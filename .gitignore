@@ -1,0 +1,48 @@
+# Python Virtual Environments
+.venv/
+venv/
+**/venv/
+ENV/
+env/
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Backups and temporary files
+*.bak
+*.tmp
+*.log
+
+# Large Datasets & Processed SQLite Database (Lưu trữ trên Cloud / Google Drive)
+data/raw/raw_dataset/
+data/raw/*.bak
+data/processed/*.db
+data/processed/*.db-journal
+data/processed/*.db-wal
+data/processed/*.db-shm
+data/processed/*.sqlite
+
+# Crawler scraped JSON and backups (tránh lỗi vượt quá 100MB trên GitHub)
+crawlers/**/*.json
+crawlers/**/*.bak
+crawlers/**/hotels/*.json
+crawlers/**/restaurants/*.json
+crawlers/**/attractions/*.json
+
+# Giữ lại metadata địa điểm và từ điển ẩm thực mẫu
+!data/raw/vietnam_places_metadata.json
+!data/processed/culinary_gazetteer.json
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo

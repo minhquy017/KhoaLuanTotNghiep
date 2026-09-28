@@ -1,0 +1,32 @@
+# ==============================================================================
+# THƯ VIỆN CẦN THIẾT CHO ĐỒ ÁN KHÓA LUẬN TỐT NGHIỆP AI
+# Đề tài: Smart Tourism QA & Itinerary Recommendation System via Spatial KG & LLMs
+# ==============================================================================
+
+# 1. Xử lý Dữ liệu & Cơ sở dữ liệu (Data Processing & DB)
+pandas>=2.0.0
+numpy>=1.24.0
+tqdm>=4.65.0
+requests>=2.31.0
+
+# 2. Xử lý Ngôn ngữ Tự nhiên & Khai phá Món ăn (Phase 1: NLP & Entity Mining)
+spacy>=3.7.0
+
+# 3. Đồ thị Tri thức Không gian (Phase 2: Spatial Knowledge Graph)
+networkx>=3.1
+
+# 4. Tìm kiếm Ngữ nghĩa & Vector Database (Phase 2-3: 2-Tier RAG & Embeddings)
+chromadb>=0.4.0
+sentence-transformers>=2.2.0
+
+# 5. Thuật toán Lên lịch trình & Gom cụm (Phase 3: Itinerary Optimization & Clustering)
+scikit-learn>=1.3.0
+scipy>=1.11.0
+
+# 6. Giao diện Web Bản đồ Tương tác (Phase 4: Web Demo & Interactive Maps)
+streamlit>=1.30.0
+folium>=0.15.0
+streamlit-folium>=0.17.0
+
+# 7. Xuất Báo cáo & Tài liệu Học thuật
+python-docx>=1.1.0

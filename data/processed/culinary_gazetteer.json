@@ -1,0 +1,7328 @@
+[
+  {
+    "dish_id": "dish_0001",
+    "canonical_name": "Phở bò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "beef noodle soup",
+      "beef pho",
+      "pho bo",
+      "pho bo ha noi",
+      "phở bò",
+      "vietnamese beef noodle soup"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0002",
+    "canonical_name": "Phở bò tái",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "half done beef pho",
+      "pho bo tai",
+      "phở bò tái",
+      "rare beef noodles",
+      "rare beef pho"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0003",
+    "canonical_name": "Phở bò chín",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "cooked beef pho",
+      "pho bo chin",
+      "phở bò chín",
+      "well-done beef pho"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0004",
+    "canonical_name": "Phở tái lăn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "pho tai lan",
+      "phở tái lăn",
+      "seared beef pho",
+      "stir fried beef noodle soup",
+      "stir-fried rare beef pho"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0005",
+    "canonical_name": "Phở nạm gầu",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "beef flank pho",
+      "flank and brisket pho",
+      "pho nam gau",
+      "phở nạm gầu"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0006",
+    "canonical_name": "Phở bắp bò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "beef shank pho",
+      "pho bap bo",
+      "phở bắp bò"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0007",
+    "canonical_name": "Phở gân bò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "beef tendon pho",
+      "pho gan bo",
+      "phở gân bò"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0008",
+    "canonical_name": "Phở đuôi bò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "oxtail noodle soup",
+      "oxtail pho",
+      "pho duoi bo",
+      "phở đuôi bò"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0009",
+    "canonical_name": "Phở sốt vang",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "beef stew pho",
+      "bordeaux beef noodle soup",
+      "pho bo sot vang",
+      "pho sot vang",
+      "phở sốt vang",
+      "red wine beef pho"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0010",
+    "canonical_name": "Phở sườn bò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "beef rib pho",
+      "pho suon bo",
+      "phở sườn bò",
+      "short rib pho"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0011",
+    "canonical_name": "Phở gà",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "chicken noodle soup",
+      "chicken pho",
+      "pho ga",
+      "phở gà",
+      "vietnamese chicken noodle soup"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0012",
+    "canonical_name": "Phở gà đồi",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "free-range chicken pho",
+      "pho ga doi",
+      "phở gà đồi"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0013",
+    "canonical_name": "Phở gà chặt",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bone-in chicken pho",
+      "pho ga chat",
+      "phở gà chặt"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0014",
+    "canonical_name": "Phở gà xé",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "pho ga xe",
+      "phở gà xé",
+      "shredded chicken pho"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0015",
+    "canonical_name": "Phở lòng gà",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "chicken giblets pho",
+      "pho long ga",
+      "phở lòng gà"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0016",
+    "canonical_name": "Phở cuốn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "fresh pho rolls",
+      "pho cuon",
+      "pho rolls",
+      "phở cuốn",
+      "rolled noodle sheets with beef",
+      "rolled pho"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0017",
+    "canonical_name": "Phở chiên phồng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "crispy puffed pho",
+      "deep fried pho",
+      "fried square pho",
+      "pho chien phong",
+      "phở chiên phồng"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0018",
+    "canonical_name": "Phở chiên trứng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "egg fried pho",
+      "pho chien trung",
+      "phở chiên trứng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0019",
+    "canonical_name": "Phở xào bò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "fried noodle with beef",
+      "pho xao bo",
+      "phở xào bò",
+      "stir fried beef pho",
+      "stir-fried pho with beef"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0020",
+    "canonical_name": "Phở xào giòn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "crispy fried pho noodles",
+      "pho xao gion",
+      "phở xào giòn"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0021",
+    "canonical_name": "Phở chua Lạng Sơn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Đông Bắc",
+    "aliases": [
+      "lang son sour pho",
+      "lang son sweet and sour noodles",
+      "pho chua",
+      "pho chua lang son",
+      "phở chua lạng sơn",
+      "sour pho"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0022",
+    "canonical_name": "Phở khô Gia Lai",
+    "category": "Món Phở & Bún",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "dry pho",
+      "gia lai dry pho",
+      "pho hai to",
+      "pho kho",
+      "pho kho gia lai",
+      "phở khô gia lai",
+      "two bowl pho"
+    ],
+    "alias_count": 7
+  },
+  {
+    "dish_id": "dish_0023",
+    "canonical_name": "Phở trộn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "dry mixed pho",
+      "mixed pho",
+      "pho tron",
+      "phở trộn",
+      "salad pho"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0024",
+    "canonical_name": "Phở tủy bò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bone marrow pho",
+      "pho tuy bo",
+      "phở tủy bò"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0025",
+    "canonical_name": "Phở vịt quay",
+    "category": "Món Phở & Bún",
+    "region_origin": "Cao Bằng",
+    "aliases": [
+      "cao bang roasted duck noodle soup",
+      "pho vit quay",
+      "phở vịt quay",
+      "roast duck pho"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0026",
+    "canonical_name": "Bún chả Hà Nội",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun cha",
+      "bun cha ha noi",
+      "bún chả hà nội",
+      "grilled pork noodle",
+      "grilled pork patties",
+      "hanoi grilled pork with noodles",
+      "obama noodles"
+    ],
+    "alias_count": 7
+  },
+  {
+    "dish_id": "dish_0027",
+    "canonical_name": "Bún chả que tre",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bamboo skewer grilled pork noodles",
+      "bun cha que tre",
+      "bún chả que tre"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0028",
+    "canonical_name": "Bún thang",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun thang",
+      "bún thang",
+      "chicken egg pork noodle soup",
+      "hanoi combination noodle soup",
+      "hanoi traditional noodle soup"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0029",
+    "canonical_name": "Bún đậu mắm tôm",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "bun dau",
+      "bun dau mam tom",
+      "bún đậu mắm tôm",
+      "fried tofu with rice noodles and fermented shrimp paste",
+      "tofu noodles with shrimp paste"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0030",
+    "canonical_name": "Bún đậu chả cốm",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun dau cha com",
+      "bún đậu chả cốm",
+      "noodles with tofu and green rice pork patties"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0031",
+    "canonical_name": "Bún ốc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun oc",
+      "bún ốc",
+      "snail noodle soup",
+      "vietnamese snail noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0032",
+    "canonical_name": "Bún ốc nguội",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun oc nguoi",
+      "bún ốc nguội",
+      "cold snail noodles",
+      "traditional cold snail noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0033",
+    "canonical_name": "Bún ốc chuối đậu",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "bun oc chuoi dau",
+      "bún ốc chuối đậu",
+      "snail noodles with green banana and tofu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0034",
+    "canonical_name": "Bún riêu cua",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "bun rieu",
+      "bun rieu cua",
+      "bún riêu cua",
+      "crab noodle soup",
+      "crab paste noodle soup",
+      "vietnamese crab noodles"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0035",
+    "canonical_name": "Bún riêu ốc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun rieu oc",
+      "bún riêu ốc",
+      "crab and snail noodle soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0036",
+    "canonical_name": "Bún riêu sườn sụn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun rieu suon",
+      "bun rieu suon sun",
+      "bún riêu sườn sụn",
+      "crab noodle soup with cartilage ribs"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0037",
+    "canonical_name": "Bún riêu giò chả",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "bun rieu gio cha",
+      "bún riêu giò chả",
+      "southern crab noodle soup with pork sausage"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0038",
+    "canonical_name": "Bún bò Huế",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun bo",
+      "bun bo hue",
+      "bún bò huế",
+      "hue beef noodle soup",
+      "hue spicy beef noodles",
+      "spicy beef noodle soup"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0039",
+    "canonical_name": "Bún bò giò heo",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun bo gio heo",
+      "bún bò giò heo",
+      "hue beef noodles with pork knuckle",
+      "pig trotter spicy noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0040",
+    "canonical_name": "Bún bò gân",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "beef tendon noodle soup",
+      "bun bo gan",
+      "bún bò gân"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0041",
+    "canonical_name": "Bún bò bắp",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "beef shank noodle soup",
+      "bun bo bap",
+      "bún bò bắp"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0042",
+    "canonical_name": "Bún bò cua",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun bo cha cua",
+      "bun bo cua",
+      "bún bò cua",
+      "hue beef and crab ball noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0043",
+    "canonical_name": "Bún chả cá Đà Nẵng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "bun cha ca da nang",
+      "bún chả cá đà nẵng",
+      "da nang fish cake noodles",
+      "fish cake noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0044",
+    "canonical_name": "Bún chả cá Nha Trang",
+    "category": "Món Phở & Bún",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "bun cha ca nha trang",
+      "bún chả cá nha trang",
+      "mackerel fish cake noodles",
+      "nha trang fish cake noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0045",
+    "canonical_name": "Bún chả cá Quy Nhơn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "bun cha ca quy nhon",
+      "bún chả cá quy nhơn",
+      "quy nhon fish cake noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0046",
+    "canonical_name": "Bún mắm",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "bun mam",
+      "bún mắm",
+      "fermented fish noodle soup",
+      "mekong fermented seafood noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0047",
+    "canonical_name": "Bún mắm nêm",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "bun mam nem",
+      "bún mắm nêm",
+      "danang pork noodles with fish sauce",
+      "noodles with anchovy dipping sauce"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0048",
+    "canonical_name": "Bún mắm nêm heo quay",
+    "category": "Món Phở & Bún",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "bun mam heo quay",
+      "bun mam nem heo quay",
+      "bún mắm nêm heo quay",
+      "crispy roast pork noodles with anchovy sauce"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0049",
+    "canonical_name": "Bún mắm nêm thịt luộc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "boiled pork noodles with anchovy sauce",
+      "bun mam nem thit luoc",
+      "bun mam thit luoc",
+      "bún mắm nêm thịt luộc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0050",
+    "canonical_name": "Bún nước lèo Sóc Trăng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "bun nuoc leo",
+      "bun nuoc leo soc trang",
+      "bún nước lèo sóc trăng",
+      "fermented fish and coconut noodles",
+      "soc trang fish soup noodles"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0051",
+    "canonical_name": "Bún nước lèo Trà Vinh",
+    "category": "Món Phở & Bún",
+    "region_origin": "Trà Vinh",
+    "aliases": [
+      "bun nuoc leo tra vinh",
+      "bún nước lèo trà vinh",
+      "tra vinh fermented broth noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0052",
+    "canonical_name": "Bún sứa",
+    "category": "Món Phở & Bún",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "bun sua",
+      "bún sứa",
+      "jellyfish noodle soup",
+      "jellyfish noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0053",
+    "canonical_name": "Bún quậy Phú Quốc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Kiên Giang",
+    "aliases": [
+      "bun quay",
+      "bun quay phu quoc",
+      "bún quậy phú quốc",
+      "fresh seafood stirred noodles",
+      "phu quoc stirred noodles",
+      "swirled noodle soup"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0054",
+    "canonical_name": "Bún kèn Phú Quốc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Kiên Giang",
+    "aliases": [
+      "bun ken",
+      "bun ken phu quoc",
+      "bún kèn phú quốc",
+      "phu quoc coconut fish curry noodles",
+      "trumpet noodles"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0055",
+    "canonical_name": "Bún cá rô đồng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "bun ca ro dong",
+      "bún cá rô đồng",
+      "climbing perch noodle soup",
+      "perch fish noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0056",
+    "canonical_name": "Bún cá cay Hải Phòng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "bun ca cay",
+      "bun ca cay hai phong",
+      "bún cá cay hải phòng",
+      "hai phong fish noodles",
+      "hai phong spicy fish noodles"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0057",
+    "canonical_name": "Bún cá dầm",
+    "category": "Món Phở & Bún",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "bun ca dam",
+      "bún cá dầm",
+      "steamed fish noodle soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0058",
+    "canonical_name": "Bún cá ngừ um",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "braised tuna vermicelli",
+      "bun ca ngu um",
+      "bún cá ngừ um",
+      "tuna noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0059",
+    "canonical_name": "Bún cá sứa",
+    "category": "Món Phở & Bún",
+    "region_origin": "Khánh Hòa",
+    "aliases": [
+      "bun ca sua",
+      "bún cá sứa",
+      "fish cake and jellyfish noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0060",
+    "canonical_name": "Bún thịt nướng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "bun thit nuong",
+      "bún thịt nướng",
+      "grilled pork noodles",
+      "grilled pork with dry vermicelli",
+      "vermicelli with grilled pork"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0061",
+    "canonical_name": "Bún thịt nướng chả giò",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "bun thit nuong cha gio",
+      "bún thịt nướng chả giò",
+      "grilled pork and spring rolls with vermicelli"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0062",
+    "canonical_name": "Bún thịt nướng kim tiền",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun thit nuong kim tien",
+      "bún thịt nướng kim tiền",
+      "hue coin grilled pork noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0063",
+    "canonical_name": "Bún nem nướng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "bun nem nuong",
+      "bún nem nướng",
+      "grilled meatball noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0064",
+    "canonical_name": "Bún thịt xào",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "bun thit xao",
+      "bún thịt xào",
+      "stir-fried pork vermicelli"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0065",
+    "canonical_name": "Bún bì",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "bun bi",
+      "bún bì",
+      "vermicelli with shredded pork skin"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0066",
+    "canonical_name": "Bún mọc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "bun moc",
+      "bún mọc",
+      "pork ball noodle soup",
+      "vermicelli with pork meatballs"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0067",
+    "canonical_name": "Bún dọc mùng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun doc mung",
+      "bún dọc mùng",
+      "pork knuckle with taro stem noodles",
+      "taro stem noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0068",
+    "canonical_name": "Bún sườn chua",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun suon chua",
+      "bún sườn chua",
+      "sour broth rib noodles",
+      "sour pork rib noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0069",
+    "canonical_name": "Bún sườn mọc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun suon moc",
+      "bún sườn mọc",
+      "pork rib and meatball noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0070",
+    "canonical_name": "Bún măng vịt",
+    "category": "Món Phở & Bún",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "bun mang vit",
+      "bún măng vịt",
+      "duck and bamboo shoot noodles",
+      "duck noodle soup with bamboo shoots"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0071",
+    "canonical_name": "Bún ngan",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun ngan",
+      "bún ngan",
+      "muscovy duck noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0072",
+    "canonical_name": "Bún ngan nướng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun ngan nuong",
+      "bún ngan nướng",
+      "grilled muscovy duck noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0073",
+    "canonical_name": "Bún ngan trộn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bun ngan tron",
+      "bún ngan trộn",
+      "dry mixed duck noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0074",
+    "canonical_name": "Bún hến",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "baby clam noodles",
+      "bun hen",
+      "bún hến",
+      "hue clam noodle",
+      "mussel vermicelli"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0075",
+    "canonical_name": "Bún nghệ Huế",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun nghe",
+      "bun nghe hue",
+      "bún nghệ huế",
+      "turmeric chitterlings noodles",
+      "turmeric noodles with pork intestines"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0076",
+    "canonical_name": "Bún đỏ Đắk Lắk",
+    "category": "Món Phở & Bún",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "bun do",
+      "bun do dak lak",
+      "bún đỏ đắk lắk",
+      "dak lak red noodle soup",
+      "red vermicelli soup"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0077",
+    "canonical_name": "Bún suông Trà Vinh",
+    "category": "Món Phở & Bún",
+    "region_origin": "Trà Vinh",
+    "aliases": [
+      "bun suong",
+      "bun suong tra vinh",
+      "bún suông trà vinh",
+      "shrimp dumpling noodles",
+      "tra vinh shrimp paste noodles"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0078",
+    "canonical_name": "Bún tôm Hải Phòng",
+    "category": "Món Phở & Bún",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "bun tom",
+      "bun tom hai phong",
+      "bún tôm hải phòng",
+      "hai phong prawn noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0079",
+    "canonical_name": "Bún giấm nuốc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun giam nuoc",
+      "bún giấm nuốc",
+      "hue jellyfish vinegar noodles",
+      "medusa jelly noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0080",
+    "canonical_name": "Bún cá Châu Đốc",
+    "category": "Món Phở & Bún",
+    "region_origin": "An Giang",
+    "aliases": [
+      "bun ca chau doc",
+      "bún cá châu đốc",
+      "chau doc fish noodles",
+      "turmeric fish broth noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0081",
+    "canonical_name": "Bún bò cay Bạc Liêu",
+    "category": "Món Phở & Bún",
+    "region_origin": "Bạc Liêu",
+    "aliases": [
+      "bac lieu spicy beef noodles",
+      "bun bo cay",
+      "bun bo cay bac lieu",
+      "bún bò cay bạc liêu"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0082",
+    "canonical_name": "Bún lòng xào nghệ",
+    "category": "Món Phở & Bún",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun long xao nghe",
+      "bún lòng xào nghệ",
+      "turmeric noodles with fried chitterlings"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0083",
+    "canonical_name": "Bún cá Kiên Giang",
+    "category": "Món Phở & Bún",
+    "region_origin": "Kiên Giang",
+    "aliases": [
+      "bun ca kien giang",
+      "bún cá kiên giang",
+      "kien giang fish noodle soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0084",
+    "canonical_name": "Bún rạm Quy Nhơn",
+    "category": "Món Phở & Bún",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "bun ram quy nhon",
+      "bún rạm quy nhơn",
+      "small crab noodles",
+      "swamp crab noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0085",
+    "canonical_name": "Bún tôm Châu Trúc",
+    "category": "Món Phở & Bún",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "bun tom binh dinh",
+      "bun tom chau truc",
+      "bún tôm châu trúc",
+      "chau truc shrimp noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0086",
+    "canonical_name": "Mì Quảng",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "mi quang",
+      "mì quảng",
+      "quang noodles",
+      "quang style noodles",
+      "turmeric noodles"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0087",
+    "canonical_name": "Mì Quảng gà",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "chicken mi quang",
+      "mi quang ga",
+      "mì quảng gà"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0088",
+    "canonical_name": "Mì Quảng tôm thịt",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "mi quang tom thit",
+      "mì quảng tôm thịt",
+      "pork and shrimp mi quang"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0089",
+    "canonical_name": "Mì Quảng ếch",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "frog mi quang",
+      "mi quang ech",
+      "mì quảng ếch"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0090",
+    "canonical_name": "Mì Quảng cá lóc",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "mi quang ca loc",
+      "mì quảng cá lóc",
+      "snakehead fish mi quang"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0091",
+    "canonical_name": "Mì Quảng sườn non",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "mi quang suon",
+      "mi quang suon non",
+      "mì quảng sườn non",
+      "pork rib mi quang"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0092",
+    "canonical_name": "Mì Quảng bò",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "beef mi quang",
+      "mi quang bo",
+      "mì quảng bò"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0093",
+    "canonical_name": "Mì Quảng sứa",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "jellyfish mi quang",
+      "mi quang sua",
+      "mì quảng sứa"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0094",
+    "canonical_name": "Cao lầu",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hội An",
+    "aliases": [
+      "cao lau",
+      "cao lau noodles",
+      "cao lầu",
+      "hoi an noodles",
+      "hoi an pork noodle"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0095",
+    "canonical_name": "Cao lầu gà",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hội An",
+    "aliases": [
+      "cao lau ga",
+      "cao lầu gà",
+      "chicken cao lau"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0096",
+    "canonical_name": "Cao lầu chay",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hội An",
+    "aliases": [
+      "cao lau chay",
+      "cao lầu chay",
+      "vegetarian cao lau"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0097",
+    "canonical_name": "Hủ tiếu Nam Vang",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "clear noodle soup with pork and seafood",
+      "hu tieu nam vang",
+      "hủ tiếu nam vang",
+      "nam vang noodle soup",
+      "phnom penh noodles"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0098",
+    "canonical_name": "Hủ tiếu khô",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "dry hu tieu",
+      "dry tossed rice noodles",
+      "hu tieu kho",
+      "hủ tiếu khô"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0099",
+    "canonical_name": "Hủ tiếu Sa Đéc",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Đồng Tháp",
+    "aliases": [
+      "hu tieu sa dec",
+      "hủ tiếu sa đéc",
+      "sa dec rice noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0100",
+    "canonical_name": "Hủ tiếu Mỹ Tho",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Tiền Giang",
+    "aliases": [
+      "hu tieu my tho",
+      "hủ tiếu mỹ tho",
+      "my tho rice noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0101",
+    "canonical_name": "Hủ tiếu mực",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "calamari noodles",
+      "hu tieu muc",
+      "hủ tiếu mực",
+      "squid rice noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0102",
+    "canonical_name": "Hủ tiếu bò kho",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "beef stew with rice noodles",
+      "hu tieu bo kho",
+      "hủ tiếu bò kho"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0103",
+    "canonical_name": "Hủ tiếu xào",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "hu tieu xao",
+      "hủ tiếu xào",
+      "stir fried rice noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0104",
+    "canonical_name": "Hủ tiếu cá",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "fish rice noodle soup",
+      "hu tieu ca",
+      "hủ tiếu cá"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0105",
+    "canonical_name": "Hủ tiếu sa tế bò",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "hu tieu sa te bo",
+      "hủ tiếu sa tế bò",
+      "satay beef rice noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0106",
+    "canonical_name": "Hủ tiếu sườn que",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "hu tieu suon",
+      "hu tieu suon que",
+      "hủ tiếu sườn que",
+      "pork ribs rice noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0107",
+    "canonical_name": "Hủ tiếu gõ",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "hu tieu go",
+      "hủ tiếu gõ",
+      "street cart hu tieu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0108",
+    "canonical_name": "Hủ tiếu hồ",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "chinese rice noodle sheets",
+      "hu tieu ho",
+      "hủ tiếu hồ"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0109",
+    "canonical_name": "Bánh canh cua",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh canh cua",
+      "bánh canh cua",
+      "crab udon soup",
+      "thick tapioca crab noodle",
+      "vietnamese thick noodle soup with crab"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0110",
+    "canonical_name": "Bánh canh ghẹ",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh canh ghe",
+      "blue crab thick noodles",
+      "bánh canh ghẹ"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0111",
+    "canonical_name": "Bánh canh Nam Phổ",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh canh nam pho",
+      "bánh canh nam phổ",
+      "hue crab and shrimp thick noodle soup",
+      "nam pho thick noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0112",
+    "canonical_name": "Bánh canh cá lóc",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "banh canh ca loc",
+      "bánh canh cá lóc",
+      "hue snakehead fish thick noodle",
+      "snakehead fish thick noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0113",
+    "canonical_name": "Bánh canh cá lóc bột lọc",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Quảng Trị",
+    "aliases": [
+      "banh canh bot loc ca loc",
+      "banh canh ca loc bot loc",
+      "bánh canh cá lóc bột lọc",
+      "tapioca snakehead fish noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0114",
+    "canonical_name": "Bánh canh Trảng Bàng",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Tây Ninh",
+    "aliases": [
+      "banh canh trang bang",
+      "bánh canh trảng bàng",
+      "pork knuckle thick noodles",
+      "trang bang thick noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0115",
+    "canonical_name": "Bánh canh chả cá",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "banh canh cha ca",
+      "bánh canh chả cá",
+      "fish cake thick noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0116",
+    "canonical_name": "Bánh canh giò heo",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh canh gio heo",
+      "bánh canh giò heo",
+      "pork trotter thick noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0117",
+    "canonical_name": "Bánh canh sườn heo",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh canh suon",
+      "banh canh suon heo",
+      "bánh canh sườn heo",
+      "pork rib thick noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0118",
+    "canonical_name": "Bánh canh vịt nước cốt dừa",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "banh canh vit",
+      "banh canh vit nuoc cot dua",
+      "bánh canh vịt nước cốt dừa",
+      "duck thick noodles with coconut milk"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0119",
+    "canonical_name": "Bánh canh tôm thịt",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh canh tom thit",
+      "bánh canh tôm thịt",
+      "shrimp and pork thick noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0120",
+    "canonical_name": "Bánh canh hẹ Phú Yên",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Phú Yên",
+    "aliases": [
+      "banh canh he",
+      "banh canh he phu yen",
+      "bánh canh hẹ phú yên",
+      "phu yen chive noodle soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0121",
+    "canonical_name": "Miến lươn Hà Nội",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "crispy eel with glass noodles",
+      "eel glass noodles",
+      "eel vermicelli",
+      "mien luon",
+      "mien luon ha noi",
+      "miến lươn hà nội"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0122",
+    "canonical_name": "Miến lươn xào",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "mien luon xao",
+      "miến lươn xào",
+      "stir fried glass noodles with eel"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0123",
+    "canonical_name": "Miến lươn trộn",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "dry mixed eel glass noodles",
+      "mien luon tron",
+      "miến lươn trộn"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0124",
+    "canonical_name": "Miến gà",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "cellophane noodles with chicken",
+      "chicken glass noodle soup",
+      "mien ga",
+      "miến gà"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0125",
+    "canonical_name": "Miến măng gà",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chicken and bamboo shoot glass noodles",
+      "mien mang ga",
+      "miến măng gà"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0126",
+    "canonical_name": "Miến xào cua",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "crab cellophane noodles",
+      "mien xao cua",
+      "miến xào cua",
+      "stir-fried glass noodles with crab"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0127",
+    "canonical_name": "Miến xào hải sản",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "mien xao hai san",
+      "miến xào hải sản",
+      "stir-fried glass noodles with seafood"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0128",
+    "canonical_name": "Miến ngan",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "mien ngan",
+      "miến ngan",
+      "muscovy duck glass noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0129",
+    "canonical_name": "Mì vằn thắn",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "mi van than",
+      "mì vằn thắn",
+      "vietnamese wonton noodle soup",
+      "wonton noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0130",
+    "canonical_name": "Mì hoành thánh",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "mi hoanh thanh",
+      "mì hoành thánh",
+      "wonton egg noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0131",
+    "canonical_name": "Mì vịt tiềm",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "braised duck egg noodles",
+      "chinese braised duck noodle soup",
+      "mi vit tiem",
+      "mì vịt tiềm"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0132",
+    "canonical_name": "Mì xào giòn hải sản",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "crispy egg noodles with seafood",
+      "mi xao gion",
+      "mi xao gion hai san",
+      "mì xào giòn hải sản"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0133",
+    "canonical_name": "Mì xào mềm",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "mi xao mem",
+      "mì xào mềm",
+      "soft stir fried noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0134",
+    "canonical_name": "Bánh đa cua Hải Phòng",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "banh da cua",
+      "banh da cua hai phong",
+      "bánh đa cua hải phòng",
+      "hai phong crab red noodles",
+      "red noodle soup with crab paste"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0135",
+    "canonical_name": "Bánh đa cua trộn",
+    "category": "Món Mì & Hủ tiếu & Bánh canh",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "banh da cua tron",
+      "bánh đa cua trộn",
+      "mixed dry red crab noodles"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0136",
+    "canonical_name": "Cơm tấm Sài Gòn",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "broken rice",
+      "com tam",
+      "com tam sai gon",
+      "cơm tấm sài gòn",
+      "saigon broken rice",
+      "vietnamese broken rice"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0137",
+    "canonical_name": "Cơm tấm sườn bì chả",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "broken rice with pork chop, skin and egg meatloaf",
+      "com tam suon bi cha",
+      "cơm tấm sườn bì chả"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0138",
+    "canonical_name": "Cơm tấm sườn nướng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "broken rice with grilled pork chop",
+      "com tam suon nuong",
+      "cơm tấm sườn nướng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0139",
+    "canonical_name": "Cơm gà Hội An",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Hội An",
+    "aliases": [
+      "com ga hoi an",
+      "cơm gà hội an",
+      "hoi an chicken rice",
+      "hoi an shredded chicken rice",
+      "turmeric chicken rice"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0140",
+    "canonical_name": "Cơm gà Tam Kỳ",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "com ga tam ky",
+      "cơm gà tam kỳ",
+      "tam ky chicken rice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0141",
+    "canonical_name": "Cơm gà Nha Trang",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "com ga nha trang",
+      "cơm gà nha trang",
+      "nha trang chicken rice with egg butter sauce"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0142",
+    "canonical_name": "Cơm gà Phan Rang",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Ninh Thuận",
+    "aliases": [
+      "com ga phan rang",
+      "cơm gà phan rang",
+      "phan rang chicken rice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0143",
+    "canonical_name": "Cơm hến Huế",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Huế",
+    "aliases": [
+      "baby clam rice",
+      "com hen",
+      "com hen hue",
+      "cơm hến huế",
+      "hue clam rice",
+      "mussel rice"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0144",
+    "canonical_name": "Cơm niêu",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "claypot rice",
+      "com nieu",
+      "crispy earthen pot rice",
+      "cơm niêu"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0145",
+    "canonical_name": "Cơm cháy kho quẹt",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "com chay kho quet",
+      "crispy rice with pork dip",
+      "crispy scorched rice with caramelized braised dip",
+      "cơm cháy kho quẹt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0146",
+    "canonical_name": "Cơm cháy Ninh Bình",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Ninh Bình",
+    "aliases": [
+      "com chay ninh binh",
+      "crispy rice crackers with goat meat stew",
+      "cơm cháy ninh bình",
+      "ninh binh scorched rice"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0147",
+    "canonical_name": "Cơm lam Tây Bắc",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "bamboo tube sticky rice",
+      "com lam",
+      "com lam tay bac",
+      "cơm lam tây bắc",
+      "sticky rice cooked in bamboo"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0148",
+    "canonical_name": "Cơm lam gà nướng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "com lam ga nuong",
+      "cơm lam gà nướng",
+      "grilled chicken with bamboo tube rice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0149",
+    "canonical_name": "Cơm rang dưa bò",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "com rang dua bo",
+      "cơm rang dưa bò",
+      "fried rice with beef and pickled mustard greens"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0150",
+    "canonical_name": "Cơm chiên Dương Châu",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "com chien duong chau",
+      "cơm chiên dương châu",
+      "yang chow fried rice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0151",
+    "canonical_name": "Cơm chiên hải sản",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "com chien hai san",
+      "cơm chiên hải sản",
+      "seafood fried rice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0152",
+    "canonical_name": "Cơm chiên cá mặn",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "com chien ca man",
+      "cơm chiên cá mặn",
+      "salted fish fried rice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0153",
+    "canonical_name": "Cơm âm phủ Huế",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Huế",
+    "aliases": [
+      "com am phu",
+      "com am phu hue",
+      "cơm âm phủ huế",
+      "hue rainbow mixed rice",
+      "underworld rice"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0154",
+    "canonical_name": "Cơm gói lá sen",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Huế",
+    "aliases": [
+      "com goi la sen",
+      "com sen",
+      "cơm gói lá sen",
+      "hue royal lotus rice",
+      "lotus leaf wrapped rice"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0155",
+    "canonical_name": "Cơm sườn nướng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "com suon nuong",
+      "cơm sườn nướng",
+      "grilled pork chop rice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0156",
+    "canonical_name": "Cơm đùi gà nướng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "com dui ga nuong",
+      "com ga nuong",
+      "cơm đùi gà nướng",
+      "grilled chicken thigh with rice"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0157",
+    "canonical_name": "Xôi xéo Hà Nội",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "sticky rice with mung bean and fried shallots",
+      "xoi xeo",
+      "xoi xeo ha noi",
+      "xôi xéo hà nội",
+      "yellow sticky rice"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0158",
+    "canonical_name": "Xôi khúc",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "banh khuc",
+      "cudweed sticky rice dumpling",
+      "xoi khuc",
+      "xôi khúc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0159",
+    "canonical_name": "Xôi gà",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chicken sticky rice",
+      "xoi ga",
+      "xôi gà"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0160",
+    "canonical_name": "Xôi ngũ sắc",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "five-color sticky rice",
+      "highland rainbow sticky rice",
+      "xoi ngu sac",
+      "xôi ngũ sắc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0161",
+    "canonical_name": "Xôi gấc",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "red baby jackfruit sticky rice",
+      "xoi gac",
+      "xôi gấc"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0162",
+    "canonical_name": "Xôi vò",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "tossed mung bean sticky rice",
+      "xoi vo",
+      "xôi vò"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0163",
+    "canonical_name": "Xôi thịt kho trứng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "sticky rice with braised pork and egg",
+      "xoi thit kho",
+      "xoi thit kho trung",
+      "xôi thịt kho trứng"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0164",
+    "canonical_name": "Xôi cá rô đồng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "climbing perch sticky rice",
+      "xoi ca ro dong",
+      "xôi cá rô đồng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0165",
+    "canonical_name": "Xôi bắp",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "corn sticky rice with shaved coconut",
+      "xoi bap",
+      "xôi bắp"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0166",
+    "canonical_name": "Xôi mặn",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "savory sticky rice with sausage and floss",
+      "xoi man",
+      "xôi mặn"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0167",
+    "canonical_name": "Xôi chiên phồng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Đồng Nai",
+    "aliases": [
+      "deep fried puffed sticky rice",
+      "xoi chien phong",
+      "xôi chiên phồng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0168",
+    "canonical_name": "Cháo sườn sụn",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "cartilage pork rib porridge",
+      "chao suon",
+      "chao suon sun",
+      "cháo sườn sụn",
+      "pork rib congee"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0169",
+    "canonical_name": "Cháo quẩy",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "chao quay",
+      "cháo quẩy",
+      "porridge with fried dough crullers"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0170",
+    "canonical_name": "Cháo ếch Singapore",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chao ech",
+      "chao ech singapore",
+      "cháo ếch singapore",
+      "claypot frog congee",
+      "frog porridge"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0171",
+    "canonical_name": "Cháo lòng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chao long",
+      "cháo lòng",
+      "pork offal porridge",
+      "pork organ congee"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0172",
+    "canonical_name": "Cháo cá lóc rau đắng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "chao ca loc",
+      "chao ca loc rau dang",
+      "cháo cá lóc rau đắng",
+      "snakehead fish porridge with bitter herbs"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0173",
+    "canonical_name": "Cháo hến",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Huế",
+    "aliases": [
+      "baby clam congee",
+      "chao hen",
+      "cháo hến",
+      "clam porridge"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0174",
+    "canonical_name": "Cháo gà hạt sen",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chao ga hat sen",
+      "chicken and lotus seed congee",
+      "cháo gà hạt sen"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0175",
+    "canonical_name": "Cháo vịt cỏ",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chao vit",
+      "chao vit co",
+      "cháo vịt cỏ",
+      "duck porridge"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0176",
+    "canonical_name": "Cháo bào ngư",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "abalone porridge",
+      "chao bao ngu",
+      "cháo bào ngư"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0177",
+    "canonical_name": "Cháo mực",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "chao muc",
+      "cháo mực",
+      "dried squid porridge"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0178",
+    "canonical_name": "Cháo lươn Nghệ An",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Nghệ An",
+    "aliases": [
+      "chao luon nghe an",
+      "cháo lươn nghệ an",
+      "nghe an eel porridge",
+      "spicy eel congee"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0179",
+    "canonical_name": "Cháo ấu tẩu Hà Giang",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Hà Giang",
+    "aliases": [
+      "aconite root porridge",
+      "chao au tau",
+      "chao au tau ha giang",
+      "cháo ấu tẩu hà giang"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0180",
+    "canonical_name": "Cháo cua đồng",
+    "category": "Món Cơm & Xôi & Cháo",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "chao cua dong",
+      "cháo cua đồng",
+      "field crab congee"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0181",
+    "canonical_name": "Bánh mì pate",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh mi",
+      "banh mi pate",
+      "bánh mì pate",
+      "pate baguette",
+      "vietnamese sandwich"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0182",
+    "canonical_name": "Bánh mì kẹp thịt",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh mi kep thit",
+      "banh mi thit",
+      "bánh mì kẹp thịt",
+      "pork roll banh mi",
+      "vietnamese pork baguette"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0183",
+    "canonical_name": "Bánh mì chảo",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh mi chao",
+      "bánh mì chảo",
+      "combination skillet banh mi",
+      "pan bread with steak and eggs"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0184",
+    "canonical_name": "Bánh mì chả cá",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "banh mi cha ca",
+      "bánh mì chả cá",
+      "fish cake banh mi"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0185",
+    "canonical_name": "Bánh mì xíu mại Đà Lạt",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "banh mi xiu mai",
+      "banh mi xiu mai da lat",
+      "bánh mì xíu mại đà lạt",
+      "da lat pork meatball sandwich",
+      "meatball baguette soup"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0186",
+    "canonical_name": "Bánh mì que Hải Phòng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "banh mi que",
+      "banh mi que hai phong",
+      "bánh mì que hải phòng",
+      "hai phong spicy breadstick",
+      "spicy mini baguette"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0187",
+    "canonical_name": "Bánh mì nướng muối ớt",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh mi nuong muoi ot",
+      "bánh mì nướng muối ớt",
+      "grilled chili salt baguette"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0188",
+    "canonical_name": "Bánh mì phá lấu",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "banh mi pha lau",
+      "braised offal banh mi",
+      "bánh mì phá lấu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0189",
+    "canonical_name": "Bánh mì heo quay",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh mi heo quay",
+      "bánh mì heo quay",
+      "crispy pork belly sandwich",
+      "roast pork banh mi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0190",
+    "canonical_name": "Bánh mì gà xé",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh mi ga",
+      "banh mi ga xe",
+      "bánh mì gà xé",
+      "shredded chicken banh mi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0191",
+    "canonical_name": "Bánh mì chả bò Đà Nẵng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "banh mi cha bo",
+      "banh mi cha bo da nang",
+      "beef sausage banh mi",
+      "bánh mì chả bò đà nẵng"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0192",
+    "canonical_name": "Bánh mì bò né",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh mi bo ne",
+      "bo ne",
+      "bánh mì bò né",
+      "sizzling beefsteak with baguette"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0193",
+    "canonical_name": "Bánh xèo miền Tây",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "banh xeo",
+      "banh xeo mien tay",
+      "bánh xèo miền tây",
+      "crispy vietnamese pancake",
+      "southern giant sizzling crepe",
+      "vietnamese sizzling crepe"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0194",
+    "canonical_name": "Bánh xèo miền Trung",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "banh xeo mien trung",
+      "bánh xèo miền trung",
+      "central style crispy pancake"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0195",
+    "canonical_name": "Bánh xèo tôm nhảy Quy Nhơn",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "banh xeo tom nhay",
+      "banh xeo tom nhay quy nhon",
+      "bánh xèo tôm nhảy quy nhơn",
+      "jumping shrimp pancake"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0196",
+    "canonical_name": "Bánh khoái Huế",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh khoai",
+      "banh khoai hue",
+      "bánh khoái huế",
+      "crispy fried hue crepe",
+      "hue royal crispy pancake"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0197",
+    "canonical_name": "Bánh khọt Vũng Tàu",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Bà Rịa - Vũng Tàu",
+    "aliases": [
+      "banh khot",
+      "banh khot vung tau",
+      "bánh khọt vũng tàu",
+      "mini savory pancakes",
+      "vung tau mini crispy shrimp pancakes"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0198",
+    "canonical_name": "Bánh bèo Huế",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh beo",
+      "banh beo chen",
+      "banh beo hue",
+      "bánh bèo huế",
+      "hue steamed rice cakes",
+      "steamed rice discs with shrimp flakes",
+      "water fern cake"
+    ],
+    "alias_count": 7
+  },
+  {
+    "dish_id": "dish_0199",
+    "canonical_name": "Bánh nậm Huế",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh nam",
+      "banh nam hue",
+      "bánh nậm huế",
+      "flat rice dumpling with shrimp",
+      "steamed flat rice cake in banana leaf"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0200",
+    "canonical_name": "Bánh bột lọc Huế",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh bot loc",
+      "banh bot loc hue",
+      "banh loc",
+      "bánh bột lọc huế",
+      "clear tapioca shrimp dumpling",
+      "tapioca dumplings with pork and shrimp"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0201",
+    "canonical_name": "Bánh bột lọc trần",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh bot loc tran",
+      "bánh bột lọc trần",
+      "naked tapioca dumplings"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0202",
+    "canonical_name": "Bánh ram ít Huế",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh ram it",
+      "banh ram it hue",
+      "bánh ram ít huế",
+      "crispy and soft sticky rice ball",
+      "fried sticky rice cake with soft dumpling"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0203",
+    "canonical_name": "Bánh ít trần",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "banh it tran",
+      "bánh ít trần",
+      "naked savory sticky rice dumpling"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0204",
+    "canonical_name": "Bánh cuốn Thanh Trì",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh cuon",
+      "banh cuon thanh tri",
+      "bánh cuốn thanh trì",
+      "steamed rice rolls",
+      "vietnamese steamed rice sheets"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0205",
+    "canonical_name": "Bánh cuốn nóng thịt mộc nhĩ",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh cuon nong",
+      "banh cuon nong thit moc nhi",
+      "bánh cuốn nóng thịt mộc nhĩ",
+      "hot steamed rice rolls with minced pork and wood ear"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0206",
+    "canonical_name": "Bánh cuốn trứng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Lạng Sơn",
+    "aliases": [
+      "banh cuon trung",
+      "bánh cuốn trứng",
+      "steamed egg rice rolls"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0207",
+    "canonical_name": "Bánh ướt lòng gà Đà Lạt",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "banh uot long ga",
+      "banh uot long ga da lat",
+      "bánh ướt lòng gà đà lạt",
+      "steamed rice sheets with chicken giblets"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0208",
+    "canonical_name": "Bánh ướt thịt nướng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh uot thit nuong",
+      "bánh ướt thịt nướng",
+      "steamed rice sheets with grilled pork"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0209",
+    "canonical_name": "Bánh chưng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "banh chung",
+      "bánh chưng",
+      "square sticky rice cake with pork and mung bean",
+      "tet square rice cake"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0210",
+    "canonical_name": "Bánh tét",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh tet",
+      "bánh tét",
+      "cylindrical sticky rice cake",
+      "southern new year rice cake"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0211",
+    "canonical_name": "Bánh tét lá cẩm",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Cần Thơ",
+    "aliases": [
+      "banh tet la cam",
+      "bánh tét lá cẩm",
+      "purple magenta plant sticky rice cake"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0212",
+    "canonical_name": "Bánh giò Hà Nội",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh gio",
+      "banh gio ha noi",
+      "bánh giò hà nội",
+      "pyramid shaped rice dumpling with minced pork"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0213",
+    "canonical_name": "Bánh bao xá xíu",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh bao xa xiu",
+      "bbq pork steamed bun",
+      "bánh bao xá xíu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0214",
+    "canonical_name": "Bánh bao nhân thịt trứng cút",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh bao",
+      "banh bao nhan thit trung cut",
+      "bánh bao nhân thịt trứng cút",
+      "steamed pork and quail egg bun"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0215",
+    "canonical_name": "Bánh tiêu",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh tieu",
+      "bánh tiêu",
+      "hollow fried sesame donut"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0216",
+    "canonical_name": "Bánh quẩy giòn",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh quay",
+      "banh quay gion",
+      "bánh quẩy giòn",
+      "fried dough cruller",
+      "quay"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0217",
+    "canonical_name": "Bánh rán mặn",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh ran man",
+      "bánh rán mặn",
+      "deep fried savory glutinous rice ball"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0218",
+    "canonical_name": "Bánh gối Hà Nội",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh goi",
+      "banh goi ha noi",
+      "bánh gối hà nội",
+      "crispy pillow pastry with pork and glass noodles"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0219",
+    "canonical_name": "Bánh tôm Hồ Tây",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh tom ho tay",
+      "bánh tôm hồ tây",
+      "crispy sweet potato shrimp fritters",
+      "west lake fried shrimp cake"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0220",
+    "canonical_name": "Bánh cống Sóc Trăng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Sóc Trăng",
+    "aliases": [
+      "banh cong",
+      "banh cong soc trang",
+      "bánh cống sóc trăng",
+      "crispy muffin cake with shrimp",
+      "soc trang fried shrimp cake"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0221",
+    "canonical_name": "Bánh tằm bì",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "banh tam bi",
+      "bánh tằm bì",
+      "silkworm thick noodles with shredded pork and coconut cream"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0222",
+    "canonical_name": "Bánh căn Đà Lạt",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "banh can",
+      "banh can da lat",
+      "bánh căn đà lạt",
+      "mini pancake cooked in earthenware mold"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0223",
+    "canonical_name": "Bánh căn Phan Rang",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Ninh Thuận",
+    "aliases": [
+      "banh can phan rang",
+      "bánh căn phan rang",
+      "phan rang mini pancakes with seafood"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0224",
+    "canonical_name": "Bánh hỏi thịt heo quay",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh hoi heo quay",
+      "banh hoi thit heo quay",
+      "bánh hỏi thịt heo quay",
+      "woven rice vermicelli with roast pork"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0225",
+    "canonical_name": "Bánh hỏi lòng heo",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "banh hoi long heo",
+      "bánh hỏi lòng heo",
+      "woven rice vermicelli with pork organ"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0226",
+    "canonical_name": "Bánh hỏi nem nướng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh hoi nem nuong",
+      "bánh hỏi nem nướng",
+      "woven vermicelli with grilled pork skewers"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0227",
+    "canonical_name": "Bánh tráng nướng Đà Lạt",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "banh trang nuong",
+      "banh trang nuong da lat",
+      "bánh tráng nướng đà lạt",
+      "da lat pizza",
+      "grilled rice paper",
+      "vietnamese pizza"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0228",
+    "canonical_name": "Bánh tráng trộn",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "banh trang tron",
+      "bánh tráng trộn",
+      "mixed rice paper salad",
+      "rice paper salad with beef jerky and quail eggs"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0229",
+    "canonical_name": "Bánh tráng cuốn sốt me",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "banh trang cuon",
+      "banh trang cuon sot me",
+      "bánh tráng cuốn sốt me",
+      "rolled rice paper with tamarind sauce"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0230",
+    "canonical_name": "Bánh tráng phơi sương Trảng Bàng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Tây Ninh",
+    "aliases": [
+      "banh trang phoi suong",
+      "banh trang phoi suong trang bang",
+      "bánh tráng phơi sương trảng bàng",
+      "dew soaked rice paper"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0231",
+    "canonical_name": "Bánh đúc nóng",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh duc nong",
+      "bánh đúc nóng",
+      "hot plain rice flan with minced pork"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0232",
+    "canonical_name": "Bánh đúc lạc",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "banh duc lac",
+      "bánh đúc lạc",
+      "steamed peanut rice cake with soy paste"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0233",
+    "canonical_name": "Bánh tai heo",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh tai heo",
+      "bánh tai heo",
+      "pig ear cookies"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0234",
+    "canonical_name": "Bánh tai vạc",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Phan Thiết",
+    "aliases": [
+      "banh quai vac",
+      "banh tai vac",
+      "bánh tai vạc",
+      "phan thiet clear tapioca dumplings"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0235",
+    "canonical_name": "Bánh bèo chén miền Trung",
+    "category": "Món Bánh & Bánh mì",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "banh beo chen",
+      "banh beo chen mien trung",
+      "bánh bèo chén miền trung",
+      "central small bowl steamed rice cake"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0236",
+    "canonical_name": "Gỏi cuốn tôm thịt",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "fresh spring rolls",
+      "goi cuon",
+      "goi cuon tom thit",
+      "gỏi cuốn tôm thịt",
+      "rice paper rolls with shrimp and pork",
+      "salad rolls",
+      "summer rolls"
+    ],
+    "alias_count": 7
+  },
+  {
+    "dish_id": "dish_0237",
+    "canonical_name": "Chả giò tôm thịt",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "cha gio",
+      "cha gio tom thit",
+      "chả giò tôm thịt",
+      "crispy spring rolls",
+      "fried egg rolls",
+      "pork and shrimp fried rolls"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0238",
+    "canonical_name": "Nem rán Hà Nội",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "fried spring rolls ha noi",
+      "hanoi crispy spring rolls",
+      "nem ran",
+      "nem ran ha noi",
+      "nem rán hà nội"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0239",
+    "canonical_name": "Nem lụi Huế",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Huế",
+    "aliases": [
+      "grilled pork on lemongrass",
+      "hue lemongrass pork skewers",
+      "nem lui",
+      "nem lui hue",
+      "nem lụi huế"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0240",
+    "canonical_name": "Nem nướng Nha Trang",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "grilled pork meatballs with dipping sauce",
+      "nem nuong",
+      "nem nuong nha trang",
+      "nem nướng nha trang",
+      "nha trang grilled pork sausage rolls"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0241",
+    "canonical_name": "Nem nướng Ninh Hòa",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Khánh Hòa",
+    "aliases": [
+      "nem nuong ninh hoa",
+      "nem nướng ninh hòa",
+      "ninh hoa grilled pork"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0242",
+    "canonical_name": "Bò bía mặn",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "bo bia",
+      "bo bia man",
+      "bò bía mặn",
+      "jicama and chinese sausage spring rolls"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0243",
+    "canonical_name": "Bò bía ngọt",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bo bia ngot",
+      "bò bía ngọt",
+      "sweet coconut rolls"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0244",
+    "canonical_name": "Bánh tráng cuốn thịt heo",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "banh trang cuon thit heo",
+      "bánh tráng cuốn thịt heo",
+      "sliced boiled pork rolled in rice paper"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0245",
+    "canonical_name": "Bánh tráng cuốn thịt heo hai đầu da",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "banh trang cuon thit heo hai dau da",
+      "bánh tráng cuốn thịt heo hai đầu da",
+      "da nang double-rind pork rolls",
+      "thit heo hai dau da"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0246",
+    "canonical_name": "Bánh cuốn thịt nướng Kim Long",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Huế",
+    "aliases": [
+      "banh cuon thit nuong kim long",
+      "banh uot cuon thit nuong",
+      "bánh cuốn thịt nướng kim long",
+      "kim long grilled pork rolled cakes"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0247",
+    "canonical_name": "Ram bắp Quảng Ngãi",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Quảng Ngãi",
+    "aliases": [
+      "crispy corn spring rolls",
+      "ram bap",
+      "ram bap quang ngai",
+      "ram bắp quảng ngãi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0248",
+    "canonical_name": "Ram ít chiên",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Huế",
+    "aliases": [
+      "fried sticky rice balls",
+      "ram it",
+      "ram it chien",
+      "ram ít chiên"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0249",
+    "canonical_name": "Chạo tôm bọc mía",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Huế",
+    "aliases": [
+      "chao tom",
+      "chao tom boc mia",
+      "chao tom hue",
+      "chạo tôm bọc mía",
+      "prawn paste on sugarcane",
+      "sugar cane shrimp skewers"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0250",
+    "canonical_name": "Nem chua Thanh Hóa",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Thanh Hóa",
+    "aliases": [
+      "fermented pork roll",
+      "fermented sour pork",
+      "nem chua",
+      "nem chua thanh hoa",
+      "nem chua thanh hóa"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0251",
+    "canonical_name": "Nem chua rán Hà Nội",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "fried fermented pork rolls",
+      "nem chua ran",
+      "nem chua ran ha noi",
+      "nem chua rán hà nội"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0252",
+    "canonical_name": "Nem chua nướng",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "grilled fermented pork rolls",
+      "nem chua nuong",
+      "nem chua nướng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0253",
+    "canonical_name": "Nem tré Huế",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Huế",
+    "aliases": [
+      "hue shredded fermented pork head with galangal",
+      "nem tre hue",
+      "nem tré huế",
+      "tre hue"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0254",
+    "canonical_name": "Tré Bình Định",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "binh dinh straw fermented pig skin and ear",
+      "tre binh dinh",
+      "tré bình định"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0255",
+    "canonical_name": "Gỏi ngó sen tôm thịt",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "goi ngo sen",
+      "goi ngo sen tom thit",
+      "gỏi ngó sen tôm thịt",
+      "lotus rootlet salad with shrimp and pork",
+      "lotus stem salad"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0256",
+    "canonical_name": "Gỏi bưởi tôm mực",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "goi buoi",
+      "goi buoi tom muc",
+      "gỏi bưởi tôm mực",
+      "pomelo salad with seafood"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0257",
+    "canonical_name": "Gỏi củ hũ dừa",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Bến Tre",
+    "aliases": [
+      "coconut heart salad with shrimp and pork",
+      "goi cu hu dua",
+      "gỏi củ hũ dừa"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0258",
+    "canonical_name": "Gỏi bò bóp thấu",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "goi bo bop thau",
+      "gỏi bò bóp thấu",
+      "rare beef salad with starfruit and herbs"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0259",
+    "canonical_name": "Nộm hoa chuối gà xé",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "banana flower salad with chicken",
+      "nom hoa chuoi",
+      "nom hoa chuoi ga xe",
+      "nộm hoa chuối gà xé"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0260",
+    "canonical_name": "Nộm sứa đỏ Hải Phòng",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "nom sua do",
+      "nom sua do hai phong",
+      "nộm sứa đỏ hải phòng",
+      "red jellyfish salad with grilled tofu and copra"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0261",
+    "canonical_name": "Gỏi sứa tai chua",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "crunchy jellyfish salad",
+      "goi sua",
+      "goi sua tai chua",
+      "gỏi sứa tai chua"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0262",
+    "canonical_name": "Gỏi cá mai Nha Trang",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "deep sea white sardine salad",
+      "goi ca mai",
+      "goi ca mai nha trang",
+      "gỏi cá mai nha trang"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0263",
+    "canonical_name": "Gỏi cá trích Phú Quốc",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Kiên Giang",
+    "aliases": [
+      "goi ca trich",
+      "goi ca trich phu quoc",
+      "gỏi cá trích phú quốc",
+      "phu quoc raw herring salad with coconut"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0264",
+    "canonical_name": "Gỏi cá mè Hiệp Hòa",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Bắc Giang",
+    "aliases": [
+      "fresh carp salad",
+      "goi ca me",
+      "goi ca me hiep hoa",
+      "gỏi cá mè hiệp hòa"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0265",
+    "canonical_name": "Gỏi cá bỗng sông Gâm",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Tuyên Quang",
+    "aliases": [
+      "goi ca bong",
+      "goi ca bong song gam",
+      "gỏi cá bỗng sông gâm",
+      "river carp salad"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0266",
+    "canonical_name": "Gỏi lá Kon Tum",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "goi la kon tum",
+      "gỏi lá kon tum",
+      "kon tum forest leaf wrap platter"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0267",
+    "canonical_name": "Nộm đu đủ bò khô",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "green papaya salad with beef jerky",
+      "nom bo kho",
+      "nom du du bo kho",
+      "nộm đu đủ bò khô",
+      "papaya dried beef salad"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0268",
+    "canonical_name": "Gỏi tai heo dưa leo",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "goi tai heo",
+      "goi tai heo dua leo",
+      "gỏi tai heo dưa leo",
+      "pig ear salad with cucumber"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0269",
+    "canonical_name": "Gỏi xoài xanh tôm khô",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "goi xoai xanh",
+      "goi xoai xanh tom kho",
+      "green mango salad with dried shrimp",
+      "gỏi xoài xanh tôm khô"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0270",
+    "canonical_name": "Gỏi mít non tôm thịt",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "goi mit non",
+      "goi mit non tom thit",
+      "gỏi mít non tôm thịt",
+      "young jackfruit salad with sesame crackers"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0271",
+    "canonical_name": "Gỏi vịt bắp cải",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "duck salad with shredded cabbage",
+      "goi vit",
+      "goi vit bap cai",
+      "gỏi vịt bắp cải"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0272",
+    "canonical_name": "Gỏi rong nho hải sản",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "goi rong nho",
+      "goi rong nho hai san",
+      "gỏi rong nho hải sản",
+      "sea grape salad with seafood"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0273",
+    "canonical_name": "Gỏi sầu đâu cá sặc",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "An Giang",
+    "aliases": [
+      "goi sau dau",
+      "goi sau dau ca sac",
+      "gỏi sầu đâu cá sặc",
+      "neem leaf salad with dried snakehead fish"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0274",
+    "canonical_name": "Cuốn diếp Huế",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Huế",
+    "aliases": [
+      "cuon diep",
+      "cuon diep hue",
+      "cuốn diếp huế",
+      "hue mustard rolls",
+      "mustard green rolls with pork and shrimp"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0275",
+    "canonical_name": "Chả cá Lã Vọng",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "cha ca la vong",
+      "chả cá lã vọng",
+      "hanoi turmeric grilled fish with dill",
+      "la vong grilled fish"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0276",
+    "canonical_name": "Chả ram tôm đất Bình Định",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "cha ram tom dat",
+      "cha ram tom dat binh dinh",
+      "chả ram tôm đất bình định",
+      "crispy ground shrimp spring rolls"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0277",
+    "canonical_name": "Chả giò rế",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "cha gio re",
+      "chả giò rế",
+      "crispy netted spring rolls"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0278",
+    "canonical_name": "Chả giò chay",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "cha gio chay",
+      "chả giò chay",
+      "vegetarian fried spring rolls"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0279",
+    "canonical_name": "Chả cá thát lát chiên cốm",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "cha ca that lat",
+      "cha ca that lat chien com",
+      "chả cá thát lát chiên cốm",
+      "featherback fish patties with green rice"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0280",
+    "canonical_name": "Chả lụa",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "cha lua",
+      "chả lụa",
+      "gio lua",
+      "steamed pork sausage",
+      "vietnamese pork ham"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0281",
+    "canonical_name": "Chả quế",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "cha que",
+      "chả quế",
+      "cinnamon roasted pork sausage"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0282",
+    "canonical_name": "Chả bò Đà Nẵng",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "cha bo da nang",
+      "chả bò đà nẵng",
+      "da nang steamed beef bologna"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0283",
+    "canonical_name": "Giò thủ",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "gio thu",
+      "giò thủ",
+      "pig head cheese",
+      "wood ear pork terrine"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0284",
+    "canonical_name": "Bắp bò ngâm mắm",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "bap bo ngam mam",
+      "beef shank soaked in sweet fish sauce",
+      "bắp bò ngâm mắm"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0285",
+    "canonical_name": "Chân gà ngâm sả tắc",
+    "category": "Món Cuốn & Gỏi & Khai vị",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chan ga ngam sa tac",
+      "chan ga sa tac",
+      "chân gà ngâm sả tắc",
+      "pickled chicken feet with lemongrass and kumquat"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0286",
+    "canonical_name": "Thịt kho tàu",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "braised pork belly and eggs in coconut water",
+      "caramelized pork belly with eggs",
+      "thit kho tau",
+      "thit kho trung",
+      "thịt kho tàu"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0287",
+    "canonical_name": "Thịt đông",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "jellied pork terrine",
+      "northern winter jellied meat",
+      "thit dong",
+      "thịt đông"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0288",
+    "canonical_name": "Cá kho tộ",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "braised fish in clay pot",
+      "ca kho to",
+      "caramelized claypot fish",
+      "cá kho tộ"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0289",
+    "canonical_name": "Cá bống kho tiêu",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Huế",
+    "aliases": [
+      "braised goby fish with black pepper",
+      "ca bong kho tieu",
+      "cá bống kho tiêu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0290",
+    "canonical_name": "Cá nục kho dứa",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "braised round scad with pineapple",
+      "ca nuc kho dua",
+      "cá nục kho dứa"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0291",
+    "canonical_name": "Cá lăng nướng than hoa",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "ca lang nuong",
+      "ca lang nuong than hoa",
+      "charcoal grilled hemibagrus fish",
+      "cá lăng nướng than hoa"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0292",
+    "canonical_name": "Cá lóc nướng trui",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "ca loc nuong trui",
+      "cá lóc nướng trui",
+      "mud baked snakehead fish",
+      "straw grilled snakehead fish"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0293",
+    "canonical_name": "Cá lóc hấp bầu",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "ca loc hap bau",
+      "cá lóc hấp bầu",
+      "steamed snakehead fish inside gourd"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0294",
+    "canonical_name": "Cá tai tượng chiên xù",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "ca tai tuong chien xu",
+      "cá tai tượng chiên xù",
+      "deep fried giant gourami"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0295",
+    "canonical_name": "Cá hồi Sa Pa nướng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "ca hoi sa pa",
+      "ca hoi sa pa nuong",
+      "cá hồi sa pa nướng",
+      "grilled sapa salmon"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0296",
+    "canonical_name": "Bò lúc lắc",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "bo luc lac",
+      "bò lúc lắc",
+      "cubed beef tenderloin sauteed with garlic",
+      "cubed beef tenderloin sautéed with garlic",
+      "shaking beef"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0297",
+    "canonical_name": "Bò nướng lá lốt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "bo la lot",
+      "bo nuong la lot",
+      "bò nướng lá lốt",
+      "grilled beef wrapped in betel leaves",
+      "wild betel leaf beef rolls"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0298",
+    "canonical_name": "Bò nướng mỡ chài",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "bo nuong mo chai",
+      "bò nướng mỡ chài",
+      "grilled beef caul fat sausages"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0299",
+    "canonical_name": "Bò nướng ống tre",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "bo nuong ong tre",
+      "bò nướng ống tre",
+      "grilled beef in bamboo tubes"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0300",
+    "canonical_name": "Bò tơ Tây Ninh nướng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Tây Ninh",
+    "aliases": [
+      "bo to tay ninh",
+      "bo to tay ninh nuong",
+      "bò tơ tây ninh nướng",
+      "grilled tender young veal"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0301",
+    "canonical_name": "Bê thui Cầu Mống",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Quảng Nam",
+    "aliases": [
+      "be thui cau mong",
+      "bê thui cầu mống",
+      "cau mong smoked roasted veal",
+      "charcoal rare calf"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0302",
+    "canonical_name": "Heo quay bánh hỏi",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "heo quay",
+      "heo quay banh hoi",
+      "heo quay bánh hỏi",
+      "roast pork belly with fine vermicelli"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0303",
+    "canonical_name": "Thịt ba chỉ nướng riềng mẻ",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "grilled pork belly with galangal and fermented rice",
+      "thit ba chi nuong rieng me",
+      "thit nuong rieng me",
+      "thịt ba chỉ nướng riềng mẻ"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0304",
+    "canonical_name": "Sườn non nướng mật ong",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "honey glazed pork ribs",
+      "suon non nuong mat ong",
+      "suon nuong mat ong",
+      "sườn non nướng mật ong"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0305",
+    "canonical_name": "Sườn ram mặn ngọt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "caramelized sweet and savory ribs",
+      "suon ram",
+      "suon ram man ngot",
+      "sườn ram mặn ngọt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0306",
+    "canonical_name": "Gà đồi Tiên Yên luộc",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Quảng Ninh",
+    "aliases": [
+      "boiled tien yen hill chicken with lemon leaves",
+      "ga doi tien yen luoc",
+      "ga tien yen",
+      "gà đồi tiên yên luộc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0307",
+    "canonical_name": "Gà nướng mọi",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "charcoal grilled whole chicken",
+      "ga nuong moi",
+      "gà nướng mọi"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0308",
+    "canonical_name": "Gà nướng muối ớt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chili salt grilled chicken",
+      "ga nuong muoi ot",
+      "gà nướng muối ớt"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0309",
+    "canonical_name": "Gà hấp lá chanh",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "ga hap la chanh",
+      "gà hấp lá chanh",
+      "steamed chicken with kaffir lime leaves"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0310",
+    "canonical_name": "Gà hấp muối sả",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ga hap muoi",
+      "ga hap muoi sa",
+      "gà hấp muối sả",
+      "salt and lemongrass steamed chicken"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0311",
+    "canonical_name": "Gà bó xôi chiên giòn",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "fried sticky rice wrapped chicken",
+      "ga bo xoi",
+      "ga bo xoi chien gion",
+      "ga khong loi thoat",
+      "gà bó xôi chiên giòn"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0312",
+    "canonical_name": "Gà đồi nướng cơm lam",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "ga doi nuong com lam",
+      "ga nuong com lam",
+      "gà đồi nướng cơm lam",
+      "highland grilled hill chicken with bamboo rice"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0313",
+    "canonical_name": "Gà rang muối",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "ga rang muoi",
+      "gà rang muối",
+      "salt coated crispy chicken"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0314",
+    "canonical_name": "Gà rang sả ớt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ga rang sa ot",
+      "gà rang sả ớt",
+      "lemongrass chili chicken"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0315",
+    "canonical_name": "Vịt quay Lạng Sơn",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Lạng Sơn",
+    "aliases": [
+      "lang son roasted duck with mac mat leaves",
+      "vit quay lang son",
+      "vịt quay lạng sơn"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0316",
+    "canonical_name": "Vịt om sấu",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "braised duck with dracontomelon sour fruit",
+      "vit om sau",
+      "vịt om sấu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0317",
+    "canonical_name": "Vịt nướng chao",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "grilled duck with fermented bean curd",
+      "vit nuong chao",
+      "vịt nướng chao"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0318",
+    "canonical_name": "Ngan cháy tỏi",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "crispy garlic seared muscovy duck",
+      "ngan chay toi",
+      "ngan cháy tỏi"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0319",
+    "canonical_name": "Chim cút nướng bơ tỏi",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chim cut nuong",
+      "chim cut nuong bo toi",
+      "chim cút nướng bơ tỏi",
+      "roasted quail with garlic butter"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0320",
+    "canonical_name": "Dê núi Ninh Bình tái chanh",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Ninh Bình",
+    "aliases": [
+      "de nui ninh binh tai chanh",
+      "de tai chanh ninh binh",
+      "dê núi ninh bình tái chanh",
+      "ninh binh mountain goat with lime salad"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0321",
+    "canonical_name": "Dê nướng tảng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Ninh Bình",
+    "aliases": [
+      "de nuong tang",
+      "dê nướng tảng",
+      "grilled goat slab"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0322",
+    "canonical_name": "Thắng cố ngựa Sa Pa",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "sapa horse meat hotpot stew",
+      "thang co ngua sa pa",
+      "thang co sa pa",
+      "thắng cố ngựa sa pa",
+      "traditional hmong horse stew"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0323",
+    "canonical_name": "Thịt trâu gác bếp",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "highland smoked jerky",
+      "smoked dried buffalo meat",
+      "thit trau gac bep",
+      "thịt trâu gác bếp"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0324",
+    "canonical_name": "Thịt lợn cắp nách nướng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "lon cap nach nuong",
+      "roasted free-range hill piglet",
+      "thit lon cap nach nuong",
+      "thịt lợn cắp nách nướng"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0325",
+    "canonical_name": "Lạp xưởng hun khói Cao Bằng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Cao Bằng",
+    "aliases": [
+      "cao bang smoked pork sausage",
+      "lap xuong gung da",
+      "lap xuong hun khoi cao bang",
+      "lạp xưởng hun khói cao bằng"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0326",
+    "canonical_name": "Heo tộc nướng lu",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "earthen jar roasted native pig",
+      "heo toc nuong lu",
+      "heo tộc nướng lu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0327",
+    "canonical_name": "Phá lấu bò Sài Gòn",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "pha lau bo",
+      "pha lau bo sai gon",
+      "phá lấu bò sài gòn",
+      "saigon braised beef offal stew with coconut milk"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0328",
+    "canonical_name": "Phá lấu nướng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "grilled marinated offal skewers",
+      "pha lau nuong",
+      "phá lấu nướng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0329",
+    "canonical_name": "Dồi sụn nướng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "doi sun nuong",
+      "dồi sụn nướng",
+      "grilled pork cartilage sausage"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0330",
+    "canonical_name": "Dồi trường hấp hành gừng",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "doi truong hap",
+      "doi truong hap hanh gung",
+      "dồi trường hấp hành gừng",
+      "steamed pork fallopian tubes with ginger and scallions"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0331",
+    "canonical_name": "Lòng xào dưa chua",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "long xao dua",
+      "long xao dua chua",
+      "lòng xào dưa chua",
+      "stir fried pork intestine with pickled mustard greens"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0332",
+    "canonical_name": "Tai heo ngâm giấm chua ngọt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "pickled pig ears in sweet vinegar",
+      "tai heo ngam giam",
+      "tai heo ngam giam chua ngot",
+      "tai heo ngâm giấm chua ngọt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0333",
+    "canonical_name": "Mực một nắng nướng sa tế",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "muc mot nang nuong",
+      "muc mot nang nuong sa te",
+      "mực một nắng nướng sa tế",
+      "sun dried grilled squid with satay"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0334",
+    "canonical_name": "Bạch tuộc nướng muối ớt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "bach tuoc nuong",
+      "bach tuoc nuong muoi ot",
+      "bạch tuộc nướng muối ớt",
+      "spicy grilled octopus"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0335",
+    "canonical_name": "Tôm nướng muối ớt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chili salt grilled prawns",
+      "tom nuong muoi ot",
+      "tôm nướng muối ớt"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0336",
+    "canonical_name": "Tôm hấp nước dừa",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Bến Tre",
+    "aliases": [
+      "steamed prawns in fresh coconut water",
+      "tom hap nuoc dua",
+      "tôm hấp nước dừa"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0337",
+    "canonical_name": "Càng ghẹ rang muối ớt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "cang ghe rang muoi",
+      "cang ghe rang muoi ot",
+      "càng ghẹ rang muối ớt",
+      "spicy salt coated blue crab claws"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0338",
+    "canonical_name": "Ốc bươu nhồi thịt Đà Lạt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "oc buou nhoi thit",
+      "oc buou nhoi thit da lat",
+      "stuffed snails with pork and lemongrass",
+      "ốc bươu nhồi thịt đà lạt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0339",
+    "canonical_name": "Ếch xào sả ớt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ech xao sa ot",
+      "stir fried frog legs with lemongrass and chili",
+      "ếch xào sả ớt"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0340",
+    "canonical_name": "Ếch núp rơm chiên giòn",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "crispy lemongrass hay coated frog",
+      "ech nup rom",
+      "ech nup rom chien gion",
+      "ếch núp rơm chiên giòn"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0341",
+    "canonical_name": "Lươn xào sả ớt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Nghệ An",
+    "aliases": [
+      "luon xao sa ot",
+      "lươn xào sả ớt",
+      "stir fried eel with turmeric and lemongrass"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0342",
+    "canonical_name": "Thịt kho mắm ruốc Huế",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Huế",
+    "aliases": [
+      "braised pork belly with fermented shrimp paste",
+      "hue pork with mam ruoc",
+      "thit kho mam ruoc",
+      "thit kho mam ruoc hue",
+      "thịt kho mắm ruốc huế"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0343",
+    "canonical_name": "Tôm chua Huế thịt luộc",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Huế",
+    "aliases": [
+      "boiled pork with sour shrimp pickle",
+      "tom chua hue",
+      "tom chua hue thit luoc",
+      "tôm chua huế thịt luộc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0344",
+    "canonical_name": "Vả trộn tôm thịt",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Huế",
+    "aliases": [
+      "hue fig salad with minced pork and shrimp",
+      "va tron",
+      "va tron tom thit",
+      "vả trộn tôm thịt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0345",
+    "canonical_name": "Cá kèo kho rau răm",
+    "category": "Món Thịt & Nướng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "braised goby fish with vietnamese coriander",
+      "ca keo kho",
+      "ca keo kho rau ram",
+      "cá kèo kho rau răm"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0346",
+    "canonical_name": "Cua Cà Mau rang me",
+    "category": "Món Hải sản",
+    "region_origin": "Cà Mau",
+    "aliases": [
+      "ca mau mud crab in tamarind sauce",
+      "cua ca mau rang me",
+      "cua cà mau rang me",
+      "cua rang me",
+      "tamarind mud crab"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0347",
+    "canonical_name": "Cua hấp bia sả",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "cua hap bia",
+      "cua hap bia sa",
+      "cua hấp bia sả",
+      "steamed crab with beer and lemongrass"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0348",
+    "canonical_name": "Cua rang muối Hong Kong",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "cua rang muoi",
+      "cua rang muoi hong kong",
+      "cua rang muối hong kong",
+      "salt and pepper stir-fried crab"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0349",
+    "canonical_name": "Ghẹ xanh hấp Phan Thiết",
+    "category": "Món Hải sản",
+    "region_origin": "Bình Thuận",
+    "aliases": [
+      "ghe hap",
+      "ghe xanh hap phan thiet",
+      "ghẹ xanh hấp phan thiết",
+      "steamed blue swimming crab",
+      "steamed sea crab"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0350",
+    "canonical_name": "Tôm hùm Nha Trang nướng phô mai",
+    "category": "Món Hải sản",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "nha trang baked lobster with cheese",
+      "tom hum nha trang nuong pho mai",
+      "tom hum nuong pho mai",
+      "tôm hùm nha trang nướng phô mai"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0351",
+    "canonical_name": "Tôm hùm nướng bơ tỏi",
+    "category": "Món Hải sản",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "grilled lobster with garlic butter",
+      "tom hum bo toi",
+      "tom hum nuong bo toi",
+      "tôm hùm nướng bơ tỏi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0352",
+    "canonical_name": "Tôm mũ ni nướng",
+    "category": "Món Hải sản",
+    "region_origin": "Nha Trang",
+    "aliases": [
+      "grilled slipper lobster",
+      "tom mu ni",
+      "tom mu ni nuong",
+      "tôm mũ ni nướng"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0353",
+    "canonical_name": "Tôm sú chiên hoàng kim",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "golden salted egg tiger prawns",
+      "tom sot trung muoi",
+      "tom su chien hoang kim",
+      "tôm sú chiên hoàng kim"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0354",
+    "canonical_name": "Mực trứng hấp gừng",
+    "category": "Món Hải sản",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "muc trung hap",
+      "muc trung hap gung",
+      "mực trứng hấp gừng",
+      "steamed baby egg squid with ginger"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0355",
+    "canonical_name": "Mực ống chiên nước mắm",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "crispy squid tossed in sweet fish sauce",
+      "muc chien nuoc mam",
+      "muc ong chien nuoc mam",
+      "mực ống chiên nước mắm"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0356",
+    "canonical_name": "Mực nháy Cửa Lò",
+    "category": "Món Hải sản",
+    "region_origin": "Nghệ An",
+    "aliases": [
+      "fresh luminous squid cua lo",
+      "muc nhay cua lo",
+      "mực nháy cửa lò"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0357",
+    "canonical_name": "Mực xào chua ngọt",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "muc xao chua ngot",
+      "mực xào chua ngọt",
+      "sweet and sour stir-fried squid"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0358",
+    "canonical_name": "Hàu nướng mỡ hành",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "grilled oysters with scallion oil and crushed peanuts",
+      "hau nuong mo hanh",
+      "hàu nướng mỡ hành"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0359",
+    "canonical_name": "Hàu nướng phô mai",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "cheese baked oysters",
+      "hau nuong pho mai",
+      "hàu nướng phô mai"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0360",
+    "canonical_name": "Hàu sữa ăn sống mù tạt",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "hau song",
+      "hau sua an song mu tat",
+      "hàu sữa ăn sống mù tạt",
+      "raw oysters with wasabi and lime"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0361",
+    "canonical_name": "Sò huyết rang me",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "blood cockles in sweet tamarind sauce",
+      "so huyet rang me",
+      "sò huyết rang me"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0362",
+    "canonical_name": "Sò huyết nướng mọi",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "charcoal grilled blood cockles",
+      "so huyet nuong",
+      "so huyet nuong moi",
+      "sò huyết nướng mọi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0363",
+    "canonical_name": "Sò lông nướng mỡ hành",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "grilled hairy ark cockles with scallion oil",
+      "so long nuong",
+      "so long nuong mo hanh",
+      "sò lông nướng mỡ hành"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0364",
+    "canonical_name": "Sò điệp nướng trứng cút",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "grilled scallops with quail eggs",
+      "so diep nuong",
+      "so diep nuong trung cut",
+      "sò điệp nướng trứng cút"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0365",
+    "canonical_name": "Ốc hương xào bơ tỏi",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "oc huong xao bo toi",
+      "sweet snails stir-fried in garlic butter",
+      "ốc hương xào bơ tỏi"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0366",
+    "canonical_name": "Ốc hương sốt trứng muối",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "oc huong sot trung muoi",
+      "sweet snails with rich salted egg yolk sauce",
+      "ốc hương sốt trứng muối"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0367",
+    "canonical_name": "Ốc móng tay xào rau muống",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "oc mong tay xao rau muong",
+      "razor clams stir-fried with morning glory",
+      "ốc móng tay xào rau muống"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0368",
+    "canonical_name": "Ốc len xào dừa",
+    "category": "Món Hải sản",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "mud creepers simmered in coconut milk",
+      "oc len xao dua",
+      "ốc len xào dừa"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0369",
+    "canonical_name": "Ốc mỡ xào me",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "oc mo xao me",
+      "spindle snails in tamarind glaze",
+      "ốc mỡ xào me"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0370",
+    "canonical_name": "Ốc cà na rang muối ớt",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chili salt roasted mini snails",
+      "oc ca na rang muoi",
+      "oc ca na rang muoi ot",
+      "ốc cà na rang muối ớt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0371",
+    "canonical_name": "Ốc gai nướng than",
+    "category": "Món Hải sản",
+    "region_origin": "Phú Quốc",
+    "aliases": [
+      "grilled thorny sea snails",
+      "oc gai",
+      "oc gai nuong than",
+      "ốc gai nướng than"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0372",
+    "canonical_name": "Nghêu hấp sả ớt",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ngheu hap sa",
+      "ngheu hap sa ot",
+      "nghêu hấp sả ớt",
+      "steamed clams with lemongrass and fresh chili"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0373",
+    "canonical_name": "Nghêu hấp thái",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ngheu hap thai",
+      "nghêu hấp thái",
+      "spicy tom yum steamed clams"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0374",
+    "canonical_name": "Tu hài nướng mỡ hành",
+    "category": "Món Hải sản",
+    "region_origin": "Quảng Ninh",
+    "aliases": [
+      "grilled geoduck with scallion oil",
+      "tu hai nuong",
+      "tu hai nuong mo hanh",
+      "tu hài nướng mỡ hành"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0375",
+    "canonical_name": "Cù kỳ hấp Quảng Ninh",
+    "category": "Món Hải sản",
+    "region_origin": "Quảng Ninh",
+    "aliases": [
+      "cu ky hap quang ninh",
+      "cu ky quang ninh",
+      "cù kỳ hấp quảng ninh",
+      "steamed stone crab"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0376",
+    "canonical_name": "Chả mực Hạ Long",
+    "category": "Món Hải sản",
+    "region_origin": "Quảng Ninh",
+    "aliases": [
+      "cha muc ha long",
+      "chả mực hạ long",
+      "ha long pounded crispy squid cakes",
+      "squid patties"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0377",
+    "canonical_name": "Cá mú hấp xì dầu",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ca mu hap xi dau",
+      "cá mú hấp xì dầu",
+      "steamed grouper with soy sauce and ginger"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0378",
+    "canonical_name": "Cá chẽm sốt chua ngọt",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ca chem sot chua ngot",
+      "crispy sea bass in sweet and sour glaze",
+      "cá chẽm sốt chua ngọt"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0379",
+    "canonical_name": "Cá bớp nướng muối ớt",
+    "category": "Món Hải sản",
+    "region_origin": "Phú Quốc",
+    "aliases": [
+      "ca bop nuong",
+      "ca bop nuong muoi ot",
+      "cá bớp nướng muối ớt",
+      "grilled cobia steak with chili salt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0380",
+    "canonical_name": "Cá chình nướng nghệ",
+    "category": "Món Hải sản",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "ca chinh nuong",
+      "ca chinh nuong nghe",
+      "cá chình nướng nghệ",
+      "turmeric grilled freshwater eel"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0381",
+    "canonical_name": "Cá chìa vôi nướng muối ớt",
+    "category": "Món Hải sản",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "ca chia voi",
+      "ca chia voi nuong muoi ot",
+      "cá chìa vôi nướng muối ớt",
+      "grilled cornetfish with chili salt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0382",
+    "canonical_name": "Nhím biển nướng mỡ hành",
+    "category": "Món Hải sản",
+    "region_origin": "Phú Quốc",
+    "aliases": [
+      "grilled sea urchin with scallion oil",
+      "nhim bien nuong mo hanh",
+      "nhum bien nuong",
+      "nhím biển nướng mỡ hành",
+      "sea urchin"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0383",
+    "canonical_name": "Cháo nhum biển",
+    "category": "Món Hải sản",
+    "region_origin": "Phú Quốc",
+    "aliases": [
+      "chao nhum",
+      "chao nhum bien",
+      "cháo nhum biển",
+      "sea urchin congee"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0384",
+    "canonical_name": "Còi biên mai nướng sa tế",
+    "category": "Món Hải sản",
+    "region_origin": "Phú Quốc",
+    "aliases": [
+      "coi bien mai",
+      "coi bien mai nuong sa te",
+      "còi biên mai nướng sa tế",
+      "grilled fan mussel sinew with satay"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0385",
+    "canonical_name": "Sam biển nướng Hạ Long",
+    "category": "Món Hải sản",
+    "region_origin": "Quảng Ninh",
+    "aliases": [
+      "grilled horseshoe crab",
+      "sam bien nuong ha long",
+      "sam bien quang ninh",
+      "sam biển nướng hạ long"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0386",
+    "canonical_name": "Mực sim Phú Quốc hấp gừng",
+    "category": "Món Hải sản",
+    "region_origin": "Kiên Giang",
+    "aliases": [
+      "muc sim",
+      "muc sim phu quoc hap gung",
+      "mực sim phú quốc hấp gừng",
+      "steamed phu quoc wild baby squid"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0387",
+    "canonical_name": "Sò mía hấp lá chanh",
+    "category": "Món Hải sản",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "so mia hap",
+      "so mia hap la chanh",
+      "steamed sugarcane clam with lime leaves",
+      "sò mía hấp lá chanh"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0388",
+    "canonical_name": "Cá đuối nướng mỡ hành",
+    "category": "Món Hải sản",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "ca duoi nuong",
+      "ca duoi nuong mo hanh",
+      "cá đuối nướng mỡ hành",
+      "grilled stingray with scallion oil"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0389",
+    "canonical_name": "Cá chim trắng nướng muối ớt",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ca chim nuong",
+      "ca chim trang nuong muoi ot",
+      "cá chim trắng nướng muối ớt",
+      "grilled white pomfret with chili salt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0390",
+    "canonical_name": "Cá bò da nướng giấy bạc",
+    "category": "Món Hải sản",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "ca bo da nuong",
+      "ca bo da nuong giay bac",
+      "cá bò da nướng giấy bạc",
+      "foil baked leatherjacket fish"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0391",
+    "canonical_name": "Bào ngư nướng sốt dầu hào",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "bao ngu nuong",
+      "bao ngu nuong sot dau hao",
+      "bào ngư nướng sốt dầu hào",
+      "grilled abalone in oyster glaze"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0392",
+    "canonical_name": "Súp bào ngư vi cá",
+    "category": "Món Hải sản",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "abalone and shark fin soup",
+      "sup bao ngu",
+      "sup bao ngu vi ca",
+      "súp bào ngư vi cá"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0393",
+    "canonical_name": "Cá chạch lấu nướng muối ớt",
+    "category": "Món Hải sản",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "ca chach lau",
+      "ca chach lau nuong muoi ot",
+      "cá chạch lấu nướng muối ớt",
+      "grilled giant spiny eel with chili salt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0394",
+    "canonical_name": "Cá thát lát rút xương chiên giòn",
+    "category": "Món Hải sản",
+    "region_origin": "Hậu Giang",
+    "aliases": [
+      "ca that lat rut xuong",
+      "ca that lat rut xuong chien gion",
+      "crispy boneless featherback fish",
+      "cá thát lát rút xương chiên giòn"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0395",
+    "canonical_name": "Mắm cá linh kho tộ",
+    "category": "Món Hải sản",
+    "region_origin": "An Giang",
+    "aliases": [
+      "braised linh fish paste in earthenware pot",
+      "mam ca linh",
+      "mam ca linh kho to",
+      "mắm cá linh kho tộ"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0396",
+    "canonical_name": "Lẩu thái hải sản",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "lau thai",
+      "lau thai hai san",
+      "lẩu thái hải sản",
+      "spicy tom yum hotpot",
+      "thai seafood hotpot"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0397",
+    "canonical_name": "Lẩu riêu cua bắp bò sườn sụn",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "crab paste hotpot",
+      "hanoi field crab paste hotpot with beef shank",
+      "lau rieu cua bap bo",
+      "lau rieu cua bap bo suon sun",
+      "lẩu riêu cua bắp bò sườn sụn"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0398",
+    "canonical_name": "Lẩu gà lá é Đà Lạt",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "chicken and basil hotpot",
+      "da lat chicken hotpot with lemon basil",
+      "lau ga la e",
+      "lau ga la e da lat",
+      "lẩu gà lá é đà lạt"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0399",
+    "canonical_name": "Lẩu bò Ba Toa Đà Lạt",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "da lat ba toa beef hotpot",
+      "lau bo ba toa",
+      "lau bo ba toa da lat",
+      "lẩu bò ba toa đà lạt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0400",
+    "canonical_name": "Lẩu mắm miền Tây",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "fermented fish hotpot with water lily and herbs",
+      "lau mam",
+      "lau mam mien tay",
+      "lẩu mắm miền tây",
+      "mekong fermented broth hotpot"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0401",
+    "canonical_name": "Lẩu cá kèo lá giang",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "goby fish hotpot with sour aganonerion leaves",
+      "lau ca keo",
+      "lau ca keo la giang",
+      "lẩu cá kèo lá giang"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0402",
+    "canonical_name": "Lẩu cá bớp măng chua",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "cobia hotpot with sour bamboo shoots",
+      "lau ca bop",
+      "lau ca bop mang chua",
+      "lẩu cá bớp măng chua"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0403",
+    "canonical_name": "Lẩu cá tầm Sa Pa",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "lau ca tam sa pa",
+      "lẩu cá tầm sa pa",
+      "sapa sturgeon fish hotpot"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0404",
+    "canonical_name": "Lẩu cá hồi Sa Pa",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Tây Bắc",
+    "aliases": [
+      "lau ca hoi sa pa",
+      "lẩu cá hồi sa pa",
+      "sapa salmon sour hotpot"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0405",
+    "canonical_name": "Lẩu cá linh bông điên điển",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "lau ca linh bong dien dien",
+      "lẩu cá linh bông điên điển",
+      "siamese mud carp hotpot with sesbania sesban flowers"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0406",
+    "canonical_name": "Lẩu vịt om sấu",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "duck and dracontomelon hotpot",
+      "lau vit om sau",
+      "lẩu vịt om sấu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0407",
+    "canonical_name": "Lẩu vịt nấu chao",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Cần Thơ",
+    "aliases": [
+      "braised duck hotpot with fermented bean curd",
+      "lau vit nau chao",
+      "lẩu vịt nấu chao"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0408",
+    "canonical_name": "Lẩu cua đồng miền Bắc",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "freshwater crab hotpot",
+      "lau cua dong",
+      "lau cua dong mien bac",
+      "lẩu cua đồng miền bắc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0409",
+    "canonical_name": "Lẩu cua Cà Mau",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Cà Mau",
+    "aliases": [
+      "ca mau fresh sea crab hotpot",
+      "lau cua ca mau",
+      "lẩu cua cà mau"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0410",
+    "canonical_name": "Lẩu dê khô",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Ninh Bình",
+    "aliases": [
+      "dry goat hotpot with herbs",
+      "lau de",
+      "lau de kho",
+      "lẩu dê khô"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0411",
+    "canonical_name": "Lẩu ếch măng cay",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "lau ech mang cay",
+      "lẩu ếch măng cay",
+      "spicy frog hotpot with bamboo shoots"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0412",
+    "canonical_name": "Lẩu nấm thiên nhiên",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "assorted natural wild mushroom hotpot",
+      "lau nam",
+      "lau nam thien nhien",
+      "lẩu nấm thiên nhiên"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0413",
+    "canonical_name": "Lẩu hải sản chua cay",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "hot and sour seafood hotpot",
+      "lau hai san",
+      "lau hai san chua cay",
+      "lẩu hải sản chua cay"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0414",
+    "canonical_name": "Lẩu gà nấm đông cô",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "chicken and shiitake mushroom hotpot",
+      "lau ga nam",
+      "lau ga nam dong co",
+      "lẩu gà nấm đông cô"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0415",
+    "canonical_name": "Lẩu cháo chim câu",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "lau chao chim",
+      "lau chao chim cau",
+      "lẩu cháo chim câu",
+      "pigeon congee hotpot"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0416",
+    "canonical_name": "Lẩu trâu nhúng mẻ",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "buffalo meat dipped in fermented rice broth hotpot",
+      "lau trau nhung me",
+      "lẩu trâu nhúng mẻ"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0417",
+    "canonical_name": "Bò nhúng dấm",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "beef slices dipped in simmering vinegar broth",
+      "bo nhung dam",
+      "bò nhúng dấm"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0418",
+    "canonical_name": "Canh chua cá lóc miền Tây",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "canh chua ca loc",
+      "canh chua ca loc mien tay",
+      "canh chua cá lóc miền tây",
+      "mekong sour snakehead fish soup",
+      "sour fish soup with tamarind and herbs"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0419",
+    "canonical_name": "Canh chua cá bông lau",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "canh chua ca bong lau",
+      "canh chua cá bông lau",
+      "catfish sour tamarind soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0420",
+    "canonical_name": "Canh cua mồng tơi mướp",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "canh cua mong toi",
+      "canh cua mong toi muop",
+      "canh cua mồng tơi mướp",
+      "crab soup with malabar spinach and luffa"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0421",
+    "canonical_name": "Canh hến nấu khế",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Huế",
+    "aliases": [
+      "baby clam soup with starfruit",
+      "canh hen nau khe",
+      "canh hến nấu khế"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0422",
+    "canonical_name": "Canh bóng thả thập cẩm",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "canh bong",
+      "canh bong tha thap cam",
+      "canh bóng thả thập cẩm",
+      "traditional hanoi pig skin and dried shrimp banquet soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0423",
+    "canonical_name": "Canh khổ qua nhồi thịt",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "canh kho qua",
+      "canh kho qua nhoi thit",
+      "canh khổ qua nhồi thịt",
+      "stuffed bitter melon soup with minced pork"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0424",
+    "canonical_name": "Canh sườn nấu sấu",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "canh suon nau sau",
+      "canh suon sau",
+      "canh sườn nấu sấu",
+      "pork rib soup with dracontomelon"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0425",
+    "canonical_name": "Canh ngao nấu chua",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "canh ngao nau chua",
+      "canh ngao nấu chua",
+      "sour clam soup with tomatoes and dill"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0426",
+    "canonical_name": "Canh rong biển thịt bằm",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "canh rong bien",
+      "canh rong bien thit bam",
+      "canh rong biển thịt bằm",
+      "seaweed soup with minced meat"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0427",
+    "canonical_name": "Canh chua cá hồi",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "canh chua ca hoi",
+      "canh chua cá hồi",
+      "sour salmon head soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0428",
+    "canonical_name": "Canh măng sườn heo",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "canh mang suon",
+      "canh mang suon heo",
+      "canh măng sườn heo",
+      "pork rib soup with fresh bamboo shoots"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0429",
+    "canonical_name": "Lẩu bò sa tế cay",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "lau bo sa te",
+      "lau bo sa te cay",
+      "lẩu bò sa tế cay",
+      "spicy satay beef hotpot"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0430",
+    "canonical_name": "Lẩu đuôi bò hầm thuốc bắc",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "lau duoi bo",
+      "lau duoi bo ham thuoc bac",
+      "lẩu đuôi bò hầm thuốc bắc",
+      "oxtail herbal hotpot"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0431",
+    "canonical_name": "Lẩu ghẹ kim chi",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "blue crab kimchi hotpot",
+      "lau ghe",
+      "lau ghe kim chi",
+      "lẩu ghẹ kim chi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0432",
+    "canonical_name": "Lẩu gà ớt hiểm",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "chicken hotpot with bird's eye chili",
+      "lau ga ot hiem",
+      "lẩu gà ớt hiểm"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0433",
+    "canonical_name": "Lẩu tôm càng sen",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Đồng Tháp",
+    "aliases": [
+      "giant freshwater prawn lotus hotpot",
+      "lau tom cang",
+      "lau tom cang sen",
+      "lẩu tôm càng sen"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0434",
+    "canonical_name": "Lẩu đầu cá hồi nấu ngót",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "lau ca hoi",
+      "lau dau ca hoi nau ngot",
+      "lẩu đầu cá hồi nấu ngót",
+      "salmon head clear soup with celery and tomatoes"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0435",
+    "canonical_name": "Canh gà nấu lá giang",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "canh ga la giang",
+      "canh ga nau la giang",
+      "canh gà nấu lá giang",
+      "sour leaf chicken soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0436",
+    "canonical_name": "Canh rau tập tàng nấu tôm",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Huế",
+    "aliases": [
+      "canh rau tap tang nau tom",
+      "canh rau tập tàng nấu tôm",
+      "canh tap tang",
+      "wild mixed garden green soup with shrimp"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0437",
+    "canonical_name": "Lẩu cá bớp nấu ngót",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "clear cobia broth hotpot",
+      "lau ca bop",
+      "lau ca bop nau ngot",
+      "lẩu cá bớp nấu ngót"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0438",
+    "canonical_name": "Lẩu lươn chua cay",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "lau luon",
+      "lau luon chua cay",
+      "lẩu lươn chua cay",
+      "sour and spicy swamp eel hotpot"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0439",
+    "canonical_name": "Lẩu cù lao miền Tây",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "lau cu lao",
+      "lau cu lao mien tay",
+      "lẩu cù lao miền tây",
+      "traditional mekong island chimney hotpot"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0440",
+    "canonical_name": "Canh bí đỏ hầm xương",
+    "category": "Món Lẩu & Canh",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "canh bi do",
+      "canh bi do ham xuong",
+      "canh bí đỏ hầm xương",
+      "pumpkin pork bone stew"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0441",
+    "canonical_name": "Rau muống xào tỏi",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "morning glory stir-fried with garlic",
+      "rau muong xao toi",
+      "rau muống xào tỏi",
+      "water spinach with garlic"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0442",
+    "canonical_name": "Rau bí xào tỏi",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "pumpkin tendrils sauteed with fragrant garlic",
+      "pumpkin tendrils sautéed with fragrant garlic",
+      "rau bi xao toi",
+      "rau bí xào tỏi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0443",
+    "canonical_name": "Ngọn su su xào tỏi Tam Đảo",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Vĩnh Phúc",
+    "aliases": [
+      "chayote shoots stir-fried with garlic",
+      "ngon su su xao toi tam dao",
+      "ngọn su su xào tỏi tam đảo",
+      "su su xao toi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0444",
+    "canonical_name": "Đậu bắp luộc chấm chao",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "boiled okra with fermented bean curd dip",
+      "dau bap luoc",
+      "dau bap luoc cham chao",
+      "đậu bắp luộc chấm chao"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0445",
+    "canonical_name": "Rau rừng Gia Lai xào tỏi",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "rau rung gia lai xao toi",
+      "rau rung xao toi",
+      "rau rừng gia lai xào tỏi",
+      "stir fried wild forest greens with garlic"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0446",
+    "canonical_name": "Cải ngồng xào nấm đông cô",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "baby gai lan stir-fried with shiitake mushrooms",
+      "cai ngong xao nam",
+      "cai ngong xao nam dong co",
+      "cải ngồng xào nấm đông cô"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0447",
+    "canonical_name": "Đậu hũ lướt ván",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "crispy silky fried tofu",
+      "dau hu luot van",
+      "đậu hũ lướt ván"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0448",
+    "canonical_name": "Đậu hũ sốt cà chua",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "braised tofu in rich tomato gravy",
+      "dau hu sot ca chua",
+      "dau sot ca chua",
+      "đậu hũ sốt cà chua"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0449",
+    "canonical_name": "Đậu hũ chiên sả ớt",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "crispy golden tofu with crispy lemongrass and chili",
+      "dau chien sa ot",
+      "dau hu chien sa ot",
+      "đậu hũ chiên sả ớt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0450",
+    "canonical_name": "Đậu hũ non sốt nấm thịt bằm",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "dau hu non sot nam thit bam",
+      "dau hu sot nam",
+      "silken tofu with mushroom and minced pork",
+      "đậu hũ non sốt nấm thịt bằm"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0451",
+    "canonical_name": "Nấm đùi gà kho tiêu",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "braised king oyster mushroom with black pepper",
+      "nam dui ga kho tieu",
+      "nam kho tieu",
+      "nấm đùi gà kho tiêu"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0452",
+    "canonical_name": "Cơm chay Huế",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Huế",
+    "aliases": [
+      "buddhist vegan meal",
+      "com chay hue",
+      "cơm chay huế",
+      "hue royal vegetarian platter"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0453",
+    "canonical_name": "Bún bò Huế chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Huế",
+    "aliases": [
+      "bun bo hue chay",
+      "bún bò huế chay",
+      "vegetarian hue spicy noodle soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0454",
+    "canonical_name": "Phở chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "pho chay",
+      "phở chay",
+      "vegan pho with tofu and assorted mushrooms"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0455",
+    "canonical_name": "Bún riêu chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "bun rieu chay",
+      "bún riêu chay",
+      "vegan crab paste noodle soup with tofu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0456",
+    "canonical_name": "Hủ tiếu chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "hu tieu chay",
+      "hủ tiếu chay",
+      "vegan rice noodle soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0457",
+    "canonical_name": "Mì xào giòn chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "crispy noodles with stir fried vegetables and mushrooms",
+      "mi xao chay",
+      "mi xao gion chay",
+      "mì xào giòn chay"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0458",
+    "canonical_name": "Lẩu nấm chay thanh đạm",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "herbal vegan mushroom hotpot",
+      "lau nam chay",
+      "lau nam chay thanh dam",
+      "lẩu nấm chay thanh đạm"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0459",
+    "canonical_name": "Chả giò nấm chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "cha gio chay",
+      "cha gio nam chay",
+      "chả giò nấm chay",
+      "nem chay",
+      "vegan crispy mushroom spring rolls"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0460",
+    "canonical_name": "Mít non kho chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Trung",
+    "aliases": [
+      "caramelized braised young jackfruit",
+      "mit non kho",
+      "mit non kho chay",
+      "mít non kho chay"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0461",
+    "canonical_name": "Rau luộc chấm kho quẹt",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "boiled garden vegetables with caramelized dip",
+      "rau luoc cham kho quet",
+      "rau luoc kho quet",
+      "rau luộc chấm kho quẹt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0462",
+    "canonical_name": "Bông điên điển xào tép",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "bong dien dien xao",
+      "bong dien dien xao tep",
+      "bông điên điển xào tép",
+      "sesbania flower sauteed with river shrimp",
+      "sesbania flower sautéed with river shrimp"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0463",
+    "canonical_name": "Bông bí xào tỏi",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "bong bi xao toi",
+      "bông bí xào tỏi",
+      "pumpkin blossoms stir fried with garlic"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0464",
+    "canonical_name": "Mướp đắng xào trứng",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "muop dang xao trung",
+      "mướp đắng xào trứng",
+      "scrambled eggs with sliced bitter melon"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0465",
+    "canonical_name": "Cà pháo muối chua",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "ca phao",
+      "ca phao muoi chua",
+      "cà pháo muối chua",
+      "pickled white round eggplants"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0466",
+    "canonical_name": "Dưa cải muối chua",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "dua cai chua",
+      "dua cai muoi chua",
+      "dưa cải muối chua",
+      "pickled mustard greens"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0467",
+    "canonical_name": "Kim chi củ sen",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "kim chi cu sen",
+      "kim chi củ sen",
+      "spicy pickled lotus root"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0468",
+    "canonical_name": "Ngó sen xào tôm",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ngo sen xao tom",
+      "ngó sen xào tôm",
+      "stir-fried lotus rhizome with shrimp"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0469",
+    "canonical_name": "Măng tây xào thịt bò",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "mang tay xao bo",
+      "mang tay xao thit bo",
+      "măng tây xào thịt bò",
+      "stir-fried asparagus with beef slices"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0470",
+    "canonical_name": "Nấm rơm kho tộ",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "claypot braised straw mushrooms",
+      "nam rom kho to",
+      "nấm rơm kho tộ"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0471",
+    "canonical_name": "Sườn non chay chua ngọt",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "suon chay chua ngot",
+      "suon non chay chua ngot",
+      "sweet and sour vegan gluten ribs",
+      "sườn non chay chua ngọt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0472",
+    "canonical_name": "Gỏi cuốn chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "goi cuon chay",
+      "gỏi cuốn chay",
+      "vegan fresh salad rolls with tofu"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0473",
+    "canonical_name": "Bánh mì chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh mi chay",
+      "bánh mì chay",
+      "vegetarian banh mi with tofu pate and seitan"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0474",
+    "canonical_name": "Bánh xèo nấm chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh xeo chay",
+      "banh xeo nam chay",
+      "bánh xèo nấm chay",
+      "vegan crispy pancake with wild mushrooms"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0475",
+    "canonical_name": "Cơm chiên trái thơm",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "com chien trai thom",
+      "cơm chiên trái thơm",
+      "pineapple fried rice with cashews and peas"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0476",
+    "canonical_name": "Cà ri chay nước cốt dừa",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "ca ri chay",
+      "ca ri chay nuoc cot dua",
+      "cà ri chay nước cốt dừa",
+      "vegan vegetable curry with coconut cream"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0477",
+    "canonical_name": "Nộm hoa chuối chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "nom chuoi chay",
+      "nom hoa chuoi chay",
+      "nộm hoa chuối chay",
+      "vegan banana blossom salad with crushed peanuts"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0478",
+    "canonical_name": "Chả lụa chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "cha lua chay",
+      "chả lụa chay",
+      "steamed vegan ham made from tofu skin"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0479",
+    "canonical_name": "Canh chua chay",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "canh chua chay",
+      "vegan tamarind sour soup with pineapple and okra"
+    ],
+    "alias_count": 2
+  },
+  {
+    "dish_id": "dish_0480",
+    "canonical_name": "Khoai tây chiên lắc phô mai",
+    "category": "Món Rau & Xào & Chay",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "french fries with cheese powder",
+      "khoai tay chien",
+      "khoai tay chien lac pho mai",
+      "khoai tây chiên lắc phô mai"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0481",
+    "canonical_name": "Chè bưởi An Giang",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "An Giang",
+    "aliases": [
+      "che buoi",
+      "che buoi an giang",
+      "chè bưởi an giang",
+      "grapefruit pith sweet soup with mung beans",
+      "pomelo sweet soup"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0482",
+    "canonical_name": "Chè hạt sen long nhãn",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Huế",
+    "aliases": [
+      "che hat sen long nhan",
+      "chè hạt sen long nhãn",
+      "hue lotus seed dessert",
+      "lotus seeds wrapped in longan sweet soup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0483",
+    "canonical_name": "Chè bột lọc bọc heo quay",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Huế",
+    "aliases": [
+      "che bot loc boc heo quay",
+      "che bot loc heo quay",
+      "chè bột lọc bọc heo quay",
+      "roast pork sweet soup",
+      "tapioca balls with roast pork in ginger syrup"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0484",
+    "canonical_name": "Chè bắp Cồn Hến",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Huế",
+    "aliases": [
+      "che bap",
+      "che bap con hen",
+      "chè bắp cồn hến",
+      "sweet corn dessert with coconut cream",
+      "sweet corn soup"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0485",
+    "canonical_name": "Chè khoai tía Huế",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Huế",
+    "aliases": [
+      "che khoai tia",
+      "che khoai tia hue",
+      "chè khoai tía huế",
+      "purple sweet potato dessert"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0486",
+    "canonical_name": "Chè sương sa hạt lựu",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "che suong sa hat luu",
+      "chè sương sa hạt lựu",
+      "rainbow sweet soup with water chestnuts and agar jelly"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0487",
+    "canonical_name": "Chè ba màu",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "che ba mau",
+      "chè ba màu",
+      "rainbow dessert",
+      "three-color sweet soup with red beans and jelly"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0488",
+    "canonical_name": "Chè đậu đỏ bánh lọt",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "che dau do",
+      "che dau do banh lot",
+      "chè đậu đỏ bánh lọt",
+      "red bean sweet soup with pandan rice droplets"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0489",
+    "canonical_name": "Chè khúc bạch",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "che khuc bach",
+      "chè khúc bạch",
+      "panna cotta almond jelly sweet dessert"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0490",
+    "canonical_name": "Chè thái sầu riêng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Đà Nẵng",
+    "aliases": [
+      "che thai da nang",
+      "che thai sau rieng",
+      "chè thái sầu riêng",
+      "durian sweet soup with assorted tropical fruits"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0491",
+    "canonical_name": "Chè chuối nếp nướng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "che chuoi nep nuong",
+      "chè chuối nếp nướng",
+      "grilled banana sticky rice in coconut cream"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0492",
+    "canonical_name": "Chè thưng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "che thung",
+      "chè thưng",
+      "sweet coconut soup with sweet potato and black-eyed peas"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0493",
+    "canonical_name": "Chè trôi nước ngũ sắc",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "che troi nuoc",
+      "che troi nuoc ngu sac",
+      "chè trôi nước ngũ sắc",
+      "glutinous rice balls in warm sweet ginger syrup"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0494",
+    "canonical_name": "Chè bà ba",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "che ba ba",
+      "chè bà ba",
+      "southern coconut milk dessert with tapioca and tubers"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0495",
+    "canonical_name": "Chè thập cẩm",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "che thap cam",
+      "chè thập cẩm",
+      "mixed beans and jelly sweet soup"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0496",
+    "canonical_name": "Chè mè đen Huế",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Huế",
+    "aliases": [
+      "black sesame sweet soup",
+      "che me den",
+      "che me den hue",
+      "chi ma phu",
+      "chè mè đen huế"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0497",
+    "canonical_name": "Chè đậu xanh đánh",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Huế",
+    "aliases": [
+      "che dau xanh danh",
+      "chè đậu xanh đánh",
+      "whipped mung bean puree with crushed ice"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0498",
+    "canonical_name": "Chè sâm bổ lượng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "che sam bo luong",
+      "ching po leung",
+      "chè sâm bổ lượng",
+      "cooling sweet herbal soup with seaweed and barley"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0499",
+    "canonical_name": "Tàu hũ nước đường gừng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "douhua",
+      "silken tofu in warm ginger sugar syrup",
+      "tau hu nuoc duong",
+      "tau hu nuoc duong gung",
+      "tàu hũ nước đường gừng"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0500",
+    "canonical_name": "Tàu hũ đá nước cốt dừa",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "chilled silken tofu with rich coconut milk",
+      "tau hu da",
+      "tau hu da nuoc cot dua",
+      "tàu hũ đá nước cốt dừa"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0501",
+    "canonical_name": "Sữa chua dẻo",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "cubed frozen yogurt with cocoa powder",
+      "sua chua deo",
+      "sữa chua dẻo"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0502",
+    "canonical_name": "Sữa chua trân châu Hạ Long",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Quảng Ninh",
+    "aliases": [
+      "ha long yogurt with warm tapioca pearls in coconut milk",
+      "sua chua tran chau ha long",
+      "sữa chua trân châu hạ long"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0503",
+    "canonical_name": "Kem bơ Đà Lạt",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "da lat avocado ice cream smoothie with shaved coconut",
+      "kem bo da lat",
+      "kem bơ đà lạt"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0504",
+    "canonical_name": "Kem dừa Côn Đảo",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Bà Rịa - Vũng Tàu",
+    "aliases": [
+      "con dao fresh coconut ice cream served in coconut shell",
+      "kem dua",
+      "kem dua con dao",
+      "kem dừa côn đảo"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0505",
+    "canonical_name": "Kem Tràng Tiền Hà Nội",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "kem trang tien",
+      "kem trang tien ha noi",
+      "kem tràng tiền hà nội",
+      "trang tien traditional hanoi ice cream pops"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0506",
+    "canonical_name": "Bánh tiêu đường",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh tieu",
+      "banh tieu duong",
+      "bánh tiêu đường",
+      "sweet hollow fried pastry with sesame"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0507",
+    "canonical_name": "Bánh bò thốt nốt Châu Đốc",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "An Giang",
+    "aliases": [
+      "banh bo thot not",
+      "banh bo thot not chau doc",
+      "bánh bò thốt nốt châu đốc",
+      "palm sugar honeycomb sponge cake"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0508",
+    "canonical_name": "Bánh bò hấp nước cốt dừa",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh bo hap",
+      "banh bo hap nuoc cot dua",
+      "bánh bò hấp nước cốt dừa",
+      "steamed sponge cake with rich coconut drizzle"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0509",
+    "canonical_name": "Bánh bò nướng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "baked honeycomb cake with pandan fragrance",
+      "banh bo nuong",
+      "bánh bò nướng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0510",
+    "canonical_name": "Bánh da lợn lá dứa",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh da lon",
+      "banh da lon la dua",
+      "bánh da lợn lá dứa",
+      "pig skin layer cake",
+      "steamed layered pandan and mung bean cake"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0511",
+    "canonical_name": "Bánh chuối nướng bơ sữa",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "baked banana bread with condensed milk",
+      "banh chuoi nuong",
+      "banh chuoi nuong bo sua",
+      "bánh chuối nướng bơ sữa"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0512",
+    "canonical_name": "Bánh chuối hấp nước cốt dừa",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh chuoi hap",
+      "banh chuoi hap nuoc cot dua",
+      "bánh chuối hấp nước cốt dừa",
+      "steamed banana slices with tapioca pearls"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0513",
+    "canonical_name": "Bánh khoai mì nướng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "baked cassava cake with coconut milk",
+      "banh khoai mi nuong",
+      "bánh khoai mì nướng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0514",
+    "canonical_name": "Bánh pía Sóc Trăng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Sóc Trăng",
+    "aliases": [
+      "banh pia",
+      "banh pia soc trang",
+      "bánh pía sóc trăng",
+      "durian pia cake",
+      "soc trang flaky pastry with durian and salted egg"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0515",
+    "canonical_name": "Bánh đậu xanh Hải Dương",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hải Dương",
+    "aliases": [
+      "banh dau xanh",
+      "banh dau xanh hai duong",
+      "bánh đậu xanh hải dương",
+      "hai duong sweet melt-in-mouth mung bean cake"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0516",
+    "canonical_name": "Bánh cáy Thái Bình",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Thái Bình",
+    "aliases": [
+      "banh cay",
+      "banh cay thai binh",
+      "bánh cáy thái bình",
+      "thai binh spicy sweet crispy rice cracker"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0517",
+    "canonical_name": "Bánh gai Nam Định",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Nam Định",
+    "aliases": [
+      "banh gai",
+      "banh gai nam dinh",
+      "black thorn leaf cake with sweetened pork and coconut",
+      "bánh gai nam định"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0518",
+    "canonical_name": "Bánh phu thê Đình Bảng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Bắc Ninh",
+    "aliases": [
+      "banh phu the",
+      "banh phu the dinh bang",
+      "banh xu xe",
+      "bánh phu thê đình bảng",
+      "husband and wife matrimonial sticky cake"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0519",
+    "canonical_name": "Bánh cốm Hàng Than",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "banh com",
+      "banh com hang than",
+      "bánh cốm hàng than",
+      "hang than sweet green rice cake with mung bean paste"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0520",
+    "canonical_name": "Kẹo cu đơ Hà Tĩnh",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hà Tĩnh",
+    "aliases": [
+      "ha tinh peanut and molasses ginger wafer brittle",
+      "keo cu do",
+      "keo cu do ha tinh",
+      "kẹo cu đơ hà tĩnh"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0521",
+    "canonical_name": "Mè xửng Huế",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Huế",
+    "aliases": [
+      "hue chewy sesame peanut candy",
+      "me xung hue",
+      "mè xửng huế"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0522",
+    "canonical_name": "Kẹo dừa Bến Tre",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Bến Tre",
+    "aliases": [
+      "ben tre rich creamy coconut candy",
+      "keo dua ben tre",
+      "kẹo dừa bến tre"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0523",
+    "canonical_name": "Kẹo gương Quảng Ngãi",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Quảng Ngãi",
+    "aliases": [
+      "crispy glass peanut candy",
+      "keo guong",
+      "keo guong quang ngai",
+      "kẹo gương quảng ngãi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0524",
+    "canonical_name": "Bánh tai heo ngọt",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "banh tai heo",
+      "banh tai heo ngot",
+      "bánh tai heo ngọt",
+      "spiral ear crispy sweet biscuits"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0525",
+    "canonical_name": "Bánh ít lá gai",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Bình Định",
+    "aliases": [
+      "banh it la gai",
+      "black sticky rice dumpling wrapped in banana leaves",
+      "bánh ít lá gai"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0526",
+    "canonical_name": "Chuối nếp nướng Cần Thơ",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Cần Thơ",
+    "aliases": [
+      "chuoi nep nuong",
+      "chuoi nep nuong can tho",
+      "chuối nếp nướng cần thơ",
+      "grilled sticky rice wrapped banana"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0527",
+    "canonical_name": "Thạch găng Hải Phòng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "green gang leaf jelly with jasmine sweet syrup",
+      "thach gang",
+      "thach gang hai phong",
+      "thạch găng hải phòng"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0528",
+    "canonical_name": "Chè dừa dầm Hải Phòng",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Hải Phòng",
+    "aliases": [
+      "che dua dam hai phong",
+      "chè dừa dầm hải phòng",
+      "coconut jelly and young copra in sweet coconut milk",
+      "dua dam hai phong"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0529",
+    "canonical_name": "Bánh cam lúc lắc",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "banh cam",
+      "banh cam luc lac",
+      "bánh cam lúc lắc",
+      "deep fried hollow sesame ball with mung bean ball"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0530",
+    "canonical_name": "Bánh ống lá dứa Trà Vinh",
+    "category": "Món Chè & Tráng miệng",
+    "region_origin": "Trà Vinh",
+    "aliases": [
+      "banh ong la dua",
+      "banh ong la dua tra vinh",
+      "bánh ống lá dứa trà vinh",
+      "steamed cylindrical pandan rice cake with coconut"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0531",
+    "canonical_name": "Cà phê sữa đá",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ca phe sua da",
+      "cà phê sữa đá",
+      "vietnamese iced coffee with condensed milk",
+      "vietnamese iced milk coffee"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0532",
+    "canonical_name": "Cà phê đen đá",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "ca phe den da",
+      "cà phê đen đá",
+      "iced black drip coffee",
+      "vietnamese black iced coffee"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0533",
+    "canonical_name": "Cà phê trứng Hà Nội",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "ca phe trung",
+      "ca phe trung ha noi",
+      "creamy whipped egg yolk coffee",
+      "cà phê trứng hà nội",
+      "vietnamese egg coffee"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0534",
+    "canonical_name": "Cà phê muối Huế",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Huế",
+    "aliases": [
+      "ca phe muoi",
+      "ca phe muoi hue",
+      "cà phê muối huế",
+      "hue salt coffee",
+      "hue salted foam coffee",
+      "salted cream coffee"
+    ],
+    "alias_count": 6
+  },
+  {
+    "dish_id": "dish_0535",
+    "canonical_name": "Bạc xỉu Sài Gòn",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "bac xiu",
+      "bac xiu sai gon",
+      "bạc xỉu sài gòn",
+      "sweet condensed milk with coffee splash",
+      "white iced coffee with extra milk"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0536",
+    "canonical_name": "Cà phê cốt dừa",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "ca phe cot dua",
+      "coconut coffee smoothie",
+      "cà phê cốt dừa",
+      "frozen coconut milk coffee"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0537",
+    "canonical_name": "Trà sen Tây Hồ",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "lotus tea",
+      "tra sen tay ho",
+      "trà sen tây hồ",
+      "west lake lotus scented green tea"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0538",
+    "canonical_name": "Trà lài",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "jasmine scented tea",
+      "tra lai",
+      "trà lài"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0539",
+    "canonical_name": "Trà đào cam sả",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "peach tea with fresh orange and lemongrass",
+      "tra dao cam sa",
+      "trà đào cam sả"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0540",
+    "canonical_name": "Trà vải kim tuyền",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "lychee iced fruit tea",
+      "tra vai",
+      "tra vai kim tuyen",
+      "trà vải kim tuyền"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0541",
+    "canonical_name": "Trà măng cụt",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Bình Dương",
+    "aliases": [
+      "mangosteen iced tea",
+      "tra mang cut",
+      "trà măng cụt"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0542",
+    "canonical_name": "Trà mãng cầu xiêm",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "soursop fresh fruit tea",
+      "tra mang cau",
+      "tra mang cau xiem",
+      "trà mãng cầu xiêm"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0543",
+    "canonical_name": "Nước mía sầu riêng",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "fresh sugarcane juice with durian aroma",
+      "nuoc mia sau rieng",
+      "nước mía sầu riêng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0544",
+    "canonical_name": "Nước mía tắc",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "fresh pressed sugarcane juice with kumquat",
+      "nuoc mia",
+      "nuoc mia tac",
+      "nước mía tắc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0545",
+    "canonical_name": "Nước dừa xiêm tươi",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Bến Tre",
+    "aliases": [
+      "fresh young xiem coconut water",
+      "nuoc dua xiem",
+      "nuoc dua xiem tuoi",
+      "nước dừa xiêm tươi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0546",
+    "canonical_name": "Dừa sáp Cầu Kè",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Trà Vinh",
+    "aliases": [
+      "dua sap cau ke",
+      "dua sap tra vinh",
+      "dừa sáp cầu kè",
+      "macapuno coconut smoothie with condensed milk"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0547",
+    "canonical_name": "Nước sâm bí đao la hán quả",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "nuoc sam bi dao",
+      "nuoc sam bi dao la han qua",
+      "nước sâm bí đao la hán quả",
+      "winter melon herbal cooling tea"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0548",
+    "canonical_name": "Nước rau má đậu xanh",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "nuoc rau ma dau xanh",
+      "nước rau má đậu xanh",
+      "pennywort juice blended with sweet mung beans",
+      "rau ma dau xanh"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0549",
+    "canonical_name": "Sinh tố bơ sáp Đắk Lắk",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Đắk Lắk",
+    "aliases": [
+      "rich creamy avocado smoothie",
+      "sinh to bo",
+      "sinh to bo sap dak lak",
+      "sinh tố bơ sáp đắk lắk"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0550",
+    "canonical_name": "Sinh tố xoài cát Hòa Lộc",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Tây",
+    "aliases": [
+      "hoa loc mango smoothie",
+      "sinh to xoai",
+      "sinh to xoai cat hoa loc",
+      "sinh tố xoài cát hòa lộc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0551",
+    "canonical_name": "Sinh tố mãng cầu",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "sinh to mang cau",
+      "sinh tố mãng cầu",
+      "soursop smoothie"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0552",
+    "canonical_name": "Nước chanh leo tuyết",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "nuoc chanh day",
+      "nuoc chanh leo tuyet",
+      "nước chanh leo tuyết",
+      "passion fruit iced drink"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0553",
+    "canonical_name": "Trà tắc mật ong",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "kumquat honey iced tea",
+      "tra tac",
+      "tra tac mat ong",
+      "trà tắc mật ong"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0554",
+    "canonical_name": "Trà chanh phố cổ Hà Nội",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "hanoi old quarter iced lime tea",
+      "tra chanh pho co",
+      "tra chanh pho co ha noi",
+      "trà chanh phố cổ hà nội"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0555",
+    "canonical_name": "Bia hơi Hà Nội",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "bia hoi",
+      "bia hoi ha noi",
+      "bia hơi hà nội",
+      "fresh street draft beer",
+      "hanoi draft beer"
+    ],
+    "alias_count": 5
+  },
+  {
+    "dish_id": "dish_0556",
+    "canonical_name": "Bia Sài Gòn Special",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "TP.HCM",
+    "aliases": [
+      "bia sai gon",
+      "bia sai gon special",
+      "bia sài gòn special",
+      "saigon special beer"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0557",
+    "canonical_name": "Bia Huda Huế",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Huế",
+    "aliases": [
+      "bia huda",
+      "bia huda hue",
+      "bia huda huế",
+      "huda central beer"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0558",
+    "canonical_name": "Rượu cần Tây Nguyên",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Tây Nguyên",
+    "aliases": [
+      "highland fermented rice wine drunk through bamboo straw",
+      "ruou can",
+      "ruou can tay nguyen",
+      "rượu cần tây nguyên"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0559",
+    "canonical_name": "Rượu sim Phú Quốc",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Kiên Giang",
+    "aliases": [
+      "phu quoc rose myrtle berry wine",
+      "ruou sim",
+      "ruou sim phu quoc",
+      "rượu sim phú quốc"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0560",
+    "canonical_name": "Rượu ngô Bản Phố",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Lào Cai",
+    "aliases": [
+      "ban pho highland sweet corn wine",
+      "ruou ngo",
+      "ruou ngo ban pho",
+      "rượu ngô bản phố"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0561",
+    "canonical_name": "Rượu nếp cái hoa vàng",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "glutinous golden blossom rice wine",
+      "ruou nep cai hoa vang",
+      "rượu nếp cái hoa vàng"
+    ],
+    "alias_count": 3
+  },
+  {
+    "dish_id": "dish_0562",
+    "canonical_name": "Sữa đậu nành nóng Đà Lạt",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "sua dau nanh da lat",
+      "sua dau nanh nong da lat",
+      "sữa đậu nành nóng đà lạt",
+      "warm fresh soy milk with pandan leaves"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0563",
+    "canonical_name": "Sữa ngô non",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "sua ngo",
+      "sua ngo non",
+      "sweet baby corn milk",
+      "sữa ngô non"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0564",
+    "canonical_name": "Trà atiso Đà Lạt",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Đà Lạt",
+    "aliases": [
+      "da lat artichoke herbal tea",
+      "tra atiso",
+      "tra atiso da lat",
+      "trà atiso đà lạt"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0565",
+    "canonical_name": "Nước sấu ngâm đường gừng",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "nuoc sau",
+      "nuoc sau ngam duong gung",
+      "nước sấu ngâm đường gừng",
+      "pickled dracontomelon juice with ginger"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0566",
+    "canonical_name": "Nước mơ ngâm đường",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Hà Nội",
+    "aliases": [
+      "nuoc mo",
+      "nuoc mo ngam duong",
+      "nước mơ ngâm đường",
+      "pickled apricot juice with ice"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0567",
+    "canonical_name": "Trà hoa cúc mật ong",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Bắc",
+    "aliases": [
+      "chrysanthemum tea with wild honey",
+      "tra hoa cuc",
+      "tra hoa cuc mat ong",
+      "trà hoa cúc mật ong"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0568",
+    "canonical_name": "Rau má dừa tươi",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Miền Nam",
+    "aliases": [
+      "pennywort juice with sweet coconut water",
+      "rau ma dua tuoi",
+      "rau ma nuoc dua",
+      "rau má dừa tươi"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0569",
+    "canonical_name": "Trà sữa trân châu đường đen",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "brown sugar boba milk tea",
+      "tra sua tran chau",
+      "tra sua tran chau duong den",
+      "trà sữa trân châu đường đen"
+    ],
+    "alias_count": 4
+  },
+  {
+    "dish_id": "dish_0570",
+    "canonical_name": "Nước ép dưa hấu",
+    "category": "Đồ uống & Cà phê",
+    "region_origin": "Toàn quốc",
+    "aliases": [
+      "fresh watermelon juice",
+      "nuoc ep dua hau",
+      "nước ép dưa hấu"
+    ],
+    "alias_count": 3
+  }
+]
