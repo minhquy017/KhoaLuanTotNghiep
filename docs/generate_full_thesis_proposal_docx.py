@@ -117,7 +117,7 @@ def build_full_proposal(filename="DE_CUONG_CHI_TIET_KHOA_LUAN_TOT_NGHIEP.docx"):
     # =============================================================
     p = doc.add_paragraph()
     format_para(p, space_before=0, space_after=2, align=WD_ALIGN_PARAGRAPH.CENTER)
-    r = p.add_run("BỘ GIÁO DỤC VÀ ĐÀO TẠO\nTRƯỜNG ĐẠI HỌC KHOA HỌC — ĐẠI HỌC HUẾ\nKHOA CÔNG NGHỆ THÔNG TIN")
+    r = p.add_run("BỘ GIÁO DỤC VÀ ĐÀO TẠO\nĐẠI HỌC HUẾ\nKHOA KỸ THUẬT VÀ CÔNG NGHỆ (HUET)")
     r.font.name = 'Times New Roman'
     r.font.size = Pt(12)
     r.font.bold = True
@@ -210,9 +210,9 @@ def build_full_proposal(filename="DE_CUONG_CHI_TIET_KHOA_LUAN_TOT_NGHIEP.docx"):
     info_data = [
         ("Tên đề tài tiếng Việt:", "Nghiên cứu xây dựng hệ thống hỏi đáp và gợi ý lịch trình du lịch thông minh ứng dụng Đồ thị Tri thức không gian và Mô hình Ngôn ngữ Lớn"),
         ("Tên đề tài tiếng Anh:", "Smart Tourism QA & Itinerary Recommendation System via Spatial Knowledge Graph and Large Language Models"),
-        ("Sinh viên thực hiện:", "[Họ và tên Sinh viên] | Lớp: AI Khóa 3 | MSSV: [Điền mã số SV]"),
+        ("Sinh viên thực hiện:", "[Họ và tên Sinh viên] | Ngành: Khoa học Dữ liệu & Trí tuệ Nhân tạo | Khóa: K3"),
         ("Giảng viên hướng dẫn:", "[Học hàm, Học vị, Họ và tên GVHD] | Email: [Email của Thầy]"),
-        ("Cơ quan chủ trì / Khoa:", "Khoa Công nghệ Thông tin — Trường Đại học Khoa học, Đại học Huế"),
+        ("Cơ quan chủ trì / Khoa:", "Khoa Kỹ thuật và Công nghệ — Đại học Huế (HUET)"),
         ("Thời gian thực hiện:", "10 tuần (Từ tháng 09/2026 đến tháng 11/2026)")
     ]
     for idx, (label, val) in enumerate(info_data):
@@ -770,7 +770,7 @@ def build_full_proposal(filename="DE_CUONG_CHI_TIET_KHOA_LUAN_TOT_NGHIEP.docx"):
         "Cơ sở tri thức đồ thị (Spatial Knowledge Graph): Cơ sở dữ liệu đồ thị Neo4j/NetworkX hoàn chỉnh bao phủ quan hệ không gian và ẩm thực.",
         "Bộ mã nguồn chương trình (Source Code): Toàn bộ pipeline tiền xử lý, trích xuất thực thể, đường ống GraphRAG và giao diện Web App.",
         "Ứng dụng Web Demo tương tác (Streamlit App): Hệ thống Trợ lý Du lịch Thông minh tích hợp bản đồ tương tác phục vụ kiểm thử và trình diễn.",
-        "Báo cáo toàn văn Khóa luận tốt nghiệp: Quyển báo cáo học thuật đầy đủ 4-5 chương theo đúng quy định của Trường Đại học Khoa học — Đại học Huế."
+        "Báo cáo toàn văn Khóa luận tốt nghiệp: Quyển báo cáo học thuật đầy đủ 4-5 chương theo đúng quy định của Khoa Kỹ thuật và Công nghệ — Đại học Huế (HUET)."
     ]
     for item in prod_list:
         bp = doc.add_paragraph(style='List Bullet')

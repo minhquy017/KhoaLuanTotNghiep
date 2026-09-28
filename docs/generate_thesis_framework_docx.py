@@ -116,7 +116,7 @@ def build_docx(filename="KHUNG_NGHIEN_CUU_VA_THI_NGHIEM_KHOA_LUAN.docx"):
     p_meta = doc.add_paragraph()
     p_meta.alignment = WD_ALIGN_PARAGRAPH.CENTER
     format_paragraph(p_meta, space_before=0, space_after=2)
-    r_uni = p_meta.add_run("BỘ GIÁO DỤC VÀ ĐÀO TẠO — NGÀNH TRÍ TUỆ NHÂN TẠO (AI)\nĐỀ CƯƠNG CHI TIẾT & KẾ HOẠCH THỰC NGHIỆM KHÓA LUẬN TỐT NGHIỆP\n")
+    r_uni = p_meta.add_run("ĐẠI HỌC HUẾ — KHOA KỸ THUẬT VÀ CÔNG NGHỆ (HUET)\nNGÀNH KHOA HỌC DỮ LIỆU & TRÍ TUỆ NHÂN TẠO — KHÓA K3 (2022 - 2026)\n")
     r_uni.font.name = 'Calibri'
     r_uni.font.size = Pt(10)
     r_uni.font.bold = True

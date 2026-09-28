@@ -159,7 +159,7 @@ def run_evaluation():
     md_content = f"""# BÁO CÁO TIẾN ĐỘ THỰC HIỆN ĐỒ ÁN TỐT NGHIỆP - GIAI ĐOẠN 1 (TUẦN 1 - 2)
 
 **Đề tài:** Nghiên cứu xây dựng hệ thống hỏi đáp và gợi ý lịch trình du lịch thông minh ứng dụng Đồ thị Tri thức không gian và Mô hình Ngôn ngữ Lớn  
-**Sinh viên thực hiện:** Ngành Kỹ thuật Trí tuệ Nhân tạo - Trường Đại học Khoa học, Đại học Huế  
+**Sinh viên thực hiện:** Ngành Khoa học Dữ liệu & Trí tuệ Nhân tạo - Khoa Kỹ thuật và Công nghệ, Đại học Huế (HUET)  
 **Thời gian báo cáo:** {time.strftime('%d/%m/%Y')}  
 **Trạng thái tiến độ:** **HOÀN THÀNH 100% CÁC MỤC TIÊU GIAI ĐOẠN 1**
 

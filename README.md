@@ -1,6 +1,6 @@
 # 🇻🇳 Smart Tourism QA & Itinerary Recommendation System via Spatial Knowledge Graph and Large Language Models
-> **ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP ĐẠI HỌC — NGÀNH TRÍ TUỆ NHÂN TẠO (AI)**  
-> **Trường Đại học Khoa học — Đại học Huế** · Khoa Công nghệ Thông tin · Khóa 3 (2022 - 2026)  
+> **ĐỀ TÀI KHÓA LUẬN TỐT NGHIỆP ĐẠI HỌC — NGÀNH KHOA HỌC DỮ LIỆU & TRÍ TUỆ NHÂN TẠO**  
+> **Khoa Kỹ thuật và Công nghệ — Đại học Huế (HUET)** · Khóa K3 (2022 - 2026)  
 > *Địa bàn nghiên cứu:* Quy mô toàn quốc (Việt Nam) & Thực nghiệm trọng điểm tại Thừa Thiên Huế.
 
 ---
