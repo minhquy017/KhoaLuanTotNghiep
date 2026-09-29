@@ -49,10 +49,12 @@ def load_gazetteer(gazetteer_path: str):
 
     province_rules = {}
     region_mapping = {}
+    central_city_mapping = {}
     district_rules = {}
 
     for prov, info in data.get("provinces", {}).items():
         region_mapping[prov] = info.get("region", "Khác")
+        central_city_mapping[prov] = 1 if info.get("is_central_city", False) else 0
         province_rules[prov] = [re.compile(r'\b' + re.escape(alias) + r'\b') for alias in info.get("aliases", [])]
 
         dist_dict = {}
@@ -60,7 +62,7 @@ def load_gazetteer(gazetteer_path: str):
             dist_dict[dist_name] = [re.compile(r'\b' + re.escape(alias) + r'\b') for alias in dist_aliases]
         district_rules[prov] = dist_dict
 
-    return bbox, foreign_kws, province_rules, region_mapping, district_rules
+    return bbox, foreign_kws, province_rules, region_mapping, central_city_mapping, district_rules
 
 
 def normalize_search_text(input_str: str) -> str:
@@ -114,15 +116,15 @@ def standardize_province_high_precision(place: dict, province_rules: dict) -> st
 
     # 1. Ưu tiên kiểm tra các đô thị đặc biệt theo URL và Locality
     if re.search(r'\b(ho chi minh|saigon|sai gon|hcmc|district 1|district 2|district 3|district 7)\b', lead_text):
-        return 'TP. Hồ Chí Minh'
+        return 'Thành phố Hồ Chí Minh'
     if re.search(r'\b(hanoi|ha noi|hoan kiem|ba dinh|tay ho|cau giay)\b', lead_text):
-        return 'Hà Nội'
+        return 'Thủ Đô Hà Nội'
     if re.search(r'\b(da nang|danang|quang nam|hoi an|tam ky|hai chau|son tra|ngu hanh son)\b', lead_text):
         return 'Thành phố Đà Nẵng'
     if re.search(r'\b(thua thien|thua thien hue|hue thua thien|thanh pho hue)\b', lead_text) or loc_norm == 'hue':
         return 'Thành phố Huế'
 
-    # 2. Quét toàn bộ 63 tỉnh trên URL và Locality
+    # 2. Quét toàn bộ danh sách 34 tỉnh/thành trên URL và Locality
     for prov, regex_list in province_rules.items():
         for pat in regex_list:
             if pat.search(lead_text):
@@ -151,14 +153,14 @@ def standardize_province_high_precision(place: dict, province_rules: dict) -> st
             # Khung tọa độ Thành phố Huế
             if 16.0 <= flat <= 16.7 and 107.2 <= flng <= 108.1:
                 return 'Thành phố Huế'
-            # Khung Hà Nội
+            # Khung Thủ Đô Hà Nội
             if 20.8 <= flat <= 21.4 and 105.6 <= flng <= 106.0:
-                return 'Hà Nội'
-            # Khung TP.HCM
-            if 10.6 <= flat <= 11.0 and 106.5 <= flng <= 107.0:
-                return 'TP. Hồ Chí Minh'
-            # Khung Thành phố Đà Nẵng (gồm cả Hội An/Quảng Nam)
-            if 15.5 <= flat <= 16.3 and 107.8 <= flng <= 108.7:
+                return 'Thủ Đô Hà Nội'
+            # Khung Thành phố Hồ Chí Minh (mở rộng bao gồm cả Bình Dương & Bà Rịa - Vũng Tàu sáp nhập)
+            if 10.1 <= flat <= 11.5 and 106.3 <= flng <= 107.4:
+                return 'Thành phố Hồ Chí Minh'
+            # Khung Thành phố Đà Nẵng (gồm cả Hội An/Quảng Nam sáp nhập)
+            if 15.2 <= flat <= 16.3 and 107.5 <= flng <= 108.7:
                 return 'Thành phố Đà Nẵng'
         except (ValueError, TypeError):
             pass
@@ -220,8 +222,8 @@ def standardize_district(place: dict, province: str, district_rules: dict) -> st
             except (ValueError, TypeError):
                 pass
 
-    # 4. Xử lý GPS cho TP. Hồ Chí Minh
-    if province == "TP. Hồ Chí Minh":
+    # 4. Xử lý GPS cho Thành phố Hồ Chí Minh
+    if province == "Thành phố Hồ Chí Minh":
         lat, lng = place.get('latitude'), place.get('longitude')
         if lat is not None and lng is not None:
             try:
@@ -235,11 +237,14 @@ def standardize_district(place: dict, province: str, district_rules: dict) -> st
                 # Thành phố Thủ Đức
                 if flng >= 106.720:
                     return "Thành phố Thủ Đức"
+                # Thành phố Vũng Tàu (Khu vực Bãi Trước, Bãi Sau)
+                if 10.32 <= flat <= 10.42 and 107.05 <= flng <= 107.15:
+                    return "Thành phố Vũng Tàu"
             except (ValueError, TypeError):
                 pass
 
-    # 5. Xử lý GPS cho Hà Nội
-    if province == "Hà Nội":
+    # 5. Xử lý GPS cho Thủ Đô Hà Nội
+    if province == "Thủ Đô Hà Nội":
         lat, lng = place.get('latitude'), place.get('longitude')
         if lat is not None and lng is not None:
             try:
@@ -267,7 +272,7 @@ def run_spatial_cleaning():
     print("BẮT ĐẦU BƯỚC 1: LÀM SẠCH VÀ CHUẨN HÓA DỮ LIỆU KHÔNG GIAN ĐA TẦNG (2-TIER SPATIAL)")
     print("=" * 80)
     print(f"-> Nạp từ điển địa danh chuẩn: {gazetteer_file}")
-    bbox, foreign_regex_list, province_rules, region_mapping, district_rules = load_gazetteer(gazetteer_file)
+    bbox, foreign_regex_list, province_rules, region_mapping, central_city_mapping, district_rules = load_gazetteer(gazetteer_file)
 
     print(f"-> Đọc dữ liệu địa điểm thô: {raw_file}")
     if not os.path.exists(raw_file):
@@ -314,6 +319,7 @@ def run_spatial_cleaning():
         # 3. Chuẩn hóa Tầng 1: Tỉnh / Thành phố
         std_prov = standardize_province_high_precision(p, province_rules)
         region = region_mapping.get(std_prov, "Khác")
+        is_central = central_city_mapping.get(std_prov, 0)
 
         # 4. Chuẩn hóa Tầng 2: Quận / Huyện / Thị xã
         std_dist = standardize_district(p, std_prov, district_rules)
@@ -327,6 +333,7 @@ def run_spatial_cleaning():
         cleaned_item = dict(p)
         cleaned_item['has_valid_gps'] = has_valid_gps
         cleaned_item['standard_province'] = std_prov
+        cleaned_item['is_central_city'] = is_central
         cleaned_item['standard_district'] = std_dist
         cleaned_item['region'] = region
 
