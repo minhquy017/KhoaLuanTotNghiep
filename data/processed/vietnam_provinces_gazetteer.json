@@ -1,0 +1,456 @@
+{
+  "metadata": {
+    "description": "Từ điển chuẩn hóa Địa danh và Phân cấp Hành chính 2 tầng (Tỉnh/Thành phố & Quận/Huyện) Việt Nam theo nghị quyết sáp nhập mới nhất",
+    "project": "Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh (DS&AI K3 - HUET)",
+    "version": "2.0.0",
+    "note": "Cập nhật Thành phố Huế trực thuộc Trung ương (Nghị quyết 175/2024/QH15) gồm Quận Phú Xuân, Quận Thuận Hóa và các thị xã, huyện."
+  },
+  "vietnam_bounding_box": {
+    "lat_min": 8.0,
+    "lat_max": 24.0,
+    "lng_min": 102.0,
+    "lng_max": 110.0
+  },
+  "foreign_keywords": [
+    "long island", "las vegas", "dubai", "paris", "bangkok",
+    "siem reap", "phnom penh", "ko chang", "trat province",
+    "channel islands", "isle of sark", "california", "oxfordshire",
+    "new york", "london", "sydney", "tokyo", "seoul",
+    "rome", "barcelona", "phuket", "bali", "chiang mai"
+  ],
+  "provinces": {
+    "Thành phố Huế": {
+      "region": "Trung Bộ",
+      "type": "Thành phố trực thuộc Trung ương",
+      "aliases": ["hue", "thua thien", "thua thien hue", "thanh pho hue", "tp hue"],
+      "districts": {
+        "Quận Phú Xuân": [
+          "phu xuan", "thanh noi", "kim long", "gia hoi", "nguyen binh khiem",
+          "tay loc", "thuan loc", "dong ba", "huong so", "an hoa", "phu hiep"
+        ],
+        "Quận Thuận Hóa": [
+          "thuan hoa", "phu hoi", "vinh ninh", "chu van an", "hung vuong",
+          "nguyen cong tru", "nguyen luong bang", "vy da", "vi da", "thuy xuan",
+          "thuy bieu", "an cuu", "phuoc vinh", "xuan phu", "phu nhuan"
+        ],
+        "Huyện Phú Lộc": ["phu loc", "lang co", "bach ma", "canh duong", "chan may", "hai van"],
+        "Huyện Nam Đông": ["nam dong", "huong giang", "huong phu", "thac mo"],
+        "Huyện A Lưới": ["a luoi", "a nor", "hong van", "hong ha", "a roang"],
+        "Huyện Phú Vang": ["phu vang", "thuan an", "phu da", "phu my", "vinh thanh"],
+        "Thị xã Hương Thủy": ["huong thuy", "phu bai", "thuy chau", "thuy duong", "da le"],
+        "Thị xã Hương Trà": ["huong tra", "tu ha", "huong van", "huong chu"],
+        "Thị xã Phong Điền": ["phong dien", "dien loc", "phong hien"],
+        "Huyện Quảng Điền": ["quang dien", "tam giang", "sia"]
+      }
+    },
+
+    "Hà Nội": {
+      "region": "Bắc Bộ",
+      "type": "Thành phố trực thuộc Trung ương",
+      "aliases": [
+        "hanoi", "ha noi", "hoan kiem", "ba dinh", "tay ho", "cau giay",
+        "dong da", "hai ba trung", "nam tu liem", "bac tu liem", "long bien",
+        "ha dong", "hoang mai", "thanh xuan", "soc son", "ba vi", "me linh",
+        "chuong my", "dan phuong", "thach that", "hoai duc", "quoc oai", "thuong tin"
+      ],
+      "districts": {
+        "Quận Hoàn Kiếm": ["hoan kiem", "pho co", "old quarter", "hang bac", "hang bo", "trang tien", "hang dao", "hang gai", "ly thuong kiet", "hang buom"],
+        "Quận Ba Đình": ["ba dinh", "truc bach", "doi can", "lieu giai", "giang vo", "kim ma", "quan thanh", "nguyen tri phuong"],
+        "Quận Tây Hồ": ["tay ho", "west lake", "quang an", "yen phu", "nhat tan", "xuan la", "thuy khue", "to ngoc van"],
+        "Quận Cầu Giấy": ["cau giay", "dich vong", "yen hoa", "trung hoa", "mai dich", "nghia do", "xuan thuy", "duy tan"],
+        "Quận Đống Đa": ["dong da", "o cho dua", "lang ha", "cat linh", "van mieu", "kham thien", "chua boc"],
+        "Quận Hai Bà Trưng": ["hai ba trung", "bach mai", "pho hue", "dong tam", "trieu viet vuong", "minh khai"],
+        "Quận Nam Từ Liêm": ["nam tu liem", "my dinh", "me tri", "trung van", "tay mo", "dai mo"],
+        "Quận Bắc Từ Liêm": ["bac tu liem", "xuan dinh", "co nhue"],
+        "Quận Long Biên": ["long bien", "bo de", "ngoc lam", "viet hung"],
+        "Quận Hà Đông": ["ha dong", "van quan", "mo lao", "la khe"],
+        "Quận Hoàng Mai": ["hoang mai", "linh dam", "dinh cong", "giap bat"],
+        "Quận Thanh Xuân": ["thanh xuan", "nhan chinh", "khuong dinh", "ha dinh"],
+        "Huyện Ba Vì": ["ba vi"],
+        "Huyện Sóc Sơn": ["soc son", "noi bai"]
+      }
+    },
+
+    "TP. Hồ Chí Minh": {
+      "region": "Nam Bộ",
+      "type": "Thành phố trực thuộc Trung ương",
+      "aliases": [
+        "ho chi minh", "saigon", "sai gon", "tp hcm", "hcmc",
+        "district 1", "district 2", "district 3", "district 4", "district 5", "district 7", "district 10",
+        "quan 1", "quan 2", "quan 3", "quan 4", "quan 5", "quan 7",
+        "binh thanh", "tan binh", "phu nhuan", "thu duc",
+        "binh tan", "binh chanh", "can gio", "cu chi", "hoc mon",
+        "go vap", "tan phu", "thao dien", "an phu"
+      ],
+      "districts": {
+        "Thành phố Thủ Đức": ["thu duc", "district 2", "district 9", "quan 2", "quan 9", "thao dien", "an phu", "hiep phu"],
+        "Quận 1": [
+          "district 1", "quan 1", "ben nghe", "ben thanh", "da kao",
+          "pham ngu lao", "tan dinh", "nguyen thai binh", "ho tung mau",
+          "dong khoi", "le loi", "nguyen hue", "ham nghi", "bui vien", "pasteur"
+        ],
+        "Quận 3": ["district 3", "quan 3", "vo thi sau", "nam ky khoi nghia"],
+        "Quận 4": ["district 4", "quan 4"],
+        "Quận 5": ["district 5", "quan 5", "cho lon"],
+        "Quận 7": ["district 7", "quan 7", "phu my hung", "tan phong", "tan quy"],
+        "Quận 10": ["district 10", "quan 10"],
+        "Quận Bình Thạnh": ["binh thanh", "hang xanh"],
+        "Quận Tân Bình": ["tan binh", "san bay tan son nhat"],
+        "Quận Phú Nhuận": ["phu nhuan", "phan xich long"],
+        "Quận Gò Vấp": ["go vap", "quang trung"],
+        "Quận Bình Tân": ["binh tan", "ten lua"],
+        "Quận Tân Phú": ["tan phu"],
+        "Huyện Cần Giờ": ["can gio"],
+        "Huyện Củ Chi": ["cu chi"]
+      }
+    },
+
+    "Thành phố Đà Nẵng": {
+      "region": "Trung Bộ",
+      "type": "Thành phố trực thuộc Trung ương",
+      "note": "Hợp nhất toàn bộ thành phố Đà Nẵng và tỉnh Quảng Nam theo Nghị quyết số 202/2025/QH15 của Quốc hội",
+      "aliases": [
+        "da nang", "danang", "quang nam", "hai chau", "son tra", "ngu hanh son",
+        "thanh khe", "cam le", "lien chieu", "hoa vang", "my an",
+        "phuoc my", "an thuong", "ba na", "hoa hai", "nam o",
+        "hoi an", "cam an", "cam chau", "cam nam", "cam ha", "cam phap",
+        "cua dai", "an bang", "thanh ha", "tam ky", "dien ban", "duy xuyen", "my son", "cu lao cham"
+      ],
+      "districts": {
+        "Quận Hải Châu": ["hai chau", "bach dang", "tran phu", "thach thang", "le duan", "nguyen van linh"],
+        "Quận Sơn Trà": ["son tra", "phuoc my", "an hai", "man thai", "tho quang", "hoang sa", "vo nguyen giap"],
+        "Quận Ngũ Hành Sơn": ["ngu hanh son", "my an", "an thuong", "hoa hai", "non nuoc", "truong sa"],
+        "Quận Thanh Khê": ["thanh khe", "ha huy tap"],
+        "Quận Cẩm Lệ": ["cam le", "hoa xuan"],
+        "Quận Liên Chiểu": ["lien chieu", "hoa khanh", "nam o"],
+        "Huyện Hòa Vang": ["hoa vang", "ba na"],
+        "Thành phố Hội An": [
+          "hoi an", "cam an", "cam chau", "cam nam", "cam ha", "cam phap",
+          "cua dai", "an bang", "thanh ha", "cu lao cham", "tran phu hoi an", "nguyen thai hoc"
+        ],
+        "Thị xã Điện Bàn": ["dien ban", "vinh dien"],
+        "Huyện Duy Xuyên": ["duy xuyen", "my son"],
+        "Thành phố Tam Kỳ": ["tam ky"]
+      }
+    },
+
+    "Kiên Giang": {
+      "region": "Nam Bộ",
+      "aliases": [
+        "phu quoc", "duong dong", "duong to", "an thoi",
+        "kien giang", "ha tien", "rach gia", "gang dau",
+        "ganh dau", "cua lap", "ham ninh", "bai dai", "bai sao"
+      ],
+      "districts": {
+        "Thành phố Phú Quốc": ["phu quoc", "duong dong", "duong to", "an thoi", "ganh dau", "cua lap", "ham ninh", "bai dai", "bai sao"],
+        "Thành phố Rạch Giá": ["rach gia"],
+        "Thành phố Hà Tiên": ["ha tien"]
+      }
+    },
+
+    "Khánh Hòa": {
+      "region": "Trung Bộ",
+      "aliases": [
+        "nha trang", "khanh hoa", "cam ranh", "ninh hoa",
+        "van phong", "diep son", "doc let", "bai dai", "hon tam", "hon mun"
+      ],
+      "districts": {
+        "Thành phố Nha Trang": ["nha trang", "loc tho", "vinh nguyen", "hon tam", "hon mun"],
+        "Thành phố Cam Ranh": ["cam ranh", "bai dai"],
+        "Thị xã Ninh Hòa": ["ninh hoa", "doc let"]
+      }
+    },
+
+    "Lâm Đồng": {
+      "region": "Trung Bộ",
+      "aliases": [
+        "da lat", "dalat", "lam dong", "bao loc",
+        "tuyen lam", "lac duong", "duc trong", "langbiang"
+      ],
+      "districts": {
+        "Thành phố Đà Lạt": ["da lat", "dalat", "tuyen lam", "xuan huong"],
+        "Thành phố Bảo Lộc": ["bao loc"],
+        "Huyện Lạc Dương": ["lac duong", "langbiang"]
+      }
+    },
+
+    "Ninh Bình": {
+      "region": "Bắc Bộ",
+      "aliases": ["ninh binh", "trang an", "tam coc", "hoa lu", "bai dinh", "gia vien", "yen khanh"],
+      "districts": {
+        "Thành phố Hoa Lư": ["hoa lu", "trang an", "tam coc", "ninh binh"],
+        "Huyện Gia Viễn": ["gia vien", "bai dinh"],
+        "Thành phố Tam Điệp": ["tam diep"]
+      }
+    },
+
+    "Quảng Ninh": {
+      "region": "Bắc Bộ",
+      "aliases": [
+        "quang ninh", "ha long", "halong", "bai chay", "tuan chau",
+        "cam pha", "van don", "co to", "yen tu", "uong bi", "mong cai"
+      ],
+      "districts": {
+        "Thành phố Hạ Long": ["ha long", "halong", "bai chay", "tuan chau", "hon gai"],
+        "Thành phố Cẩm Phả": ["cam pha"],
+        "Thành phố Uông Bí": ["uong bi", "yen tu"],
+        "Thành phố Móng Cái": ["mong cai", "tra co"],
+        "Huyện Vân Đồn": ["van don"],
+        "Huyện Cô Tô": ["co to"]
+      }
+    },
+
+    "Lào Cai": {
+      "region": "Bắc Bộ",
+      "aliases": ["sa pa", "sapa", "lao cai", "bac ha", "fansipan", "y ty"],
+      "districts": {
+        "Thị xã Sa Pa": ["sa pa", "sapa", "fansipan", "muong hoa", "ta van"],
+        "Huyện Bắc Hà": ["bac ha"],
+        "Thành phố Lào Cai": ["lao cai"]
+      }
+    },
+
+    "Bình Thuận": {
+      "region": "Trung Bộ",
+      "aliases": [
+        "binh thuan", "phan thiet", "mui ne", "ham tien",
+        "tien thanh", "phu quy", "ke ga"
+      ],
+      "districts": {
+        "Thành phố Phan Thiết": ["phan thiet", "mui ne", "ham tien", "tien thanh"],
+        "Huyện Phú Quý": ["phu quy"]
+      }
+    },
+
+    "Bà Rịa - Vũng Tàu": {
+      "region": "Nam Bộ",
+      "aliases": [
+        "vung tau", "ba ria", "con dao", "con son", "xuyen moc",
+        "long hai", "ho tram", "ho coc"
+      ],
+      "districts": {
+        "Thành phố Vũng Tàu": ["vung tau", "bai truoc", "bai sau"],
+        "Thành phố Bà Rịa": ["ba ria"],
+        "Huyện Côn Đảo": ["con dao", "con son"],
+        "Huyện Xuyên Mộc": ["xuyen moc", "ho tram", "ho coc"]
+      }
+    },
+
+    "Hải Phòng": {
+      "region": "Bắc Bộ",
+      "type": "Thành phố trực thuộc Trung ương",
+      "aliases": ["hai phong", "cat ba", "do son", "lan ha", "thuy nguyen"],
+      "districts": {
+        "Huyện Cát Hải": ["cat ba", "lan ha"],
+        "Quận Đồ Sơn": ["do son"],
+        "Thành phố Thủy Nguyên": ["thuy nguyen"]
+      }
+    },
+
+    "Cần Thơ": {
+      "region": "Nam Bộ",
+      "type": "Thành phố trực thuộc Trung ương",
+      "aliases": ["can tho", "ninh kieu", "cai rang", "my khanh", "phong dien"],
+      "districts": {
+        "Quận Ninh Kiều": ["ninh kieu"],
+        "Quận Cái Răng": ["cai rang"],
+        "Huyện Phong Điền": ["phong dien", "my khanh"]
+      }
+    },
+
+    "Quảng Bình": {
+      "region": "Trung Bộ",
+      "aliases": ["quang binh", "dong hoi", "phong nha", "son doong", "bo trach", "tu lan", "thien duong"],
+      "districts": {
+        "Thành phố Đồng Hới": ["dong hoi", "bao ninh"],
+        "Huyện Bố Trạch": ["bo trach", "phong nha", "son doong", "thien duong"]
+      }
+    },
+
+    "Bình Định": {
+      "region": "Trung Bộ",
+      "aliases": ["binh dinh", "quy nhon", "quynhon", "ky co", "eo gio", "ghenh rang", "an nhon"],
+      "districts": {
+        "Thành phố Quy Nhơn": ["quy nhon", "quynhon", "ky co", "eo gio", "ghenh rang"]
+      }
+    },
+
+    "Phú Yên": {
+      "region": "Trung Bộ",
+      "aliases": ["phu yen", "tuy hoa", "ganh da dia", "mui dien", "hon yen", "vung ro"],
+      "districts": {
+        "Thành phố Tuy Hòa": ["tuy hoa"],
+        "Thị xã Sông Cầu": ["song cau"]
+      }
+    },
+
+    "Hà Giang": {
+      "region": "Bắc Bộ",
+      "aliases": ["ha giang", "dong van", "meo vac", "yen minh", "lung cu", "quan ba"],
+      "districts": {
+        "Huyện Đồng Văn": ["dong van", "lung cu"],
+        "Huyện Mèo Vạc": ["meo vac"],
+        "Thành phố Hà Giang": ["ha giang"]
+      }
+    },
+
+    "Nghệ An": {
+      "region": "Trung Bộ",
+      "aliases": ["nghe an", "vinh", "cua lo", "nam dan", "thai hoa"],
+      "districts": {
+        "Thành phố Vinh": ["vinh", "ben thuy"],
+        "Thị xã Cửa Lò": ["cua lo"]
+      }
+    },
+
+    "Thanh Hóa": {
+      "region": "Trung Bộ",
+      "aliases": ["thanh hoa", "sam son", "pu luong", "hia trung", "hai tien"],
+      "districts": {
+        "Thành phố Sầm Sơn": ["sam son"],
+        "Huyện Bá Thước": ["pu luong"],
+        "Thành phố Thanh Hóa": ["thanh hoa"]
+      }
+    },
+
+    "Hòa Bình": {
+      "region": "Bắc Bộ",
+      "aliases": ["hoa binh", "mai chau", "luong son", "kim boi"],
+      "districts": {
+        "Huyện Mai Châu": ["mai chau"],
+        "Thành phố Hòa Bình": ["hoa binh"]
+      }
+    },
+
+    "Sơn La": {
+      "region": "Bắc Bộ",
+      "aliases": ["son la", "moc chau", "ta xua"],
+      "districts": {
+        "Thị xã Mộc Châu": ["moc chau"],
+        "Huyện Bắc Yên": ["ta xua"]
+      }
+    },
+
+    "Ninh Thuận": {
+      "region": "Trung Bộ",
+      "aliases": ["ninh thuan", "phan rang", "ninh hai", "vinh hy", "thap cham", "ca na"],
+      "districts": {
+        "Thành phố Phan Rang - Tháp Chàm": ["phan rang", "thap cham"],
+        "Huyện Ninh Hải": ["ninh hai", "vinh hy"]
+      }
+    },
+
+    "Đắk Lắk": {
+      "region": "Trung Bộ",
+      "aliases": ["dak lak", "daklak", "buon ma thuot", "buon don", "ho lak"],
+      "districts": {
+        "Thành phố Buôn Ma Thuột": ["buon ma thuot"]
+      }
+    },
+
+    "Quảng Trị": {
+      "region": "Trung Bộ",
+      "aliases": ["quang tri", "dong ha", "khe sanh", "co thanh"],
+      "districts": {
+        "Thành phố Đông Hà": ["dong ha"]
+      }
+    },
+
+    "Hà Tĩnh": {
+      "region": "Trung Bộ",
+      "aliases": ["ha tinh", "nghi xuan", "thien cam", "hong linh"],
+      "districts": {
+        "Thành phố Hà Tĩnh": ["ha tinh"],
+        "Huyện Nghi Xuân": ["nghi xuan"]
+      }
+    },
+
+    "Quảng Ngãi": {
+      "region": "Trung Bộ",
+      "aliases": ["quang ngai", "ly son", "my khe quang ngai"],
+      "districts": {
+        "Huyện Lý Sơn": ["ly son"],
+        "Thành phố Quảng Ngãi": ["quang ngai"]
+      }
+    },
+
+    "Điện Biên": {
+      "region": "Bắc Bộ",
+      "aliases": ["dien bien", "dien bien phu", "muong phang"],
+      "districts": {
+        "Thành phố Điện Biên Phủ": ["dien bien phu"]
+      }
+    },
+
+    "Cao Bằng": {
+      "region": "Bắc Bộ",
+      "aliases": ["cao bang", "ban gioc", "pac bo", "trung khanh"],
+      "districts": {
+        "Huyện Trùng Khánh": ["ban gioc", "trung khanh"]
+      }
+    },
+
+    "An Giang": {
+      "region": "Nam Bộ",
+      "aliases": ["an giang", "chau doc", "long xuyen", "tra su", "that son"],
+      "districts": {
+        "Thành phố Châu Đốc": ["chau doc"],
+        "Thành phố Long Xuyên": ["long xuyen"]
+      }
+    },
+
+    "Đồng Nai": {
+      "region": "Nam Bộ",
+      "aliases": ["dong nai", "bien hoa", "nam cat tien", "long khanh"],
+      "districts": {
+        "Thành phố Biên Hòa": ["bien hoa"]
+      }
+    },
+
+    "Bình Dương": {
+      "region": "Nam Bộ",
+      "aliases": ["binh duong", "thu dau mot", "di an", "thuan an"],
+      "districts": {
+        "Thành phố Thủ Dầu Một": ["thu dau mot"]
+      }
+    },
+
+    "Tây Ninh": {
+      "region": "Nam Bộ",
+      "aliases": ["tay ninh", "ba den"],
+      "districts": {
+        "Thành phố Tây Ninh": ["tay ninh", "ba den"]
+      }
+    },
+
+    "Bình Phước": {"region": "Nam Bộ", "aliases": ["binh phuoc", "dong xoai"]},
+    "Long An": {"region": "Nam Bộ", "aliases": ["long an", "tan an", "ben luc"]},
+    "Tiền Giang": {"region": "Nam Bộ", "aliases": ["tien giang", "my tho", "cai be"]},
+    "Bến Tre": {"region": "Nam Bộ", "aliases": ["ben tre", "chau thanh ben tre"]},
+    "Vĩnh Long": {"region": "Nam Bộ", "aliases": ["vinh long"]},
+    "Trà Vinh": {"region": "Nam Bộ", "aliases": ["tra vinh"]},
+    "Đồng Tháp": {"region": "Nam Bộ", "aliases": ["dong thap", "sa dec", "cao lanh", "tram chim"]},
+    "Hậu Giang": {"region": "Nam Bộ", "aliases": ["hau giang", "vi thanh"]},
+    "Sóc Trăng": {"region": "Nam Bộ", "aliases": ["soc trang"]},
+    "Bạc Liêu": {"region": "Nam Bộ", "aliases": ["bac lieu"]},
+    "Cà Mau": {"region": "Nam Bộ", "aliases": ["ca mau", "dat mui", "u minh"]},
+    "Thái Nguyên": {"region": "Bắc Bộ", "aliases": ["thai nguyen", "ho nui coc"]},
+    "Yên Bái": {"region": "Bắc Bộ", "aliases": ["yen bai", "mu cang chai", "nghia lo", "thac ba"]},
+    "Bắc Kạn": {"region": "Bắc Bộ", "aliases": ["bac kan", "bac can", "ba be"]},
+    "Tuyên Quang": {"region": "Bắc Bộ", "aliases": ["tuyen quang", "na hang"]},
+    "Phú Thọ": {"region": "Bắc Bộ", "aliases": ["phu tho", "viet tri", "den hung"]},
+    "Vĩnh Phúc": {"region": "Bắc Bộ", "aliases": ["vinh phuc", "tam dao", "dai lai", "vinh yen"]},
+    "Bắc Giang": {"region": "Bắc Bộ", "aliases": ["bac giang"]},
+    "Bắc Ninh": {"region": "Bắc Bộ", "aliases": ["bac ninh", "tu son"]},
+    "Hải Dương": {"region": "Bắc Bộ", "aliases": ["hai duong", "con son kiep bac"]},
+    "Hưng Yên": {"region": "Bắc Bộ", "aliases": ["hung yen", "pho hien"]},
+    "Hà Nam": {"region": "Bắc Bộ", "aliases": ["ha nam", "tam chuc", "phu ly"]},
+    "Nam Định": {"region": "Bắc Bộ", "aliases": ["nam dinh"]},
+    "Thái Bình": {"region": "Bắc Bộ", "aliases": ["thai binh"]},
+    "Lạng Sơn": {"region": "Bắc Bộ", "aliases": ["lang son", "mau son", "dong dang"]},
+    "Lai Châu": {"region": "Bắc Bộ", "aliases": ["lai chau", "sin ho"]},
+    "Đắk Nông": {"region": "Trung Bộ", "aliases": ["dak nong", "ta dung", "gia nghia"]},
+    "Gia Lai": {"region": "Trung Bộ", "aliases": ["gia lai", "pleiku", "bien ho"]},
+    "Kon Tum": {"region": "Trung Bộ", "aliases": ["kon tum", "mang den"]}
+  }
+}
