@@ -1,0 +1,24 @@
+{
+  "graph_name": "Vietnam Spatial Tourism Knowledge Graph",
+  "total_nodes": 9525,
+  "total_edges": 90948,
+  "node_type_distribution": {
+    "Province": 34,
+    "Dish": 570,
+    "Hotel": 2423,
+    "Restaurant": 4462,
+    "Attraction": 2036
+  },
+  "edge_type_distribution": {
+    "ORIGINATED_FROM": 112,
+    "LOCATED_IN": 8921,
+    "NEAR_BY": 77578,
+    "SERVES": 4337
+  },
+  "hue_case_study": {
+    "total_places": 612,
+    "serves_edges": 140,
+    "nearby_edges": 5554
+  },
+  "build_duration_seconds": 8.78
+}

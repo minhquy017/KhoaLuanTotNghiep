@@ -49,3 +49,8 @@ Desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Crawler temporary progress & raw dumps
+data/raw/*_supplement.json*
+data/raw/partial_*.json*
+data/raw/progress_*.json*
