@@ -54,3 +54,14 @@ Desktop.ini
 data/raw/*_supplement.json*
 data/raw/partial_*.json*
 data/raw/progress_*.json*
+
+# Presentation slides and Word documents
+*.pptx
+*.docx
+docs/*.docx
+
+# Presentation figures & generation scripts
+docs/figures/
+scripts/generate_*.py
+scripts/build_presentation.py
+scripts/export_presentation_script_docx.py

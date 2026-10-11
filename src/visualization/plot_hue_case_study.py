@@ -371,17 +371,6 @@ def plot_hue_case_study():
     ax.set_xlabel("Số lượt du khách ghi nhận", fontsize=11, fontweight='bold', color='#2B2D42')
     ax.grid(axis='x', linestyle='--', alpha=0.6)
 
-    # Box thông số đối tượng
-    leisure_pct = ((trip_map['couple'] + trip_map['friends']) / total_trips) * 100
-    persona_box = (
-        f"Tổng lượt gắn nhãn: {total_trips:,}\n"
-        f"Du lịch Trải nghiệm & Cặp đôi: {leisure_pct:.1f}%\n"
-        f"Công tác (Business): Chỉ chiếm {trip_map['business']/total_trips*100:.1f}%\n"
-        f"-> Căn cứ thiết kế Persona cho LLM"
-    )
-    ax.text(0.55, 0.28, persona_box, transform=ax.transAxes, fontsize=10, fontweight='semibold',
-            color='#1D3557', verticalalignment='top',
-            bbox=dict(boxstyle='round,pad=0.6', facecolor='#FEF3C7', edgecolor='#F59E0B', linewidth=1.2, alpha=0.95))
 
     ax.set_title("CƠ CẤU ĐỐI TƯỢNG DU KHÁCH ĐẾN THỪA THIÊN HUẾ\n"
                  "(Phân loại theo loại hình chuyến đi - Trip Types từ phản hồi du khách)",

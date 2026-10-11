@@ -130,142 +130,65 @@ def plot_temporal_analysis():
             note = "<- Bùng nổ vượt đỉnh lịch sử"
         print(f"  • Năm {y}: {c:>9,} bài review  {note}")
 
-    # Khởi tạo Figure 3 panel chuẩn ấn phẩm
-    fig = plt.figure(figsize=(16, 12), dpi=300)
+    # Khởi tạo Figure đơn (1 biểu đồ duy nhất, tỉ lệ chuẩn cho slide thuyết trình)
+    fig, ax = plt.subplots(figsize=(14, 6.2), dpi=300)
     fig.patch.set_facecolor('#FFFFFF')
-    gs = fig.add_gridspec(2, 2, height_ratios=[1.2, 1.0], hspace=0.32, wspace=0.22)
-
-    # --------------------------------------------------------------------------
-    # PANEL 1 (TOP): CHUỖI THỜI GIAN THEO THÁNG (2015 - 2026)
-    # --------------------------------------------------------------------------
-    ax1 = fig.add_subplot(gs[0, :])
-    ax1.set_facecolor('#FAFAFA')
+    ax.set_facecolor('#FAFAFA')
 
     # Vẽ đường xu hướng và diện tích (Line & Area)
-    ax1.plot(df_time['date'], df_time['count'], color='#1D3557', linewidth=2.2, label='Số lượng bài review / tháng', zorder=4)
-    ax1.fill_between(df_time['date'], df_time['count'], color='#457B9D', alpha=0.25, zorder=3)
+    ax.plot(df_time['date'], df_time['count'], color='#1D3557', linewidth=2.5, label='Số lượng bài đánh giá / tháng', zorder=4)
+    ax.fill_between(df_time['date'], df_time['count'], color='#457B9D', alpha=0.22, zorder=3)
 
     # Đánh dấu vùng bóng thời kỳ COVID-19 (Tháng 02/2020 đến Tháng 03/2022)
     covid_start = pd.to_datetime('2020-02-01')
     covid_end = pd.to_datetime('2022-03-15')
-    ax1.axvspan(covid_start, covid_end, color='#E63946', alpha=0.14, label='Giai đoạn Đại dịch COVID-19 & Phong tỏa', zorder=2)
+    ax.axvspan(covid_start, covid_end, color='#E63946', alpha=0.14, label='Giai đoạn Đại dịch COVID-19 & Phong tỏa', zorder=2)
 
-    # Các điểm Annotations quan trọng
-    # 1. Đỉnh 2019
+    # 1. Đỉnh cao trước dịch
     max_2019_row = df_time[df_time['year'] == 2019].sort_values('count', ascending=False).iloc[0]
-    ax1.annotate('Đỉnh cao trước dịch (T5/2019)\n10,179 bài/tháng',
-                 xy=(max_2019_row['date'], max_2019_row['count']),
-                 xytext=(pd.to_datetime('2017-06-01'), 16000),
-                 arrowprops=dict(arrowstyle='->', color='#1D3557', lw=1.5),
-                 fontsize=10, fontweight='bold', color='#1D3557',
-                 bbox=dict(boxstyle='round,pad=0.4', facecolor='#F1FAEE', edgecolor='#1D3557', alpha=0.9))
+    ax.annotate('Đỉnh cao trước dịch',
+                xy=(max_2019_row['date'], max_2019_row['count']),
+                xytext=(pd.to_datetime('2017-06-01'), 16500),
+                arrowprops=dict(arrowstyle='->', color='#1D3557', lw=1.6),
+                fontsize=10.5, fontweight='bold', color='#1D3557',
+                bbox=dict(boxstyle='round,pad=0.45', facecolor='#F1FAEE', edgecolor='#1D3557', alpha=0.95))
 
-    # 2. Đáy dịch 2021
+    # 2. Đáy dịch
     min_covid_row = df_time[(df_time['year'] == 2021) & (df_time['month'] == 8)].iloc[0]
-    ax1.annotate('Chạm đáy đóng băng\n(T8/2021: 82 bài)',
-                 xy=(min_covid_row['date'], min_covid_row['count']),
-                 xytext=(pd.to_datetime('2020-07-01'), 8500),
-                 arrowprops=dict(arrowstyle='->', color='#E63946', lw=1.5),
-                 fontsize=9.5, fontweight='bold', color='#E63946',
-                 bbox=dict(boxstyle='round,pad=0.4', facecolor='#FFE3E3', edgecolor='#E63946', alpha=0.9))
+    ax.annotate('Chạm đáy đóng băng',
+                xy=(min_covid_row['date'], min_covid_row['count']),
+                xytext=(pd.to_datetime('2020-07-01'), 9500),
+                arrowprops=dict(arrowstyle='->', color='#E63946', lw=1.6),
+                fontsize=10, fontweight='bold', color='#E63946',
+                bbox=dict(boxstyle='round,pad=0.45', facecolor='#FFE3E3', edgecolor='#E63946', alpha=0.95))
 
-    # 3. Mở cửa 15/03/2022
+    # 3. Mốc mở cửa du lịch
     reopen_date = pd.to_datetime('2022-03-15')
-    ax1.axvline(reopen_date, color='#2A9D8F', linestyle='--', linewidth=1.8, zorder=5)
-    ax1.text(reopen_date + pd.Timedelta(days=25), 17000, '15/03/2022: Việt Nam mở cửa\ndu lịch toàn diện',
-             fontsize=9.5, fontweight='bold', color='#2A9D8F',
-             bbox=dict(boxstyle='round,pad=0.3', facecolor='#E8F8F5', edgecolor='#2A9D8F', alpha=0.9))
-
-    # 4. Kỷ lục 2025 - 2026
-    max_all = df_time.sort_values('count', ascending=False).iloc[0]
-    ax1.annotate(f'Kỷ lục phục hồi ({max_all["month"]}/{max_all["year"]})\n{max_all["count"]:,} bài/tháng',
-                 xy=(max_all['date'], max_all['count']),
-                 xytext=(pd.to_datetime('2023-04-01'), 20500),
-                 arrowprops=dict(arrowstyle='->', color='#E76F51', lw=1.5),
-                 fontsize=10, fontweight='bold', color='#E76F51',
-                 bbox=dict(boxstyle='round,pad=0.4', facecolor='#FFF3EE', edgecolor='#E76F51', alpha=0.9))
+    ax.axvline(reopen_date, color='#2A9D8F', linestyle='--', linewidth=2.0, zorder=5)
+    ax.text(reopen_date + pd.Timedelta(days=25), 17500, 'Việt Nam mở cửa\ndu lịch toàn diện',
+            fontsize=10, fontweight='bold', color='#2A9D8F',
+            bbox=dict(boxstyle='round,pad=0.4', facecolor='#E8F8F5', edgecolor='#2A9D8F', alpha=0.95))
 
     # Định dạng trục
-    ax1.xaxis.set_major_locator(mdates.YearLocator(1))
-    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
-    ax1.yaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('{x:,.0f}'))
-    ax1.set_ylabel("Số lượng bài review / tháng", fontsize=11, fontweight='bold', color='#2B2D42')
-    ax1.set_ylim(0, 23500)
-    ax1.grid(True, linestyle='--', alpha=0.6)
-    ax1.legend(loc='upper left', frameon=True, facecolor='white', edgecolor='#CCC', fontsize=10)
+    ax.xaxis.set_major_locator(mdates.YearLocator(1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+    ax.yaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('{x:,.0f}'))
+    ax.set_ylabel("Số lượng bài đánh giá / tháng", fontsize=11.5, fontweight='bold', color='#2B2D42')
+    ax.set_xlabel("Năm", fontsize=11, fontweight='bold', color='#2B2D42', labelpad=8)
+    ax.set_ylim(0, 26000)
+    ax.grid(True, linestyle='--', alpha=0.55, color='#E0E0E0')
+    ax.legend(loc='upper left', frameon=True, facecolor='white', edgecolor='#CCCCCC', fontsize=10.5)
 
-    ax1.set_title("A. XU HƯỚNG TỔNG LƯỢNG BÀI ĐÁNH GIÁ DU LỊCH THEO THỜI GIAN (2015 - 2026)\n"
-                 "(Thể hiện rõ nét giai đoạn sụt giảm sâu do COVID-19 và đà phục hồi bùng nổ kỷ lục)",
-                 fontsize=12.5, fontweight='bold', color='#1D3557', pad=14, loc='left')
+    # Ẩn đường viền trên và phải
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
 
-    # --------------------------------------------------------------------------
-    # PANEL 2 (BOTTOM-LEFT): PHÂN TÍCH QUY LUẬT MÙA VỤ (SEASONALITY BY MONTH)
-    # --------------------------------------------------------------------------
-    ax2 = fig.add_subplot(gs[1, 0])
-    ax2.set_facecolor('#FAFAFA')
+    # Tiêu đề biểu đồ: Tổng quan, không có số liệu cụ thể
+    ax.set_title("XU HƯỚNG BÀI ĐÁNH GIÁ DU LỊCH THEO THỜI GIAN\n"
+                 "(Giai đoạn sụt giảm do đại dịch COVID-19 và xu hướng phục hồi sau mở cửa)",
+                 fontsize=13, fontweight='bold', color='#1D3557', pad=15, loc='left')
 
-    monthly_stats = df_time.groupby('month')['count'].sum().reset_index()
-    month_names = ['T1\n(Tết)', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7\n(Hè)', 'T8\n(Hè)', 'T9', 'T10', 'T11', 'T12\n(Noel)']
-
-    # Phối màu cột: Nhấn mạnh tháng cao điểm
-    bar_colors = []
-    for m in monthly_stats['month']:
-        if m in [1, 2, 3, 4]:          # Mùa Tết & Mùa Xuân du lịch quốc tế
-            bar_colors.append('#E76F51')
-        elif m in [7, 8]:              # Mùa Hè nội địa
-            bar_colors.append('#2A9D8F')
-        else:
-            bar_colors.append('#457B9D')
-
-    bars = ax2.bar(monthly_stats['month'], monthly_stats['count'], color=bar_colors, width=0.68, edgecolor='white', linewidth=1.2)
-
-    # Ghi nhãn số lượng trên đỉnh cột
-    for bar in bars:
-        h = bar.get_height()
-        ax2.text(bar.get_x() + bar.get_width()/2., h + 2000, f"{int(h/1000):,}k",
-                 ha='center', va='bottom', fontsize=8.5, fontweight='bold', color='#1D3557')
-
-    ax2.set_xticks(range(1, 13))
-    ax2.set_xticklabels(month_names, fontsize=9.5, fontweight='semibold')
-    ax2.yaxis.set_major_formatter(mpl.ticker.StrMethodFormatter('{x:,.0f}'))
-    ax2.set_ylabel("Tổng lượng review tích lũy", fontsize=10.5, fontweight='bold', color='#2B2D42')
-    ax2.set_ylim(0, 148000)
-    ax2.grid(axis='y', linestyle='--', alpha=0.6)
-
-    ax2.set_title("B. QUY LUẬT MÙA VỤ DU LỊCH THEO 12 THÁNG\n"
-                 "(Cam: Mùa Tết & Lễ hội; Xanh ngọc: Mùa hè cao điểm)",
-                 fontsize=11.5, fontweight='bold', color='#1D3557', pad=12, loc='left')
-
-    # --------------------------------------------------------------------------
-    # PANEL 3 (BOTTOM-RIGHT): MA TRẬN NHIỆT (HEATMAP NĂM x THÁNG)
-    # --------------------------------------------------------------------------
-    ax3 = fig.add_subplot(gs[1, 1])
-
-    # Tạo Pivot table: Index = Năm, Columns = Tháng
-    heatmap_data = df_time.pivot(index='year', columns='month', values='count').fillna(0)
-    heatmap_data = heatmap_data.sort_index(ascending=False)  # Năm mới nhất ở trên
-
-    # Vẽ Heatmap bằng Seaborn
-    sns.heatmap(heatmap_data, ax=ax3, cmap='YlOrRd', cbar_kws={'label': 'Số lượng bài review / tháng'},
-                linewidths=0.5, linecolor='white')
-
-    ax3.set_xlabel("Tháng trong năm", fontsize=10.5, fontweight='bold', color='#2B2D42')
-    ax3.set_ylabel("Năm", fontsize=10.5, fontweight='bold', color='#2B2D42')
-    ax3.set_xticklabels([f"T{m}" for m in range(1, 13)], fontsize=9)
-    ax3.set_yticklabels(heatmap_data.index, fontsize=9, rotation=0)
-
-    ax3.set_title("C. MA TRẬN NHIỆT MẬT ĐỘ ĐÁNH GIÁ (NĂM x THÁNG)\n"
-                 "(Thấy rõ vệt đóng băng màu nhạt 2020-2021 và vùng đỏ rực 2023-2026)",
-                 fontsize=11.5, fontweight='bold', color='#1D3557', pad=12, loc='left')
-
-    # Tinh chỉnh viền
-    for ax in [ax1, ax2]:
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-
-    plt.suptitle("PHÂN TÍCH CHUỖI THỜI GIAN & QUY LUẬT MÙA VỤ CỦA DU KHÁCH TẠI VIỆT NAM (2015 - 2026)\n"
-                 "(Phân tích thám nghiệm trên 1.44 triệu bài đánh giá có thông tin ngày đi thực tế - Khóa luận Tốt nghiệp DS&AI K3)",
-                 fontsize=14.5, fontweight='bold', color='#1D3557', y=0.985)
+    plt.tight_layout()
 
     output_png = os.path.join(OUTPUT_DIR, "temporal_tourism_trends_2015_2026.png")
     output_pdf = os.path.join(OUTPUT_DIR, "temporal_tourism_trends_2015_2026.pdf")
@@ -274,7 +197,7 @@ def plot_temporal_analysis():
     plt.savefig(output_pdf, bbox_inches='tight')
     plt.close()
 
-    print(f"\n✅ ĐÃ XUẤT ẢNH BIỂU ĐỒ CHUỖI THỜI GIAN THÀNH CÔNG:")
+    print(f"\n✅ ĐÃ XUẤT ẢNH BIỂU ĐỒ CHUỖI THỜI GIAN (CHỈ PANEL COVID) THÀNH CÔNG:")
     print(f"👉 File PNG (300 DPI): {output_png}")
     print(f"👉 File PDF (Vector) : {output_pdf}")
     print("=" * 80)
