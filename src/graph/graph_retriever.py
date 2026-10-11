@@ -32,6 +32,7 @@ def strip_accents(text: str) -> str:
     """Loại bỏ dấu tiếng Việt để tìm kiếm mờ (fuzzy keyword matching)."""
     if not text:
         return ""
+    text = text.replace('đ', 'd').replace('Đ', 'D')
     text = unicodedata.normalize('NFD', text)
     text = "".join(ch for ch in text if unicodedata.category(ch) != 'Mn')
     return unicodedata.normalize('NFC', text).lower().strip()
