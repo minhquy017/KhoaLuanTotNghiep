@@ -129,7 +129,13 @@ def run_etl():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(base_dir, "..", ".."))
     
-    metadata_path = os.path.join(project_root, "data", "raw", "vietnam_places_metadata.json")
+    cleaned_path = os.path.join(project_root, "data", "processed", "vietnam_places_spatial_cleaned.json")
+    if os.path.exists(cleaned_path):
+        metadata_path = cleaned_path
+        print(f"-> Sử dụng dữ liệu đã làm sạch không gian: {metadata_path}")
+    else:
+        metadata_path = os.path.join(project_root, "data", "raw", "vietnam_places_metadata.json")
+        print(f"-> Sử dụng dữ liệu thô: {metadata_path}")
     raw_dataset_dir = os.path.join(project_root, "data", "raw", "raw_dataset")
     gazetteer_path = os.path.join(project_root, "data", "processed", "culinary_gazetteer.json")
     db_path = os.path.join(project_root, "data", "processed", "tourism_vietnam.db")
@@ -156,7 +162,7 @@ def run_etl():
     # ---------------------------------------------------------
     # 1. NẠP PLACES METADATA
     # ---------------------------------------------------------
-    print("\n[1/3] Đang nạp Metadata địa điểm (vietnam_places_metadata.json)...")
+    print(f"\n[1/3] Đang nạp Metadata địa điểm ({os.path.basename(metadata_path)})...")
     with open(metadata_path, "r", encoding="utf-8") as f:
         places_data = json.load(f)
 
@@ -174,7 +180,10 @@ def run_etl():
         valid_urls.add(norm_url)
         cat = p.get("category", "")
         places_cat_count[cat] += 1
-        is_hue = is_hue_place(p, norm_url)
+        
+        std_prov = p.get("standard_province") or p.get("locality", "")
+        std_dist = p.get("standard_district") or p.get("district", "")
+        is_hue = 1 if std_prov == "Thành phố Huế" or is_hue_place(p, norm_url) else 0
         if is_hue:
             hue_count += 1
 
@@ -187,8 +196,8 @@ def run_etl():
             p.get("latitude"),
             p.get("longitude"),
             p.get("street_address", ""),
-            p.get("district", ""),
-            p.get("locality", ""),
+            std_dist,
+            std_prov,
             p.get("postal_code", ""),
             p.get("country", ""),
             cuisines_str,

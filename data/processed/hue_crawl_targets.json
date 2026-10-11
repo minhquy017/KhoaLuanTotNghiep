@@ -1,0 +1,3278 @@
+{
+  "attractions": [
+    {
+      "place_id": 8875,
+      "name": "Hue Imperial City (The Citadel)",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d317599-Reviews-Hue_Imperial_City_The_Citadel-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 11417,
+      "rating_value": 4.3,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8876,
+      "name": "Thien Mu Pagoda",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d451126-Reviews-Thien_Mu_Pagoda-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3922,
+      "rating_value": 4.2,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8878,
+      "name": "Mausoleum of Emperor Minh Mang",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d451127-Reviews-Mausoleum_of_Emperor_Minh_Mang-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2657,
+      "rating_value": 4.5,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8882,
+      "name": "Perfume River",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d456107-Reviews-Perfume_River-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2277,
+      "rating_value": 3.6,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8880,
+      "name": "Tomb of Tu Duc",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d451128-Reviews-Tomb_of_Tu_Duc-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2137,
+      "rating_value": 4.2,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8884,
+      "name": "Hue Royal Palace",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d451120-Reviews-Hue_Royal_Palace-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 996,
+      "rating_value": 4.2,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8879,
+      "name": "Royal Tombs",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d555721-Reviews-Royal_Tombs-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 974,
+      "rating_value": 4.5,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8895,
+      "name": "Hai Van Pass",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g11923533-d455407-Reviews-Hai_Van_Pass-Lang_Co_Phu_Loc_District_Thua_Thien_Hue_Province.html",
+      "review_count": 643,
+      "rating_value": 4.3,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8919,
+      "name": "Truong Tien Bridge",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d600750-Reviews-Truong_Tien_Bridge-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 628,
+      "rating_value": 3.9,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8881,
+      "name": "Imperial Tomb of Dong Khanh",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d8546743-Reviews-Imperial_Tomb_of_Dong_Khanh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 585,
+      "rating_value": 4.5,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8885,
+      "name": "Thanh Toan Bridge",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d3741185-Reviews-Thanh_Toan_Bridge-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 429,
+      "rating_value": 4.4,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8920,
+      "name": "Dong Ba Market",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d2519037-Reviews-Dong_Ba_Market-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 400,
+      "rating_value": 3.4,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8877,
+      "name": "Bach Ma National Park",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d562580-Reviews-Bach_Ma_National_Park-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 346,
+      "rating_value": 4.5,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8908,
+      "name": "Hue Transfers",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d8813685-Reviews-Hue_Transfers-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 319,
+      "rating_value": 5.0,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8909,
+      "name": "Hue Private Transfers",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d8300268-Reviews-Hue_Private_Transfers-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 319,
+      "rating_value": 5.0,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8914,
+      "name": "Let's Hue - Local Buddies",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d11947607-Reviews-Let_s_Hue_Local_Buddies-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 223,
+      "rating_value": 5.0,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8917,
+      "name": "Lang Co Beach",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d11437075-Reviews-Lang_Co_Beach-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 100,
+      "rating_value": 3.9,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8918,
+      "name": "Tam Giang Lagoon",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d2416127-Reviews-Tam_Giang_Lagoon-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 97,
+      "rating_value": 4.4,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8915,
+      "name": "Hue Cooking Class - Cooking With Madam Thu",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d27172026-Reviews-Hue_Cooking_Class_Cooking_With_Madam_Thu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 84,
+      "rating_value": 4.9,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8921,
+      "name": "XQ Hand Embroidery",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d12898894-Reviews-XQ_Hand_Embroidery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 59,
+      "rating_value": 4.8,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8886,
+      "name": "Tu Hieu Pagoda",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d6941969-Reviews-Tu_Hieu_Pagoda-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 53,
+      "rating_value": 4.6,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8910,
+      "name": "Gakka Art Gallery",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d8617302-Reviews-Gakka_Art_Gallery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 47,
+      "rating_value": 4.9,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8907,
+      "name": "Kelly Spa & Beauty",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d18892002-Reviews-Kelly_Spa_Beauty-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 44,
+      "rating_value": 4.9,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8883,
+      "name": "Aeon Mall Hue",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d32878349-Reviews-Aeon_Mall_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 30,
+      "rating_value": 4.9,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8913,
+      "name": "Vietnam Catholic Tours",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d12926625-Reviews-Vietnam_Catholic_Tours-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 25,
+      "rating_value": 5.0,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8904,
+      "name": "Lebadang Memory Space",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g15333846-d17713528-Reviews-Lebadang_Memory_Space-Huong_Thuy_Thua_Thien_Hue_Province.html",
+      "review_count": 21,
+      "rating_value": 4.9,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8911,
+      "name": "Spa & Massage Holidays",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d26728962-Reviews-Spa_Massage_Holidays-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 17,
+      "rating_value": 4.8,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8916,
+      "name": "Phantom massage & relaxation",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d34103879-Reviews-Phantom_massage_relaxation-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 10,
+      "rating_value": 5.0,
+      "category": "attraction"
+    },
+    {
+      "place_id": 8912,
+      "name": "VN DAYTRIP - Vietnam Tour Travel",
+      "url": "https://www.tripadvisor.com/Attraction_Review-g293926-d32760678-Reviews-VN_DAYTRIP_Vietnam_Tour_Travel-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 5.0,
+      "category": "attraction"
+    }
+  ],
+  "restaurants": [
+    {
+      "place_id": 7326,
+      "name": "Dmz Bar & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1738361-Reviews-Dmz_Bar_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3343,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7296,
+      "name": "Madam Thu Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8571633-Reviews-Madam_Thu_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3166,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7335,
+      "name": "Bún Bò Huế Sen",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d6897910-Reviews-Bun_Bo_Hu_Sen-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2819,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7330,
+      "name": "Zucca Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3295650-Reviews-Zucca_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2724,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7309,
+      "name": "Les Jardins de La Carambole",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d2668637-Reviews-Les_Jardins_de_La_Carambole-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2702,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7315,
+      "name": "Nina's Cafe - Eatery",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1724500-Reviews-Nina_s_Cafe_Eatery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2694,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7340,
+      "name": "Golden Rice",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d2398631-Reviews-Golden_Rice-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2277,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7310,
+      "name": "Quán Hạnh",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17562943-Reviews-Quan_H_nh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2235,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7324,
+      "name": "Family Home Cafe & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d2012139-Reviews-Family_Home_Cafe_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1907,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7343,
+      "name": "Elegant Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7192741-Reviews-Elegant_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1666,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7323,
+      "name": "Nook Eatery",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d11886600-Reviews-Nook_Eatery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1638,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7351,
+      "name": "HotTuna Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1122506-Reviews-HotTuna_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1634,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7336,
+      "name": "Little Italy Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1909247-Reviews-Little_Italy_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1611,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7293,
+      "name": "Chan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d18854311-Reviews-Chan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1463,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7313,
+      "name": "Spice Viet Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12512176-Reviews-Spice_Viet_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1270,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7294,
+      "name": "Chan - 19 Nguyen Thai Hoc",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26864305-Reviews-Chan_19_Nguyen_Thai_Hoc-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1164,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7314,
+      "name": "Junrei Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8824452-Reviews-Junrei_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1143,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8054,
+      "name": "Gecko Pub - Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7126151-Reviews-Gecko_Pub_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1088,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7295,
+      "name": "Madam Thu 2",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26652254-Reviews-Madam_Thu_2-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1025,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7316,
+      "name": "COZY Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13084307-Reviews-COZY_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 951,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7312,
+      "name": "Eco Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10606650-Reviews-Eco_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 940,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7317,
+      "name": "Bánh Gánh Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25165033-Reviews-Banh_Ganh_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 783,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7311,
+      "name": "Le Cercle Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26528139-Reviews-Le_Cercle_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 775,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7298,
+      "name": "Ancient Huế Gallery Cuisine",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1632193-Reviews-Ancient_Hu_Gallery_Cuisine-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 733,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7308,
+      "name": "Vị Huế Restaurant & Café",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28558483-Reviews-V_Hu_Restaurant_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 708,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7341,
+      "name": "Lạc Thiện Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1604153-Reviews-L_c_Thi_n_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 708,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8051,
+      "name": "Why Not? Bar & Restaurant Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1748982-Reviews-Why_Not_Bar_Restaurant_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 694,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7325,
+      "name": "Bistro La Carambole",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d14062058-Reviews-Bistro_La_Carambole-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 688,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7331,
+      "name": "Maison Trang Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17596312-Reviews-Maison_Trang_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 681,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7300,
+      "name": "Y Thao Garden",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1121818-Reviews-Y_Thao_Garden-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 615,
+      "rating_value": 3.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7292,
+      "name": "Pizz.á Restaurant - Italian Cuisine",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28118958-Reviews-Pizz_a_Restaurant_Italian_Cuisine-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 593,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7338,
+      "name": "La Boulangerie Francaise",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1371993-Reviews-La_Boulangerie_Francaise-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 583,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7352,
+      "name": "Cafe on Thu Wheels restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3452460-Reviews-Cafe_on_Thu_Wheels_restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 547,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7318,
+      "name": "La Paix Bistro",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d19121650-Reviews-La_Paix_Bistro-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 514,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8062,
+      "name": "Com Chay Duong Sinh Lien Hoa",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1785631-Reviews-Com_Chay_Duong_Sinh_Lien_Hoa-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 512,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7350,
+      "name": "Secret Lounge Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8678483-Reviews-Secret_Lounge_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 497,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7320,
+      "name": "Nhà Hàng Khải Hoàn",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27929484-Reviews-Nha_Hang_Kh_i_Hoan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 396,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7299,
+      "name": "Le Parfum",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1600092-Reviews-Le_Parfum-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 390,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8052,
+      "name": "Cococlub Hue Restaurant Brasserie Vietnamese & Western",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7041174-Reviews-Cococlub_Hue_Restaurant_Brasserie_Vietnamese_Western-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 376,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8080,
+      "name": "Banana Mango",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1422380-Reviews-Banana_Mango-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 361,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7346,
+      "name": "Ganesh Indian Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8285487-Reviews-Ganesh_Indian_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 351,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7297,
+      "name": "Alma Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25547301-Reviews-Alma_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 337,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8055,
+      "name": "Shiva Shakti Indian Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8327395-Reviews-Shiva_Shakti_Indian_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 321,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8098,
+      "name": "Le's Garden Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3748747-Reviews-Le_s_Garden_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 314,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7328,
+      "name": "Nha Hang Cafe Vy Da Xua",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4209841-Reviews-Nha_Hang_Cafe_Vy_Da_Xua-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 302,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7291,
+      "name": "1984 Coffee • Pub • Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33411708-Reviews-1984_Coffee_Pub_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 301,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8068,
+      "name": "Take Japanese Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4209906-Reviews-Take_Japanese_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 298,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8071,
+      "name": "Tipsy Pub n' Bistro",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8635728-Reviews-Tipsy_Pub_n_Bistro-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 262,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8072,
+      "name": "Red Chilli Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d5501134-Reviews-Red_Chilli_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 258,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8104,
+      "name": "Ushi Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1853132-Reviews-Ushi_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 250,
+      "rating_value": 3.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8060,
+      "name": "Cherish Hue Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d6637726-Reviews-Cherish_Hue_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 239,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8093,
+      "name": "Brown Eyes Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1058450-Reviews-Brown_Eyes_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 219,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7319,
+      "name": "Hương Ngự Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27488427-Reviews-Huong_Ng_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 213,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7327,
+      "name": "Shino Sushi & BBQ",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d14098632-Reviews-Shino_Sushi_BBQ-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 212,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8076,
+      "name": "Stop & Eat - Family restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8869828-Reviews-Stop_Eat_Family_restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 205,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8061,
+      "name": "Garden Riverside Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10457612-Reviews-Garden_Riverside_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 200,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8050,
+      "name": "Risotto Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27121390-Reviews-Risotto_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 198,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8091,
+      "name": "Lac Thanh",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4793181-Reviews-Lac_Thanh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 197,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8127,
+      "name": "The Rustic Kitchen & Chill Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12711242-Reviews-The_Rustic_Kitchen_Chill_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 189,
+      "rating_value": 3.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7337,
+      "name": "Ngo Nho Restaurant & Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25415657-Reviews-Ngo_Nho_Restaurant_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 185,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7349,
+      "name": "Chez Maïs",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26768478-Reviews-Chez_Mais-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 181,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8088,
+      "name": "Hang Me Me",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d6598710-Reviews-Hang_Me_Me-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 159,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8058,
+      "name": "Mr. Pho - Pho Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4004540-Reviews-Mr_Pho_Pho_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 157,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8086,
+      "name": "Hoa Vien",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d2067094-Reviews-Hoa_Vien-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 153,
+      "rating_value": 3.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7322,
+      "name": "Shino Sushi 2 - Japanese Restaurant - Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d19102669-Reviews-Shino_Sushi_2_Japanese_Restaurant_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 149,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8120,
+      "name": "Rose 2",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4840494-Reviews-Rose_2-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 147,
+      "rating_value": 3.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7321,
+      "name": "Sunrise Lounge - Rooftop Sky Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27491083-Reviews-Sunrise_Lounge_Rooftop_Sky_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 140,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8112,
+      "name": "Cay Dao Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12369104-Reviews-Cay_Dao_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 139,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8118,
+      "name": "Hung Vuong Inn",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1121806-Reviews-Hung_Vuong_Inn-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 137,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8092,
+      "name": "Pho Sai Gon",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1633392-Reviews-Pho_Sai_Gon-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 136,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7345,
+      "name": "Banh Khoai Hong Mai",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10063408-Reviews-Banh_Khoai_Hong_Mai-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 135,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7329,
+      "name": "Nón Huế- Authentic Hue Food",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d21080437-Reviews-Non_Hu_Authentic_Hue_Food-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 132,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8066,
+      "name": "Maison Trang 2 Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28669656-Reviews-Maison_Trang_2_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 127,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8233,
+      "name": "Bar Sunlight",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3871825-Reviews-Bar_Sunlight-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 123,
+      "rating_value": 2.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8074,
+      "name": "Tinh Gia Vien",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1988490-Reviews-Tinh_Gia_Vien-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 121,
+      "rating_value": 3.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8114,
+      "name": "Hoa Nghiem Vegetarian Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7042179-Reviews-Hoa_Nghiem_Vegetarian_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 117,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8090,
+      "name": "Khong Gian Xua",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1795319-Reviews-Khong_Gian_Xua-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 114,
+      "rating_value": 3.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8083,
+      "name": "Moc Vien Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d5959678-Reviews-Moc_Vien_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 104,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8123,
+      "name": "The Beach Bar Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4747357-Reviews-The_Beach_Bar_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 104,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8155,
+      "name": "Song Huong Floating Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3134654-Reviews-Song_Huong_Floating_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 102,
+      "rating_value": 2.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7333,
+      "name": "N. Cafe And Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25553950-Reviews-N_Cafe_And_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 99,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7348,
+      "name": "Kyodai Japanese Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10445247-Reviews-Kyodai_Japanese_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 98,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8095,
+      "name": "Hue Jade Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10169373-Reviews-Hue_Jade_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 96,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7332,
+      "name": "Hoang Yen Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34158485-Reviews-Hoang_Yen_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 93,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7334,
+      "name": "Ngu Yen - Royal Cuisine Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27491087-Reviews-Ngu_Yen_Royal_Cuisine_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 87,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7339,
+      "name": "Vietnammese Restaurant & Fastfood22",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25392101-Reviews-Vietnammese_Restaurant_Fastfood22-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 85,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8057,
+      "name": "La Pines",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4914368-Reviews-La_Pines-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 85,
+      "rating_value": 3.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7307,
+      "name": "Thong Dong Vegetarian Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34062455-Reviews-Thong_Dong_Vegetarian_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 82,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8082,
+      "name": "Mingle Vegetarian Cafe Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27771114-Reviews-Mingle_Vegetarian_Cafe_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 82,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8128,
+      "name": "Banana Flower Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4039457-Reviews-Banana_Flower_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 80,
+      "rating_value": 3.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8048,
+      "name": "Ngon Burger",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26343199-Reviews-Ngon_Burger-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 79,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8110,
+      "name": "Oasis Bar & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4583588-Reviews-Oasis_Bar_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 76,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8065,
+      "name": "Be Than Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10769920-Reviews-Be_Than_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 71,
+      "rating_value": 3.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8156,
+      "name": "Phuoc Thanh Garden Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d2036889-Reviews-Phuoc_Thanh_Garden_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 69,
+      "rating_value": 3.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7342,
+      "name": "An Nhiên Garden Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23411630-Reviews-An_Nhien_Garden_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 66,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8122,
+      "name": "Burger Shack Hue - Lều Hamburgers",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12385031-Reviews-Burger_Shack_Hue_L_u_Hamburgers-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 65,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8049,
+      "name": "Ta Vet",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12832825-Reviews-Ta_Vet-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 63,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8085,
+      "name": "Saké Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28669803-Reviews-Sake_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 61,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8173,
+      "name": "Royal Park, Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3347829-Reviews-Royal_Park_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 61,
+      "rating_value": 3.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8079,
+      "name": "San May Vegeterian Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10060151-Reviews-San_May_Vegeterian_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 60,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7301,
+      "name": "Ben Xuan Garden House Theatre",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d11962508-Reviews-Ben_Xuan_Garden_House_Theatre-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 59,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8097,
+      "name": "The Cham Craft Beer & Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17453911-Reviews-The_Cham_Craft_Beer_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 57,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8119,
+      "name": "Thanh Liêu",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d6894038-Reviews-Thanh_Lieu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 55,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8197,
+      "name": "Garlic & Chives Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d11799874-Reviews-Garlic_Chives_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 55,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8209,
+      "name": "Temple Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1121813-Reviews-Temple_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 54,
+      "rating_value": 3.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8132,
+      "name": "Ba Do",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4062843-Reviews-Ba_Do-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 51,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8184,
+      "name": "Vinh Lac Tran",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17713449-Reviews-Vinh_Lac_Tran-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 51,
+      "rating_value": 3.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8094,
+      "name": "Huyen Anh",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8130689-Reviews-Huyen_Anh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 48,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8084,
+      "name": "Hoang Phu Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12913420-Reviews-Hoang_Phu_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 46,
+      "rating_value": 3.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8164,
+      "name": "Biet Phu Thao Nhi",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1748964-Reviews-Biet_Phu_Thao_Nhi-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 46,
+      "rating_value": 3.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7347,
+      "name": "Baga Bar & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33110729-Reviews-Baga_Bar_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 45,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8134,
+      "name": "Tai Phu Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10178110-Reviews-Tai_Phu_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 44,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8140,
+      "name": "Eldora Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8603371-Reviews-Eldora_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 40,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8146,
+      "name": "Al Pomodoro Restaurant, Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15758137-Reviews-Al_Pomodoro_Restaurant_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 40,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8149,
+      "name": "Viet Village Restaurant Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d9982917-Reviews-Viet_Village_Restaurant_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 38,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8152,
+      "name": "Green Bean Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12453602-Reviews-Green_Bean_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 38,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8157,
+      "name": "Fruit House",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17838440-Reviews-Fruit_House-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 37,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8172,
+      "name": "054 Cafe'",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10211570-Reviews-054_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 37,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8059,
+      "name": "Quán nhạu 36",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25259128-Reviews-Quan_nh_u_36-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 36,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8067,
+      "name": "Duyen Anh Seafood Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d2242452-Reviews-Duyen_Anh_Seafood_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 34,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7306,
+      "name": "Tha Om Garden House",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4829631-Reviews-Tha_Om_Garden_House-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 33,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8113,
+      "name": "Huetui",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32904217-Reviews-Huetui-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 33,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7344,
+      "name": "Zenith SkyBar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25547286-Reviews-Zenith_SkyBar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 32,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8064,
+      "name": "Thị's Kitchen",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27715545-Reviews-Th_s_Kitchen-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 32,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7304,
+      "name": "Đai Nam – Authentique Cuisine de Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25152078-Reviews-Dai_Nam_Authentique_Cuisine_de_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 31,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8056,
+      "name": "Cơm Niêu Bánh Gánh 2",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28098633-Reviews-Com_Nieu_Banh_Ganh_2-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 31,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7303,
+      "name": "Ama Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23010922-Reviews-Ama_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 30,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8077,
+      "name": "Cat Cafe Mocha Aeon Mall Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34274929-Reviews-Cat_Cafe_Mocha_Aeon_Mall_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 29,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8078,
+      "name": "Sala Restaurant Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26491783-Reviews-Sala_Restaurant_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 29,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7302,
+      "name": "Stella Garden",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32822447-Reviews-Stella_Garden-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 26,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8154,
+      "name": "Quan Cam - Bun Bo Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12130537-Reviews-Quan_Cam_Bun_Bo_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 25,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8169,
+      "name": "La Brasserie & Le Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8559978-Reviews-La_Brasserie_Le_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 25,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8205,
+      "name": "Pause Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13307243-Reviews-Pause_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 25,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8241,
+      "name": "Gac - Mang - Re",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12703271-Reviews-Gac_Mang_Re-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 25,
+      "rating_value": 3.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8087,
+      "name": "Bun bo Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12230714-Reviews-Bun_bo_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 23,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8215,
+      "name": "Tinh Quan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d6277268-Reviews-Tinh_Quan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 23,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8222,
+      "name": "Pizza Amour",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d6871891-Reviews-Pizza_Amour-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 23,
+      "rating_value": 3.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8053,
+      "name": "Le Soleil De Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27539193-Reviews-Le_Soleil_De_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 22,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8103,
+      "name": "Luna Bistro & Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34040376-Reviews-Luna_Bistro_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 22,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8115,
+      "name": "Starbucks Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33931796-Reviews-Starbucks_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 22,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8131,
+      "name": "An Phu Garden Restaurant Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28986739-Reviews-An_Phu_Garden_Restaurant_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 22,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8201,
+      "name": "Pumpkin Bistro & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d20301598-Reviews-Pumpkin_Bistro_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 22,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8336,
+      "name": "Hoa Hong Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d5533334-Reviews-Hoa_Hong_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 22,
+      "rating_value": 3.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8108,
+      "name": "Tachi - Vietnamese Seafood",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17424081-Reviews-Tachi_Vietnamese_Seafood-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 21,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8261,
+      "name": "Nha Hang Thang Long Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1179593-Reviews-Nha_Hang_Thang_Long_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 21,
+      "rating_value": 3.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 7305,
+      "name": "Vu Cuisine",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25031846-Reviews-Vu_Cuisine-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 20,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8063,
+      "name": "Hueritage Cruises",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33065582-Reviews-Hueritage_Cruises-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 20,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8124,
+      "name": "Tịnh Tâm Vegan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23650564-Reviews-T_nh_Tam_Vegan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 20,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8194,
+      "name": "Hue Riverside Resort and Spa",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7927443-Reviews-Hue_Riverside_Resort_and_Spa-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 20,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8230,
+      "name": "Com Nieu Gia Dinh 2",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3983079-Reviews-Com_Nieu_Gia_Dinh_2-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 20,
+      "rating_value": 3.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8161,
+      "name": "Tu Phuong Vo Su Lau Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d9997120-Reviews-Tu_Phuong_Vo_Su_Lau_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 19,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8216,
+      "name": "Bigben Coffee - Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d11955570-Reviews-Bigben_Coffee_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 19,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8308,
+      "name": "Cheer Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13359511-Reviews-Cheer_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 19,
+      "rating_value": 3.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8070,
+      "name": "Tropical Garden",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26865032-Reviews-Tropical_Garden-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 18,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8168,
+      "name": "Green Garden Hue Restaurant & Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10752041-Reviews-Green_Garden_Hue_Restaurant_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 18,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8069,
+      "name": "Bánh mì Ba Bu",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32708720-Reviews-Banh_mi_Ba_Bu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 17,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8089,
+      "name": "BUN BÒ HUẾ SEN RESTAURANT",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26685844-Reviews-BUN_BO_HU_SEN_RESTAURANT-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 17,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8130,
+      "name": "Barlab-Rooftop",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27095493-Reviews-Barlab_Rooftop-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 17,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8142,
+      "name": "Nhà Hàng Thân Thiện - Com Nieu Nha Ruong",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33056551-Reviews-Nha_Hang_Than_Thi_n_Com_Nieu_Nha_Ruong-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 17,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8212,
+      "name": "Méw Secret",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23348745-Reviews-Mew_Secret-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 17,
+      "rating_value": 3.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8220,
+      "name": "Om Pub & Restauran Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10741647-Reviews-Om_Pub_Restauran_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 17,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8075,
+      "name": "Gem Sushi Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25224790-Reviews-Gem_Sushi_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 16,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8102,
+      "name": "Hue Cuisine & Café",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23220341-Reviews-Hue_Cuisine_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 16,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8170,
+      "name": "Golden Land",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15296514-Reviews-Golden_Land-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 16,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8099,
+      "name": "Nhà hàng Nghệ",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34305991-Reviews-Nha_hang_Ngh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 15,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8182,
+      "name": "Quan Nho",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d9705440-Reviews-Quan_Nho-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 15,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8188,
+      "name": "Di Nhien Tea House",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10826285-Reviews-Di_Nhien_Tea_House-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 15,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8195,
+      "name": "Hue Plumeria Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12338696-Reviews-Hue_Plumeria_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 15,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8250,
+      "name": "CHU Cafe & Lounge",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13837733-Reviews-CHU_Cafe_Lounge-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 15,
+      "rating_value": 3.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8266,
+      "name": "Park View Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3330131-Reviews-Park_View_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 15,
+      "rating_value": 3.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8190,
+      "name": "Pizza Kat",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d20302416-Reviews-Pizza_Kat-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 14,
+      "rating_value": 3.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8244,
+      "name": "B41 Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10168840-Reviews-B41_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 14,
+      "rating_value": 3.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8269,
+      "name": "An Phuoc Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d11707662-Reviews-An_Phuoc_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 14,
+      "rating_value": 2.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8319,
+      "name": "Com Am Phu Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10757710-Reviews-Com_Am_Phu_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 14,
+      "rating_value": 1.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8105,
+      "name": "Quán bánh Chi",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15186319-Reviews-Quan_banh_Chi-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 13,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8121,
+      "name": "Huong Cau Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8678513-Reviews-Huong_Cau_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 13,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8326,
+      "name": "King Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3588878-Reviews-King_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 13,
+      "rating_value": 3.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8345,
+      "name": "ABOSS",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13860027-Reviews-ABOSS-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 13,
+      "rating_value": 2.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8135,
+      "name": "Đa:mê Café - Coffee & Pastry",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28114321-Reviews-Da_me_Cafe_Coffee_Pastry-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 12,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8116,
+      "name": "Nhi's Crepe & Pizza",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15062660-Reviews-Nhi_s_Crepe_Pizza-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 11,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8191,
+      "name": "Koi Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13813117-Reviews-Koi_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 11,
+      "rating_value": 3.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8200,
+      "name": "Pho Nui Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13860003-Reviews-Pho_Nui_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 11,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8206,
+      "name": "Victory Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4793518-Reviews-Victory_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 11,
+      "rating_value": 3.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8253,
+      "name": "Nha Hang Chay Phuong Nam",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15233442-Reviews-Nha_Hang_Chay_Phuong_Nam-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 11,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8346,
+      "name": "Life Bar - Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d16762673-Reviews-Life_Bar_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 11,
+      "rating_value": 3.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8163,
+      "name": "CHAY Corner - Vietnamese Dumplings",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24888946-Reviews-CHAY_Corner_Vietnamese_Dumplings-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 10,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8174,
+      "name": "Nha Hang Gao",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24946595-Reviews-Nha_Hang_Gao-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 10,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8265,
+      "name": "Restaurant Bun Bo Thuong Tu",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d4753634-Reviews-Restaurant_Bun_Bo_Thuong_Tu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 10,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8328,
+      "name": "Quang Aachener Imbiss",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10834352-Reviews-Quang_Aachener_Imbiss-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 10,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8330,
+      "name": "La Maison Cafe & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10719989-Reviews-La_Maison_Cafe_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 10,
+      "rating_value": 2.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8136,
+      "name": "Nhà Hàng KTV",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25000919-Reviews-Nha_Hang_KTV-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 9,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8185,
+      "name": "Hương - Tinh hoa hương vị Việt",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32596781-Reviews-Huong_Tinh_hoa_huong_v_Vi_t-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 9,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8187,
+      "name": "Huong Traditional Cakes Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15028722-Reviews-Huong_Traditional_Cakes_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 9,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8107,
+      "name": "Mâm. - Cơm Việt Lối Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34232177-Reviews-Mam_Com_Vi_t_L_i_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8129,
+      "name": "Cam On Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d30426653-Reviews-Cam_On_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8166,
+      "name": "Mayla Healthy Coffee & Bakery",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24798736-Reviews-Mayla_Healthy_Coffee_Bakery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8176,
+      "name": "Ngon' Pizza - Steak - Ribs",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27732333-Reviews-Ngon_Pizza_Steak_Ribs-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8179,
+      "name": "Rice Bowl",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33883632-Reviews-Rice_Bowl-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8208,
+      "name": "Banh Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7816297-Reviews-Banh_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8218,
+      "name": "Blueberry Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d11912465-Reviews-Blueberry_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8305,
+      "name": "The Pizza Company",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15319993-Reviews-The_Pizza_Company-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 2.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8335,
+      "name": "Backpacker Bar and Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13128471-Reviews-Backpacker_Bar_and_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 8,
+      "rating_value": 2.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8125,
+      "name": "Hi Boss restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25755822-Reviews-Hi_Boss_restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8141,
+      "name": "De Men BBQ",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12832742-Reviews-De_Men_BBQ-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8144,
+      "name": "Revolution Express Lang Co",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28123136-Reviews-Revolution_Express_Lang_Co-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8153,
+      "name": "Bánh Ép Gia Di",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27654476-Reviews-Banh_Ep_Gia_Di-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8165,
+      "name": "Pinetree House Restaurant Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32414296-Reviews-Pinetree_House_Restaurant_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8186,
+      "name": "Hạ - Cơm Nấu Lối Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33026771-Reviews-H_Com_N_u_L_i_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 4.9,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8196,
+      "name": "Barapub Beer Garden",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12838473-Reviews-Barapub_Beer_Garden-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8227,
+      "name": "Ba Hoa",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3959428-Reviews-Ba_Hoa-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8229,
+      "name": "Com Hen Hoa Dong",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d16754543-Reviews-Com_Hen_Hoa_Dong-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 4.1,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8262,
+      "name": "Banh Mi Op la",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10757638-Reviews-Banh_Mi_Op_la-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 7,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8073,
+      "name": "HÀNG ME - Ẩm Thực Đặc Sản Xứ Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34659530-Reviews-HANG_ME_m_Th_c_D_c_S_n_X_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8096,
+      "name": "Quán Ăn An Tâm Hue Vietnam",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32969467-Reviews-Quan_An_An_Tam_Hue_Vietnam-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8111,
+      "name": "Huế Plaza",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34232979-Reviews-Hu_Plaza-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8148,
+      "name": "Fai Wine Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34100957-Reviews-Fai_Wine_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8150,
+      "name": "An Nhi Vegan _ Tea _ Coffee Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d30695557-Reviews-An_Nhi_Vegan_Tea_Coffee_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8159,
+      "name": "Nhà Hàng Chay Hương Mai",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26313442-Reviews-Nha_Hang_Chay_Huong_Mai-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8189,
+      "name": "An Tam",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26446273-Reviews-An_Tam-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8198,
+      "name": "Anh Kafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10791812-Reviews-Anh_Kafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8210,
+      "name": "Seaweed Food Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12158438-Reviews-Seaweed_Food_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8219,
+      "name": "Madame Chau Restaurant & Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d14776466-Reviews-Madame_Chau_Restaurant_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8245,
+      "name": "Lotteria Big C",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12948758-Reviews-Lotteria_Big_C-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8246,
+      "name": "Shanti Craft Beer And Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24895360-Reviews-Shanti_Craft_Beer_And_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8247,
+      "name": "T.O Beer",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13218425-Reviews-T_O_Beer-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8341,
+      "name": "Chau Loan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d2650063-Reviews-Chau_Loan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 6,
+      "rating_value": 3.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8147,
+      "name": "Thành Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34445471-Reviews-Thanh_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8151,
+      "name": "Morning Glory Hue - Local Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24030355-Reviews-Morning_Glory_Hue_Local_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8160,
+      "name": "1995s Hub Rooftop Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32869134-Reviews-1995s_Hub_Rooftop_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8171,
+      "name": "Old Money Cafe & Cocktails",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26146533-Reviews-Old_Money_Cafe_Cocktails-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8192,
+      "name": "Feever Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34484000-Reviews-Feever_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8202,
+      "name": "Soul Kitchen",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25205905-Reviews-Soul_Kitchen-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8211,
+      "name": "T.O Quan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12926250-Reviews-T_O_Quan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8217,
+      "name": "Mama's House Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15530929-Reviews-Mama_s_House_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8224,
+      "name": "Kakarotto Udon & Tempura",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26767580-Reviews-Kakarotto_Udon_Tempura-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8232,
+      "name": "Nam Phuong Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8803535-Reviews-Nam_Phuong_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 4.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8235,
+      "name": "Bun Bo Hue My Tam",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12731125-Reviews-Bun_Bo_Hue_My_Tam-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 3.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8242,
+      "name": "Khong Gian Xua",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d19849783-Reviews-Khong_Gian_Xua-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 3.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8254,
+      "name": "Xeco Coffee & Pub",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13504908-Reviews-Xeco_Coffee_Pub-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8268,
+      "name": "Cơm Quê Mự Hải",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34068868-Reviews-Com_Que_M_H_i-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8272,
+      "name": "Nhuận An",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27418358-Reviews-Nhu_n_An-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 4.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8286,
+      "name": "Stop Coffee Go",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13968780-Reviews-Stop_Coffee_Go-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8287,
+      "name": "Banquet & Jules Ferry Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d11761191-Reviews-Banquet_Jules_Ferry_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 3.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8297,
+      "name": "Khói Mô",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32824684-Reviews-Khoi_Mo-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 2.6,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8306,
+      "name": "A Dau - Pork Rolls",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10674869-Reviews-A_Dau_Pork_Rolls-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 4.2,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8356,
+      "name": "A. VINH, GAN KIEU 68.",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d3163767-Reviews-A_VINH_GAN_KIEU_68-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 5,
+      "rating_value": 3.4,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8081,
+      "name": "Mandarin Coffee & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26727334-Reviews-Mandarin_Coffee_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8133,
+      "name": "Nam Phuong Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25391726-Reviews-Nam_Phuong_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8143,
+      "name": "Quan Banh Uot Thit Heo Quay Ba Suu",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12530648-Reviews-Quan_Banh_Uot_Thit_Heo_Quay_Ba_Suu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8158,
+      "name": "Jade & Ginger Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34246035-Reviews-Jade_Ginger_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8175,
+      "name": "Donald Trung",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12940358-Reviews-Donald_Trung-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8213,
+      "name": "Hoang Anh",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d1754241-Reviews-Hoang_Anh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8223,
+      "name": "Nha 87 Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17415287-Reviews-Nha_87_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8267,
+      "name": "Toa Kham Cafe & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17389992-Reviews-Toa_Kham_Cafe_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 2.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8277,
+      "name": "75Dope CAFE'",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d20091924-Reviews-75Dope_CAFE-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8296,
+      "name": "WHITE Garden Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10628429-Reviews-WHITE_Garden_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8350,
+      "name": "Cafe Thon Vy",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d9739814-Reviews-Cafe_Thon_Vy-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 4.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8370,
+      "name": "Villa Hue Resaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d5790390-Reviews-Villa_Hue_Resaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 4,
+      "rating_value": 3.8,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8100,
+      "name": "Quán Sò Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13480429-Reviews-Quan_So_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8101,
+      "name": "Nhà Hàng Nam Châu Hội Quán",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27501877-Reviews-Nha_Hang_Nam_Chau_H_i_Quan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8106,
+      "name": "Royal Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15239606-Reviews-Royal_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8109,
+      "name": "The Temple Restaurant Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25353059-Reviews-The_Temple_Restaurant_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8117,
+      "name": "Nhà hàng Bếp Nhà Nội",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34615765-Reviews-Nha_hang_B_p_Nha_N_i-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8126,
+      "name": "Hue Hostel & Sports Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17623258-Reviews-Hue_Hostel_Sports_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8139,
+      "name": "Không Gian Xưa 98 Minh Mạng",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34098519-Reviews-Khong_Gian_Xua_98_Minh_M_ng-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8167,
+      "name": "Tĩnh Garden Vegetarian",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d25467004-Reviews-Tinh_Garden_Vegetarian-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8177,
+      "name": "Yaki Yum",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26365964-Reviews-Yaki_Yum-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 3.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8183,
+      "name": "Sweetie Lemon - Vegetarian Fusion, Coffee & Bakery",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33372917-Reviews-Sweetie_Lemon_Vegetarian_Fusion_Coffee_Bakery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8214,
+      "name": "Sline Sky Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33071223-Reviews-Sline_Sky_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8226,
+      "name": "Pizza HT",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d14041601-Reviews-Pizza_HT-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8228,
+      "name": "Anh Cookery",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d16817205-Reviews-Anh_Cookery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8234,
+      "name": "Dong Tam Bakery",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8862126-Reviews-Dong_Tam_Bakery-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8239,
+      "name": "De B&b House",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32786149-Reviews-De_B_b_House-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8240,
+      "name": "Vuon Pho Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13222192-Reviews-Vuon_Pho_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8249,
+      "name": "All Risotto Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27150218-Reviews-All_Risotto_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8270,
+      "name": "The Ware-house",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12120320-Reviews-The_Ware_house-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8273,
+      "name": "Pizza Berry",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23402096-Reviews-Pizza_Berry-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8274,
+      "name": "O Phụng bún bò Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23030915-Reviews-O_Ph_ng_bun_bo_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8279,
+      "name": "Orchid Lounge",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10063258-Reviews-Orchid_Lounge-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8282,
+      "name": "Quan Nam Pho",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13484604-Reviews-Quan_Nam_Pho-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8293,
+      "name": "Be Kem - Banh Trang Kep",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10674792-Reviews-Be_Kem_Banh_Trang_Kep-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8316,
+      "name": "Lotteria Coopmart Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12864234-Reviews-Lotteria_Coopmart_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8325,
+      "name": "Dau Xua Coffee & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d9706214-Reviews-Dau_Xua_Coffee_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 3.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8331,
+      "name": "Quan Hạt Tieu",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d20994996-Reviews-Quan_H_t_Tieu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 3.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8339,
+      "name": "Mr. Thinh",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15522204-Reviews-Mr_Thinh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 2.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8344,
+      "name": "Quynh Huong",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7816275-Reviews-Quynh_Huong-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 2.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8365,
+      "name": "Zoom Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10078009-Reviews-Zoom_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8366,
+      "name": "Quan Com Hen",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17390016-Reviews-Quan_Com_Hen-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 3.7,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8368,
+      "name": "Cool Beer Xin Chao",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d19796576-Reviews-Cool_Beer_Xin_Chao-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 3,
+      "rating_value": 2.3,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8145,
+      "name": "Rumba Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17631936-Reviews-Rumba_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8162,
+      "name": "Quán nhậu kiểu Nhật tại Huế - Ryo izakaya",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34381262-Reviews-Quan_nh_u_ki_u_Nh_t_t_i_Hu_Ryo_izakaya-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8180,
+      "name": "Bánh Mì Trường Tiền O Tho",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33352474-Reviews-Banh_Mi_Tru_ng_Ti_n_O_Tho-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8181,
+      "name": "Madam Ng Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34224707-Reviews-Madam_Ng_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8203,
+      "name": "Đông Ba Brewery - Huế Local Craft Beer",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34265661-Reviews-Dong_Ba_Brewery_Hu_Local_Craft_Beer-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8204,
+      "name": "Thuy Bieu Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15354092-Reviews-Thuy_Bieu_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8207,
+      "name": "King’s Panorama Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d19501970-Reviews-King_s_Panorama_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8221,
+      "name": "Saucy",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24923017-Reviews-Saucy-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8231,
+      "name": "Domino's Pizza Tầng 3 Aeon Mall Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32867072-Reviews-Domino_s_Pizza_T_ng_3_Aeon_Mall_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8236,
+      "name": "Deja Vu Coffee & Dessert",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d21317785-Reviews-Deja_Vu_Coffee_Dessert-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8237,
+      "name": "Nhà Hàng Gongwuan Hotpot",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27103022-Reviews-Nha_Hang_Gongwuan_Hotpot-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8238,
+      "name": "ChocoHouse Hue_Chocolate and Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27130988-Reviews-ChocoHouse_Hue_Chocolate_and_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8248,
+      "name": "Kim Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26518445-Reviews-Kim_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8252,
+      "name": "Buncha House & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15581820-Reviews-Buncha_House_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8258,
+      "name": "Truong Tien Cafe & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12059691-Reviews-Truong_Tien_Cafe_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8260,
+      "name": "Lucky Cafe & Fast Food",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26635814-Reviews-Lucky_Cafe_Fast_Food-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 3.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8263,
+      "name": "Kicochi House",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17604581-Reviews-Kicochi_House-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8264,
+      "name": "King BBQ",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d20149163-Reviews-King_BBQ-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8276,
+      "name": "Nha Tram So 21",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13358763-Reviews-Nha_Tram_So_21-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8288,
+      "name": "Com Hen Nhu Y",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15035632-Reviews-Com_Hen_Nhu_Y-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8290,
+      "name": "Sen Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12832593-Reviews-Sen_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8291,
+      "name": "Lau Pho",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26956036-Reviews-Lau_Pho-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8298,
+      "name": "The Hub Beer - Lounge - Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12338742-Reviews-The_Hub_Beer_Lounge_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 1.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8310,
+      "name": "Freedom Hostel Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12423969-Reviews-Freedom_Hostel_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8311,
+      "name": "Banh Canh Ba Doi",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12850843-Reviews-Banh_Canh_Ba_Doi-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 3.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8321,
+      "name": "Sala Huế - Nhà Hàng Chay",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26560853-Reviews-Sala_Hu_Nha_Hang_Chay-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 3.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8323,
+      "name": "An Nhi Vegan Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d30695556-Reviews-An_Nhi_Vegan_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8327,
+      "name": "Madame Thu Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27947333-Reviews-Madame_Thu_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8333,
+      "name": "Pumpkin Bistro & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d20309503-Reviews-Pumpkin_Bistro_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8348,
+      "name": "Pao Lou Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15512274-Reviews-Pao_Lou_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 3.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8353,
+      "name": "Den Dau",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24089715-Reviews-Den_Dau-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8354,
+      "name": "Banh Mi Truyen Thong Dong Ba",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d14770524-Reviews-Banh_Mi_Truyen_Thong_Dong_Ba-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 2.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8360,
+      "name": "KaThy Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10168103-Reviews-KaThy_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 4.5,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8361,
+      "name": "Méw Restaurant & Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33001146-Reviews-Mew_Restaurant_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 2,
+      "rating_value": 3.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8137,
+      "name": "Omega",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33098309-Reviews-Omega-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8138,
+      "name": "Nhà Hàng Festival Huế",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27928571-Reviews-Nha_Hang_Festival_Hu-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8178,
+      "name": "Memo Steakhouse",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34597420-Reviews-Memo_Steakhouse-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8193,
+      "name": "Son Hai Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10794280-Reviews-Son_Hai_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8199,
+      "name": "Quán Ăn Nhỏ",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33352478-Reviews-Quan_An_Nh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8225,
+      "name": "Cha Ca Ha Noi Ngu Pho",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17577342-Reviews-Cha_Ca_Ha_Noi_Ngu_Pho-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8243,
+      "name": "Bear Food",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15749865-Reviews-Bear_Food-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8251,
+      "name": "Wagyu Yo Korean BBQ",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d18965840-Reviews-Wagyu_Yo_Korean_BBQ-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8255,
+      "name": "Méw Secret",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d28023727-Reviews-Mew_Secret-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8256,
+      "name": "Kim Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27707155-Reviews-Kim_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8257,
+      "name": "Ikigai Cocktail Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34122709-Reviews-Ikigai_Cocktail_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8259,
+      "name": "Pizza Karoo Hue",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26626558-Reviews-Pizza_Karoo_Hue-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8271,
+      "name": "Harang Korean Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34273215-Reviews-Harang_Korean_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8275,
+      "name": "Chill Out - 46 Trương Gia Mô",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27491085-Reviews-Chill_Out_46_Truong_Gia_Mo-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8278,
+      "name": "Mee - O",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17779871-Reviews-Mee_O-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8280,
+      "name": "Ruby Bistro Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d18188592-Reviews-Ruby_Bistro_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8281,
+      "name": "Hien Anh Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d10755001-Reviews-Hien_Anh_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8283,
+      "name": "King Beer",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26313914-Reviews-King_Beer-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8284,
+      "name": "Quan Ken Duong",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27482441-Reviews-Quan_Ken_Duong-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8285,
+      "name": "Sakura Sushi Garden",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26883239-Reviews-Sakura_Sushi_Garden-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8289,
+      "name": "Ones Casual Bar",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33269901-Reviews-Ones_Casual_Bar-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8292,
+      "name": "Emm.in Kafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34326122-Reviews-Emm_in_Kafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8294,
+      "name": "Tra Dinh Vien",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d23370287-Reviews-Tra_Dinh_Vien-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8295,
+      "name": "Phở Bắc Hồng Loan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d32842463-Reviews-Ph_B_c_H_ng_Loan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8299,
+      "name": "An Hien Bar & Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12130785-Reviews-An_Hien_Bar_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8300,
+      "name": "Nha Cam",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15785274-Reviews-Nha_Cam-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8301,
+      "name": "Quán Đỏ",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26320381-Reviews-Quan_D-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8302,
+      "name": "B.I Beer & Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17301512-Reviews-B_I_Beer_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8303,
+      "name": "Pho Ty",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27497367-Reviews-Pho_Ty-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8304,
+      "name": "Bun Rieu Cua Thuy",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15757616-Reviews-Bun_Rieu_Cua_Thuy-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8307,
+      "name": "Zone 7 Coffee & Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17118451-Reviews-Zone_7_Coffee_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8309,
+      "name": "Chimaek",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15142129-Reviews-Chimaek-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8312,
+      "name": "La's Beach House",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d21045304-Reviews-La_s_Beach_House-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8313,
+      "name": "Pho 20",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15815081-Reviews-Pho_20-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8314,
+      "name": "Imperial Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13984647-Reviews-Imperial_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8315,
+      "name": "Alin's Homestay",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13430267-Reviews-Alin_s_Homestay-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8318,
+      "name": "Ghita Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d9745703-Reviews-Ghita_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8320,
+      "name": "Quan Ga 2B Mieu Doi",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12847737-Reviews-Quan_Ga_2B_Mieu_Doi-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8322,
+      "name": "3T Bread & Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d18721421-Reviews-3T_Bread_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8329,
+      "name": "Chuong Gio Garden",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12907284-Reviews-Chuong_Gio_Garden-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8332,
+      "name": "Vien Phong Garden",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d7157555-Reviews-Vien_Phong_Garden-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8334,
+      "name": "O Hương",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d26631404-Reviews-O_Huong-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8337,
+      "name": "Geylang Hue Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d12357587-Reviews-Geylang_Hue_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8340,
+      "name": "Reo Coffee",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15353953-Reviews-Reo_Coffee-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 2.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8343,
+      "name": "Ton Nu Vien Cafe",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d9701239-Reviews-Ton_Nu_Vien_Cafe-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8347,
+      "name": "Quán Chay Hồng Nga",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d27539135-Reviews-Quan_Chay_H_ng_Nga-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8349,
+      "name": "Baskin Robbins",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d20302410-Reviews-Baskin_Robbins-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 1.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8352,
+      "name": "Hoa Mai Restaurant",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d15239659-Reviews-Hoa_Mai_Restaurant-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8355,
+      "name": "Tiệm cơm nhà cô ri",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34101796-Reviews-Ti_m_com_nha_co_ri-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8358,
+      "name": "Lau Bo A Binh",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d17713469-Reviews-Lau_Bo_A_Binh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8359,
+      "name": "Mon Am Dac",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33351604-Reviews-Mon_Am_Dac-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8362,
+      "name": "100% Beer",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d34083858-Reviews-100_Beer-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8364,
+      "name": "HekSa",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d19354268-Reviews-HekSa-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8371,
+      "name": "Pho Tuan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d13114872-Reviews-Pho_Tuan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 4.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8380,
+      "name": "Minh Binh",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d24091556-Reviews-Minh_Binh-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 3.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8385,
+      "name": "Phuc Tam Quan",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d8617791-Reviews-Phuc_Tam_Quan-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 5.0,
+      "category": "restaurant"
+    },
+    {
+      "place_id": 8387,
+      "name": "Tam Huy, Quan Banh Out Heo Quay",
+      "url": "https://www.tripadvisor.com/Restaurant_Review-g293926-d33412004-Reviews-Tam_Huy_Quan_Banh_Out_Heo_Quay-Hue_Thua_Thien_Hue_Province.html",
+      "review_count": 1,
+      "rating_value": 1.0,
+      "category": "restaurant"
+    }
+  ]
+}

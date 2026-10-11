@@ -40,9 +40,14 @@ from bs4 import BeautifulSoup
 # ==============================================================================
 # CẤU HÌNH CHẠY TRÊN 1 MÁY DUY NHẤT (SINGLE MACHINE)
 # ==============================================================================
-# File lưu kết quả và file checkpoint ghi nhớ tiến độ
-OUTPUT_FILE = "vietnam_places_metadata.json"
-PROGRESS_FILE = "progress_places_metadata.json"
+# File lưu kết quả và file checkpoint ghi nhớ tiến độ (trỏ thẳng vào data/raw/)
+BASE_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT_DIR = os.path.dirname(BASE_SCRIPT_DIR)
+DATA_RAW_DIR = os.path.join(PROJECT_ROOT_DIR, "data", "raw")
+os.makedirs(DATA_RAW_DIR, exist_ok=True)
+
+OUTPUT_FILE = os.path.join(DATA_RAW_DIR, "vietnam_places_metadata.json")
+PROGRESS_FILE = os.path.join(DATA_RAW_DIR, "progress_places_metadata.json")
 
 # Thời gian nghỉ giữa các địa điểm (giây) - Đặt 4-7s để DataDome không nghi ngờ quét bot hàng loạt
 REQUEST_GAP = (4.0, 7.5)
