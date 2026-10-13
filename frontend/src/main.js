@@ -84,26 +84,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     mapStudio.setMapStyle(e.target.value);
   });
 
-  // Cập nhật số lượng hiển thị trên từng chip danh mục
-  function updateFilterCounts() {
-    const counts = mapStudio.getCategoryCounts();
-    const countAll = document.getElementById('count-all');
-    const countAttraction = document.getElementById('count-attraction');
-    const countRestaurant = document.getElementById('count-restaurant');
-    const countCafe = document.getElementById('count-cafe');
-    const countHotel = document.getElementById('count-hotel');
-
-    if (countAll) countAll.textContent = counts.all;
-    if (countAttraction) countAttraction.textContent = counts.attraction;
-    if (countRestaurant) countRestaurant.textContent = counts.restaurant;
-    if (countCafe) countCafe.textContent = counts.cafe;
-    if (countHotel) countHotel.textContent = counts.hotel;
-  }
-  updateFilterCounts();
-
   // Danh mục tiêu đề bản đồ tương ứng
   const categoryTitles = {
-    all: 'Toàn cảnh 32 Điểm Di sản Cố Đô Huế',
+    all: 'Toàn cảnh Di sản & Ẩm thực',
     attraction: 'Di tích Lịch sử, Thắng cảnh & Lăng tẩm',
     restaurant: 'Ẩm thực Truyền thống & Quán ăn Cố Đô',
     cafe: 'Cà phê View đẹp & Điểm ngắm Hoàng hôn',
@@ -117,10 +100,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       filterChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
 
-      const result = mapStudio.filterByCategory(cat);
+      mapStudio.filterByCategory(cat);
       if (mapActiveMeta) {
-        const title = categoryTitles[cat] || 'Địa điểm Cố Đô';
-        mapActiveMeta.textContent = `${title} (${result.count} địa điểm)`;
+        mapActiveMeta.textContent = categoryTitles[cat] || 'Địa điểm Cố Đô';
       }
     });
   });
@@ -152,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       else c.classList.remove('active');
     });
     if (mapActiveMeta) {
-      mapActiveMeta.textContent = 'Toàn cảnh 32 Điểm Di sản Cố Đô Huế';
+      mapActiveMeta.textContent = 'Toàn cảnh Di sản & Ẩm thực';
     }
     if (mapSearchInput) {
       mapSearchInput.value = '';
@@ -175,10 +157,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const iconMap = {
-      attraction: '🏯',
-      restaurant: '🍲',
-      cafe: '☕',
-      hotel: '🏨'
+      attraction: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>`,
+      restaurant: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/></svg>`,
+      cafe: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg>`,
+      hotel: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`
     };
 
     const catLabelMap = {
@@ -190,7 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     mapSearchDropdown.innerHTML = results.slice(0, 8).map(item => {
       const cat = (item.cat || '').toLowerCase();
-      const icon = iconMap[cat] || '📍';
+      const icon = iconMap[cat] || `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>`;
       const catLabel = catLabelMap[cat] || item.cat;
       return `
         <div class="search-result-item" data-name="${item.name}">
@@ -291,9 +273,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     itineraryResults.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">⏳</div>
-        <h3 class="empty-title">Đang tính toán tuyến đường tối ưu...</h3>
-        <p class="empty-text">Hệ thống đang truy vấn Đồ thị Tri thức Không gian, co cụm theo bán kính trục sông Hương và ghép nối quán ăn gần nhất.</p>
+        <div class="spinner-editorial"></div>
+        <h3 class="empty-title">Đang sắp xếp lịch trình...</h3>
+        <p class="empty-text">Hệ thống đang tối ưu đường đi và kết hợp các quán ăn theo sở thích của bạn.</p>
       </div>
     `;
 
@@ -302,10 +284,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderItineraryCards(data);
     } catch (err) {
       itineraryResults.innerHTML = `
-        <div class="empty-state" style="border-color: #EF4444;">
-          <div class="empty-icon">⚠️</div>
-          <h3 class="empty-title" style="color: #DC2626;">Không thể lập lịch trình</h3>
-          <p class="empty-text">${err.message}. Đảm bảo Backend FastAPI đang chạy tại <code>localhost:8000</code>.</p>
+        <div class="empty-state state-error">
+          <h3 class="empty-title">Không thể lập lịch trình</h3>
+          <p class="empty-text">${err.message}. Đảm bảo máy chủ FastAPI đang hoạt động tại cổng 8000.</p>
         </div>
       `;
     } finally {
@@ -317,7 +298,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function renderItineraryCards(res) {
     const plan = res.itinerary_data;
     if (!plan || !plan.days || plan.days.length === 0) {
-      itineraryResults.innerHTML = `<div class="empty-state"><p>Không tìm thấy dữ liệu lịch trình phù hợp.</p></div>`;
+      itineraryResults.innerHTML = `<div class="empty-state"><p class="empty-text">Không tìm thấy dữ liệu lịch trình phù hợp.</p></div>`;
       return;
     }
 
@@ -326,7 +307,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     plan.days.forEach(day => {
       const slots = day.slots || day.stops || [];
-      const totalKm = day.total_distance_km ? ` · Tổng cự ly: ${day.total_distance_km.toFixed(1)} km` : '';
+      const totalKm = day.total_distance_km ? ` · ${day.total_distance_km.toFixed(1)} km` : '';
       
       const dayStops = [];
       slots.forEach(slot => {
@@ -341,7 +322,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const dest = `${dayStops[dayStops.length - 1].lat},${dayStops[dayStops.length - 1].lng}`;
         const waypoints = dayStops.slice(1, -1).map(s => `${s.lat},${s.lng}`).join('|');
         const gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}${waypoints ? `&waypoints=${encodeURIComponent(waypoints)}` : ''}`;
-        gmapsRouteBtn = `<a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-gmaps-route" title="Mở chỉ đường toàn tuyến Ngày ${day.day_number} trên Google Maps">🧭 Google Maps</a>`;
+        gmapsRouteBtn = `<a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-gmaps-route" title="Mở chỉ đường toàn tuyến Ngày ${day.day_number} trên Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> Google Maps</a>`;
       }
 
       html += `
@@ -373,11 +354,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const distanceBadge = (slot.distance_from_prev_km && slot.distance_from_prev_km > 0)
-          ? `<span class="meta-pill pill-distance">Cự ly chặng: ${slot.distance_from_prev_km.toFixed(1)} km</span>`
-          : (slot.distance_to_anchor_km ? `<span class="meta-pill pill-distance">Cự ly: ${slot.distance_to_anchor_km.toFixed(1)} km</span>` : '');
+          ? `<span class="meta-pill pill-distance">${slot.distance_from_prev_km.toFixed(1)} km</span>`
+          : (slot.distance_to_anchor_km ? `<span class="meta-pill pill-distance">${slot.distance_to_anchor_km.toFixed(1)} km</span>` : '');
 
         const dishBadge = slot.dish_highlight || slot.specialty_dish
-          ? `<span class="meta-pill pill-dish">🍲 Món: ${slot.dish_highlight || slot.specialty_dish}</span>`
+          ? `<span class="meta-pill pill-dish">Món: ${slot.dish_highlight || slot.specialty_dish}</span>`
           : '';
 
         const ratingBadge = slot.rating
@@ -388,15 +369,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="timeline-step">
             <div class="step-time-badge">${slot.slot_name || slot.slot_time || 'Chặng tour'}</div>
             <div class="step-content">
-              <h4 class="step-poi-name" style="cursor: pointer;" data-name="${slot.place_name || slot.name}" title="Nhấp để xem hồ sơ & đánh giá chi tiết">${slot.place_name || slot.name} <span style="font-size: 0.72rem; color: #D97706;">📋</span></h4>
+              <h4 class="step-poi-name" data-name="${slot.place_name || slot.name}" title="Nhấp để xem hồ sơ & đánh giá chi tiết">${slot.place_name || slot.name}</h4>
               <p class="step-poi-desc">${slot.description || slot.address || 'Điểm trải nghiệm di sản Cố Đô'}</p>
               <div class="step-meta-row">
                 <span class="meta-pill">${slot.activity_type || slot.category || (isFood ? 'Ẩm thực' : 'Di tích')}</span>
                 ${ratingBadge}
                 ${distanceBadge}
                 ${dishBadge}
-                ${lat && lng ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}">📍 Ghim</button>` : ''}
-                <button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}" style="background: none; border: none; font-size: 0.75rem; color: #D97706; font-weight: 700; cursor: pointer; padding: 0 4px;">📋 Xem Chi Tiết</button>
+                ${lat && lng ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}">Định vị</button>` : ''}
+                <button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}">Xem chi tiết &rarr;</button>
               </div>
             </div>
           </div>
@@ -479,7 +460,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const msg = document.createElement('div');
     msg.className = 'chat-message user';
     msg.innerHTML = `
-      <div class="message-avatar">👤</div>
+      <div class="message-avatar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
       <div class="message-bubble">
         <p>${text}</p>
       </div>
@@ -494,9 +477,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     msg.id = id;
     msg.className = 'chat-message assistant';
     msg.innerHTML = `
-      <div class="message-avatar">🏯</div>
+      <div class="message-avatar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
+      </div>
       <div class="message-bubble">
-        <p style="color: var(--color-ink-muted);"><em>Đang tìm kiếm thông tin và tạo câu trả lời...</em></p>
+        <p class="loading-text">Đang tìm kiếm thông tin và phân tích...</p>
       </div>
     `;
     chatThread.appendChild(msg);
@@ -525,39 +510,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     const matched = res.matched_places || [];
     if (matched.length > 0) {
       placesPillsHtml = `
-        <div class="chat-suggested-places" style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #CBD5E1;">
-          <div style="font-size: 0.76rem; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">📍 Địa điểm đã ghim lên bản đồ (Bấm để xem chi tiết):</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-            ${matched.map(p => `
-              <button type="button" class="chat-poi-btn" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}" style="
-                background: #FFFFFF;
-                border: 1.5px solid #E2E8F0;
-                border-radius: 6px;
-                padding: 4px 10px;
-                font-size: 0.78rem;
-                font-weight: 600;
-                color: #0F172A;
-                cursor: pointer;
-                display: inline-flex;
-                align-items: center;
-                gap: 5px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-                transition: all 0.2s ease;
-              ">
-                <span>${(p.category || '').toLowerCase().includes('restaurant') ? '🍲' : '🏯'}</span>
-                <span>${p.name}</span>
-                <span style="font-size: 0.7rem; color: #D97706; margin-left: 2px;">📋</span>
-              </button>
-            `).join('')}
+        <div class="chat-suggested-places">
+          <div class="suggested-places-label">Địa điểm liên quan trên bản đồ:</div>
+          <div class="suggested-places-list">
+            ${matched.map(p => {
+              const catLower = (p.category || '').toLowerCase();
+              const isFood = catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán');
+              const isCafe = catLower.includes('cafe') || catLower.includes('cà phê');
+              const isHotel = catLower.includes('hotel') || catLower.includes('khách sạn');
+              
+              let catClass = 'attraction';
+              let iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>`;
+              
+              if (isFood) {
+                catClass = 'restaurant';
+                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/></svg>`;
+              } else if (isCafe) {
+                catClass = 'cafe';
+                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg>`;
+              } else if (isHotel) {
+                catClass = 'hotel';
+                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`;
+              }
+
+              return `
+                <button type="button" class="chat-poi-btn ${catClass}" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}">
+                  <span class="poi-btn-icon">${iconSvg}</span>
+                  <span class="poi-btn-name">${p.name}</span>
+                </button>
+              `;
+            }).join('')}
           </div>
         </div>
       `;
     }
 
     msg.innerHTML = `
-      <div class="message-avatar">🏯</div>
+      <div class="message-avatar">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
+      </div>
       <div class="message-bubble">
-        <div>${formattedAnswer}</div>
+        <div class="answer-content">${formattedAnswer}</div>
         ${placesPillsHtml}
       </div>
     `;
@@ -629,11 +622,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     poiDrawer?.setAttribute('aria-hidden', 'false');
 
     if (poiTitle) poiTitle.textContent = name || 'Đang tải thông tin...';
-    if (poiAddressText) poiAddressText.textContent = 'Đang truy vấn cơ sở dữ liệu TripAdvisor & Đồ thị Tri thức...';
-    if (poiDescText) poiDescText.textContent = 'Đang đồng bộ hồ sơ văn hóa, điểm đánh giá và các cạnh liên kết...';
-    if (poiDishesGrid) poiDishesGrid.innerHTML = '<div style="font-size: 0.78rem; color: #64748B; padding: 6px 0;">⏳ Đang khai phá thực đơn từ cạnh SERVES...</div>';
-    if (poiReviewsList) poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B; padding: 6px 0;">⏳ Đang trích xuất nhận xét chân thực từ du khách...</div>';
-    if (poiNearbyList) poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B; padding: 6px 0;">⏳ Đang tính toán các điểm đến lân cận...</div>';
+    if (poiAddressText) poiAddressText.textContent = 'Đang tải thông tin địa điểm...';
+    if (poiDescText) poiDescText.textContent = 'Đang đồng bộ hồ sơ văn hóa và điểm đánh giá...';
+    if (poiDishesGrid) poiDishesGrid.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tải danh sách món nổi bật...</div>';
+    if (poiReviewsList) poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tải nhận xét từ du khách...</div>';
+    if (poiNearbyList) poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tìm các địa điểm lân cận...</div>';
 
     try {
       const data = await TourismApiClient.getPlaceDetail(name, placeId);
@@ -686,8 +679,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           `).join('');
         } else {
           poiDishesGrid.innerHTML = `
-            <div style="font-size: 0.78rem; color: #64748B; font-style: italic;">
-              ${catClass === 'attraction' ? '🏛️ Quần thể kiến trúc lịch sử, không kinh doanh dịch vụ ăn uống trực tiếp.' : 'Chưa có dữ liệu thực đơn được liên kết trong Đồ thị.'}
+            <div style="font-size: 0.78rem; color: var(--color-ink-secondary); font-style: italic;">
+              ${catClass === 'attraction' ? 'Địa điểm di tích lịch sử, không kinh doanh ăn uống trực tiếp.' : 'Chưa có thông tin thực đơn chi tiết.'}
             </div>
           `;
         }
@@ -743,7 +736,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
           });
         } else {
-          poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B;">Không tìm thấy địa điểm lân cận trong bán kính 1.5km.</div>';
+          poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted);">Không có địa điểm lân cận trong bán kính gần.</div>';
         }
       }
 
@@ -798,6 +791,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (tabChat) tabChat.click();
     if (chatInput) chatInput.value = `Hãy giới thiệu chi tiết về ${currentPoiData.name} và các món ăn đặc sản nổi tiếng ở đây.`;
     chatForm?.dispatchEvent(new Event('submit'));
+  });
+
+  // Action: Click vào các thẻ địa điểm nổi bật ở màn hình chào mừng
+  document.querySelectorAll('.featured-place-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const name = card.dataset.name;
+      const lat = parseFloat(card.dataset.lat);
+      const lng = parseFloat(card.dataset.lng);
+      if (lat && lng) {
+        mapStudio.panTo(lat, lng, 16);
+      }
+      if (name && window.openPoiDetail) {
+        window.openPoiDetail(name);
+      }
+    });
   });
 
   window.openPoiDetail = openPoiDetail;

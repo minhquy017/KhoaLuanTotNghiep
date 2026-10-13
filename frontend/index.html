@@ -1,362 +1,424 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Du Lịch Cố Đô Huế</title>
-    <meta name="description" content="Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Cố đô Huế thông minh." />
-    
-    <!-- Preconnect Google Fonts for Typography Excellence -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  </head>
-  <body>
-    <!-- Top Imperial Heritage Header -->
-    <header class="site-header" role="banner">
-      <div class="header-inner">
-        <div class="brand-group">
-          <div class="brand-seal" aria-hidden="true">
-            <svg viewBox="0 0 40 40" width="38" height="38" fill="none">
-              <defs>
-                <linearGradient id="sealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FCD34D" />
-                  <stop offset="100%" stop-color="#D97706" />
-                </linearGradient>
-                <linearGradient id="sealBg" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#2D2D4A" />
-                  <stop offset="100%" stop-color="#1A1A2E" />
-                </linearGradient>
-              </defs>
-              <rect x="2" y="2" width="36" height="36" rx="10" stroke="url(#sealGrad)" stroke-width="2" fill="url(#sealBg)"/>
-              <path d="M8 26L20 12L32 26" stroke="url(#sealGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M14 26V32H26V26" stroke="url(#sealGrad)" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="20" cy="9" r="2.5" fill="#FF4B6E"/>
-            </svg>
-          </div>
-          <div class="brand-text">
-            <h1 class="brand-title">CỐ ĐÔ HUẾ</h1>
-          </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Du Lịch Cố Đô Huế</title>
+  <meta name="description" content="Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Cố đô Huế thông minh." />
+
+  <!-- Preconnect Google Fonts for Typography Excellence -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+
+<body>
+  <!-- Top Clean Editorial Heritage Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-seal" aria-hidden="true">
+          <svg viewBox="0 0 36 36" width="34" height="34" fill="none">
+            <rect x="1.5" y="1.5" width="33" height="33" rx="8" stroke="#1C1917" stroke-width="1.5" fill="#FAFAF9" />
+            <!-- Architectural Pavilion Line Art -->
+            <path d="M7 23H29" stroke="#18181B" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M9 18H27" stroke="#1C1917" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M12 18V23M24 18V23" stroke="#1C1917" stroke-width="1.5" />
+            <path d="M6 18C10 14 14 12 18 12C22 12 26 14 30 18" stroke="#18181B" stroke-width="1.5"
+              stroke-linecap="round" />
+            <circle cx="18" cy="8.5" r="1.5" fill="#18181B" />
+          </svg>
         </div>
+        <div class="brand-text">
+          <h1 class="brand-title">Cố Đô Huế</h1>
+          <span class="brand-kicker">Khám phá Di sản & Ẩm thực</span>
+        </div>
+      </div>
 
-        <nav class="nav-tabs" role="tablist" aria-label="Tính năng chính">
-          <button class="nav-tab active" role="tab" id="tab-btn-itinerary" aria-selected="true" aria-controls="panel-itinerary" data-target="itinerary">
-            <span class="tab-icon">🗺️</span>
-            <span class="tab-label">Lập Lịch Trình</span>
-          </button>
-          <button class="nav-tab" role="tab" id="tab-btn-chat" aria-selected="false" aria-controls="panel-chat" data-target="chat">
-            <span class="tab-icon">💬</span>
-            <span class="tab-label">Trợ Lý Hỏi Đáp</span>
-          </button>
-        </nav>
+      <nav class="nav-tabs" role="tablist" aria-label="Tính năng chính">
+        <button class="nav-tab active" role="tab" id="tab-btn-itinerary" aria-selected="true"
+          aria-controls="panel-itinerary" data-target="itinerary">
+          <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+            <line x1="9" y1="3" x2="9" y2="18" />
+            <line x1="15" y1="6" x2="15" y2="21" />
+          </svg>
+          <span class="tab-label">Lịch trình</span>
+        </button>
+        <button class="nav-tab" role="tab" id="tab-btn-chat" aria-selected="false" aria-controls="panel-chat"
+          data-target="chat">
+          <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span class="tab-label">Hỏi đáp</span>
+        </button>
+      </nav>
 
-        <div class="header-status">
-          <div class="status-pill" id="system-status-pill" title="Trạng thái hệ thống">
-            <span class="status-dot pulse"></span>
-            <span class="status-text" id="status-label">Trực tuyến</span>
+      <div class="header-status">
+        <div class="status-pill" id="system-status-pill" title="Trạng thái hệ thống">
+          <span class="status-dot"></span>
+          <span class="status-text" id="status-label">Trực tuyến</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Studio Layout: Balanced Split Grid -->
+  <main class="studio-layout">
+    <!-- Left Panel: Spatial Map Canvas Studio -->
+    <section class="spatial-canvas-panel" aria-label="Bản đồ không gian Cố đô Huế">
+      <div class="map-toolbar">
+        <div class="toolbar-title">
+          <span class="toolbar-meta" id="map-active-meta">Toàn cảnh Di sản & Ẩm thực</span>
+        </div>
+        <div class="toolbar-actions">
+          <select class="map-style-select" id="select-map-style" title="Chọn phong cách giao diện bản đồ">
+            <option value="google_streets" selected>Bản đồ đường phố</option>
+            <option value="google_satellite">Vệ tinh chân thực</option>
+          </select>
+          <button class="map-btn" id="btn-reset-map" title="Về trung tâm Huế">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            <span>Trung tâm</span>
+          </button>
+          <div class="radius-control-pill" title="Phân tích bán kính không gian xung quanh trục Sông Hương">
+            <button class="map-btn btn-radius-toggle" id="btn-toggle-radius" title="Bật/Tắt vòng tròn bán kính">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+              </svg>
+              <span id="radius-btn-label">Bán Kính</span>
+            </button>
+            <select class="map-radius-select" id="select-radius-range" title="Chọn cự ly bán kính phân tích">
+              <option value="500">500 m</option>
+              <option value="1000">1.0 km</option>
+              <option value="1500" selected>1.5 km</option>
+              <option value="2500">2.5 km</option>
+              <option value="5000">5.0 km</option>
+            </select>
           </div>
         </div>
       </div>
-    </header>
 
-    <!-- Main Studio Layout: Asymmetric Split Grid -->
-    <main class="studio-layout">
-      <!-- Left Panel: Spatial Map Canvas Studio (55% width) -->
-      <section class="spatial-canvas-panel" aria-label="Bản đồ không gian Cố đô Huế">
-        <div class="map-toolbar">
-          <div class="toolbar-title">
-            <span class="toolbar-meta" id="map-active-meta">Toàn cảnh 32 Điểm Di sản Cố Đô Huế</span>
+      <!-- Thanh Tìm kiếm Nhanh & Bộ lọc Danh mục Điểm đến -->
+      <div class="map-controls-strip">
+        <div class="map-search-wrapper">
+          <div class="map-search-box">
+            <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" id="map-search-input" placeholder="Tìm di tích, chùa, quán bún bò, cà phê, khách sạn..."
+              autocomplete="off">
+            <button type="button" id="btn-clear-search" class="btn-clear-search" style="display: none;"
+              title="Xóa tìm kiếm">✕</button>
           </div>
-          <div class="toolbar-actions">
-            <select class="map-style-select" id="select-map-style" title="Chọn phong cách giao diện bản đồ">
-              <option value="google_streets" selected>🗺️ Google Maps</option>
-              <option value="google_satellite">🛰️ Vệ Tinh (Chân Thực)</option>
-            </select>
-            <button class="map-btn" id="btn-reset-map" title="Đặt lại góc nhìn trung tâm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-              <span>Về Trung Tâm</span>
-            </button>
-            <div class="radius-control-pill" title="Phân tích bán kính không gian xung quanh trục Sông Hương">
-              <button class="map-btn btn-radius-toggle" id="btn-toggle-radius" title="Bật/Tắt vòng tròn bán kính">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>
-                <span id="radius-btn-label">Bán Kính</span>
-              </button>
-              <select class="map-radius-select" id="select-radius-range" title="Chọn cự ly bán kính phân tích">
-                <option value="500">500 m</option>
-                <option value="1000">1.0 km</option>
-                <option value="1500" selected>1.5 km</option>
-                <option value="2500">2.5 km</option>
-                <option value="5000">5.0 km</option>
+          <div id="map-search-dropdown" class="map-search-dropdown" style="display: none;"></div>
+        </div>
+
+        <div class="map-filter-chips" role="group" aria-label="Bộ lọc danh mục địa điểm">
+          <button class="filter-chip active" data-category="all">
+            <span class="chip-label">Tất cả</span>
+          </button>
+          <button class="filter-chip" data-category="attraction">
+            <svg class="chip-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z" />
+            </svg>
+            <span class="chip-label">Di tích</span>
+          </button>
+          <button class="filter-chip" data-category="restaurant">
+            <svg class="chip-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6" />
+            </svg>
+            <span class="chip-label">Quán ăn</span>
+          </button>
+          <button class="filter-chip" data-category="cafe">
+            <svg class="chip-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+              <line x1="6" y1="2" x2="6" y2="4" />
+              <line x1="10" y1="2" x2="10" y2="4" />
+              <line x1="14" y1="2" x2="14" y2="4" />
+            </svg>
+            <span class="chip-label">Cà phê</span>
+          </button>
+          <button class="filter-chip" data-category="hotel">
+            <svg class="chip-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9" />
+            </svg>
+            <span class="chip-label">Khách sạn</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="map-container" class="map-viewport" aria-label="Bản đồ tương tác Leaflet"></div>
+
+      <div class="map-legend">
+        <div class="legend-item"><span class="legend-dot dot-attraction"></span> Di tích / Thắng cảnh</div>
+        <div class="legend-item"><span class="legend-dot dot-restaurant"></span> Ẩm thực Cố Đô</div>
+        <div class="legend-item"><span class="legend-dot dot-cafe"></span> Cà phê & Sunset</div>
+        <div class="legend-item"><span class="legend-dot dot-hotel"></span> Khách sạn / Nghỉ dưỡng</div>
+        <div class="legend-item"><span class="legend-line line-route"></span> Tuyến Tour Tối Ưu</div>
+        <div class="legend-item"><span class="legend-circle circle-radius"></span> Vùng R ≤ <span
+            id="legend-radius-val">1.5</span>km</div>
+      </div>
+    </section>
+
+    <!-- Right Panel: Editorial Workbench & Assistant -->
+    <section class="editorial-workbench-panel" aria-label="Bảng điều khiển tác vụ">
+
+      <!-- PANEL 1: LẬP LỊCH TRÌNH TOUR -->
+      <article class="tab-panel active" id="panel-itinerary" role="tabpanel" aria-labelledby="tab-btn-itinerary">
+        <div class="panel-header">
+          <h2 class="panel-title">Gợi ý lịch trình</h2>
+          <p class="panel-desc">
+            Chọn số ngày và món ăn bạn thích — hệ thống sẽ sắp xếp tuyến đường hợp lý theo khoảng cách thực tế.
+          </p>
+        </div>
+
+        <form id="form-itinerary" class="itinerary-controls-card">
+          <div class="form-row-grid">
+            <div class="form-group">
+              <label for="select-days" class="form-label">Số ngày</label>
+              <select id="select-days" class="form-select">
+                <option value="1">1 ngày</option>
+                <option value="2" selected>2 ngày</option>
+                <option value="3">3 ngày</option>
               </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Thanh Tìm kiếm Nhanh & Bộ lọc Danh mục Điểm đến -->
-        <div class="map-controls-strip">
-          <div class="map-search-wrapper">
-            <div class="map-search-box">
-              <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input type="text" id="map-search-input" placeholder="Tìm kiếm nhanh di tích, chùa, quán bún bò, cà phê, khách sạn..." autocomplete="off">
-              <button type="button" id="btn-clear-search" class="btn-clear-search" style="display: none;" title="Xóa tìm kiếm">✕</button>
-            </div>
-            <div id="map-search-dropdown" class="map-search-dropdown" style="display: none;"></div>
-          </div>
-
-          <div class="map-filter-chips" role="group" aria-label="Bộ lọc danh mục địa điểm">
-            <button class="filter-chip active" data-category="all" title="Hiển thị tất cả 32 địa điểm Cố Đô">
-              <span class="chip-label">Tất cả</span>
-              <span class="chip-count" id="count-all">32</span>
-            </button>
-            <button class="filter-chip" data-category="attraction" title="Quần thể di tích lịch sử, thắng cảnh, lăng tẩm & chùa">
-              <span class="chip-icon">🏯</span>
-              <span class="chip-label">Di tích & Điểm đến</span>
-              <span class="chip-count" id="count-attraction">15</span>
-            </button>
-            <button class="filter-chip" data-category="restaurant" title="Ẩm thực truyền thống, quán bún bò, bánh bèo Cố Đô">
-              <span class="chip-icon">🍲</span>
-              <span class="chip-label">Ẩm thực & Quán ăn</span>
-              <span class="chip-count" id="count-restaurant">9</span>
-            </button>
-            <button class="filter-chip" data-category="cafe" title="Cà phê view đẹp, điểm ngắm hoàng hôn sông Hương & đồi thông">
-              <span class="chip-icon">☕</span>
-              <span class="chip-label">Cà phê & Sunset</span>
-              <span class="chip-count" id="count-cafe">4</span>
-            </button>
-            <button class="filter-chip" data-category="hotel" title="Khách sạn boutique, resort nghỉ dưỡng">
-              <span class="chip-icon">🏨</span>
-              <span class="chip-label">Khách sạn & Resort</span>
-              <span class="chip-count" id="count-hotel">4</span>
-            </button>
-          </div>
-        </div>
-
-        <div id="map-container" class="map-viewport" aria-label="Bản đồ tương tác Leaflet"></div>
-
-        <div class="map-legend">
-          <div class="legend-item"><span class="legend-dot dot-attraction"></span> Di tích / Thắng cảnh</div>
-          <div class="legend-item"><span class="legend-dot dot-restaurant"></span> Ẩm thực Cố Đô</div>
-          <div class="legend-item"><span class="legend-dot dot-cafe"></span> Cà phê & Sunset</div>
-          <div class="legend-item"><span class="legend-dot dot-hotel"></span> Khách sạn / Nghỉ dưỡng</div>
-          <div class="legend-item"><span class="legend-line line-route"></span> Tuyến Tour Tối Ưu</div>
-          <div class="legend-item"><span class="legend-circle circle-radius"></span> Vùng R ≤ <span id="legend-radius-val">1.5</span>km</div>
-        </div>
-      </section>
-
-      <!-- Right Panel: Editorial Workbench & Assistant (45% width) -->
-      <section class="editorial-workbench-panel" aria-label="Bảng điều khiển tác vụ">
-        
-        <!-- PANEL 1: LẬP LỊCH TRÌNH TOUR -->
-        <article class="tab-panel active" id="panel-itinerary" role="tabpanel" aria-labelledby="tab-btn-itinerary">
-          <div class="panel-header">
-            <h2 class="panel-title">Lịch Trình Du Lịch Tối Ưu</h2>
-            <p class="panel-desc">
-              Gợi ý hành trình tham quan theo ngày, kết hợp hài hòa giữa các điểm di tích văn hóa và quán ăn đặc sản lân cận.
-            </p>
-          </div>
-
-          <form id="form-itinerary" class="itinerary-controls-card">
-            <div class="form-row-grid">
-              <div class="form-group">
-                <label for="select-days" class="form-label">Thời lượng chuyến đi</label>
-                <select id="select-days" class="form-select">
-                  <option value="1">1 Ngày (Khám phá nhanh)</option>
-                  <option value="2" selected>2 Ngày (Trải nghiệm trọn vẹn)</option>
-                  <option value="3">3 Ngày (Chuyên sâu di sản & ngoại ô)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="select-trip-type" class="form-label">Phong cách du khách</label>
-                <select id="select-trip-type" class="form-select">
-                  <option value="Couples" selected>Cặp đôi (Lãng mạn, ẩm thực)</option>
-                  <option value="Family">Gia đình (Nhẹ nhàng, văn hóa)</option>
-                  <option value="Friends">Nhóm bạn (Năng động, trải nghiệm)</option>
-                  <option value="Solo">Độc hành (Thanh tịnh, khám phá)</option>
-                </select>
-              </div>
             </div>
 
             <div class="form-group">
-              <label class="form-label">Món ăn Cố Đô ưu tiên muốn thưởng thức</label>
-              <div class="dish-tag-cloud" id="dish-tag-cloud">
-                <button type="button" class="dish-tag active" data-dish="Bún bò Huế">🍜 Bún bò Huế</button>
-                <button type="button" class="dish-tag active" data-dish="Bánh bèo, nậm, lọc">🥟 Bánh bèo, nậm, lọc</button>
-                <button type="button" class="dish-tag active" data-dish="Cơm hến">🥣 Cơm hến Hoa Đông</button>
-                <button type="button" class="dish-tag" data-dish="Chè hẻm Huế">🍧 Chè hẻm Cố Đô</button>
-                <button type="button" class="dish-tag" data-dish="Bánh khoái">🥞 Bánh khoái Hoàng Triều</button>
-                <button type="button" class="dish-tag" data-dish="Cơm chay Huế">🥬 Cơm chay thanh tịnh</button>
-              </div>
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" id="btn-generate-itinerary" class="btn btn-primary">
-                <span class="btn-spinner"></span>
-                <span class="btn-text">✨ Kiến Tạo Lịch Trình</span>
-              </button>
-            </div>
-          </form>
-
-          <!-- Itinerary Results Container -->
-          <div id="itinerary-results" class="results-container">
-            <div class="empty-state">
-              <div class="empty-icon">🏯</div>
-              <h3 class="empty-title">Chưa có lịch trình được tạo</h3>
-              <p class="empty-text">Chọn số ngày và món ăn mong muốn, sau đó nhấn <strong>Kiến Tạo Lịch Trình</strong> để hệ thống tính toán tuyến đường tối ưu.</p>
-            </div>
-          </div>
-        </article>
-
-        <!-- PANEL 2: TRỢ LÝ HỎI ĐÁP DU LỊCH (CHATBOT) -->
-        <article class="tab-panel" id="panel-chat" role="tabpanel" aria-labelledby="tab-btn-chat" hidden>
-          <div class="panel-header">
-            <h2 class="panel-title">Trợ Lý Hỏi Đáp Di Sản & Ẩm Thực</h2>
-            <p class="panel-desc">
-              Hỏi đáp tự nhiên về các điểm tham quan, ẩm thực đặc sản và hỗ trợ chỉ đường trực tiếp trên bản đồ.
-            </p>
-          </div>
-
-          <!-- Suggested queries chips -->
-          <div class="prompt-chips">
-            <span class="chips-label">Gợi ý câu hỏi:</span>
-            <button type="button" class="chip-item">Quán bún bò nào ngon gần Đại Nội Huế?</button>
-            <button type="button" class="chip-item">Buổi chiều ở Huế nên đi đâu và ăn bánh bèo ở quán nào?</button>
-            <button type="button" class="chip-item">Chùa Thiên Mụ mở cửa lúc mấy giờ và gần quán chay nào?</button>
-          </div>
-
-          <!-- Chat conversation history -->
-          <div class="chat-thread" id="chat-thread" role="log" aria-live="polite">
-            <div class="chat-message assistant">
-              <div class="message-avatar">🏯</div>
-              <div class="message-bubble">
-                <p>Xin chào quý khách! Tôi là <strong>Trợ lý Du lịch Cố đô Huế</strong>. Tôi có thể giải đáp thông tin về các di tích lăng tẩm hoàng gia, quán ăn đặc sản theo cự ly thực tế và chỉ đường trực tiếp trên bản đồ.</p>
-              </div>
+              <label for="select-trip-type" class="form-label">Bạn đi cùng ai?</label>
+              <select id="select-trip-type" class="form-select">
+                <option value="Couples" selected>Cặp đôi</option>
+                <option value="Family">Gia đình</option>
+                <option value="Friends">Nhóm bạn</option>
+                <option value="Solo">Một mình</option>
+              </select>
             </div>
           </div>
 
-          <!-- Chat input box (8-state compliant) -->
-          <form id="chat-form" class="chat-input-wrapper">
-            <input 
-              type="text" 
-              id="chat-input" 
-              class="chat-input" 
-              placeholder="Nhập câu hỏi về du lịch, quán ăn, di tích Huế..." 
-              autocomplete="off"
-              required
-            />
-            <button type="submit" id="chat-send-btn" class="btn btn-primary btn-send" aria-label="Gửi câu hỏi">
-              <span class="btn-text">Gửi</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <div class="form-group">
+            <label class="form-label">Món muốn ăn</label>
+            <div class="dish-tag-cloud" id="dish-tag-cloud">
+              <button type="button" class="dish-tag active" data-dish="Bún bò Huế">Bún bò Huế</button>
+              <button type="button" class="dish-tag active" data-dish="Bánh bèo, nậm, lọc">Bánh bèo, nậm, lọc</button>
+              <button type="button" class="dish-tag active" data-dish="Cơm hến">Cơm hến</button>
+              <button type="button" class="dish-tag" data-dish="Chè hẻm Huế">Chè Huế</button>
+              <button type="button" class="dish-tag" data-dish="Bánh khoái">Bánh khoái</button>
+              <button type="button" class="dish-tag" data-dish="Cơm chay Huế">Cơm chay</button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="btn-generate-itinerary" class="btn btn-primary">
+              <span class="btn-spinner"></span>
+              <span class="btn-text">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                  <line x1="9" y1="3" x2="9" y2="18" />
+                  <line x1="15" y1="6" x2="15" y2="21" />
+                </svg>
+                Tạo lịch trình
+              </span>
             </button>
-          </form>
-        </article>
-
-
-
-      </section>
-    </main>
-
-    <!-- POI Deep-dive Slide-out Drawer Panel -->
-    <aside class="poi-drawer" id="poi-drawer" aria-hidden="true" role="dialog" aria-labelledby="poi-title">
-      <!-- Backdrop overlay -->
-      <div class="poi-drawer-backdrop" id="poi-drawer-backdrop"></div>
-
-      <!-- Sliding Panel Content -->
-      <div class="poi-drawer-panel">
-        <!-- Header -->
-        <div class="poi-drawer-header">
-          <div class="poi-header-badges">
-            <span class="poi-cat-badge" id="poi-cat-badge">🏯 Di tích & Thắng cảnh</span>
-            <div class="poi-rating-pill" id="poi-rating-pill">
-              <span class="star-icon">⭐</span>
-              <strong id="poi-rating-val">4.8</strong>
-              <span class="review-count" id="poi-review-count">(TripAdvisor)</span>
-            </div>
           </div>
-          <button type="button" class="btn-close-drawer" id="btn-close-drawer" title="Đóng cửa sổ chi tiết (Esc)">✕</button>
-        </div>
+        </form>
 
-        <div class="poi-drawer-body">
-          <!-- Title & Address -->
-          <h2 class="poi-title" id="poi-title">Đại Nội Huế (Hoàng Thành)</h2>
-          <p class="poi-address">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span id="poi-address-text">Kinh thành Huế, TP Huế</span>
+        <!-- Itinerary Results Container -->
+        <div id="itinerary-results" class="results-container">
+          <div class="empty-state">
+            <div class="empty-art" aria-hidden="true">
+              <svg width="54" height="54" viewBox="0 0 48 48" fill="none">
+                <rect x="4" y="4" width="40" height="40" rx="10" stroke="#E7E5E4" stroke-width="1.5" fill="#FAFAF9" />
+                <path d="M12 32H36" stroke="#18181B" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M14 26H34" stroke="#1C1917" stroke-width="1.5" stroke-linecap="round" />
+                <path d="M18 26V32M30 26V32" stroke="#1C1917" stroke-width="1.5" />
+                <path d="M11 26C16 20 20 18 24 18C28 18 32 20 37 26" stroke="#18181B" stroke-width="1.5"
+                  stroke-linecap="round" />
+                <circle cx="24" cy="13" r="2" fill="#18181B" />
+              </svg>
+            </div>
+            <h3 class="empty-title">Chưa có lịch trình</h3>
+            <p class="empty-text">Chọn số ngày, món ăn rồi bấm <strong>Tạo lịch trình</strong> để bắt đầu.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- PANEL 2: TRỢ LÝ HỎI ĐÁP DU LỊCH (CHATBOT) -->
+      <article class="tab-panel" id="panel-chat" role="tabpanel" aria-labelledby="tab-btn-chat" hidden>
+        <div class="panel-header">
+          <h2 class="panel-title">Hỏi đáp về Huế</h2>
+          <p class="panel-desc">
+            Hỏi bất cứ gì về di tích, quán ăn, đường đi — trợ lý sẽ tìm và chỉ trên bản đồ.
           </p>
+        </div>
 
-          <!-- Overview description -->
-          <div class="poi-section">
-            <h3 class="poi-section-title">📖 Giới Thiệu Tổng Quan</h3>
-            <p class="poi-desc-text" id="poi-desc-text">Kinh thành Huế · Hoàng cung triều Nguyễn cổ kính.</p>
-          </div>
+        <!-- Suggested queries chips -->
+        <div class="prompt-chips">
+          <span class="chips-label">Thử hỏi:</span>
+          <button type="button" class="chip-item">Bún bò ngon gần Đại Nội?</button>
+          <button type="button" class="chip-item">Chiều nay đi đâu, ăn gì?</button>
+          <button type="button" class="chip-item">Chùa Thiên Mụ gần quán chay nào?</button>
+        </div>
 
-          <!-- Extracted Menu from SERVES edges in KG -->
-          <div class="poi-section" id="poi-section-dishes">
-            <h3 class="poi-section-title">
-              <span>🍲 Thực Đơn Đặc Sản Nổi Bật</span>
-              <span class="section-meta-tag">Cạnh SERVES</span>
-            </h3>
-            <div class="poi-dishes-grid" id="poi-dishes-grid">
-              <!-- Dish chips rendered here -->
+        <!-- Chat conversation history -->
+        <div class="chat-thread" id="chat-thread" role="log" aria-live="polite">
+          <div class="chat-message assistant">
+            <div class="message-avatar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z" />
+              </svg>
             </div>
-          </div>
-
-          <!-- Real Visitor Reviews from SQLite / ChromaDB -->
-          <div class="poi-section" id="poi-section-reviews">
-            <h3 class="poi-section-title">
-              <span>💬 Nhận Xét Chân Thực Từ Du Khách</span>
-              <span class="section-meta-tag">TripAdvisor</span>
-            </h3>
-            <div class="poi-reviews-list" id="poi-reviews-list">
-              <!-- Reviews rendered here -->
-            </div>
-          </div>
-
-          <!-- Nearby Places from NEAR_BY edges in KG -->
-          <div class="poi-section" id="poi-section-nearby">
-            <h3 class="poi-section-title">
-              <span>📍 Điểm Đến Lân Cận (&le; 1.5km)</span>
-              <span class="section-meta-tag">Cạnh NEAR_BY</span>
-            </h3>
-            <div class="poi-nearby-list" id="poi-nearby-list">
-              <!-- Nearby places rendered here -->
+            <div class="message-bubble">
+              <p>Chào bạn! Mình có thể giúp bạn tìm quán ăn, di tích, hoặc gợi ý chỗ đi chơi ở Huế. Cứ hỏi thoải mái
+                nhé.</p>
             </div>
           </div>
         </div>
 
-        <!-- Action Footer -->
-        <div class="poi-drawer-footer">
-          <a href="#" target="_blank" rel="noopener noreferrer" class="btn-drawer btn-google-nav" id="poi-btn-google-maps">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-            <span>Chỉ Đường Google Maps</span>
-          </a>
-          <button type="button" class="btn-drawer btn-add-tour" id="poi-btn-add-tour">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            <span>Thêm Vào Tour</span>
+        <!-- Chat input box -->
+        <form id="chat-form" class="chat-input-wrapper">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Hỏi gì về Huế..." autocomplete="off"
+            required />
+          <button type="submit" id="chat-send-btn" class="btn btn-primary btn-send" aria-label="Gửi câu hỏi">
+            <span class="btn-text">Gửi</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
           </button>
-          <button type="button" class="btn-drawer btn-ask-ai" id="poi-btn-ask-ai" title="Hỏi trợ lý AI về điểm này">
-            <span>💬 Hỏi AI</span>
-          </button>
+        </form>
+      </article>
+
+
+
+    </section>
+  </main>
+
+  <!-- POI Deep-dive Slide-out Drawer Panel -->
+  <aside class="poi-drawer" id="poi-drawer" aria-hidden="true" role="dialog" aria-labelledby="poi-title">
+    <!-- Backdrop overlay -->
+    <div class="poi-drawer-backdrop" id="poi-drawer-backdrop"></div>
+
+    <!-- Sliding Panel Content -->
+    <div class="poi-drawer-panel">
+      <!-- Header -->
+      <div class="poi-drawer-header">
+        <div class="poi-header-badges">
+          <span class="poi-cat-badge" id="poi-cat-badge">🏯 Di tích & Thắng cảnh</span>
+          <div class="poi-rating-pill" id="poi-rating-pill">
+            <span class="star-icon">⭐</span>
+            <strong id="poi-rating-val">4.8</strong>
+            <span class="review-count" id="poi-review-count">(TripAdvisor)</span>
+          </div>
+        </div>
+        <button type="button" class="btn-close-drawer" id="btn-close-drawer"
+          title="Đóng cửa sổ chi tiết (Esc)">✕</button>
+      </div>
+
+      <div class="poi-drawer-body">
+        <!-- Title & Address -->
+        <h2 class="poi-title" id="poi-title">Đại Nội Huế (Hoàng Thành)</h2>
+        <p class="poi-address">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span id="poi-address-text">Kinh thành Huế, TP Huế</span>
+        </p>
+
+        <!-- Overview description -->
+        <div class="poi-section">
+          <h3 class="poi-section-title">Giới thiệu</h3>
+          <p class="poi-desc-text" id="poi-desc-text">Kinh thành Huế · Hoàng cung triều Nguyễn cổ kính.</p>
+        </div>
+
+        <!-- Extracted Menu from SERVES edges in KG -->
+        <div class="poi-section" id="poi-section-dishes">
+          <h3 class="poi-section-title">
+            <span>Món nổi bật</span>
+          </h3>
+          <div class="poi-dishes-grid" id="poi-dishes-grid">
+            <!-- Dish chips rendered here -->
+          </div>
+        </div>
+
+        <!-- Real Visitor Reviews from SQLite / ChromaDB -->
+        <div class="poi-section" id="poi-section-reviews">
+          <h3 class="poi-section-title">
+            <span>Nhận xét từ du khách</span>
+          </h3>
+          <div class="poi-reviews-list" id="poi-reviews-list">
+            <!-- Reviews rendered here -->
+          </div>
+        </div>
+
+        <!-- Nearby Places from NEAR_BY edges in KG -->
+        <div class="poi-section" id="poi-section-nearby">
+          <h3 class="poi-section-title">
+            <span>Gần đây</span>
+          </h3>
+          <div class="poi-nearby-list" id="poi-nearby-list">
+            <!-- Nearby places rendered here -->
+          </div>
         </div>
       </div>
-    </aside>
 
-    <!-- Site Footer -->
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-copy">
-          <strong>Du Lịch Cố Đô Huế:</strong> Khám phá di sản, văn hóa và ẩm thực Cố Đô với trợ lý thông minh.
-        </div>
-        <div class="footer-meta">
-          <span>© 2026 Du Lịch Thông Minh Cố Đô Huế</span>
-        </div>
+      <!-- Action Footer -->
+      <div class="poi-drawer-footer">
+        <a href="#" target="_blank" rel="noopener noreferrer" class="btn-drawer btn-google-nav"
+          id="poi-btn-google-maps">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+          </svg>
+          <span>Chỉ Đường Google Maps</span>
+        </a>
+        <button type="button" class="btn-drawer btn-add-tour" id="poi-btn-add-tour">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
+          <span>Thêm Vào Tour</span>
+        </button>
+        <button type="button" class="btn-drawer btn-ask-ai" id="poi-btn-ask-ai" title="Hỏi trợ lý AI về điểm này">
+          <span>Hỏi thêm</span>
+        </button>
       </div>
-    </footer>
+    </div>
+  </aside>
 
-    <!-- Main JavaScript Modules -->
-    <script type="module" src="/src/main.js"></script>
-  </body>
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-copy">
+        Đồ án tốt nghiệp · Đại học Huế
+      </div>
+      <div class="footer-meta">
+        <span>© 2026</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript Modules -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>

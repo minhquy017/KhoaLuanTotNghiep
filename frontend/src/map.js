@@ -132,50 +132,60 @@ export class SpatialMapStudio {
   }
 
   /**
-   * Tạo Custom SVG Marker biểu tượng Cố Đô hiện đại & sắc màu riêng theo 4 danh mục
+   * Tạo Custom Architectural SVG Marker chuẩn di sản Cố Đô (sắc sảo, tối giản, thanh lịch)
    */
   createCustomIcon(category = 'Attraction', label = '', stepNumber = null) {
     const catLower = (category || '').toLowerCase();
     
-    let bgGradient = 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
-    let iconChar = '🏯';
-    let shadowColor = 'rgba(217, 119, 6, 0.45)';
+    // Bảng màu di sản Cố Đô có kỷ luật (chất gốm sứ, ngói lưu ly và thổ nhưỡng)
+    let pinColor = '#B45309'; // Di tích: Vàng thổ hoàng / Hoàng cung
+    let svgIcon = `
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/>
+      </svg>
+    `;
 
     if (catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán')) {
-      // Ẩm thực: Hồng ngọc / Đỏ cam nổi bật
-      bgGradient = 'linear-gradient(135deg, #FF4B6E 0%, #D81B60 100%)';
-      iconChar = '🍲';
-      shadowColor = 'rgba(216, 27, 96, 0.45)';
+      pinColor = '#C2410C'; // Ẩm thực: Đỏ gạch / Đất nung
+      svgIcon = `
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/>
+        </svg>
+      `;
     } else if (catLower.includes('cafe') || catLower.includes('cà phê') || catLower.includes('sunset')) {
-      // Cà phê & Sunset: Tím hoàng hôn thơ mộng
-      bgGradient = 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)';
-      iconChar = '☕';
-      shadowColor = 'rgba(139, 92, 246, 0.45)';
+      pinColor = '#78350F'; // Cà phê & Sunset: Nâu hổ phách ấm
+      svgIcon = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
+        </svg>
+      `;
     } else if (catLower.includes('hotel') || catLower.includes('khách sạn') || catLower.includes('resort')) {
-      // Khách sạn & Nghỉ dưỡng: Xanh ngọc lục bảo sang trọng
-      bgGradient = 'linear-gradient(135deg, #0E8B7D 0%, #0A6E63 100%)';
-      iconChar = '🏨';
-      shadowColor = 'rgba(14, 139, 125, 0.45)';
+      pinColor = '#0F766E'; // Khách sạn & Nghỉ dưỡng: Xanh chàm trầm
+      svgIcon = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/>
+        </svg>
+      `;
     }
 
     const stepBadgeHtml = stepNumber !== null ? `
       <div style="
         position: absolute;
-        top: -7px;
-        right: -7px;
-        background: #1E1B4B;
-        color: #FBBF24;
-        font-weight: 800;
-        font-size: 11px;
-        font-family: system-ui, -apple-system, sans-serif;
+        top: -6px;
+        right: -6px;
+        background: #1C1917;
+        color: #FFFFFF;
+        font-weight: 700;
+        font-size: 10px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         border-radius: 50%;
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
         border: 2px solid #FFFFFF;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.25);
         z-index: 10;
       ">${stepNumber}</div>
     ` : '';
@@ -185,37 +195,38 @@ export class SpatialMapStudio {
       html: `
         <div style="
           position: relative;
-          width: 36px;
-          height: 36px;
+          width: 32px;
+          height: 38px;
           display: flex;
           align-items: center;
           justify-content: center;
         ">
           ${stepBadgeHtml}
           <div style="
-            background: ${bgGradient};
-            width: 34px;
-            height: 34px;
-            border-radius: 50% 50% 50% 4px;
+            width: 30px;
+            height: 30px;
+            background-color: ${pinColor};
+            border-radius: 50% 50% 50% 3px;
             transform: rotate(-45deg);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 14px ${shadowColor};
-            border: 2.5px solid #FFFFFF;
-            transition: transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(28, 25, 23, 0.22);
+            border: 2px solid #FFFFFF;
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           ">
-            <span style="
+            <div style="
               transform: rotate(45deg);
-              font-size: 15px;
-              line-height: 1;
-            ">${iconChar}</span>
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            ">${svgIcon}</div>
           </div>
         </div>
       `,
-      iconSize: [36, 36],
-      iconAnchor: [18, 34],
-      popupAnchor: [0, -32]
+      iconSize: [32, 38],
+      iconAnchor: [16, 36],
+      popupAnchor: [0, -34]
     });
   }
 
@@ -387,7 +398,7 @@ export class SpatialMapStudio {
     const icon = this.createCustomIcon(category, '', stepNumber);
 
     const stepLabel = stepNumber !== null 
-      ? `<div style="font-size: 0.72rem; font-weight: 800; color: #D97706; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">📍 Điểm dừng ${stepNumber}</div>` 
+      ? `<div class="popup-step-tag">Điểm dừng ${stepNumber}</div>` 
       : '';
 
     const safeName = (name || '').replace(/'/g, "\\'");
@@ -397,12 +408,12 @@ export class SpatialMapStudio {
         <div class="popup-title">${name}</div>
         <div class="popup-category">${category}</div>
         <div class="popup-address">${address || 'Thành phố Huế'}</div>
-        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid #E2E8F0; display: flex; flex-direction: column; gap: 4px;">
+        <div class="popup-actions">
           <button type="button" class="btn-open-detail-popup" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}')">
-            <span>📋 Xem Chi Tiết & Đánh Giá</span> &rarr;
+            <span>Xem chi tiết</span> &rarr;
           </button>
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" style="font-size: 0.74rem; color: #2563EB; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 4px 0;">
-            <span>🧭 Chỉ đường Google Maps</span>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="popup-gmaps-link">
+            <span>Chỉ đường Google Maps</span>
           </a>
         </div>
       </div>
@@ -545,7 +556,7 @@ export class SpatialMapStudio {
         lng,
         p.name,
         cat,
-        p.address || 'Địa điểm gợi ý từ Trợ lý AI'
+        p.address || 'Địa điểm gợi ý'
       );
       if (marker) addedMarkers.push(marker);
     });
