@@ -1,0 +1,79 @@
+\begin{thebibliography}{10}
+
+\bibitem{hogan2021kg}
+A.~Hogan, E.~Blomqvist, M.~Cochez, C.~d'Amato, G.~de~Melo, C.~Gutierrez,
+  S.~Kirrane, J.~E.~L. Gayo, R.~Navigli, S.~Neumaier, A.-C.~N. Ngomo,
+  A.~Polleres, S.~M. Rashid, A.~Rula, L.~Schmelzeisen, J.~Sequeda, S.~Staab,
+  and A.~Zimmermann, ``Knowledge graphs,'' {\em ACM Computing Surveys (CSUR)},
+  vol.~54, no.~4, pp.~1--37, 2021.
+
+\bibitem{ballatore2014spatial}
+A.~Ballatore, M.~Bertolotto, and D.~C. Wilson, ``Spatial data usability in
+  geographic information systems and location-based services,'' {\em
+  Transactions in GIS}, vol.~18, no.~6, pp.~813--831, 2014.
+
+\bibitem{sinnott1984haversine}
+R.~W. Sinnott, ``Virtues of the haversine,'' {\em Sky and Telescope}, vol.~68,
+  no.~2, p.~159, 1984.
+
+\bibitem{lewis2020rag}
+P.~Lewis, E.~Perez, A.~Piktus, F.~Petroni, V.~Karpukhin, N.~Goyal,
+  H.~K{\"u}ttler, M.~Lewis, W.~tau Yih, T.~Rockt{\"a}schel, S.~Riedel, and
+  D.~Kiela, ``Retrieval-augmented generation for knowledge-intensive {NLP}
+  tasks,'' in {\em Advances in Neural Information Processing Systems
+  (NeurIPS)}, vol.~33, pp.~9459--9474, 2020.
+
+\bibitem{edge2024graphrag}
+D.~Edge, H.~Trinh, N.~Cheng, J.~Bradley, A.~Chao, A.~Mody, S.~Truitt, and
+  J.~Larson, ``From local to global: A graph {RAG} approach to query-focused
+  summarization,'' {\em arXiv preprint arXiv:2404.16130}, 2024.
+
+\bibitem{pan2024unifying}
+S.~Pan, L.~Luo, Y.~Wang, C.~Chen, J.~Wang, and X.~Wu, ``Unifying large language
+  models and knowledge graphs: A roadmap,'' {\em IEEE Transactions on Knowledge
+  and Data Engineering (TKDE)}, vol.~36, no.~7, pp.~3580--3599, 2024.
+
+\bibitem{langgraph2024}
+{LangChain Team}, ``Langgraph: Building resilient agentic workflows with
+  stategraph.'' \url{https://github.com/langchain-ai/langgraph}, 2024.
+
+\bibitem{qwen2024team}
+{Qwen Team}, ``Qwen2.5 technical report: Open-source foundation models for
+  multilingual applications,'' {\em Alibaba Group Technical Report}, 2024.
+
+\bibitem{tripadvisor2024}
+{TripAdvisor LLC}, ``Tripadvisor content and review data repository.''
+  TripAdvisor Travel Research Portal, 2024.
+
+\bibitem{yasunaga2021qagnn}
+M.~Yasunaga, H.~Ren, A.~Bosselut, P.~Liang, and J.~Leskovec, ``{QA-GNN}:
+  Reasoning with language models and knowledge graphs for question answering,''
+  in {\em Proceedings of the Conference of the North American Chapter of the
+  Association for Computational Linguistics (NAACL)}, pp.~535--546, 2021.
+
+\bibitem{reimers2019sentencebert}
+N.~Reimers and I.~Gurevych, ``Sentence-{BERT}: Sentence embeddings using
+  siamese {BERT}-networks,'' in {\em Proceedings of the Conference on Empirical
+  Methods in Natural Language Processing (EMNLP)}, pp.~3982--3992, 2019.
+
+\bibitem{vaswani2017attention}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez,
+  {\L}.~Kaiser, and I.~Polosukhin, ``Attention is all you need,'' in {\em
+  Advances in Neural Information Processing Systems (NeurIPS)}, vol.~30,
+  pp.~5998--6008, 2017.
+
+\bibitem{kipf2017gcn}
+T.~N. Kipf and M.~Welling, ``Semi-supervised classification with graph
+  convolutional networks,'' in {\em International Conference on Learning
+  Representations (ICLR)}, 2017.
+
+\bibitem{openstreetmap2024}
+{OpenStreetMap Foundation}, ``Openstreetmap geo-database documentation and
+  geographic primitives.'' \url{https://www.openstreetmap.org}, 2024.
+
+\bibitem{hues2024}
+{IOC Thừa Thiên Huế}, ``Nền tảng Đô thị thông minh hue-s: Kiến
+  trúc dịch vụ và kết nối cổng dữ liệu mở.'' Trung tâm Giám
+  sát Điều hành Đô thị Thông minh tỉnh Thừa Thiên Huế, 2024.
+
+\end{thebibliography}

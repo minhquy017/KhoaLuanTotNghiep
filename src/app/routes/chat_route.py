@@ -37,18 +37,34 @@ def chat_assistant(req: ChatRequest):
         }
         res = agent.invoke(initial_state)
 
-        # Chuẩn hóa danh sách địa điểm trả về
+        # Chuẩn hóa danh sách địa điểm trả về kèm tọa độ GPS
         clean_places = []
-        for p in res.get("matched_places", [])[:5]:
-            clean_places.append({
-                "node_id": p.get("node_id"),
-                "name": p.get("name"),
-                "category": p.get("category"),
-                "latitude": p.get("latitude"),
-                "longitude": p.get("longitude"),
-                "rating": p.get("rating_value", 4.5),
-                "address": p.get("street_address", "")
-            })
+        seen_ids = set()
+        
+        # Gộp các địa điểm từ matched_places và nearby_map
+        all_poi_candidates = list(res.get("matched_places", []))
+        for near_list in res.get("nearby_map", {}).values():
+            for np in near_list:
+                if np not in all_poi_candidates:
+                    all_poi_candidates.append(np)
+
+        for p in all_poi_candidates:
+            nid = p.get("node_id") or p.get("name")
+            lat = p.get("latitude") or p.get("lat")
+            lng = p.get("longitude") or p.get("lng")
+            if lat and lng and nid not in seen_ids:
+                seen_ids.add(nid)
+                clean_places.append({
+                    "node_id": str(p.get("node_id", "")),
+                    "name": p.get("name", ""),
+                    "category": p.get("category", "Attraction"),
+                    "latitude": float(lat),
+                    "longitude": float(lng),
+                    "rating": float(p.get("rating_value", 4.5)),
+                    "address": p.get("street_address", p.get("address", "Thành phố Huế"))
+                })
+            if len(clean_places) >= 6:
+                break
 
         return ChatResponse(
             status="success",

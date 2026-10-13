@@ -67,22 +67,196 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  // 4. MAP TOOLBAR CONTROLS
+  // 4. MAP STUDIO TOOLBAR, SEARCH & FILTER CONTROLS
   const btnResetMap = document.getElementById('btn-reset-map');
   const btnToggleRadius = document.getElementById('btn-toggle-radius');
+  const selectRadiusRange = document.getElementById('select-radius-range');
+  const legendRadiusVal = document.getElementById('legend-radius-val');
   const selectMapStyle = document.getElementById('select-map-style');
+  const mapActiveMeta = document.getElementById('map-active-meta');
+  const filterChips = document.querySelectorAll('.filter-chip');
+  const mapSearchInput = document.getElementById('map-search-input');
+  const mapSearchDropdown = document.getElementById('map-search-dropdown');
+  const btnClearSearch = document.getElementById('btn-clear-search');
 
+  // Đổi phong cách bản đồ (Google Maps / Vệ Tinh)
   selectMapStyle?.addEventListener('change', (e) => {
     mapStudio.setMapStyle(e.target.value);
   });
 
-  btnResetMap?.addEventListener('click', () => {
-    mapStudio.resetView();
+  // Cập nhật số lượng hiển thị trên từng chip danh mục
+  function updateFilterCounts() {
+    const counts = mapStudio.getCategoryCounts();
+    const countAll = document.getElementById('count-all');
+    const countAttraction = document.getElementById('count-attraction');
+    const countRestaurant = document.getElementById('count-restaurant');
+    const countCafe = document.getElementById('count-cafe');
+    const countHotel = document.getElementById('count-hotel');
+
+    if (countAll) countAll.textContent = counts.all;
+    if (countAttraction) countAttraction.textContent = counts.attraction;
+    if (countRestaurant) countRestaurant.textContent = counts.restaurant;
+    if (countCafe) countCafe.textContent = counts.cafe;
+    if (countHotel) countHotel.textContent = counts.hotel;
+  }
+  updateFilterCounts();
+
+  // Danh mục tiêu đề bản đồ tương ứng
+  const categoryTitles = {
+    all: 'Toàn cảnh 32 Điểm Di sản Cố Đô Huế',
+    attraction: 'Di tích Lịch sử, Thắng cảnh & Lăng tẩm',
+    restaurant: 'Ẩm thực Truyền thống & Quán ăn Cố Đô',
+    cafe: 'Cà phê View đẹp & Điểm ngắm Hoàng hôn',
+    hotel: 'Khách sạn Boutique & Resort Nghỉ dưỡng'
+  };
+
+  // Xử lý click chọn bộ lọc danh mục
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const cat = chip.dataset.category;
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      const result = mapStudio.filterByCategory(cat);
+      if (mapActiveMeta) {
+        const title = categoryTitles[cat] || 'Địa điểm Cố Đô';
+        mapActiveMeta.textContent = `${title} (${result.count} địa điểm)`;
+      }
+    });
+  });
+
+  // Tùy chỉnh cự ly bán kính phân tích không gian
+  selectRadiusRange?.addEventListener('change', (e) => {
+    const meters = parseInt(e.target.value, 10);
+    mapStudio.setRadiusDistance(meters);
+    if (legendRadiusVal) {
+      legendRadiusVal.textContent = (meters / 1000).toFixed(1);
+    }
+    // Tự động kích hoạt hiển thị vòng bán kính nếu đang tắt
+    if (!mapStudio.showRadius) {
+      const isShowing = mapStudio.toggleRadius();
+      btnToggleRadius?.classList.toggle('active', isShowing);
+    }
   });
 
   btnToggleRadius?.addEventListener('click', () => {
     const isShowing = mapStudio.toggleRadius();
     btnToggleRadius.classList.toggle('active', isShowing);
+  });
+
+  // Đặt lại góc nhìn bản đồ trung tâm và khôi phục bộ lọc
+  btnResetMap?.addEventListener('click', () => {
+    mapStudio.resetView();
+    filterChips.forEach(c => {
+      if (c.dataset.category === 'all') c.classList.add('active');
+      else c.classList.remove('active');
+    });
+    if (mapActiveMeta) {
+      mapActiveMeta.textContent = 'Toàn cảnh 32 Điểm Di sản Cố Đô Huế';
+    }
+    if (mapSearchInput) {
+      mapSearchInput.value = '';
+      if (btnClearSearch) btnClearSearch.style.display = 'none';
+    }
+    if (mapSearchDropdown) mapSearchDropdown.style.display = 'none';
+  });
+
+  // Xử lý ô Tìm kiếm nhanh với Autocomplete Dropdown
+  function renderSearchResults(results) {
+    if (!mapSearchDropdown) return;
+    if (results.length === 0) {
+      mapSearchDropdown.innerHTML = `
+        <div class="search-empty-item">
+          Không tìm thấy địa điểm phù hợp với từ khóa
+        </div>
+      `;
+      mapSearchDropdown.style.display = 'block';
+      return;
+    }
+
+    const iconMap = {
+      attraction: '🏯',
+      restaurant: '🍲',
+      cafe: '☕',
+      hotel: '🏨'
+    };
+
+    const catLabelMap = {
+      attraction: 'Di tích',
+      restaurant: 'Ẩm thực',
+      cafe: 'Cà phê',
+      hotel: 'Khách sạn'
+    };
+
+    mapSearchDropdown.innerHTML = results.slice(0, 8).map(item => {
+      const cat = (item.cat || '').toLowerCase();
+      const icon = iconMap[cat] || '📍';
+      const catLabel = catLabelMap[cat] || item.cat;
+      return `
+        <div class="search-result-item" data-name="${item.name}">
+          <div class="result-main">
+            <div class="result-icon-badge ${cat}">${icon}</div>
+            <div class="result-texts">
+              <span class="result-name">${item.name}</span>
+              <span class="result-desc">${item.desc}</span>
+            </div>
+          </div>
+          <span class="result-cat-tag ${cat}">${catLabel}</span>
+        </div>
+      `;
+    }).join('');
+
+    mapSearchDropdown.style.display = 'block';
+
+    mapSearchDropdown.querySelectorAll('.search-result-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const name = el.dataset.name;
+        mapSearchInput.value = name;
+        mapSearchDropdown.style.display = 'none';
+        if (btnClearSearch) btnClearSearch.style.display = 'flex';
+        mapStudio.flyToPoi(name);
+        if (window.openPoiDetail) {
+          window.openPoiDetail(name);
+        }
+      });
+    });
+  }
+
+  mapSearchInput?.addEventListener('input', (e) => {
+    const val = e.target.value.trim();
+    if (!val) {
+      mapSearchDropdown.style.display = 'none';
+      if (btnClearSearch) btnClearSearch.style.display = 'none';
+      return;
+    }
+    if (btnClearSearch) btnClearSearch.style.display = 'flex';
+    const matches = mapStudio.searchLandmarks(val);
+    renderSearchResults(matches);
+  });
+
+  mapSearchInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const firstItem = mapSearchDropdown?.querySelector('.search-result-item');
+      if (firstItem) {
+        firstItem.click();
+      }
+    } else if (e.key === 'Escape') {
+      if (mapSearchDropdown) mapSearchDropdown.style.display = 'none';
+    }
+  });
+
+  btnClearSearch?.addEventListener('click', () => {
+    mapSearchInput.value = '';
+    btnClearSearch.style.display = 'none';
+    if (mapSearchDropdown) mapSearchDropdown.style.display = 'none';
+    mapSearchInput.focus();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.map-search-wrapper')) {
+      if (mapSearchDropdown) mapSearchDropdown.style.display = 'none';
+    }
   });
 
   // 5. CHỌN MÓN ĂN ƯU TIÊN (DISH TAG CLOUD)
@@ -214,14 +388,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="timeline-step">
             <div class="step-time-badge">${slot.slot_name || slot.slot_time || 'Chặng tour'}</div>
             <div class="step-content">
-              <h4 class="step-poi-name">${slot.place_name || slot.name}</h4>
+              <h4 class="step-poi-name" style="cursor: pointer;" data-name="${slot.place_name || slot.name}" title="Nhấp để xem hồ sơ & đánh giá chi tiết">${slot.place_name || slot.name} <span style="font-size: 0.72rem; color: #D97706;">📋</span></h4>
               <p class="step-poi-desc">${slot.description || slot.address || 'Điểm trải nghiệm di sản Cố Đô'}</p>
               <div class="step-meta-row">
                 <span class="meta-pill">${slot.activity_type || slot.category || (isFood ? 'Ẩm thực' : 'Di tích')}</span>
                 ${ratingBadge}
                 ${distanceBadge}
                 ${dishBadge}
-                ${lat && lng ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}">📍 Ghim bản đồ</button>` : ''}
+                ${lat && lng ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}">📍 Ghim</button>` : ''}
+                <button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}" style="background: none; border: none; font-size: 0.75rem; color: #D97706; font-weight: 700; cursor: pointer; padding: 0 4px;">📋 Xem Chi Tiết</button>
               </div>
             </div>
           </div>
@@ -242,6 +417,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const lat = parseFloat(btn.dataset.lat);
         const lng = parseFloat(btn.dataset.lng);
         mapStudio.panTo(lat, lng, 16);
+      });
+    });
+
+    // Gán sự kiện click xem chi tiết từng điểm trong lịch trình
+    itineraryResults.querySelectorAll('.btn-step-detail, .step-poi-name').forEach(el => {
+      el.addEventListener('click', () => {
+        const name = el.dataset.name;
+        if (name && window.openPoiDetail) {
+          window.openPoiDetail(name);
+        }
       });
     });
 
@@ -282,18 +467,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const res = await TourismApiClient.askAssistant(query);
       removeLoadingMessage(loadingId);
       appendAssistantResponse(res);
-
-      // Nếu có các điểm trả về -> Vẽ lên bản đồ
-      if (res.matched_places && res.matched_places.length > 0) {
-        const stops = res.matched_places.map(p => ({
-          lat: p.latitude,
-          lng: p.longitude,
-          name: p.name,
-          category: p.category || 'Attraction',
-          address: p.address || ''
-        }));
-        mapStudio.drawTourRoute(stops);
-      }
     } catch (err) {
       removeLoadingMessage(loadingId);
       appendAssistantError(err.message);
@@ -339,22 +512,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   function appendAssistantResponse(res) {
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
-    
-    let placesHtml = '';
-    if (res.matched_places && res.matched_places.length > 0) {
-      placesHtml = `
-        <div style="margin-top: 0.65rem; padding-top: 0.5rem; border-top: 1px dashed var(--color-border);">
-          <strong style="font-size: 0.8rem; color: var(--color-deep);">Thực thể không gian liên quan:</strong>
-          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.35rem;">
-            ${res.matched_places.map(p => `
-              <span class="meta-pill pill-poi" onclick="window.locatePoi(${p.latitude}, ${p.longitude})">
-                📍 ${p.name} (${p.category || 'POI'})
-              </span>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
 
     const formattedAnswer = res.answer
       ? res.answer
@@ -363,18 +520,67 @@ document.addEventListener('DOMContentLoaded', async () => {
           .replace(/\n/g, '<br/>')
       : '';
 
+    // Tạo các pill bấm nhanh định vị các địa điểm trên bản đồ
+    let placesPillsHtml = '';
+    const matched = res.matched_places || [];
+    if (matched.length > 0) {
+      placesPillsHtml = `
+        <div class="chat-suggested-places" style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #CBD5E1;">
+          <div style="font-size: 0.76rem; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">📍 Địa điểm đã ghim lên bản đồ (Bấm để xem chi tiết):</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            ${matched.map(p => `
+              <button type="button" class="chat-poi-btn" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}" style="
+                background: #FFFFFF;
+                border: 1.5px solid #E2E8F0;
+                border-radius: 6px;
+                padding: 4px 10px;
+                font-size: 0.78rem;
+                font-weight: 600;
+                color: #0F172A;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                transition: all 0.2s ease;
+              ">
+                <span>${(p.category || '').toLowerCase().includes('restaurant') ? '🍲' : '🏯'}</span>
+                <span>${p.name}</span>
+                <span style="font-size: 0.7rem; color: #D97706; margin-left: 2px;">📋</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
     msg.innerHTML = `
       <div class="message-avatar">🏯</div>
       <div class="message-bubble">
         <div>${formattedAnswer}</div>
-        ${placesHtml}
-        <div class="message-meta">
-          <span style="color: var(--color-ink-muted);">Độ tin cậy: ${(res.confidence_score * 100).toFixed(0)}%</span>
-        </div>
+        ${placesPillsHtml}
       </div>
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
+
+    // Gán sự kiện click vào các nút địa điểm trong chat bubble: Ghim bản đồ + Mở Drawer
+    msg.querySelectorAll('.chat-poi-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lat = parseFloat(btn.dataset.lat);
+        const lng = parseFloat(btn.dataset.lng);
+        const name = btn.dataset.name;
+        mapStudio.panTo(lat, lng, 17);
+        if (name && window.openPoiDetail) {
+          window.openPoiDetail(name);
+        }
+      });
+    });
+
+    // TỰ ĐỘNG VẼ CÁC ĐỊA ĐIỂM ĐƯỢC GỢI Ý LÊN BẢN ĐỒ BÊN CẠNH NGAY LẬP TỨC
+    if (matched.length > 0) {
+      mapStudio.highlightChatPlaces(matched);
+    }
   }
 
   function appendAssistantError(errorMsg) {
@@ -389,6 +595,212 @@ document.addEventListener('DOMContentLoaded', async () => {
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
   }
+
+  // =============================================================================
+  // 8. MODAL / DRAWER XEM CHI TIẾT ĐỊA ĐIỂM (POI DEEP-DIVE PANEL)
+  // Khai phá cạnh SERVES, cạnh NEAR_BY, điểm đánh giá & review thực tế TripAdvisor
+  // =============================================================================
+  const poiDrawer = document.getElementById('poi-drawer');
+  const poiDrawerBackdrop = document.getElementById('poi-drawer-backdrop');
+  const btnCloseDrawer = document.getElementById('btn-close-drawer');
+  const poiCatBadge = document.getElementById('poi-cat-badge');
+  const poiRatingVal = document.getElementById('poi-rating-val');
+  const poiReviewCount = document.getElementById('poi-review-count');
+  const poiTitle = document.getElementById('poi-title');
+  const poiAddressText = document.getElementById('poi-address-text');
+  const poiDescText = document.getElementById('poi-desc-text');
+  const poiSectionDishes = document.getElementById('poi-section-dishes');
+  const poiDishesGrid = document.getElementById('poi-dishes-grid');
+  const poiSectionReviews = document.getElementById('poi-section-reviews');
+  const poiReviewsList = document.getElementById('poi-reviews-list');
+  const poiSectionNearby = document.getElementById('poi-section-nearby');
+  const poiNearbyList = document.getElementById('poi-nearby-list');
+  const poiBtnGoogleMaps = document.getElementById('poi-btn-google-maps');
+  const poiBtnAddTour = document.getElementById('poi-btn-add-tour');
+  const poiBtnAskAi = document.getElementById('poi-btn-ask-ai');
+
+  let currentPoiData = null;
+
+  async function openPoiDetail(name, placeId = null) {
+    if (!name && !placeId) return;
+
+    // 1. Mở Drawer ngay lập tức với trạng thái loading
+    poiDrawer?.classList.add('open');
+    poiDrawer?.setAttribute('aria-hidden', 'false');
+
+    if (poiTitle) poiTitle.textContent = name || 'Đang tải thông tin...';
+    if (poiAddressText) poiAddressText.textContent = 'Đang truy vấn cơ sở dữ liệu TripAdvisor & Đồ thị Tri thức...';
+    if (poiDescText) poiDescText.textContent = 'Đang đồng bộ hồ sơ văn hóa, điểm đánh giá và các cạnh liên kết...';
+    if (poiDishesGrid) poiDishesGrid.innerHTML = '<div style="font-size: 0.78rem; color: #64748B; padding: 6px 0;">⏳ Đang khai phá thực đơn từ cạnh SERVES...</div>';
+    if (poiReviewsList) poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B; padding: 6px 0;">⏳ Đang trích xuất nhận xét chân thực từ du khách...</div>';
+    if (poiNearbyList) poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B; padding: 6px 0;">⏳ Đang tính toán các điểm đến lân cận...</div>';
+
+    try {
+      const data = await TourismApiClient.getPlaceDetail(name, placeId);
+      currentPoiData = data;
+
+      // 2. Cập nhật Tiêu đề và Địa chỉ
+      if (poiTitle) poiTitle.textContent = data.name;
+      if (poiAddressText) poiAddressText.textContent = data.address || 'Thành phố Huế';
+      if (poiDescText) poiDescText.textContent = data.description || 'Địa điểm du lịch và ẩm thực nổi tiếng tại Cố đô Huế.';
+
+      // 3. Category badge
+      const cat = (data.category || '').toLowerCase();
+      let catClass = 'attraction';
+      let catIcon = '🏯';
+      let catLabel = 'Di tích & Thắng cảnh';
+
+      if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) {
+        catClass = 'restaurant';
+        catIcon = '🍲';
+        catLabel = 'Ẩm thực Cố Đô';
+      } else if (cat.includes('cafe') || cat.includes('cà phê') || cat.includes('sunset')) {
+        catClass = 'cafe';
+        catIcon = '☕';
+        catLabel = 'Cà phê & Sunset';
+      } else if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) {
+        catClass = 'hotel';
+        catIcon = '🏨';
+        catLabel = 'Khách sạn / Resort';
+      }
+
+      if (poiCatBadge) {
+        poiCatBadge.className = `poi-cat-badge ${catClass}`;
+        poiCatBadge.textContent = `${catIcon} ${catLabel}`;
+      }
+
+      // 4. Rating & Reviews
+      if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || 4.7).toFixed(1);
+      if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || 120} đánh giá)`;
+
+      // 5. Cạnh SERVES (Món đặc sản)
+      if (poiDishesGrid) {
+        if (data.dishes && data.dishes.length > 0) {
+          if (poiSectionDishes) poiSectionDishes.style.display = 'flex';
+          poiDishesGrid.innerHTML = data.dishes.map(d => `
+            <div class="poi-dish-chip">
+              <span>🍲</span>
+              <span>${d.name}</span>
+              <span class="dish-mention">${d.mention_count || 1} lượt nhắc · ⭐ ${d.avg_rating || 4.5}</span>
+            </div>
+          `).join('');
+        } else {
+          poiDishesGrid.innerHTML = `
+            <div style="font-size: 0.78rem; color: #64748B; font-style: italic;">
+              ${catClass === 'attraction' ? '🏛️ Quần thể kiến trúc lịch sử, không kinh doanh dịch vụ ăn uống trực tiếp.' : 'Chưa có dữ liệu thực đơn được liên kết trong Đồ thị.'}
+            </div>
+          `;
+        }
+      }
+
+      // 6. Nhận xét chân thực từ du khách (TripAdvisor / SQLite)
+      if (poiReviewsList) {
+        if (data.reviews && data.reviews.length > 0) {
+          if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
+          poiReviewsList.innerHTML = data.reviews.map(r => `
+            <div class="poi-review-card">
+              <div class="review-header">
+                <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
+                <span class="review-tag">👤 ${r.trip_type || 'Du khách'} · ${r.visit_date || '2024'}</span>
+              </div>
+              <h5 class="review-title">${r.title}</h5>
+              <p class="review-comment">“${r.comment}”</p>
+            </div>
+          `).join('');
+        } else {
+          poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B;">Chưa có trích đoạn nhận xét chi tiết.</div>';
+        }
+      }
+
+      // 7. Điểm lân cận qua cạnh NEAR_BY
+      if (poiNearbyList) {
+        if (data.nearby_places && data.nearby_places.length > 0) {
+          if (poiSectionNearby) poiSectionNearby.style.display = 'flex';
+          poiNearbyList.innerHTML = data.nearby_places.map(nb => {
+            const nbCat = (nb.category || '').toLowerCase();
+            const nbIcon = nbCat.includes('restaurant') ? '🍲' : (nbCat.includes('cafe') ? '☕' : (nbCat.includes('hotel') ? '🏨' : '🏯'));
+            return `
+              <div class="poi-nearby-card" data-name="${nb.name}" data-lat="${nb.lat || ''}" data-lng="${nb.lng || ''}">
+                <div class="nearby-main">
+                  <span class="nearby-icon">${nbIcon}</span>
+                  <span class="nearby-name">${nb.name}</span>
+                </div>
+                <span class="nearby-dist">${nb.distance_km} km</span>
+              </div>
+            `;
+          }).join('');
+
+          // Click vào địa điểm lân cận -> Chuyển sang địa điểm đó
+          poiNearbyList.querySelectorAll('.poi-nearby-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const nbName = card.dataset.name;
+              const nbLat = parseFloat(card.dataset.lat);
+              const nbLng = parseFloat(card.dataset.lng);
+              if (nbLat && nbLng) {
+                mapStudio.panTo(nbLat, nbLng, 16);
+              }
+              openPoiDetail(nbName);
+            });
+          });
+        } else {
+          poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B;">Không tìm thấy địa điểm lân cận trong bán kính 1.5km.</div>';
+        }
+      }
+
+      // 8. Cập nhật nút điều hướng Google Maps
+      if (poiBtnGoogleMaps) {
+        if (data.latitude && data.longitude) {
+          poiBtnGoogleMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${data.latitude},${data.longitude}`;
+        } else {
+          poiBtnGoogleMaps.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.name + ' Huế')}`;
+        }
+      }
+
+    } catch (err) {
+      console.warn('Lỗi tải chi tiết POI:', err);
+      if (poiDescText) poiDescText.textContent = `Không thể tải hồ sơ chi tiết: ${err.message}.`;
+    }
+  }
+
+  function closePoiDetail() {
+    poiDrawer?.classList.remove('open');
+    poiDrawer?.setAttribute('aria-hidden', 'true');
+  }
+
+  btnCloseDrawer?.addEventListener('click', closePoiDetail);
+  poiDrawerBackdrop?.addEventListener('click', closePoiDetail);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && poiDrawer?.classList.contains('open')) {
+      closePoiDetail();
+    }
+  });
+
+  // Action: Thêm vào tour
+  poiBtnAddTour?.addEventListener('click', () => {
+    if (!currentPoiData) return;
+    closePoiDetail();
+    const tabItinerary = document.getElementById('tab-btn-itinerary');
+    if (tabItinerary) tabItinerary.click();
+    // Bật tag món ăn tương ứng nếu có
+    dishTags.forEach(tag => {
+      if (currentPoiData.name.includes(tag.dataset.dish) || (currentPoiData.cuisines || '').includes(tag.dataset.dish)) {
+        tag.classList.add('active');
+      }
+    });
+  });
+
+  // Action: Hỏi AI về điểm này
+  poiBtnAskAi?.addEventListener('click', () => {
+    if (!currentPoiData) return;
+    closePoiDetail();
+    const tabChat = document.getElementById('tab-btn-chat');
+    if (tabChat) tabChat.click();
+    if (chatInput) chatInput.value = `Hãy giới thiệu chi tiết về ${currentPoiData.name} và các món ăn đặc sản nổi tiếng ở đây.`;
+    chatForm?.dispatchEvent(new Event('submit'));
+  });
+
+  window.openPoiDetail = openPoiDetail;
 
   window.locatePoi = (lat, lng) => {
     mapStudio.panTo(lat, lng, 16);

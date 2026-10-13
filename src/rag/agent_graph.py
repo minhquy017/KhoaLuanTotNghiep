@@ -49,6 +49,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_ollama import ChatOllama
 
 from src.graph.graph_retriever import get_graph_retriever, strip_accents
+from src.graph.spatial_indexer import haversine_distance
 from src.rag.vector_retriever import get_vector_retriever
 from src.rag.web_search_tool import get_web_search_tool
 
@@ -103,12 +104,34 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     elif "da nang" in norm_q:
         locality = "Thành phố Đà Nẵng"
 
-    # 2. Nhận diện món ăn đặc sản trong câu hỏi
+    # 2. Nhận diện món ăn đặc sản trong câu hỏi (hỗ trợ alias phổ biến)
+    dish_aliases = {
+        "bun bo": "Bún bò Huế",
+        "banh beo": "Bánh bèo",
+        "banh nam": "Bánh nậm",
+        "banh loc": "Bánh bột lọc",
+        "banh bot loc": "Bánh bột lọc",
+        "com hen": "Cơm hến",
+        "bun hen": "Bún hến",
+        "che heo quay": "Chè bột lọc bọc heo quay",
+        "che bot loc": "Chè bột lọc bọc heo quay",
+        "banh khoai": "Bánh khoái",
+        "nem lui": "Nem lụi",
+        "banh canh": "Bánh canh Nam Phổ",
+        "che bap": "Chè bắp",
+        "me xung": "Mè xửng"
+    }
     target_dish = None
-    for d_norm, d_node_id in graph_retriever._dish_name_index.items():
-        if d_norm in norm_q and len(d_norm) >= 3:
-            target_dish = graph_retriever.G.nodes[d_node_id].get("name")
+    for alias, formal_name in dish_aliases.items():
+        if alias in norm_q:
+            target_dish = formal_name
             break
+
+    if not target_dish:
+        for d_norm, d_node_id in graph_retriever._dish_name_index.items():
+            if d_norm in norm_q and len(d_norm) >= 3:
+                target_dish = graph_retriever.G.nodes[d_node_id].get("name")
+                break
 
     # 3. Nhận diện địa điểm nổi tiếng (hỗ trợ alias tiếng Việt phổ biến)
     alias_dict = {
@@ -141,25 +164,53 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             target_place_id = pid
             break
 
-    # A. Nếu tìm quán ăn theo món đặc sản (SERVES edge)
-    if target_dish:
-        serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality, limit=4)
-        matched_places.extend(serving_places)
-
-    # B. Nếu tìm địa điểm lân cận địa danh xác định (NEAR_BY edge)
-    if target_place_id:
+    # A. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
+    if target_place_id and target_dish:
         origin_place = graph_retriever.get_place(target_place_id)
-        if origin_place and origin_place not in matched_places:
+        if origin_place:
             matched_places.append(origin_place)
-        
-        # Lấy các điểm lân cận
-        nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=1.5, limit=4)
-        nearby_map[target_place_id] = nearby
+            lat0, lng0 = origin_place.get("latitude"), origin_place.get("longitude")
+            serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality or "Thành phố Huế", limit=15)
+            if lat0 and lng0:
+                for sp in serving_places:
+                    if sp.get("latitude") and sp.get("longitude"):
+                        sp["dist_to_origin"] = haversine_distance(lat0, lng0, sp["latitude"], sp["longitude"])
+                serving_places.sort(key=lambda x: x.get("dist_to_origin", 999))
+            
+            # Đưa các quán gần nhất vào matched_places
+            for sp in serving_places[:4]:
+                if sp not in matched_places:
+                    matched_places.append(sp)
 
-    # C. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG
+            # Lấy thêm các điểm lân cận qua cạnh NEAR_BY
+            nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=1.5, limit=3)
+            nearby_map[target_place_id] = nearby
+    elif target_dish:
+        # Chỉ có món đặc sản: Tìm các quán uy tín phục vụ món
+        serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality, limit=5)
+        matched_places.extend(serving_places)
+    elif target_place_id:
+        # Chỉ có địa danh di tích: Lấy điểm gốc và các điểm lân cận
+        origin_place = graph_retriever.get_place(target_place_id)
+        if origin_place:
+            matched_places.append(origin_place)
+            nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=1.5, limit=4)
+            nearby_map[target_place_id] = nearby
+            for nb in nearby:
+                if nb not in matched_places:
+                    matched_places.append(nb)
+
+    # B. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG
     if not matched_places:
-        searched = graph_retriever.search_places(query, locality=locality, limit=3)
+        searched = graph_retriever.search_places(query, locality=locality, limit=4)
         matched_places.extend(searched)
+
+    # 4. Nhận diện nhu cầu ăn chay hoặc danh mục đặc thù
+    if any(k in norm_q for k in ["chay", "quan chay", "com chay", "an chay", "do chay"]):
+        veg_places = graph_retriever.search_places("chay", locality=locality or "Thành phố Huế", limit=3)
+        for vp in veg_places:
+            if vp not in matched_places:
+                matched_places.append(vp)
 
     # Lấy thêm thông tin món đặc sản và điểm lân cận cho các địa điểm tìm thấy
     for p in matched_places:
@@ -189,22 +240,31 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 # =============================================================================
 def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
     query = state["query"]
+    norm_q = strip_accents(query)
     matched_places = state.get("matched_places", [])
+
+    # Nếu câu hỏi thuần về giờ mở cửa, giá vé, địa chỉ -> không cần inject review tránh loãng ngữ cảnh
+    pure_fact_triggers = ["may gio", "mo cua", "dong cua", "gia ve", "bao nhieu tien", "o dau", "dia chi"]
+    is_pure_fact = any(f in norm_q for f in pure_fact_triggers) and not any(k in norm_q for k in ["review", "danh gia", "ngon", "kinh nghiem", "khen", "che"])
+
+    if is_pure_fact:
+        return {
+            "reviews": [],
+            "confidence_score": 0.5
+        }
 
     # Lọc theo place_urls nếu đã tìm được địa điểm cụ thể từ KG
     place_urls = [p.get("url") for p in matched_places if p.get("url")]
 
     reviews, raw_score = vector_retriever.query_reviews(
         query_text=query,
-        n_results=4,
+        n_results=3,
         place_urls=place_urls if place_urls else None
     )
 
     # Tính toán Composite Confidence Score
-    # Điểm tin cậy được củng cố bởi cả sự tồn tại của thực thể trong KG và điểm tương đồng vector
     entity_bonus = 0.15 if matched_places else 0.0
     dish_bonus = 0.10 if state.get("target_dish") else 0.0
-    
     total_confidence = min(1.0, raw_score + entity_bonus + dish_bonus)
 
     return {
@@ -219,21 +279,25 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
 def grade_confidence(state: TourismAgentState) -> Literal["node_generate_response", "node_web_search_fallback"]:
     """
     Quyết định nhánh xử lý trong LangGraph:
-    - Nếu câu hỏi về thông tin thời gian thực ngoài CSDL (thời tiết, giá vé máy bay, tin tức): Kích hoạt Web Fallback
-    - Nếu Đồ thị Tri thức đã tìm thấy địa điểm/món ăn HOẶC Vector Store có độ tương đồng tốt (>= 0.35): Đi thẳng tới LLM
-    - Nếu hoàn toàn không có thực thể và điểm vector thấp: Kích hoạt Web Fallback
+    - Nếu câu hỏi về thông tin thời gian thực / vận hành (giờ mở cửa, giá vé, thời tiết): Kích hoạt Web Fallback
+    - Nếu câu hỏi về món ăn / địa điểm đã có trong Knowledge Graph: Đi thẳng tới LLM
+    - Nếu hoàn toàn không có thực thể: Kích hoạt Web Fallback
     """
     confidence = state.get("confidence_score", 0.0)
     has_places = len(state.get("matched_places", [])) > 0
     has_reviews = len(state.get("reviews", [])) > 0
 
-    # Các từ khóa đặc trưng của thông tin ngoại vi real-time
     query_lower = state["query"].lower()
+    norm_q = strip_accents(query_lower)
+
+    # Các từ khóa hỏi về thông tin thời gian thực / giờ giấc / giá vé mà KG tĩnh không có
     external_triggers = [
         "thoi tiet", "thời tiết", "ve may bay", "vé máy bay", 
-        "nhiet do", "nhiệt độ", "bao nhieu do", "mưa khong", "mưa không", "dự báo thời tiết"
+        "nhiet do", "nhiệt độ", "bao nhieu do", "mưa khong", "mưa không", "dự báo thời tiết",
+        "mo cua", "mở cửa", "dong cua", "đóng cửa", "may gio", "mấy giờ", "khi nao mo",
+        "gia ve", "giá vé", "ve vao cong", "vé vào cổng", "phi tham quan", "phí tham quan"
     ]
-    is_external_query = any(t in query_lower for t in external_triggers)
+    is_external_query = any(t in norm_q or t in query_lower for t in external_triggers)
 
     if is_external_query:
         return "node_web_search_fallback"
@@ -243,7 +307,7 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
         return "node_generate_response"
 
     # Nếu Vector Search tìm được review chất lượng cao
-    if has_reviews and confidence >= 0.38:
+    if has_reviews and confidence >= 0.40:
         return "node_generate_response"
 
     return "node_web_search_fallback"
@@ -289,26 +353,35 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     # 2. Ngữ cảnh từ ChromaDB Reviews
     if reviews:
         rev_context = vector_retriever.format_reviews_context(reviews)
-        context_blocks.append(rev_context)
+        if rev_context:
+            context_blocks.append(rev_context)
 
     # 3. Ngữ cảnh từ Web Search nếu có
     if web_results:
         web_context = web_search_tool.format_search_context(web_results)
-        context_blocks.append(web_context)
+        if web_context:
+            context_blocks.append(web_context)
 
     full_context = "\n\n".join(context_blocks) if context_blocks else "Không tìm thấy dữ liệu liên quan."
 
-    # Định dạng Prompt học thuật, súc tích cho Qwen2.5
-    system_prompt = """Bạn là trợ lý AI chuyên gia tư vấn du lịch Việt Nam thông minh, chuẩn xác và am hiểu sâu sắc văn hóa, ẩm thực Cố đô Huế.
-Nhiệm vụ: Dựa vào thông tin được cung cấp trong [NGỮ CẢNH HỆ THỐNG] để trả lời câu hỏi của du khách.
+    # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
+    system_prompt = """Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, chuẩn xác và am hiểu sâu sắc di sản văn hóa, lịch sử và ẩm thực Huế.
 
-Nguyên tắc bắt buộc:
-1. TRUNG THỰC & CHUẨN XÁC: Chỉ dùng thông tin có trong ngữ cảnh. Không suy đoán hay tự bịa số liệu.
-2. NÊU RÕ BẰNG CHỨNG:
-   - Nếu có thông tin từ Đồ thị Tri thức: Nêu rõ tên quán, địa chỉ, rating, món đặc sản, khoảng cách lân cận.
-   - Nếu có trải nghiệm du khách: Trích dẫn nhận xét thực tế (ví dụ: "Theo đánh giá của du khách...").
-   - Nếu sử dụng thông tin Internet: Nêu rõ "Dựa trên dữ liệu cập nhật từ nguồn mở...".
-3. TRÌNH BÀY ĐẸP: Dùng gạch đầu dòng, icon trực quan (🍲, 📍, ⭐), ngôn phong lịch sự, ấm áp."""
+Nguyên tắc trả lời bắt buộc:
+1. TRẢ LỜI ĐÚNG TRỌNG TÂM CÂU HỎI:
+   - Đi thẳng vào các thắc mắc của du khách (ví dụ: giờ mở cửa, giá vé, địa chỉ, gợi ý món ăn/quán ăn).
+   - Tuyệt đối KHÔNG trích dẫn thô các đoạn review tiếng Anh hay số liệu đánh giá kỹ thuật một cách máy móc.
+   - Diễn đạt 100% bằng tiếng Việt tự nhiên, ấm áp, văn minh, mang nét văn hóa hiếu khách của người Huế.
+   - Tuyệt đối KHÔNG gán ghép thông tin của địa điểm này sang địa điểm khác (ví dụ: không lấy giờ của Chợ Đông Ba gán cho Chùa Thiên Mụ).
+
+2. KẾT HỢP TRI THỨC ĐA NGUỒN CHUẨN XÁC:
+   - Vận dụng thông tin từ [NGỮ CẢNH HỆ THỐNG] (tọa độ, địa chỉ, món đặc sản) kết hợp linh hoạt với hiểu biết thực tế về du lịch Huế của bạn.
+   - Về các di tích Huế (như Chùa Thiên Mụ: nằm bên bờ sông Hương trên đồi Hà Khê, mở cửa tự do từ sáng sớm ~07:00 - 18:00 hàng ngày, miễn phí vé tham quan; nên đi vào sáng sớm hoặc ngắm hoàng hôn).
+   - Về ẩm thực chay tại Huế: Huế có truyền thống ăn chay lâu đời, gợi ý các quán chay uy tín, thanh tịnh (ví dụ: Quán chay Sân Mây - đường Thanh Tịnh, Quán chay Liên Hoa - đường Lê Quý Đôn, Cơm chay Bồ Đề - đường Bà Triệu, Chay An Nhiên,...).
+
+3. ĐỊNH DẠNG ĐẸP & DỄ ĐỌC:
+   - Dùng gạch đầu dòng rõ ràng, icon trực quan (🏯, 🍲, 📍, ⏰).
+   - Ngắn gọn, súc tích, mang lại giá trị trải nghiệm thực tế cao nhất cho du khách."""
 
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}

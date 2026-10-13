@@ -15,7 +15,53 @@ export class SpatialMapStudio {
     this.centerHue = [16.4637, 107.5909];
     this.defaultZoom = 13;
     this.showRadius = false;
+    this.currentRadiusMeters = 1500;
+    this.activeCategoryFilter = 'all';
     this.currentTileLayer = null;
+    this.markerInstances = new Map();
+
+    // Dữ liệu Địa danh & Cơ sở Dịch vụ Chuẩn Cố Đô Huế (32 địa điểm chia 4 nhóm danh mục)
+    this.masterLandmarks = [
+      // 1. Quần thể Di sản & Thắng cảnh (Attraction)
+      { name: 'Đại Nội Huế (Hoàng Thành)', lat: 16.4690, lng: 107.5781, cat: 'Attraction', desc: 'Kinh thành Huế · Hoàng cung triều Nguyễn', tags: 'hoang thanh, dai noi, kinh thanh, ngo mon' },
+      { name: 'Chùa Thiên Mụ', lat: 16.4537, lng: 107.5446, cat: 'Attraction', desc: 'Đồi Hà Khê · Cổ tự hơn 400 năm bên bờ sông Hương', tags: 'thien mu, chua, phat giao, song huong' },
+      { name: 'Lăng Tự Đức (Khiêm Lăng)', lat: 16.4330, lng: 107.5664, cat: 'Attraction', desc: 'Thủy Xuân · Quần thể lăng tẩm thơ mộng bậc nhất triều Nguyễn', tags: 'tu duc, khiem lang, lang tam' },
+      { name: 'Lăng Khải Định (Ứng Lăng)', lat: 16.3990, lng: 107.5903, cat: 'Attraction', desc: 'Châu Chữ, Thủy Bằng · Kiệt tác khảm sành sứ giao thoa Đông - Tây', tags: 'khai dinh, ung lang, kien truc' },
+      { name: 'Lăng Minh Mạng (Hiếu Lăng)', lat: 16.3877, lng: 107.5692, cat: 'Attraction', desc: 'Hương Thọ · Quần thể lăng đăng đối uy nghiêm bên dòng Tả Trạch', tags: 'minh mang, hieu lang, phong thuy' },
+      { name: 'Lăng Đồng Khánh', lat: 16.4300, lng: 107.5700, cat: 'Attraction', desc: 'Thượng Hai, Thủy Xuân · Công trình kiến trúc cung đình tinh xảo', tags: 'dong khanh, lang tam' },
+      { name: 'Lăng Gia Long (Thiên Thọ Lăng)', lat: 16.3532, lng: 107.5855, cat: 'Attraction', desc: 'Hương Thọ · Nơi an nghỉ của vị vua sáng lập triều Nguyễn giữa rừng thông', tags: 'gia long, thien tho lang' },
+      { name: 'Cầu Trường Tiền', lat: 16.4676, lng: 107.5900, cat: 'Attraction', desc: 'Sông Hương, TP Huế · Biểu tượng lịch sử 6 vài 12 nhịp', tags: 'truong tien, trang tien, cau, song huong' },
+      { name: 'Chợ Đông Ba', lat: 16.4725, lng: 107.5886, cat: 'Attraction', desc: 'Trần Hưng Đạo · Chợ truyền thống lớn nhất Cố Đô với muôn vàn đặc sản', tags: 'dong ba, cho, dac san' },
+      { name: 'Đồi Vọng Cảnh', lat: 16.4255, lng: 107.5505, cat: 'Attraction', desc: 'Thủy Xuân · Tầm nhìn bao quát khúc uốn sông Hương và đồi thông lãng mạn', tags: 'vong canh, sunset, doi, view' },
+      { name: 'Làng hương Thủy Xuân', lat: 16.4385, lng: 107.5680, cat: 'Attraction', desc: 'Huyền Trân Công Chúa · Làng nghề tăm hương sắc màu rực rỡ', tags: 'thuy xuan, lang huong, checkin' },
+      { name: 'Chùa Từ Hiếu', lat: 16.4390, lng: 107.5819, cat: 'Attraction', desc: 'Thủy Xuân · Cổ tự yên bình gắn liền Thiền sư Thích Nhất Hạnh và lăng Thái giám', tags: 'tu hieu, chua, thien' },
+      { name: 'Cầu ngói Thanh Toàn', lat: 16.4668, lng: 107.6427, cat: 'Attraction', desc: 'Thủy Thanh, Hương Thủy · Cây cầu ngói cổ kính độc đáo bên dòng sông Như Ý', tags: 'thanh toan, cau ngoi' },
+      { name: 'Điện Hòn Chén', lat: 16.4316, lng: 107.5312, cat: 'Attraction', desc: 'Núi Ngọc Trản, Hương Thọ · Thánh địa tín ngưỡng Mẫu Thiên Y A Na bên sông Hương', tags: 'hon chen, ngoctrann, dien' },
+      { name: 'Đầm Chuồn (Phá Tam Giang)', lat: 16.5050, lng: 107.6480, cat: 'Attraction', desc: 'Phú An, Phú Vang · Đầm nước lợ trù phú ngắm bình minh và thưởng thức hải sản', tags: 'dam chuon, pha tam giang, song nuoc' },
+
+      // 2. Ẩm thực & Quán ăn truyền thống (Restaurant)
+      { name: 'Bún bò Cẩm', lat: 16.4668, lng: 107.5931, cat: 'Restaurant', desc: '38 Trần Cao Vân, Phú Hội · Bún bò Huế chuẩn vị đậm đà thơm mùi sả ruốc', tags: 'bun bo, cam, an sang' },
+      { name: 'Bún bò Bà Tám', lat: 16.4735, lng: 107.5820, cat: 'Restaurant', desc: '23 Chu Văn An, Phú Hội · Nước dùng thanh ngọt, thịt bắp bò mềm ngậy', tags: 'bun bo, ba tam' },
+      { name: 'Bánh bèo Bà Đỏ', lat: 16.4823, lng: 107.5893, cat: 'Restaurant', desc: '8 Nguyễn Bỉnh Khiêm, Gia Hội · Khay bánh bèo chén, bánh nậm tôm thịt, lọc giòn', tags: 'banh beo, ba do, banh nam, banh loc' },
+      { name: 'Cơm hến Hoa Đông', lat: 16.4716, lng: 107.6042, cat: 'Restaurant', desc: '64 kiệt 7 Ưng Bình, Cồn Hến · Quán cơm hến, mì hến trứ danh cái nôi Cồn Hến', tags: 'com hen, hoa dong, con hen, mi hen' },
+      { name: 'Bánh khoái Lạc Thiện', lat: 16.4720, lng: 107.5780, cat: 'Restaurant', desc: '6 Đinh Tiên Hoàng, Phú Hòa · Vỏ giòn rụm, nước lèo tương gan lạc gia truyền lâu đời', tags: 'banh khoai, lac thien, nem lui' },
+      { name: 'Chè Hẻm Huế', lat: 16.4630, lng: 107.5940, cat: 'Restaurant', desc: 'Kiệt 29 Hùng Vương, Phú Hội · Chè bột lọc heo quay, chè hạt sen long nhãn Cố Đô', tags: 'che hem, che heo quay, che bot loc, trang mieng' },
+      { name: 'Quán chay Sân Mây', lat: 16.4522, lng: 107.5645, cat: 'Restaurant', desc: '8 Thanh Tịnh, Vỹ Dạ · Không gian thiền vị nhà rường cổ kính và ẩm thực chay thanh tịnh', tags: 'an chay, san may, com chay' },
+      { name: 'Cơm niêu Không Gian Xưa', lat: 16.4578, lng: 107.5992, cat: 'Restaurant', desc: '205 Điện Biên Phủ, Trường An · Bữa cơm gia đình thuần Việt trong quần thể nhà rường', tags: 'com nieu, khong gian xua' },
+      { name: 'Bánh ướt thịt nướng Huyền Anh', lat: 16.4545, lng: 107.5532, cat: 'Restaurant', desc: '50 Kim Long, TP Huế · Bánh ướt trắng mềm cuốn thịt nướng chấm tương đậu mè béo ngậy', tags: 'banh uot, thit nuong, huyen anh, kim long' },
+
+      // 3. Cà phê & Điểm ngắm Hoàng hôn (Cafe)
+      { name: 'Cà phê Muối Đặng Thái Thân', lat: 16.4712, lng: 107.5762, cat: 'Cafe', desc: '10 Đặng Thái Thân, Thuận Thành · Khởi nguồn món Cà phê muối trứ danh của xứ Huế', tags: 'ca phe muoi, dang thai than, cafe' },
+      { name: 'Tân Cafe Đinh Tiên Hoàng', lat: 16.4738, lng: 107.5775, cat: 'Cafe', desc: '14 Đinh Tiên Hoàng, Thuận Thành · Phong cách bao cấp hoài cổ, không gian cây xanh', tags: 'tan cafe, vintage, cafe' },
+      { name: 'Vọng Cảnh Sunset Coffee', lat: 16.4251, lng: 107.5510, cat: 'Cafe', desc: 'Đồi Vọng Cảnh, Thủy Xuân · Quán cafe đồi thông ngắm hoàng hôn buông xuống dòng sông Hương', tags: 'sunset, vong canh, cafe' },
+      { name: 'The Busa Park Huế', lat: 16.4670, lng: 107.5985, cat: 'Cafe', desc: 'Bờ sông Hương, Phú Hội · Không gian lounge ngoài trời ngắm cầu Trường Tiền về đêm', tags: 'busa park, lounge, riverside, song huong' },
+
+      // 4. Khách sạn & Nghỉ dưỡng (Hotel)
+      { name: 'Saigon Morin Hotel', lat: 16.4678, lng: 107.5912, cat: 'Hotel', desc: '30 Lê Lợi, Phú Hội · Khách sạn thuộc địa Pháp cổ kính nhất miền Trung từ năm 1901', tags: 'saigon morin, hotel, khach san, le loi' },
+      { name: 'Silk Path Grand Hue Hotel', lat: 16.4570, lng: 107.5878, cat: 'Hotel', desc: '02 Lê Lợi, Vĩnh Ninh · Khách sạn 5 sao mang phong cách quý tộc cung đình trang nhã', tags: 'silk path, resort, khach san 5 sao' },
+      { name: 'Pilgrimage Village Boutique Resort', lat: 16.4290, lng: 107.5850, cat: 'Hotel', desc: '130 Minh Mạng, Thủy Xuân · Khu nghỉ dưỡng Làng Hành Hương mộc mạc giữa làng quê', tags: 'lang hanh huong, pilgrimage, resort' },
+      { name: 'Azerai La Residence Hue', lat: 16.4615, lng: 107.5822, cat: 'Hotel', desc: '05 Lê Lợi, Vĩnh Ninh · Biệt thự phong cách Art Deco danh tiếng ngắm sông Hương thơ mộng', tags: 'azerai, la residence, luxury, riverside' }
+    ];
   }
 
   getTileUrlConfig(styleName) {
@@ -61,7 +107,7 @@ export class SpatialMapStudio {
     this.routesLayer = L.layerGroup().addTo(this.map);
     this.radiusLayer = L.layerGroup().addTo(this.map);
 
-    // Nạp sẵn một số địa danh biểu tượng của Cố đô Huế
+    // Nạp sẵn toàn bộ địa danh biểu tượng của Cố đô Huế
     this.renderDefaultHeritageSites();
 
     // Đảm bảo kích thước bản đồ hiển thị mượt mà
@@ -71,7 +117,7 @@ export class SpatialMapStudio {
   }
 
   /**
-   * Chuyển đổi giao diện nền bản đồ linh hoạt (Topo / Street / Satellite / OSM)
+   * Chuyển đổi giao diện nền bản đồ linh hoạt (Street / Satellite)
    */
   setMapStyle(styleName = 'google_streets') {
     if (!this.map) return;
@@ -86,19 +132,31 @@ export class SpatialMapStudio {
   }
 
   /**
-   * Tạo Custom SVG Marker biểu tượng Cố Đô hiện đại & nổi bật
+   * Tạo Custom SVG Marker biểu tượng Cố Đô hiện đại & sắc màu riêng theo 4 danh mục
    */
   createCustomIcon(category = 'Attraction', label = '', stepNumber = null) {
-    const isRestaurant = category.toLowerCase().includes('restaurant') || 
-                         category.toLowerCase().includes('ẩm thực') || 
-                         category.toLowerCase().includes('quán');
+    const catLower = (category || '').toLowerCase();
     
-    // Gradient màu nổi bật: Rose/Coral cho ẩm thực, Amber/Gold cho Di tích
-    const bgGradient = isRestaurant 
-      ? 'linear-gradient(135deg, #FF4B6E 0%, #D81B60 100%)' 
-      : 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
-    const iconChar = isRestaurant ? '🍲' : '🏯';
-    const shadowColor = isRestaurant ? 'rgba(216, 27, 96, 0.4)' : 'rgba(217, 119, 6, 0.4)';
+    let bgGradient = 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)';
+    let iconChar = '🏯';
+    let shadowColor = 'rgba(217, 119, 6, 0.45)';
+
+    if (catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán')) {
+      // Ẩm thực: Hồng ngọc / Đỏ cam nổi bật
+      bgGradient = 'linear-gradient(135deg, #FF4B6E 0%, #D81B60 100%)';
+      iconChar = '🍲';
+      shadowColor = 'rgba(216, 27, 96, 0.45)';
+    } else if (catLower.includes('cafe') || catLower.includes('cà phê') || catLower.includes('sunset')) {
+      // Cà phê & Sunset: Tím hoàng hôn thơ mộng
+      bgGradient = 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)';
+      iconChar = '☕';
+      shadowColor = 'rgba(139, 92, 246, 0.45)';
+    } else if (catLower.includes('hotel') || catLower.includes('khách sạn') || catLower.includes('resort')) {
+      // Khách sạn & Nghỉ dưỡng: Xanh ngọc lục bảo sang trọng
+      bgGradient = 'linear-gradient(135deg, #0E8B7D 0%, #0A6E63 100%)';
+      iconChar = '🏨';
+      shadowColor = 'rgba(14, 139, 125, 0.45)';
+    }
 
     const stepBadgeHtml = stepNumber !== null ? `
       <div style="
@@ -166,12 +224,23 @@ export class SpatialMapStudio {
    */
   resetView() {
     if (this.map) {
+      this.filterByCategory('all');
       this.map.setView(this.centerHue, this.defaultZoom, { animate: true });
     }
   }
 
   /**
-   * Bật / tắt hiển thị bán kính không gian 1.5km
+   * Cập nhật cự ly bán kính phân tích không gian (500m, 1000m, 1500m, 2500m, 5000m)
+   */
+  setRadiusDistance(radiusInMeters = 1500) {
+    this.currentRadiusMeters = radiusInMeters;
+    if (this.showRadius) {
+      this.renderRadiusCircles();
+    }
+  }
+
+  /**
+   * Bật / tắt hiển thị bán kính không gian
    */
   toggleRadius() {
     this.showRadius = !this.showRadius;
@@ -185,45 +254,132 @@ export class SpatialMapStudio {
 
   renderRadiusCircles() {
     this.radiusLayer.clearLayers();
-    // Vòng tròn bán kính 1.5km quanh Đại Nội Huế (Bờ Bắc)
-    L.circle([16.4699, 107.5786], {
-      radius: 1500,
+    const r = this.currentRadiusMeters || 1500;
+    const rKm = (r / 1000).toFixed(1);
+
+    // Vòng tròn bán kính quanh Đại Nội Huế (Bờ Bắc)
+    L.circle([16.4690, 107.5781], {
+      radius: r,
       color: '#D97706',
       weight: 2,
       dashArray: '6, 6',
       fillColor: '#F59E0B',
       fillOpacity: 0.12
-    }).bindTooltip('📍 Bờ Bắc: Vùng lân cận Đại Nội (R = 1.5km)', { permanent: false }).addTo(this.radiusLayer);
+    }).bindTooltip(`📍 Bờ Bắc: Vùng quanh Đại Nội (R = ${rKm} km)`, { permanent: false }).addTo(this.radiusLayer);
 
-    // Vòng tròn bán kính 1.5km quanh Trung tâm Bờ Nam
+    // Vòng tròn bán kính quanh Trung tâm Bờ Nam (Lê Lợi / Hùng Vương)
     L.circle([16.4637, 107.5909], {
-      radius: 1500,
+      radius: r,
       color: '#0E8B7D',
       weight: 2,
       dashArray: '6, 6',
       fillColor: '#0E8B7D',
       fillOpacity: 0.10
-    }).bindTooltip('📍 Bờ Nam: Vùng du lịch trung tâm (R = 1.5km)', { permanent: false }).addTo(this.radiusLayer);
+    }).bindTooltip(`📍 Bờ Nam: Trung tâm Du lịch (R = ${rKm} km)`, { permanent: false }).addTo(this.radiusLayer);
   }
 
   /**
-   * Hiển thị các địa danh biểu tượng ban đầu
+   * Lấy số lượng địa điểm theo từng danh mục
+   */
+  getCategoryCounts() {
+    const counts = { all: this.masterLandmarks.length, attraction: 0, restaurant: 0, cafe: 0, hotel: 0 };
+    this.masterLandmarks.forEach(item => {
+      const c = item.cat.toLowerCase();
+      if (counts[c] !== undefined) {
+        counts[c]++;
+      }
+    });
+    return counts;
+  }
+
+  /**
+   * Lọc địa điểm theo danh mục và tự động căn chỉnh khung hình
+   */
+  filterByCategory(category = 'all') {
+    this.activeCategoryFilter = category;
+    this.markersLayer.clearLayers();
+    this.markerInstances.clear();
+
+    const catNormalized = (category || 'all').toLowerCase();
+    const filtered = catNormalized === 'all'
+      ? this.masterLandmarks
+      : this.masterLandmarks.filter(item => item.cat.toLowerCase() === catNormalized);
+
+    const latlngs = [];
+    filtered.forEach(p => {
+      const marker = this.addPoi(p.lat, p.lng, p.name, p.cat, p.desc);
+      if (marker) {
+        this.markerInstances.set(p.name, marker);
+        latlngs.push([p.lat, p.lng]);
+      }
+    });
+
+    if (latlngs.length > 0 && this.map) {
+      if (catNormalized === 'all') {
+        this.map.setView(this.centerHue, this.defaultZoom, { animate: true });
+      } else {
+        const bounds = L.latLngBounds(latlngs);
+        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15, animate: true });
+      }
+    }
+
+    return {
+      category,
+      count: filtered.length,
+      landmarks: filtered
+    };
+  }
+
+  /**
+   * Tìm kiếm địa danh không dấu, hỗ trợ gõ nhanh tiếng Việt
+   */
+  searchLandmarks(query = '') {
+    const q = this.removeVietnameseTones(query.trim().toLowerCase());
+    if (!q) return [];
+
+    return this.masterLandmarks.filter(item => {
+      const nameNorm = this.removeVietnameseTones(item.name.toLowerCase());
+      const descNorm = this.removeVietnameseTones(item.desc.toLowerCase());
+      const tagsNorm = this.removeVietnameseTones((item.tags || '').toLowerCase());
+      const catNorm = this.removeVietnameseTones(item.cat.toLowerCase());
+      return nameNorm.includes(q) || descNorm.includes(q) || tagsNorm.includes(q) || catNorm.includes(q);
+    });
+  }
+
+  removeVietnameseTones(str) {
+    if (!str) return '';
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'd');
+  }
+
+  /**
+   * Bay mượt mà đến địa điểm và mở popup
+   */
+  flyToPoi(name) {
+    const poi = this.masterLandmarks.find(p => p.name === name);
+    if (!poi || !this.map) return;
+
+    let marker = this.markerInstances.get(poi.name);
+    if (!marker) {
+      // Nếu địa điểm chưa nằm trong layer do đang lọc danh mục khác, tạm thời thêm vào
+      marker = this.addPoi(poi.lat, poi.lng, poi.name, poi.cat, poi.desc);
+      this.markerInstances.set(poi.name, marker);
+    }
+
+    this.map.flyTo([poi.lat, poi.lng], 16, { duration: 1.2 });
+    setTimeout(() => {
+      if (marker) marker.openPopup();
+    }, 600);
+  }
+
+  /**
+   * Hiển thị các địa danh biểu tượng ban đầu (Tất cả)
    */
   renderDefaultHeritageSites() {
-    this.clearAll();
-
-    const landmarks = [
-      { name: 'Đại Nội Huế (Hoàng Thành)', lat: 16.4690, lng: 107.5781, cat: 'Attraction', desc: 'Kinh thành Huế · Hoàng cung triều Nguyễn' },
-      { name: 'Chùa Thiên Mụ', lat: 16.4537, lng: 107.5446, cat: 'Attraction', desc: 'Đồi Hà Khê · Ngôi cổ tự hơn 400 năm bên bờ sông Hương' },
-      { name: 'Lăng Khải Định', lat: 16.3990, lng: 107.5903, cat: 'Attraction', desc: 'Châu Chữ, Thủy Bằng · Kiệt tác kiến trúc Đông - Tây' },
-      { name: 'Chợ Đông Ba', lat: 16.4725, lng: 107.5886, cat: 'Attraction', desc: 'Trần Hưng Đạo, Phú Xuân · Thiên đường ẩm thực Cố Đô' },
-      { name: 'Bánh bèo Bà Đỏ', lat: 16.4823, lng: 107.5893, cat: 'Restaurant', desc: '8 Nguyễn Bỉnh Khiêm, Gia Hội · Bánh bèo, nậm, lọc' },
-      { name: 'Bún bò Cẩm', lat: 16.4668, lng: 107.5931, cat: 'Restaurant', desc: '38 Trần Cao Vân, Phú Hội · Đặc sản Bún bò Huế' }
-    ];
-
-    landmarks.forEach(p => {
-      this.addPoi(p.lat, p.lng, p.name, p.cat, p.desc);
-    });
+    this.filterByCategory('all');
   }
 
   addPoi(lat, lng, name, category = 'Attraction', address = '', stepNumber = null) {
@@ -234,15 +390,19 @@ export class SpatialMapStudio {
       ? `<div style="font-size: 0.72rem; font-weight: 800; color: #D97706; text-transform: uppercase; margin-bottom: 3px; letter-spacing: 0.5px;">📍 Điểm dừng ${stepNumber}</div>` 
       : '';
 
+    const safeName = (name || '').replace(/'/g, "\\'");
     const popupHtml = `
       <div class="custom-leaflet-popup">
         ${stepLabel}
         <div class="popup-title">${name}</div>
         <div class="popup-category">${category}</div>
         <div class="popup-address">${address || 'Thành phố Huế'}</div>
-        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid #E2E8F0;">
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" style="font-size: 0.75rem; color: #2563EB; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-            <span>🧭 Dẫn đường Google Maps</span> &rarr;
+        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid #E2E8F0; display: flex; flex-direction: column; gap: 4px;">
+          <button type="button" class="btn-open-detail-popup" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}')">
+            <span>📋 Xem Chi Tiết & Đánh Giá</span> &rarr;
+          </button>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" style="font-size: 0.74rem; color: #2563EB; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 4px 0;">
+            <span>🧭 Chỉ đường Google Maps</span>
           </a>
         </div>
       </div>
@@ -360,6 +520,51 @@ export class SpatialMapStudio {
           }
         });
       }
+    }
+  }
+
+  /**
+   * Hiển thị các địa điểm được gợi ý từ Trợ lý Hỏi đáp (Chatbot)
+   */
+  highlightChatPlaces(places = []) {
+    const validPlaces = places.filter(p => p && (p.latitude || p.lat) && (p.longitude || p.lng));
+    if (validPlaces.length === 0) return;
+
+    const addedMarkers = [];
+
+    validPlaces.forEach((p) => {
+      const lat = p.latitude || p.lat;
+      const lng = p.longitude || p.lng;
+      const isRestaurant = (p.category || '').toLowerCase().includes('restaurant') ||
+                           (p.category || '').toLowerCase().includes('ẩm thực') ||
+                           (p.category || '').toLowerCase().includes('quán');
+      const cat = isRestaurant ? 'Restaurant' : (p.category || 'Attraction');
+
+      const marker = this.addPoi(
+        lat,
+        lng,
+        p.name,
+        cat,
+        p.address || 'Địa điểm gợi ý từ Trợ lý AI'
+      );
+      if (marker) addedMarkers.push(marker);
+    });
+
+    // Mở popup cho địa điểm đầu tiên
+    if (addedMarkers.length > 0) {
+      setTimeout(() => {
+        addedMarkers[0].openPopup();
+      }, 300);
+    }
+
+    // Căn góc nhìn bản đồ bao trọn các địa điểm được gợi ý
+    if (validPlaces.length === 1) {
+      const p = validPlaces[0];
+      this.panTo(p.latitude || p.lat, p.longitude || p.lng, 16);
+    } else {
+      const latlngs = validPlaces.map(p => [p.latitude || p.lat, p.longitude || p.lng]);
+      const bounds = L.latLngBounds(latlngs);
+      this.map.fitBounds(bounds, { padding: [70, 70], maxZoom: 16 });
     }
   }
 

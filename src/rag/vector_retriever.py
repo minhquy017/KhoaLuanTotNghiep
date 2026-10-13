@@ -90,8 +90,10 @@ class VectorRetriever:
                 where=where_filter,
                 include=["documents", "metadatas", "distances"]
             )
-        except Exception as e:
-            # Fallback nếu filter gặp lỗi
+        except Exception:
+            if where_filter:
+                # Không fallback sang tìm toàn bộ database vì sẽ kéo nhầm review của địa điểm khác vào
+                return [], 0.0
             results = self.collection.query(
                 query_embeddings=query_emb,
                 n_results=n_results,
@@ -106,10 +108,10 @@ class VectorRetriever:
         max_confidence = 0.0
 
         for doc, meta, dist in zip(docs, metas, dists):
-            # Với normalized embedding, Cosine distance d in [0, 2]
-            # Similarity = 1 - (dist / 2) hoặc 1 - dist (nếu metric là cosine chuẩn)
-            # ChromaDB cosine distance: dist = 1 - cosine_similarity
             similarity = max(0.0, min(1.0, 1.0 - (dist / 2.0) if dist > 1.0 else 1.0 - dist))
+            # Chỉ lấy các review có độ tương đồng tối thiểu để tránh kéo review rác
+            if similarity < 0.40:
+                continue
             
             if similarity > max_confidence:
                 max_confidence = similarity
@@ -127,15 +129,16 @@ class VectorRetriever:
     def format_reviews_context(self, reviews: List[Dict[str, Any]]) -> str:
         """Định dạng các review thành đoạn trích dẫn cô đọng cho LLM."""
         if not reviews:
-            return "Không có dữ liệu đánh giá thực tế phù hợp."
+            return ""
 
-        lines = ["### [TRẢI NGHIỆM THỰC TẾ CỦA DU KHÁCH (CHROMA REVIEWS)]"]
+        lines = ["### [NHẬN XÉT THỰC TẾ CỦA KHÁCH DU LỊCH (THAM KHẢO THÊM)]"]
         for idx, rev in enumerate(reviews, 1):
             rating_star = f"⭐ {rev['rating']}/5" if rev['rating'] > 0 else ""
-            trip = f"[{rev['trip_type']}]" if rev['trip_type'] else ""
             snippet = rev['text'].replace('\n', ' ').strip()
-            lines.append(f"{idx}. {rating_star} {trip} \"{snippet}\"")
-        return "\n".join(lines)
+            if len(snippet) < 15:
+                continue
+            lines.append(f"{idx}. {rating_star} \"{snippet[:250]}\"")
+        return "\n".join(lines) if len(lines) > 1 else ""
 
 
 _vector_retriever = None

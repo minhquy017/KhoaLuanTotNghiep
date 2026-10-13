@@ -1,0 +1,95 @@
+\phan{PHẦN II. TỔNG QUAN VẤN ĐỀ NGHIÊN CỨU}
+\label{phan:tong-quan}
+
+\section*{1. Cơ sở lý thuyết nền tảng}
+\addcontentsline{toc}{section}{1. Cơ sở lý thuyết nền tảng}
+
+\subsection*{1.1. Đồ thị Tri thức Không gian và Khoảng cách Mặt cầu}
+\addcontentsline{toc}{subsection}{1.1. Đồ thị Tri thức Không gian và Khoảng cách Mặt cầu}
+
+Đồ thị Tri thức (Knowledge Graph -- KG) là một cấu trúc toán học biểu diễn tri thức dưới dạng đồ thị có hướng và có nhãn $\mathcal{G} = (\mathcal{V}, \mathcal{E}, \mathcal{R})$, trong đó $\mathcal{V}$ là tập hợp các nút đại diện cho các thực thể (Entities), $\mathcal{R}$ là tập hợp các kiểu quan hệ ngữ nghĩa (Relations), và $\mathcal{E} \subseteq \mathcal{V} \times \mathcal{R} \times \mathcal{V}$ là tập hợp các cạnh định hướng dưới dạng bộ ba tri thức $(h, r, t)$ phản ánh việc thực thể đầu $h$ có mối quan hệ $r$ với thực thể cuối $t$~\cite{hogan2021kg}. Trong miền du lịch, các thực thể bao gồm Điểm tham quan di tích (Attraction), Nhà hàng quán ăn (Restaurant), Cơ sở lưu trú (Hotel), Món ăn đặc sản (Dish) và Đơn vị hành chính (Locality).
+
+Đồ thị Tri thức Không gian (Spatial Knowledge Graph -- SKG) mở rộng cấu trúc đồ thị truyền thống bằng cách tích hợp trực tiếp các thuộc tính không gian địa lý vào từng nút thực thể, đồng thời thiết lập các cạnh liên kết hình học và topo dựa trên vị trí tọa độ địa lý thực tế~\cite{ballatore2014spatial}. Mỗi thực thể địa lý $v \in \mathcal{V}$ được gắn kèm một cặp tọa độ hệ quy chiếu toàn cầu WGS84: $\mathbf{coords}(v) = (\phi_v, \lambda_v)$, trong đó $\phi_v$ là vĩ độ (latitude) và $\lambda_v$ là kinh độ (longitude).
+
+Để đo lường khoảng cách địa lý giữa hai thực thể trên bề mặt cong của Trái Đất một cách chuẩn xác, công thức khoảng cách mặt cầu Haversine được áp dụng thay thế cho khoảng cách Euclid thông thường~\cite{sinnott1984haversine}:
+\begin{equation}
+    d(u, v) = 2 R \arcsin \left( \sqrt{\sin^2\left(\frac{\Delta\phi}{2}\right) + \cos(\phi_u) \cos(\phi_v) \sin^2\left(\frac{\Delta\lambda}{2}\right)} \right)
+    \label{eq:haversine}
+\end{equation}
+trong đó $d(u, v)$ là khoảng cách trắc địa đường chim bay tính theo kilômét giữa hai điểm $u$ và $v$ trên bề mặt Trái Đất; $R \approx 6.371\text{ km}$ là bán kính trung bình của Trái Đất; $\phi_u$ và $\phi_v$ lần lượt là vĩ độ tính bằng radian của hai địa điểm; $\Delta\phi = \phi_v - \phi_u$ là độ chênh lệch vĩ độ; $\Delta\lambda = \lambda_v - \lambda_u$ là độ chênh lệch kinh độ; và $\arcsin(\cdot)$ là hàm lượng giác ngược.
+
+Dựa trên công thức (\ref{eq:haversine}), một cạnh quan hệ lân cận không gian có trọng số $\mathbf{e}_{\text{NEAR\_BY}} = (u, \text{NEAR\_BY}, v)$ được thiết lập tự động giữa hai thực thể dịch vụ hoặc tham quan nếu và chỉ nếu khoảng cách mặt cầu thỏa mãn điều kiện ngưỡng cự ly đi bộ:
+\begin{equation}
+    (u, \text{NEAR\_BY}, v) \in \mathcal{E} \iff d(u, v) \le \tau_{\text{spatial}}
+    \label{eq:spatial-threshold}
+\end{equation}
+trong đó $\tau_{\text{spatial}}$ là ngưỡng bán kính lân cận không gian, được nghiên cứu ấn định ở mức $\tau_{\text{spatial}} = 1,5\text{ km}$. Ngưỡng cự ly này tương ứng với thời gian đi bộ tối đa khoảng 15 đến 20 phút của du khách, bảo đảm tính khả thi cao trong việc kết hợp tham quan di tích và thưởng thức ẩm thực lân cận mà không làm gián đoạn trải nghiệm du lịch.
+
+\subsection*{1.2. Sự tiến hóa từ Naive RAG sang GraphRAG và Agentic RAG}
+\addcontentsline{toc}{subsection}{1.2. Sự tiến hóa từ Naive RAG sang GraphRAG và Agentic RAG}
+
+Kiến trúc Tăng cường Tạo sinh Truy xuất (Retrieval-Augmented Generation -- RAG) được đề xuất ban đầu nhằm khắc phục hiện tượng ảo giác và bổ sung tri thức chuyên biệt cho LLM mà không cần tái huấn luyện toàn bộ trọng số mô hình~\cite{lewis2020rag}. Quá trình phát triển của công nghệ RAG đã trải qua ba thế hệ tiến hóa phương pháp luận căn bản:
+
+Thế hệ thứ nhất là Naive RAG, hoạt động dựa trên nguyên lý phân đoạn văn bản thành các khối nhỏ (chunks), chuyển đổi các khối văn bản thành véc-tơ đặc trưng thông qua mô hình nhúng ngữ nghĩa (Embedding Model), và truy xuất các đoạn văn bản liên quan nhất bằng độ đo tương đồng Cosine:
+\begin{equation}
+    \text{Sim}(\mathbf{q}, \mathbf{d}) = \frac{\mathbf{q} \cdot \mathbf{d}}{\|\mathbf{q}\|_2 \|\mathbf{d}\|_2}
+    \label{eq:cosine-sim}
+\end{equation}
+trong đó $\mathbf{q} \in \mathbb{R}^D$ là véc-tơ biểu diễn câu hỏi truy vấn của người dùng; $\mathbf{d} \in \mathbb{R}^D$ là véc-tơ biểu diễn khối tài liệu lưu trữ; $\|\cdot\|_2$ là chuẩn Euclid cấp 2; và $\text{Sim}(\mathbf{q}, \mathbf{d}) \in [-1, 1]$ là hệ số tương đồng cô-sin đo lường mức độ đồng hướng ngữ nghĩa trong không gian véc-tơ $D$ chiều.
+
+Nhược điểm chí tử của Naive RAG trong bài toán du lịch là tính chất hoàn toàn ``mù không gian'' (Space-agnostic limitation). Công thức (\ref{eq:cosine-sim}) chỉ đo lường sự tương đồng về mặt từ vựng và ngữ nghĩa bề mặt. Khi một du khách đặt câu hỏi ``Gợi ý quán bún bò ngon gần Đại Nội Huế'', Naive RAG sẽ dễ dàng truy xuất các bài nhận xét ca ngợi một quán bún bò nổi tiếng tại thị trấn Lăng Cô hoặc đầm Lập An chỉ vì đoạn văn bản chứa nhiều từ khóa tích cực về bún bò, bất chấp việc địa điểm này cách xa Đại Nội tới hơn 60 kilômét.
+
+Thế hệ thứ hai là GraphRAG, được tiên phong bởi Microsoft Research~\cite{edge2024graphrag}, khắc phục hạn chế trên bằng cách tổ chức tri thức dưới dạng đồ thị có cấu trúc. Thay vì chỉ truy xuất các đoạn văn bản rời rạc, GraphRAG khai thác các đường đi liên kết trên đồ thị (Graph Traversal) để tổng hợp tri thức đa chặng (multi-hop reasoning), giúp mô hình nắm bắt được mối quan hệ phân cấp giữa thành phố, phường xã, điểm di tích và các cơ sở kinh doanh lân cận.
+
+Thế hệ thứ ba là Agentic RAG, chuyển dịch từ luồng xử lý tuyến tính cố định sang mô hình tác tử tự chủ có khả năng tự suy ngẫm (Self-reflection), tự đánh giá chất lượng thông tin truy xuất (Confidence Grading), và định tuyến động (Dynamic Routing) giữa nhiều công cụ khác nhau~\cite{pan2024unifying}. Khi tri thức nội bộ từ đồ thị không đủ độ tin cậy để trả lời các sự kiện thời gian thực (như giá vé mới cập nhật hay lễ hội đột xuất), tác tử có khả năng tự động rẽ nhánh sang công cụ tìm kiếm mạng (Web Search Fallback) nhằm bổ sung thông tin kịp thời.
+
+\subsection*{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5}
+\addcontentsline{toc}{subsection}{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5}
+
+Để hiện thực hóa kiến trúc Agentic RAG với khả năng kiểm soát luồng thực thi nghiêm ngặt, thư viện LangGraph được lựa chọn làm nền tảng điều phối~\cite{langgraph2024}. Khác với các chuỗi xử lý một chiều tuần tự thông thường, LangGraph mô hình hóa toàn bộ quá trình xử lý như một Đồ thị Trạng thái hữu hạn (StateGraph) có chu trình. Trạng thái của hệ thống được đóng gói trong một cấu trúc dữ liệu chung (GraphState) chứa đựng toàn bộ ngữ cảnh bao gồm câu hỏi của du khách, các thực thể đã nhận diện, các nút đồ thị đã truy xuất, điểm số tin cậy và phản hồi tạo sinh cuối cùng.
+
+Các nút xử lý trong đồ thị trạng thái thực hiện các chức năng phân lập: nút trích xuất thực thể, nút truy vấn đồ thị không gian, nút đánh giá độ tin cậy của ngữ cảnh, nút tìm kiếm bổ trợ và nút sinh câu trả lời. Sự chuyển tiếp giữa các nút được điều khiển bởi các Cạnh có điều kiện (Conditional Edges) dựa trên các ngưỡng xác suất toán học.
+
+Về mô hình suy luận ngôn ngữ, nghiên cứu tích hợp mô hình mã nguồn mở Qwen2.5-3B-Instruct do Alibaba Cloud phát triển~\cite{qwen2024team}, vận hành nội bộ thông qua môi trường thực thi Ollama trên máy trạm cá nhân. Qwen2.5-3B là mô hình ngôn ngữ thế hệ mới đạt năng lực vượt trội về khả năng hiểu tiếng Việt, tuân thủ chỉ dẫn định dạng có cấu trúc (JSON Schema) và khả năng suy luận logic trong phân khúc mô hình dưới 7 tỷ tham số. Việc vận hành mô hình hoàn toàn cục bộ trên GPU cá nhân (NVIDIA RTX 3050 với 4GB VRAM) bảo đảm ba ưu thế cốt tử: triệt tiêu 100\% chi phí cuộc gọi API thương mại (Zero API Cost), bảo mật tuyệt đối dữ liệu người dùng, và bảo đảm tính sẵn sàng hoạt động ngoại tuyến phục vụ các kịch bản triển khai tại địa phương.
+
+\subsection*{1.4. Khai phá thực đơn ngầm từ Dữ liệu Nhận xét Du khách}
+\addcontentsline{toc}{subsection}{1.4. Khai phá thực đơn ngầm từ Dữ liệu Nhận xét Du khách}
+
+Một trong những hạn chế lớn của các hệ thống gợi ý ẩm thực hiện nay là sự phụ thuộc vào các menu tĩnh đăng ký trên giấy phép kinh doanh, vốn chỉ liệt kê tên quán và danh mục chung mà không phản ánh được món ăn thực sự làm nên danh tiếng của quán. Trong thực tế, du khách đến một quán ăn cụ thể thường vì một hoặc hai món đặc sản gia truyền được cộng đồng truyền tai nhau.
+
+Để giải quyết khoảng trống này, kỹ thuật Khai phá thực đơn ngầm (Implicit Menu Mining) được đề xuất thông qua việc kết hợp Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer gồm 570 món ăn chuẩn hóa) với thuật toán đối sánh chuỗi thực thể mờ (Fuzzy String Entity Linking) trên tập ngữ liệu 1,69 triệu bài nhận xét du khách từ TripAdvisor~\cite{tripadvisor2024}. Một cạnh quan hệ $\mathbf{e}_{\text{SERVES}} = (u, \text{SERVES}, m)$ liên kết giữa nhà hàng $u$ và món ăn $m$ chỉ được hình thành trên đồ thị khi thỏa mãn điều kiện ngưỡng tần suất và chỉ số tin cậy thống kê:
+\begin{equation}
+    \text{Conf}(u, m) = \frac{\sum_{k \in \mathcal{K}_u} \mathbb{I}(m \in \text{text}_k) \cdot \text{Rating}_k}{\sum_{k \in \mathcal{K}_u} \text{Rating}_k} \ge \tau_{\text{dish}}
+    \label{eq:dish-confidence}
+\end{equation}
+trong đó $\mathcal{K}_u$ là tập hợp toàn bộ các bài đánh giá viết về nhà hàng $u$; $\mathbb{I}(\cdot)$ là hàm chỉ thị nhị phân có giá trị bằng 1 nếu món ăn $m$ xuất hiện trong nội dung bài nhận xét thứ $k$ và bằng 0 trong trường hợp ngược lại; $\text{Rating}_k \in [1, 5]$ là điểm số hài lòng của du khách trong bài nhận xét $k$; và $\tau_{\text{dish}}$ là ngưỡng tin cậy tối thiểu để xác lập quan hệ phục vụ món ăn. Nhờ cơ chế này, đồ thị tri thức không chỉ biết nhà hàng bán món gì, mà còn định lượng được mức độ bảo chứng của cộng đồng du khách đối với từng món đặc sản cụ thể.
+
+\section*{2. Tổng quan các công trình nghiên cứu liên quan}
+\addcontentsline{toc}{section}{2. Tổng quan các công trình nghiên cứu liên quan}
+
+\subsection*{2.1. Các hướng tiếp cận RAG và GraphRAG trong miền Du lịch}
+\addcontentsline{toc}{subsection}{2.1. Các hướng tiếp cận RAG và GraphRAG trong miền Du lịch}
+
+Kể từ khi kiến trúc RAG được Lewis và các cộng sự giới thiệu vào năm 2020~\cite{lewis2020rag}, ứng dụng của nó trong lĩnh vực du lịch và dịch vụ lữ hành đã thu hút sự chú ý sâu sắc của giới học thuật. Hầu hết các nghiên cứu giai đoạn đầu tập trung vào việc nhúng các cẩm nang hướng dẫn du lịch vào kho vector và áp dụng mô hình ngôn ngữ lớn để trả lời câu hỏi của người dùng. Tuy nhiên, các báo cáo gần đây chỉ ra rằng các hệ thống Naive RAG thuần túy bộc lộ tỷ lệ ảo giác đáng kể đối với các địa danh ít phổ biến và gặp khó khăn lớn khi phải tổng hợp thông tin phân bố qua nhiều trang tài liệu khác nhau.
+
+Sự xuất hiện của GraphRAG do Edge và các đồng nghiệp đề xuất vào năm 2024~\cite{edge2024graphrag} đã đánh dấu một bước chuyển dịch quan trọng, chứng minh rằng việc xây dựng đồ thị tri thức từ văn bản cho phép LLM nắm bắt được cấu trúc toàn cục và thực hiện suy luận tổng hợp tốt hơn nhiều so với việc chỉ đối sánh các đoạn văn bản cục bộ. Nghiên cứu của Pan và các cộng sự năm 2024~\cite{pan2024unifying} đã hệ thống hóa lộ trình hợp nhất giữa LLM và Đồ thị Tri thức, khẳng định rằng đồ thị đóng vai trò là một cơ chế neo giữ chân lý (Grounding Anchor), giúp hạn chế triệt để ảo giác của LLM thông qua các ràng buộc logic có cấu trúc. Dù vậy, phần lớn các công trình GraphRAG hiện nay vẫn chỉ tập trung vào các quan hệ ngữ nghĩa văn bản trừu tượng mà chưa tích hợp sâu các đặc tính không gian địa lý vào cấu trúc đồ thị.
+
+\subsection*{2.2. Các giải pháp định tuyến và Lập lịch trình du lịch thông minh}
+\addcontentsline{toc}{subsection}{2.2. Các giải pháp định tuyến và Lập lịch trình du lịch thông minh}
+
+Bài toán Lập lịch trình du lịch tự động (Tourist Trip Design Problem -- TTDP) là một bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem). Các tiếp cận truyền thống thường sử dụng các thuật giải di truyền (Genetic Algorithms), tối ưu hóa bầy đàn (Particle Swarm Optimization) hoặc quy hoạch động để tìm kiếm tuyến đường tối đa hóa điểm số ưa thích của du khách trong giới hạn ngân sách thời gian.
+
+Trong những năm gần đây, xu hướng tích hợp LLM vào bài toán TTDP đã mở ra khả năng hiểu sâu ngôn ngữ tự nhiên và nắm bắt sở thích phức tạp của người dùng. Tuy nhiên, việc để LLM tự do sinh lịch trình mà không có sự kiểm soát của giải thuật không gian thường dẫn đến các tuyến đường đi lại ziczac, phân bố thời gian phi thực tế và vi phạm nghiêm trọng cự ly di chuyển giữa các điểm đến. Nghiên cứu của Ballatore và các đồng sự~\cite{ballatore2014spatial} đã nhấn mạnh tầm quan trọng của việc kiểm soát chất lượng dữ liệu không gian trong các dịch vụ định vị. Do đó, việc kết hợp giữa năng lực hiểu ngôn ngữ của LLM và thuật toán phân cụm địa lý có kiểm soát ràng buộc cự ly là hướng đi tất yếu để tạo ra các lịch trình du lịch khả thi trong thực tiễn.
+
+\section*{3. Nhận diện các khoảng trống nghiên cứu}
+\addcontentsline{toc}{section}{3. Nhận diện các khoảng trống nghiên cứu}
+
+Qua quá trình khảo cứu hệ thống các công trình khoa học trong và ngoài nước, khóa luận nhận diện ba khoảng trống nghiên cứu then chốt mà các giải pháp hiện nay chưa giải quyết thỏa đáng:
+
+Khoảng trống thứ nhất (Spatial-Semantic Disconnect): Tồn tại sự chia cắt giữa mô hình hóa ngữ nghĩa văn bản và mô hình hóa không gian địa lý. Các hệ thống RAG hiện tại hoặc chỉ tập trung vào văn bản (mù về tọa độ GPS và địa hình), hoặc các hệ thống bản đồ số (GIS) chỉ xử lý tọa độ mà thiếu khả năng đọc hiểu ngữ cảnh tự nhiên và đánh giá của con người. Chưa có một kiến trúc tích hợp mở nào dung hợp được bán kính lân cận mặt cầu Haversine vào chính các cạnh quan hệ của Đồ thị Tri thức để phục vụ suy luận LLM.
+
+Khoảng trống thứ hai (Local Entity Hallucination): Các mô hình ngôn ngữ lớn thương mại có tỷ lệ ảo giác rất cao đối với các thực thể du lịch cấp địa phương (đặc biệt là các quán ăn dân dã, ngõ hẻm lịch sử tại Huế), trong khi việc tinh chỉnh (fine-tuning) toàn bộ mô hình đòi hỏi chi phí tính toán khổng lồ và dữ liệu nhanh chóng bị lỗi thời. Nhu cầu đặt ra là một cơ chế neo giữ tri thức thực thể thông qua Đồ thị Tri thức cục bộ để đạt tỷ lệ bảo chứng thực thể 100\% mà không cần đào tạo lại mô hình nền tảng.
+
+Khoảng trống thứ ba (Unstructured Review Underutilization): Nguồn tài nguyên dữ liệu khổng lồ từ hàng triệu bài đánh giá của du khách trên các nền tảng mạng xã hội du lịch chưa được khai thác có hệ thống để giải quyết bài toán menu ngầm và thị hiếu ẩm thực địa phương. Đa số các ứng dụng du lịch vẫn dựa vào danh mục ẩm thực tĩnh do chủ quán tự đăng ký, dẫn đến việc tư vấn sai lệch sở thích ẩm thực thực tế của du khách.
+
+Khóa luận này được xây dựng nhằm giải quyết đồng bộ và triệt để cả ba khoảng trống nghiên cứu nói trên thông qua kiến trúc Spatial GraphRAG chuyên biệt cho du lịch Cố đô Huế.

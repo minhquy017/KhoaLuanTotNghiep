@@ -68,7 +68,7 @@
       <section class="spatial-canvas-panel" aria-label="Bản đồ không gian Cố đô Huế">
         <div class="map-toolbar">
           <div class="toolbar-title">
-            <span class="toolbar-meta" id="map-active-meta">Toàn cảnh Di sản Cố Đô Huế</span>
+            <span class="toolbar-meta" id="map-active-meta">Toàn cảnh 32 Điểm Di sản Cố Đô Huế</span>
           </div>
           <div class="toolbar-actions">
             <select class="map-style-select" id="select-map-style" title="Chọn phong cách giao diện bản đồ">
@@ -79,9 +79,57 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
               <span>Về Trung Tâm</span>
             </button>
-            <button class="map-btn" id="btn-toggle-radius" title="Hiển thị vùng lân cận 1.5km">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>
-              <span>Bán Kính 1.5km</span>
+            <div class="radius-control-pill" title="Phân tích bán kính không gian xung quanh trục Sông Hương">
+              <button class="map-btn btn-radius-toggle" id="btn-toggle-radius" title="Bật/Tắt vòng tròn bán kính">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>
+                <span id="radius-btn-label">Bán Kính</span>
+              </button>
+              <select class="map-radius-select" id="select-radius-range" title="Chọn cự ly bán kính phân tích">
+                <option value="500">500 m</option>
+                <option value="1000">1.0 km</option>
+                <option value="1500" selected>1.5 km</option>
+                <option value="2500">2.5 km</option>
+                <option value="5000">5.0 km</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thanh Tìm kiếm Nhanh & Bộ lọc Danh mục Điểm đến -->
+        <div class="map-controls-strip">
+          <div class="map-search-wrapper">
+            <div class="map-search-box">
+              <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" id="map-search-input" placeholder="Tìm kiếm nhanh di tích, chùa, quán bún bò, cà phê, khách sạn..." autocomplete="off">
+              <button type="button" id="btn-clear-search" class="btn-clear-search" style="display: none;" title="Xóa tìm kiếm">✕</button>
+            </div>
+            <div id="map-search-dropdown" class="map-search-dropdown" style="display: none;"></div>
+          </div>
+
+          <div class="map-filter-chips" role="group" aria-label="Bộ lọc danh mục địa điểm">
+            <button class="filter-chip active" data-category="all" title="Hiển thị tất cả 32 địa điểm Cố Đô">
+              <span class="chip-label">Tất cả</span>
+              <span class="chip-count" id="count-all">32</span>
+            </button>
+            <button class="filter-chip" data-category="attraction" title="Quần thể di tích lịch sử, thắng cảnh, lăng tẩm & chùa">
+              <span class="chip-icon">🏯</span>
+              <span class="chip-label">Di tích & Điểm đến</span>
+              <span class="chip-count" id="count-attraction">15</span>
+            </button>
+            <button class="filter-chip" data-category="restaurant" title="Ẩm thực truyền thống, quán bún bò, bánh bèo Cố Đô">
+              <span class="chip-icon">🍲</span>
+              <span class="chip-label">Ẩm thực & Quán ăn</span>
+              <span class="chip-count" id="count-restaurant">9</span>
+            </button>
+            <button class="filter-chip" data-category="cafe" title="Cà phê view đẹp, điểm ngắm hoàng hôn sông Hương & đồi thông">
+              <span class="chip-icon">☕</span>
+              <span class="chip-label">Cà phê & Sunset</span>
+              <span class="chip-count" id="count-cafe">4</span>
+            </button>
+            <button class="filter-chip" data-category="hotel" title="Khách sạn boutique, resort nghỉ dưỡng">
+              <span class="chip-icon">🏨</span>
+              <span class="chip-label">Khách sạn & Resort</span>
+              <span class="chip-count" id="count-hotel">4</span>
             </button>
           </div>
         </div>
@@ -91,8 +139,10 @@
         <div class="map-legend">
           <div class="legend-item"><span class="legend-dot dot-attraction"></span> Di tích / Thắng cảnh</div>
           <div class="legend-item"><span class="legend-dot dot-restaurant"></span> Ẩm thực Cố Đô</div>
+          <div class="legend-item"><span class="legend-dot dot-cafe"></span> Cà phê & Sunset</div>
+          <div class="legend-item"><span class="legend-dot dot-hotel"></span> Khách sạn / Nghỉ dưỡng</div>
           <div class="legend-item"><span class="legend-line line-route"></span> Tuyến Tour Tối Ưu</div>
-          <div class="legend-item"><span class="legend-circle circle-radius"></span> Vùng R ≤ 1.5km</div>
+          <div class="legend-item"><span class="legend-circle circle-radius"></span> Vùng R ≤ <span id="legend-radius-val">1.5</span>km</div>
         </div>
       </section>
 
@@ -208,6 +258,91 @@
 
       </section>
     </main>
+
+    <!-- POI Deep-dive Slide-out Drawer Panel -->
+    <aside class="poi-drawer" id="poi-drawer" aria-hidden="true" role="dialog" aria-labelledby="poi-title">
+      <!-- Backdrop overlay -->
+      <div class="poi-drawer-backdrop" id="poi-drawer-backdrop"></div>
+
+      <!-- Sliding Panel Content -->
+      <div class="poi-drawer-panel">
+        <!-- Header -->
+        <div class="poi-drawer-header">
+          <div class="poi-header-badges">
+            <span class="poi-cat-badge" id="poi-cat-badge">🏯 Di tích & Thắng cảnh</span>
+            <div class="poi-rating-pill" id="poi-rating-pill">
+              <span class="star-icon">⭐</span>
+              <strong id="poi-rating-val">4.8</strong>
+              <span class="review-count" id="poi-review-count">(TripAdvisor)</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close-drawer" id="btn-close-drawer" title="Đóng cửa sổ chi tiết (Esc)">✕</button>
+        </div>
+
+        <div class="poi-drawer-body">
+          <!-- Title & Address -->
+          <h2 class="poi-title" id="poi-title">Đại Nội Huế (Hoàng Thành)</h2>
+          <p class="poi-address">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span id="poi-address-text">Kinh thành Huế, TP Huế</span>
+          </p>
+
+          <!-- Overview description -->
+          <div class="poi-section">
+            <h3 class="poi-section-title">📖 Giới Thiệu Tổng Quan</h3>
+            <p class="poi-desc-text" id="poi-desc-text">Kinh thành Huế · Hoàng cung triều Nguyễn cổ kính.</p>
+          </div>
+
+          <!-- Extracted Menu from SERVES edges in KG -->
+          <div class="poi-section" id="poi-section-dishes">
+            <h3 class="poi-section-title">
+              <span>🍲 Thực Đơn Đặc Sản Nổi Bật</span>
+              <span class="section-meta-tag">Cạnh SERVES</span>
+            </h3>
+            <div class="poi-dishes-grid" id="poi-dishes-grid">
+              <!-- Dish chips rendered here -->
+            </div>
+          </div>
+
+          <!-- Real Visitor Reviews from SQLite / ChromaDB -->
+          <div class="poi-section" id="poi-section-reviews">
+            <h3 class="poi-section-title">
+              <span>💬 Nhận Xét Chân Thực Từ Du Khách</span>
+              <span class="section-meta-tag">TripAdvisor</span>
+            </h3>
+            <div class="poi-reviews-list" id="poi-reviews-list">
+              <!-- Reviews rendered here -->
+            </div>
+          </div>
+
+          <!-- Nearby Places from NEAR_BY edges in KG -->
+          <div class="poi-section" id="poi-section-nearby">
+            <h3 class="poi-section-title">
+              <span>📍 Điểm Đến Lân Cận (&le; 1.5km)</span>
+              <span class="section-meta-tag">Cạnh NEAR_BY</span>
+            </h3>
+            <div class="poi-nearby-list" id="poi-nearby-list">
+              <!-- Nearby places rendered here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="poi-drawer-footer">
+          <a href="#" target="_blank" rel="noopener noreferrer" class="btn-drawer btn-google-nav" id="poi-btn-google-maps">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            <span>Chỉ Đường Google Maps</span>
+          </a>
+          <button type="button" class="btn-drawer btn-add-tour" id="poi-btn-add-tour">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span>Thêm Vào Tour</span>
+          </button>
+          <button type="button" class="btn-drawer btn-ask-ai" id="poi-btn-ask-ai" title="Hỏi trợ lý AI về điểm này">
+            <span>💬 Hỏi AI</span>
+          </button>
+        </div>
+      </div>
+    </aside>
 
     <!-- Site Footer -->
     <footer class="site-footer">

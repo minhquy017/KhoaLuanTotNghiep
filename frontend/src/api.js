@@ -103,4 +103,19 @@ export class TourismApiClient {
     if (!res.ok) throw new Error(`Lỗi tra cứu lân cận (HTTP ${res.status})`);
     return await res.json();
   }
+
+  /**
+   * Tra cứu hồ sơ chi tiết chuyên sâu của địa điểm (POI Deep-dive: Rating, Reviews, Cạnh SERVES, Cạnh NEAR_BY)
+   * @param {string} name - Tên địa điểm
+   * @param {string} [placeId] - ID địa điểm
+   */
+  static async getPlaceDetail(name, placeId = null) {
+    const params = new URLSearchParams();
+    if (name) params.append('name', name);
+    if (placeId) params.append('place_id', placeId);
+
+    const res = await fetch(`${API_BASE_URL}/api/v1/kg/places/detail?${params.toString()}`);
+    if (!res.ok) throw new Error(`Lỗi tra cứu chi tiết địa điểm (HTTP ${res.status})`);
+    return await res.json();
+  }
 }
