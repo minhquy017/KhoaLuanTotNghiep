@@ -4,6 +4,11 @@
 // =============================================================================
 
 import L from 'leaflet';
+window.L = L;
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import hueTopPlaces from './hue_top_places.json';
 
 export class SpatialMapStudio {
   constructor(containerId = 'map-container') {
@@ -20,48 +25,8 @@ export class SpatialMapStudio {
     this.currentTileLayer = null;
     this.markerInstances = new Map();
 
-    // Dữ liệu Địa danh & Cơ sở Dịch vụ Chuẩn Cố Đô Huế (32 địa điểm chia 4 nhóm danh mục)
-    this.masterLandmarks = [
-      // 1. Quần thể Di sản & Thắng cảnh (Attraction)
-      { name: 'Đại Nội Huế (Hoàng Thành)', lat: 16.4690, lng: 107.5781, cat: 'Attraction', desc: 'Kinh thành Huế · Hoàng cung triều Nguyễn', tags: 'hoang thanh, dai noi, kinh thanh, ngo mon' },
-      { name: 'Chùa Thiên Mụ', lat: 16.4537, lng: 107.5446, cat: 'Attraction', desc: 'Đồi Hà Khê · Cổ tự hơn 400 năm bên bờ sông Hương', tags: 'thien mu, chua, phat giao, song huong' },
-      { name: 'Lăng Tự Đức (Khiêm Lăng)', lat: 16.4330, lng: 107.5664, cat: 'Attraction', desc: 'Thủy Xuân · Quần thể lăng tẩm thơ mộng bậc nhất triều Nguyễn', tags: 'tu duc, khiem lang, lang tam' },
-      { name: 'Lăng Khải Định (Ứng Lăng)', lat: 16.3990, lng: 107.5903, cat: 'Attraction', desc: 'Châu Chữ, Thủy Bằng · Kiệt tác khảm sành sứ giao thoa Đông - Tây', tags: 'khai dinh, ung lang, kien truc' },
-      { name: 'Lăng Minh Mạng (Hiếu Lăng)', lat: 16.3877, lng: 107.5692, cat: 'Attraction', desc: 'Hương Thọ · Quần thể lăng đăng đối uy nghiêm bên dòng Tả Trạch', tags: 'minh mang, hieu lang, phong thuy' },
-      { name: 'Lăng Đồng Khánh', lat: 16.4300, lng: 107.5700, cat: 'Attraction', desc: 'Thượng Hai, Thủy Xuân · Công trình kiến trúc cung đình tinh xảo', tags: 'dong khanh, lang tam' },
-      { name: 'Lăng Gia Long (Thiên Thọ Lăng)', lat: 16.3532, lng: 107.5855, cat: 'Attraction', desc: 'Hương Thọ · Nơi an nghỉ của vị vua sáng lập triều Nguyễn giữa rừng thông', tags: 'gia long, thien tho lang' },
-      { name: 'Cầu Trường Tiền', lat: 16.4676, lng: 107.5900, cat: 'Attraction', desc: 'Sông Hương, TP Huế · Biểu tượng lịch sử 6 vài 12 nhịp', tags: 'truong tien, trang tien, cau, song huong' },
-      { name: 'Chợ Đông Ba', lat: 16.4725, lng: 107.5886, cat: 'Attraction', desc: 'Trần Hưng Đạo · Chợ truyền thống lớn nhất Cố Đô với muôn vàn đặc sản', tags: 'dong ba, cho, dac san' },
-      { name: 'Đồi Vọng Cảnh', lat: 16.4255, lng: 107.5505, cat: 'Attraction', desc: 'Thủy Xuân · Tầm nhìn bao quát khúc uốn sông Hương và đồi thông lãng mạn', tags: 'vong canh, sunset, doi, view' },
-      { name: 'Làng hương Thủy Xuân', lat: 16.4385, lng: 107.5680, cat: 'Attraction', desc: 'Huyền Trân Công Chúa · Làng nghề tăm hương sắc màu rực rỡ', tags: 'thuy xuan, lang huong, checkin' },
-      { name: 'Chùa Từ Hiếu', lat: 16.4390, lng: 107.5819, cat: 'Attraction', desc: 'Thủy Xuân · Cổ tự yên bình gắn liền Thiền sư Thích Nhất Hạnh và lăng Thái giám', tags: 'tu hieu, chua, thien' },
-      { name: 'Cầu ngói Thanh Toàn', lat: 16.4668, lng: 107.6427, cat: 'Attraction', desc: 'Thủy Thanh, Hương Thủy · Cây cầu ngói cổ kính độc đáo bên dòng sông Như Ý', tags: 'thanh toan, cau ngoi' },
-      { name: 'Điện Hòn Chén', lat: 16.4316, lng: 107.5312, cat: 'Attraction', desc: 'Núi Ngọc Trản, Hương Thọ · Thánh địa tín ngưỡng Mẫu Thiên Y A Na bên sông Hương', tags: 'hon chen, ngoctrann, dien' },
-      { name: 'Đầm Chuồn (Phá Tam Giang)', lat: 16.5050, lng: 107.6480, cat: 'Attraction', desc: 'Phú An, Phú Vang · Đầm nước lợ trù phú ngắm bình minh và thưởng thức hải sản', tags: 'dam chuon, pha tam giang, song nuoc' },
-
-      // 2. Ẩm thực & Quán ăn truyền thống (Restaurant)
-      { name: 'Bún bò Cẩm', lat: 16.4668, lng: 107.5931, cat: 'Restaurant', desc: '38 Trần Cao Vân, Phú Hội · Bún bò Huế chuẩn vị đậm đà thơm mùi sả ruốc', tags: 'bun bo, cam, an sang' },
-      { name: 'Bún bò Bà Tám', lat: 16.4735, lng: 107.5820, cat: 'Restaurant', desc: '23 Chu Văn An, Phú Hội · Nước dùng thanh ngọt, thịt bắp bò mềm ngậy', tags: 'bun bo, ba tam' },
-      { name: 'Bánh bèo Bà Đỏ', lat: 16.4823, lng: 107.5893, cat: 'Restaurant', desc: '8 Nguyễn Bỉnh Khiêm, Gia Hội · Khay bánh bèo chén, bánh nậm tôm thịt, lọc giòn', tags: 'banh beo, ba do, banh nam, banh loc' },
-      { name: 'Cơm hến Hoa Đông', lat: 16.4716, lng: 107.6042, cat: 'Restaurant', desc: '64 kiệt 7 Ưng Bình, Cồn Hến · Quán cơm hến, mì hến trứ danh cái nôi Cồn Hến', tags: 'com hen, hoa dong, con hen, mi hen' },
-      { name: 'Bánh khoái Lạc Thiện', lat: 16.4720, lng: 107.5780, cat: 'Restaurant', desc: '6 Đinh Tiên Hoàng, Phú Hòa · Vỏ giòn rụm, nước lèo tương gan lạc gia truyền lâu đời', tags: 'banh khoai, lac thien, nem lui' },
-      { name: 'Chè Hẻm Huế', lat: 16.4630, lng: 107.5940, cat: 'Restaurant', desc: 'Kiệt 29 Hùng Vương, Phú Hội · Chè bột lọc heo quay, chè hạt sen long nhãn Cố Đô', tags: 'che hem, che heo quay, che bot loc, trang mieng' },
-      { name: 'Quán chay Sân Mây', lat: 16.4522, lng: 107.5645, cat: 'Restaurant', desc: '8 Thanh Tịnh, Vỹ Dạ · Không gian thiền vị nhà rường cổ kính và ẩm thực chay thanh tịnh', tags: 'an chay, san may, com chay' },
-      { name: 'Cơm niêu Không Gian Xưa', lat: 16.4578, lng: 107.5992, cat: 'Restaurant', desc: '205 Điện Biên Phủ, Trường An · Bữa cơm gia đình thuần Việt trong quần thể nhà rường', tags: 'com nieu, khong gian xua' },
-      { name: 'Bánh ướt thịt nướng Huyền Anh', lat: 16.4545, lng: 107.5532, cat: 'Restaurant', desc: '50 Kim Long, TP Huế · Bánh ướt trắng mềm cuốn thịt nướng chấm tương đậu mè béo ngậy', tags: 'banh uot, thit nuong, huyen anh, kim long' },
-
-      // 3. Cà phê & Điểm ngắm Hoàng hôn (Cafe)
-      { name: 'Cà phê Muối Đặng Thái Thân', lat: 16.4712, lng: 107.5762, cat: 'Cafe', desc: '10 Đặng Thái Thân, Thuận Thành · Khởi nguồn món Cà phê muối trứ danh của xứ Huế', tags: 'ca phe muoi, dang thai than, cafe' },
-      { name: 'Tân Cafe Đinh Tiên Hoàng', lat: 16.4738, lng: 107.5775, cat: 'Cafe', desc: '14 Đinh Tiên Hoàng, Thuận Thành · Phong cách bao cấp hoài cổ, không gian cây xanh', tags: 'tan cafe, vintage, cafe' },
-      { name: 'Vọng Cảnh Sunset Coffee', lat: 16.4251, lng: 107.5510, cat: 'Cafe', desc: 'Đồi Vọng Cảnh, Thủy Xuân · Quán cafe đồi thông ngắm hoàng hôn buông xuống dòng sông Hương', tags: 'sunset, vong canh, cafe' },
-      { name: 'The Busa Park Huế', lat: 16.4670, lng: 107.5985, cat: 'Cafe', desc: 'Bờ sông Hương, Phú Hội · Không gian lounge ngoài trời ngắm cầu Trường Tiền về đêm', tags: 'busa park, lounge, riverside, song huong' },
-
-      // 4. Khách sạn & Nghỉ dưỡng (Hotel)
-      { name: 'Saigon Morin Hotel', lat: 16.4678, lng: 107.5912, cat: 'Hotel', desc: '30 Lê Lợi, Phú Hội · Khách sạn thuộc địa Pháp cổ kính nhất miền Trung từ năm 1901', tags: 'saigon morin, hotel, khach san, le loi' },
-      { name: 'Silk Path Grand Hue Hotel', lat: 16.4570, lng: 107.5878, cat: 'Hotel', desc: '02 Lê Lợi, Vĩnh Ninh · Khách sạn 5 sao mang phong cách quý tộc cung đình trang nhã', tags: 'silk path, resort, khach san 5 sao' },
-      { name: 'Pilgrimage Village Boutique Resort', lat: 16.4290, lng: 107.5850, cat: 'Hotel', desc: '130 Minh Mạng, Thủy Xuân · Khu nghỉ dưỡng Làng Hành Hương mộc mạc giữa làng quê', tags: 'lang hanh huong, pilgrimage, resort' },
-      { name: 'Azerai La Residence Hue', lat: 16.4615, lng: 107.5822, cat: 'Hotel', desc: '05 Lê Lợi, Vĩnh Ninh · Biệt thự phong cách Art Deco danh tiếng ngắm sông Hương thơ mộng', tags: 'azerai, la residence, luxury, riverside' }
-    ];
+    // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố Đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
+    this.masterLandmarks = hueTopPlaces;
   }
 
   getTileUrlConfig(styleName) {
@@ -102,8 +67,40 @@ export class SpatialMapStudio {
     // Mặc định nạp bản đồ Google Maps sắc nét, hiện đại, tiếng Việt chuẩn
     this.setMapStyle('google_streets');
 
-    // Layer Groups
-    this.markersLayer = L.layerGroup().addTo(this.map);
+    // Layer Groups - Tích hợp MarkerClusterGroup với chùm ghim xếp lớp nghệ thuật (không hiển thị số khô khan)
+    if (typeof L.markerClusterGroup === 'function') {
+      this.markersLayer = L.markerClusterGroup({
+        maxClusterRadius: 42,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        disableClusteringAtZoom: 17,
+        iconCreateFunction: (cluster) => {
+          const count = cluster.getChildCount();
+          const isLarge = count > 12;
+          const isMedium = count > 4;
+
+          return L.divIcon({
+            html: `
+              <div class="stacked-cluster-pin ${isLarge ? 'cluster-large' : isMedium ? 'cluster-medium' : 'cluster-small'}" title="Quần thể điểm đến (Nhấp để mở rộng)">
+                <div class="pin-layer pin-back-left"></div>
+                ${isMedium ? '<div class="pin-layer pin-back-right"></div>' : ''}
+                <div class="pin-layer pin-front-center">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFFFFF">
+                    <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+                  </svg>
+                </div>
+              </div>
+            `,
+            className: 'marker-cluster-wrapper',
+            iconSize: L.point(38, 42),
+            iconAnchor: L.point(19, 36)
+          });
+        }
+      }).addTo(this.map);
+    } else {
+      this.markersLayer = L.layerGroup().addTo(this.map);
+    }
     this.routesLayer = L.layerGroup().addTo(this.map);
     this.radiusLayer = L.layerGroup().addTo(this.map);
 
@@ -140,7 +137,7 @@ export class SpatialMapStudio {
     // Bảng màu di sản Cố Đô có kỷ luật (chất gốm sứ, ngói lưu ly và thổ nhưỡng)
     let pinColor = '#B45309'; // Di tích: Vàng thổ hoàng / Hoàng cung
     let svgIcon = `
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/>
       </svg>
     `;
@@ -148,21 +145,21 @@ export class SpatialMapStudio {
     if (catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán')) {
       pinColor = '#C2410C'; // Ẩm thực: Đỏ gạch / Đất nung
       svgIcon = `
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/>
         </svg>
       `;
     } else if (catLower.includes('cafe') || catLower.includes('cà phê') || catLower.includes('sunset')) {
       pinColor = '#78350F'; // Cà phê & Sunset: Nâu hổ phách ấm
       svgIcon = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/>
         </svg>
       `;
     } else if (catLower.includes('hotel') || catLower.includes('khách sạn') || catLower.includes('resort')) {
       pinColor = '#0F766E'; // Khách sạn & Nghỉ dưỡng: Xanh chàm trầm
       svgIcon = `
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/>
         </svg>
       `;
@@ -195,23 +192,23 @@ export class SpatialMapStudio {
       html: `
         <div style="
           position: relative;
-          width: 32px;
-          height: 38px;
+          width: 28px;
+          height: 34px;
           display: flex;
           align-items: center;
           justify-content: center;
         ">
           ${stepBadgeHtml}
           <div style="
-            width: 30px;
-            height: 30px;
+            width: 26px;
+            height: 26px;
             background-color: ${pinColor};
             border-radius: 50% 50% 50% 3px;
             transform: rotate(-45deg);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(28, 25, 23, 0.22);
+            box-shadow: 0 3px 8px rgba(28, 25, 23, 0.22);
             border: 2px solid #FFFFFF;
             transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
           ">
@@ -224,9 +221,9 @@ export class SpatialMapStudio {
           </div>
         </div>
       `,
-      iconSize: [32, 38],
-      iconAnchor: [16, 36],
-      popupAnchor: [0, -34]
+      iconSize: [28, 34],
+      iconAnchor: [14, 32],
+      popupAnchor: [0, -30]
     });
   }
 
@@ -318,7 +315,7 @@ export class SpatialMapStudio {
 
     const latlngs = [];
     filtered.forEach(p => {
-      const marker = this.addPoi(p.lat, p.lng, p.name, p.cat, p.desc);
+      const marker = this.addPoi(p.lat, p.lng, p.name, p.cat, p.desc, null, p.place_id);
       if (marker) {
         this.markerInstances.set(p.name, marker);
         latlngs.push([p.lat, p.lng]);
@@ -376,7 +373,7 @@ export class SpatialMapStudio {
     let marker = this.markerInstances.get(poi.name);
     if (!marker) {
       // Nếu địa điểm chưa nằm trong layer do đang lọc danh mục khác, tạm thời thêm vào
-      marker = this.addPoi(poi.lat, poi.lng, poi.name, poi.cat, poi.desc);
+      marker = this.addPoi(poi.lat, poi.lng, poi.name, poi.cat, poi.desc, null, poi.place_id);
       this.markerInstances.set(poi.name, marker);
     }
 
@@ -393,7 +390,7 @@ export class SpatialMapStudio {
     this.filterByCategory('all');
   }
 
-  addPoi(lat, lng, name, category = 'Attraction', address = '', stepNumber = null) {
+  addPoi(lat, lng, name, category = 'Attraction', address = '', stepNumber = null, placeId = null) {
     if (!lat || !lng) return null;
     const icon = this.createCustomIcon(category, '', stepNumber);
 
@@ -402,6 +399,7 @@ export class SpatialMapStudio {
       : '';
 
     const safeName = (name || '').replace(/'/g, "\\'");
+    const safePlaceId = (placeId || '').replace(/'/g, "\\'");
     const popupHtml = `
       <div class="custom-leaflet-popup">
         ${stepLabel}
@@ -409,7 +407,7 @@ export class SpatialMapStudio {
         <div class="popup-category">${category}</div>
         <div class="popup-address">${address || 'Thành phố Huế'}</div>
         <div class="popup-actions">
-          <button type="button" class="btn-open-detail-popup" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}')">
+          <button type="button" class="btn-open-detail-popup" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}', '${safePlaceId}')">
             <span>Xem chi tiết</span> &rarr;
           </button>
           <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="popup-gmaps-link">

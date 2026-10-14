@@ -642,6 +642,92 @@ button, input, select, textarea {
   color: #FFFFFF;
 }
 
+/* Stacked Multi-Pin Cluster Styling (Không dùng con số - Tinh xảo & Nghệ thuật) */
+.marker-cluster-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.stacked-cluster-pin {
+  position: relative;
+  width: 38px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stacked-cluster-pin:hover {
+  transform: scale(1.15) translateY(-3px);
+}
+
+.stacked-cluster-pin .pin-layer {
+  position: absolute;
+  border-radius: 50% 50% 50% 3px;
+  box-shadow: 0 3px 8px rgba(180, 83, 9, 0.25);
+  border: 1.5px solid #FFFFFF;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ghim sau bên trái: Vàng thổ hoàng di sản */
+.stacked-cluster-pin .pin-back-left {
+  width: 23px;
+  height: 23px;
+  background-color: #D97706; /* Vàng hoàng cung rực rỡ */
+  bottom: 8px;
+  left: 1px;
+  transform: rotate(-68deg);
+  opacity: 0.95;
+  z-index: 1;
+}
+
+/* Ghim sau bên phải: Xanh chàm sông Hương */
+.stacked-cluster-pin .pin-back-right {
+  width: 23px;
+  height: 23px;
+  background-color: #0F766E; /* Xanh ngọc bích / sông Hương */
+  bottom: 8px;
+  right: 1px;
+  transform: rotate(-22deg);
+  opacity: 0.95;
+  z-index: 2;
+}
+
+/* Ghim chính diện ở giữa: Đỏ đất nung ấm áp */
+.stacked-cluster-pin .pin-front-center {
+  width: 27px;
+  height: 27px;
+  background-color: #C2410C; /* Đỏ gạch nung ấm áp Cố Đô */
+  bottom: 5px;
+  left: 5.5px;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(194, 65, 12, 0.35);
+  border: 2px solid #FFFFFF;
+  z-index: 3;
+}
+
+.stacked-cluster-pin .pin-front-center svg {
+  transform: rotate(45deg);
+}
+
+/* Hiệu ứng xòe ghim nhẹ nhàng khi rê chuột vào cụm */
+.stacked-cluster-pin:hover .pin-back-left {
+  transform: rotate(-82deg) translate(-5px, -3px);
+}
+
+.stacked-cluster-pin:hover .pin-back-right {
+  transform: rotate(-8deg) translate(5px, -3px);
+}
+
+.stacked-cluster-pin.cluster-large .pin-front-center {
+  box-shadow: 0 0 0 2px #FDE68A, 0 4px 12px rgba(194, 65, 12, 0.45);
+}
+
 /* Map Canvas Viewport */
 .map-viewport {
   flex: 1;

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 1. KHỞI TẠO BẢN ĐỒ KHÔNG GIAN
   const mapStudio = new SpatialMapStudio('map-container');
   mapStudio.init();
+  window.mapStudio = mapStudio;
 
   // 2. KIỂM TRA TRẠNG THÁI FASTAPI BACKEND
   const statusPill = document.getElementById('system-status-pill');
@@ -602,8 +603,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const poiTitle = document.getElementById('poi-title');
   const poiAddressText = document.getElementById('poi-address-text');
   const poiDescText = document.getElementById('poi-desc-text');
-  const poiSectionDishes = document.getElementById('poi-section-dishes');
-  const poiDishesGrid = document.getElementById('poi-dishes-grid');
   const poiSectionReviews = document.getElementById('poi-section-reviews');
   const poiReviewsList = document.getElementById('poi-reviews-list');
   const poiSectionNearby = document.getElementById('poi-section-nearby');
@@ -617,25 +616,58 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function openPoiDetail(name, placeId = null) {
     if (!name && !placeId) return;
 
-    // 1. Mở Drawer ngay lập tức với trạng thái loading
+    // 1. Mở Drawer ngay lập tức với trạng thái sẵn sàng
     poiDrawer?.classList.add('open');
     poiDrawer?.setAttribute('aria-hidden', 'false');
 
-    if (poiTitle) poiTitle.textContent = name || 'Đang tải thông tin...';
-    if (poiAddressText) poiAddressText.textContent = 'Đang tải thông tin địa điểm...';
-    if (poiDescText) poiDescText.textContent = 'Đang đồng bộ hồ sơ văn hóa và điểm đánh giá...';
-    if (poiDishesGrid) poiDishesGrid.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tải danh sách món nổi bật...</div>';
-    if (poiReviewsList) poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tải nhận xét từ du khách...</div>';
+    // Tìm dữ liệu địa phương từ masterLandmarks để hiển thị tức thì (Zero-latency fallback)
+    const localPlace = window.mapStudio?.masterLandmarks?.find(p => 
+      (placeId && p.place_id === placeId) || (name && p.name === name)
+    );
+
+    const initialName = localPlace?.name || name || 'Đang tải thông tin...';
+    if (poiTitle) poiTitle.textContent = initialName;
+    if (poiAddressText) poiAddressText.textContent = localPlace?.address || localPlace?.desc || 'Thành phố Huế';
+    if (poiDescText) poiDescText.textContent = localPlace?.desc || 'Đang đồng bộ hồ sơ văn hóa và điểm đánh giá...';
+
+    // Cập nhật nhãn category & rating sơ bộ từ dữ liệu bản đồ
+    const initialCat = (localPlace?.cat || 'Attraction').toLowerCase();
+    let initialCatClass = 'attraction';
+    let initialCatIcon = '🏯';
+    let initialCatLabel = 'Di tích & Thắng cảnh';
+
+    if (initialCat.includes('restaurant') || initialCat.includes('ẩm thực') || initialCat.includes('quán')) {
+      initialCatClass = 'restaurant';
+      initialCatIcon = '🍲';
+      initialCatLabel = 'Ẩm thực Cố Đô';
+    } else if (initialCat.includes('cafe') || initialCat.includes('cà phê') || initialCat.includes('sunset')) {
+      initialCatClass = 'cafe';
+      initialCatIcon = '☕';
+      initialCatLabel = 'Cà phê & Sunset';
+    } else if (initialCat.includes('hotel') || initialCat.includes('khách sạn') || initialCat.includes('resort')) {
+      initialCatClass = 'hotel';
+      initialCatIcon = '🏨';
+      initialCatLabel = 'Khách sạn / Resort';
+    }
+
+    if (poiCatBadge) {
+      poiCatBadge.className = `poi-cat-badge ${initialCatClass}`;
+      poiCatBadge.textContent = `${initialCatIcon} ${initialCatLabel}`;
+    }
+    if (poiRatingVal) poiRatingVal.textContent = (localPlace?.rating_value || 4.6).toFixed(1);
+    if (poiReviewCount) poiReviewCount.textContent = `(${localPlace?.review_count || 350} đánh giá)`;
+
+    if (poiReviewsList) poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang đồng bộ nhận xét từ du khách...</div>';
     if (poiNearbyList) poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tìm các địa điểm lân cận...</div>';
 
     try {
       const data = await TourismApiClient.getPlaceDetail(name, placeId);
       currentPoiData = data;
 
-      // 2. Cập nhật Tiêu đề và Địa chỉ
-      if (poiTitle) poiTitle.textContent = data.name;
-      if (poiAddressText) poiAddressText.textContent = data.address || 'Thành phố Huế';
-      if (poiDescText) poiDescText.textContent = data.description || 'Địa điểm du lịch và ẩm thực nổi tiếng tại Cố đô Huế.';
+      // 2. Cập nhật Tiêu đề và Địa chỉ (bảo vệ tránh lệch tên)
+      if (poiTitle) poiTitle.textContent = data.name || initialName;
+      if (poiAddressText) poiAddressText.textContent = data.address || localPlace?.address || 'Thành phố Huế';
+      if (poiDescText) poiDescText.textContent = data.description || localPlace?.desc || 'Địa điểm du lịch và ẩm thực nổi tiếng tại Cố đô Huế.';
 
       // 3. Category badge
       const cat = (data.category || '').toLowerCase();
@@ -666,27 +698,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || 4.7).toFixed(1);
       if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || 120} đánh giá)`;
 
-      // 5. Cạnh SERVES (Món đặc sản)
-      if (poiDishesGrid) {
-        if (data.dishes && data.dishes.length > 0) {
-          if (poiSectionDishes) poiSectionDishes.style.display = 'flex';
-          poiDishesGrid.innerHTML = data.dishes.map(d => `
-            <div class="poi-dish-chip">
-              <span>🍲</span>
-              <span>${d.name}</span>
-              <span class="dish-mention">${d.mention_count || 1} lượt nhắc · ⭐ ${d.avg_rating || 4.5}</span>
-            </div>
-          `).join('');
-        } else {
-          poiDishesGrid.innerHTML = `
-            <div style="font-size: 0.78rem; color: var(--color-ink-secondary); font-style: italic;">
-              ${catClass === 'attraction' ? 'Địa điểm di tích lịch sử, không kinh doanh ăn uống trực tiếp.' : 'Chưa có thông tin thực đơn chi tiết.'}
-            </div>
-          `;
-        }
-      }
-
-      // 6. Nhận xét chân thực từ du khách (TripAdvisor / SQLite)
+      // 5. Nhận xét chân thực từ du khách (TripAdvisor / SQLite)
       if (poiReviewsList) {
         if (data.reviews && data.reviews.length > 0) {
           if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
