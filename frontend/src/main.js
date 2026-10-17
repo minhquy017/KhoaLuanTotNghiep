@@ -478,14 +478,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     let dayTabsHtml = '';
     let dayContentsHtml = '';
 
+    const dayColors = {
+      1: '#2563EB',
+      2: '#D97706',
+      3: '#0D9488'
+    };
+
     plan.days.forEach((day, index) => {
       const isFirstDay = index === 0;
       const slots = day.slots || day.stops || [];
       const totalKm = day.total_distance_km ? ` · ${day.total_distance_km.toFixed(1)} km` : '';
+      const dotColor = dayColors[day.day_number] || '#4F46E5';
 
       dayTabsHtml += `
-        <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}">
-          Ngày ${day.day_number}
+        <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}" title="Xem lịch trình và lộ trình Ngày ${day.day_number}">
+          <span class="day-tab-dot" style="background-color: ${dotColor};"></span>
+          <span>Ngày ${day.day_number}</span>
         </button>
       `;
 
@@ -585,6 +593,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       `;
     });
 
+    if (plan.days.length > 1) {
+      dayTabsHtml += `
+        <button type="button" class="deck-day-tab" data-deck="${deckId}" data-day="all" title="Xem tuyến đường toàn bộ các ngày cùng lúc">
+          <span class="day-tab-dot" style="background: linear-gradient(135deg, #2563EB, #D97706);"></span>
+          <span>Tất cả ngày</span>
+        </button>
+      `;
+    }
+
     const totalKmText = totalTripDistanceKm > 0 ? ` · ~${totalTripDistanceKm.toFixed(1)} km` : '';
 
     const msg = document.createElement('div');
@@ -647,10 +664,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           tab.classList.add('active');
 
           const contents = deckEl.querySelectorAll('.deck-day-content');
-          contents.forEach(c => c.classList.remove('active'));
-
-          const targetContent = document.getElementById(`${deckId}-day-${dayNum}`);
-          if (targetContent) targetContent.classList.add('active');
+          if (dayNum === 'all') {
+            // Khi xem tất cả: hiện đầy đủ nội dung các ngày & vẽ tuyến độc lập trên bản đồ
+            contents.forEach(c => c.classList.add('active'));
+            mapStudio.renderTourItineraryDay('all');
+          } else {
+            contents.forEach(c => c.classList.remove('active'));
+            const targetContent = document.getElementById(`${deckId}-day-${dayNum}`);
+            if (targetContent) targetContent.classList.add('active');
+            mapStudio.renderTourItineraryDay(parseInt(dayNum, 10));
+          }
         });
       });
 
@@ -659,16 +682,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.addEventListener('click', () => {
           const lat = parseFloat(btn.dataset.lat);
           const lng = parseFloat(btn.dataset.lng);
-          mapStudio.panTo(lat, lng, 16);
+          const dayContent = btn.closest('.deck-day-content');
+          const dayIdMatch = dayContent?.id?.match(/-day-(\d+)/);
+          if (dayIdMatch && mapStudio.currentItineraryDay !== 'all') {
+            const targetDay = parseInt(dayIdMatch[1], 10);
+            if (mapStudio.currentItineraryDay !== targetDay) {
+              const targetTab = deckEl.querySelector(`.deck-day-tab[data-day="${targetDay}"]`);
+              if (targetTab) {
+                tabs.forEach(t => t.classList.remove('active'));
+                targetTab.classList.add('active');
+                const contents = deckEl.querySelectorAll('.deck-day-content');
+                contents.forEach(c => c.classList.remove('active'));
+                dayContent.classList.add('active');
+                mapStudio.renderTourItineraryDay(targetDay);
+              }
+            }
+          }
+          const name = btn.dataset.name;
+          if (name && mapStudio.routeDisplayMode === 'leg') {
+            mapStudio.setActiveLegByDestination(name);
+          } else {
+            mapStudio.panTo(lat, lng, 16);
+          }
         });
       });
 
-      // Gán sự kiện click xem chi tiết từng điểm (mở Drawer POI)
+      // Gán sự kiện click xem chi tiết từng điểm (mở Drawer POI và đồng bộ chặng trên bản đồ)
       deckEl.querySelectorAll('.btn-step-detail, .step-poi-name').forEach(el => {
         el.addEventListener('click', () => {
           const name = el.dataset.name;
           if (name && window.openPoiDetail) {
             window.openPoiDetail(name);
+          }
+          if (name && mapStudio.routeDisplayMode === 'leg') {
+            mapStudio.setActiveLegByDestination(name);
           }
         });
       });
@@ -681,8 +728,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    // Tự động vẽ toàn bộ tuyến tour lên bản đồ Leaflet
-    if (allStopsForMap.length > 0) {
+    // Tự động vẽ lộ trình phân tách theo Ngày (Mặc định hiển thị Ngày 1 để thoáng mắt, không chằng chịt)
+    if (plan.days && plan.days.length > 0) {
+      mapStudio.setTourItinerary(plan, 1);
+    } else if (allStopsForMap.length > 0) {
       mapStudio.drawTourRoute(allStopsForMap);
     }
   }

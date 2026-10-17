@@ -24,6 +24,18 @@ export class SpatialMapStudio {
     this.userLocation = null;
     this.userLocationMarker = null;
     this.navigationLayer = null;
+    this.currentItinerary = null;
+    this.currentItineraryDay = 1;
+    this.currentDayLegs = [];
+    this.activeLegIndex = 0;
+    this.routeDisplayMode = 'leg'; // 'leg' (mặc định từng chặng) hoặc 'all' (toàn cảnh)
+    this.cachedLegRoutes = new Map();
+    this.dayRouteColors = {
+      1: { stroke: '#2563EB', bg: '#2563EB', casing: '#FFFFFF', name: 'Ngày 1' },
+      2: { stroke: '#D97706', bg: '#D97706', casing: '#FFFFFF', name: 'Ngày 2' },
+      3: { stroke: '#0D9488', bg: '#0D9488', casing: '#FFFFFF', name: 'Ngày 3' },
+      default: { stroke: '#4F46E5', bg: '#4F46E5', casing: '#FFFFFF', name: 'Lộ trình' }
+    };
 
     // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố Đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
     this.masterLandmarks = hueTopPlaces;
@@ -107,6 +119,15 @@ export class SpatialMapStudio {
     // Nạp sẵn toàn bộ địa danh biểu tượng của Cố đô Huế
     this.renderDefaultHeritageSites();
 
+    // Lắng nghe sự kiện thanh điều hướng chặng nổi trên bản đồ
+    const prevBtn = document.getElementById('btn-prev-leg');
+    const nextBtn = document.getElementById('btn-next-leg');
+    const modeBtn = document.getElementById('btn-toggle-route-mode');
+
+    prevBtn?.addEventListener('click', () => this.prevLeg());
+    nextBtn?.addEventListener('click', () => this.nextLeg());
+    modeBtn?.addEventListener('click', () => this.toggleRouteDisplayMode());
+
     // Đảm bảo kích thước bản đồ hiển thị mượt mà
     setTimeout(() => {
       if (this.map) this.map.invalidateSize();
@@ -131,7 +152,7 @@ export class SpatialMapStudio {
   /**
    * Tạo Custom Architectural SVG Marker chuẩn di sản Cố Đô (sắc sảo, tối giản, thanh lịch)
    */
-  createCustomIcon(category = 'Attraction', label = '', stepNumber = null) {
+  createCustomIcon(category = 'Attraction', label = '', stepNumber = null, badgeBg = null) {
     const catLower = (category || '').toLowerCase();
     
     // Bảng màu di sản Cố Đô có kỷ luật (chất gốm sứ, ngói lưu ly và thổ nhưỡng)
@@ -175,22 +196,24 @@ export class SpatialMapStudio {
     const stepBadgeHtml = stepNumber !== null ? `
       <div style="
         position: absolute;
-        top: -6px;
-        right: -6px;
-        background: #1C1917;
+        top: -7px;
+        right: -8px;
+        background: ${badgeBg || '#1C1917'};
         color: #FFFFFF;
         font-weight: 700;
         font-size: 10px;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        border-radius: 50%;
-        width: 18px;
+        border-radius: 9px;
+        min-width: 18px;
         height: 18px;
+        padding: 0 4px;
         display: flex;
         align-items: center;
         justify-content: center;
         border: 2px solid #FFFFFF;
         box-shadow: 0 1px 4px rgba(0,0,0,0.25);
         z-index: 10;
+        box-sizing: border-box;
       ">${stepNumber}</div>
     ` : '';
 
@@ -348,7 +371,7 @@ export class SpatialMapStudio {
     this.filterByCategory('all');
   }
 
-  addPoi(lat, lng, name, category = 'Attraction', address = '', stepNumber = null, placeId = null) {
+  addPoi(lat, lng, name, category = 'Attraction', address = '', stepNumber = null, placeId = null, badgeBg = null) {
     if (!lat || !lng) return null;
 
     const isUserLoc = (category || '').toLowerCase().includes('userlocation') ||
@@ -362,31 +385,57 @@ export class SpatialMapStudio {
       return this.userLocationMarker;
     }
 
-    const icon = this.createCustomIcon(category, '', stepNumber);
+    const icon = this.createCustomIcon(category, '', stepNumber, badgeBg);
+
+    const catLower = (category || '').toLowerCase();
+    let catBadgeName = 'Di tích';
+    let catClass = 'attraction';
+    if (catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán')) {
+      catBadgeName = 'Ẩm thực';
+      catClass = 'restaurant';
+    } else if (catLower.includes('cafe') || catLower.includes('cà phê') || catLower.includes('bar')) {
+      catBadgeName = 'Cà phê';
+      catClass = 'cafe';
+    } else if (catLower.includes('hotel') || catLower.includes('khách sạn') || catLower.includes('resort')) {
+      catBadgeName = 'Nghỉ dưỡng';
+      catClass = 'hotel';
+    }
 
     const stepLabel = stepNumber !== null 
-      ? `<div class="popup-step-tag">Điểm dừng ${stepNumber}</div>` 
+      ? `<span class="popup-step-pill" ${badgeBg ? `style="background: ${badgeBg}; color: #FFFFFF;"` : ''}>Chặng ${stepNumber}</span>` 
       : '';
 
     const safeName = (name || '').replace(/'/g, "\\'");
     const safePlaceId = (placeId || '').replace(/'/g, "\\'");
     const detailBtnHtml = `
-      <button type="button" class="btn-open-detail-popup" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}', '${safePlaceId}')">
-        <span>Xem chi tiết</span> &rarr;
+      <button type="button" class="btn-popup-detail" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}', '${safePlaceId}')">
+        <span>Chi tiết</span>
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
+    `;
+
+    const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    const gmapsBtnHtml = `
+      <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-popup-gmaps" title="Chỉ đường qua Google Maps">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Chỉ đường</span>
+      </a>
     `;
 
     const popupHtml = `
       <div class="custom-leaflet-popup">
-        ${stepLabel}
-        <div class="popup-title">${name}</div>
-        <div class="popup-category">${category}</div>
-        <div class="popup-address">${address || 'Thành phố Huế'}</div>
+        <div class="popup-header-tags">
+          ${stepLabel}
+          <span class="popup-cat-pill cat-${catClass}">${catBadgeName}</span>
+        </div>
+        <h4 class="popup-title">${name}</h4>
+        <div class="popup-address">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>${address || 'Thành phố Huế'}</span>
+        </div>
         <div class="popup-actions">
           ${detailBtnHtml}
-          <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="popup-gmaps-link">
-            <span>Chỉ đường Google Maps</span>
-          </a>
+          ${gmapsBtnHtml}
         </div>
       </div>
     `;
@@ -527,6 +576,455 @@ export class SpatialMapStudio {
 
     // 6. Căn chỉnh góc nhìn bản đồ bao trọn lộ trình
     this.map.fitBounds(mainPolyline.getBounds(), { padding: [50, 50] });
+  }
+
+  /**
+   * Thiết lập và nạp toàn bộ dữ liệu lịch trình đa ngày
+   */
+  setTourItinerary(plan, activeDay = 1) {
+    this.currentItinerary = plan;
+    this.routeDisplayMode = 'leg';
+    this.renderTourItineraryDay(activeDay, 0);
+  }
+
+  /**
+   * Hiển thị lộ trình phân tách theo Ngày & Từng chặng (Tuyệt đối không chằng chịt)
+   * dayParam: 1, 2, 3... hoặc 'all'
+   */
+  async renderTourItineraryDay(dayParam = 1, initialLegIndex = 0) {
+    if (!this.currentItinerary || !this.currentItinerary.days) return;
+    this.currentItineraryDay = dayParam;
+
+    this.clearAll();
+
+    const days = this.currentItinerary.days;
+    const isAllDays = dayParam === 'all' || dayParam === 0;
+
+    const daysToRender = isAllDays
+      ? days
+      : days.filter(d => d.day_number === Number(dayParam));
+
+    if (daysToRender.length === 0) {
+      this.hideLegStepper();
+      return;
+    }
+
+    const getDayStyle = (dayNum) => {
+      return this.dayRouteColors[dayNum] || this.dayRouteColors.default;
+    };
+
+    const allAddedMarkers = [];
+    this.currentDayLegs = [];
+
+    // 1. Phân loại và tạo markers cho từng ngày
+    for (const day of daysToRender) {
+      const dayNum = day.day_number;
+      const dayStyle = getDayStyle(dayNum);
+      const rawSlots = day.slots || day.stops || [];
+
+      const validSlots = rawSlots.filter(s => (s.latitude || s.lat) && (s.longitude || s.lng));
+      if (validSlots.length === 0) continue;
+
+      let userOrigin = null;
+      const dayPois = [];
+
+      validSlots.forEach(s => {
+        const isUserLoc = (s.category || '').toLowerCase().includes('userlocation') ||
+                          (s.category || '').toLowerCase().includes('khởi hành') ||
+                          (s.slot_name || '').toLowerCase().includes('xuất phát') ||
+                          (s.place_name || s.name || '').toLowerCase().includes('vị trí của bạn') ||
+                          (s.place_name || s.name || '').toLowerCase().includes('vị trí hiện tại');
+        const lat = s.latitude || s.lat;
+        const lng = s.longitude || s.lng;
+        const name = s.place_name || s.name;
+        const cat = s.category || 'Attraction';
+        const address = s.address || '';
+        const placeId = s.place_id || s.placeId;
+
+        if (isUserLoc) {
+          if (!userOrigin) {
+            userOrigin = { lat, lng, name, category: 'UserLocation' };
+          }
+        } else {
+          dayPois.push({ lat, lng, name, category: cat, address, placeId });
+        }
+      });
+
+      // Nếu có điểm xuất phát người dùng
+      if (userOrigin) {
+        this.setUserLocation(userOrigin.lat, userOrigin.lng, userOrigin.name || 'Vị trí của bạn (Điểm xuất phát)');
+      }
+
+      // Tạo marker cho các điểm tham quan / ăn uống trong ngày
+      dayPois.forEach((poi, idx) => {
+        const stepNumber = isAllDays ? `${dayNum}.${idx + 1}` : (idx + 1);
+        const marker = this.addPoi(
+          poi.lat,
+          poi.lng,
+          poi.name,
+          poi.category,
+          poi.address,
+          stepNumber,
+          poi.placeId,
+          dayStyle.bg
+        );
+        if (marker) allAddedMarkers.push(marker);
+      });
+
+      // Tạo danh sách các chặng độc lập (Không bao giờ nối dính ngày nọ sang ngày kia)
+      const routePointsForDay = userOrigin ? [userOrigin, ...dayPois] : dayPois;
+      for (let i = 0; i < routePointsForDay.length - 1; i++) {
+        const fromPt = routePointsForDay[i];
+        const toPt = routePointsForDay[i + 1];
+        this.currentDayLegs.push({
+          legIndex: this.currentDayLegs.length,
+          dayNum,
+          from: fromPt,
+          to: toPt,
+          fromName: fromPt.name,
+          toName: toPt.name,
+          stepNumber: isAllDays ? `${dayNum}.${i + 1}` : (i + 1),
+          dayStyle
+        });
+      }
+    }
+
+    if (this.currentDayLegs.length === 0) {
+      this.hideLegStepper();
+      return;
+    }
+
+    // 2. Chế độ hiển thị:
+    if (this.routeDisplayMode === 'leg' && !isAllDays) {
+      // Chế độ Từng chặng: Chỉ vẽ 1 đoạn đường A -> B duy nhất, sạch tinh và không chồng chéo!
+      this.activeLegIndex = Math.max(0, Math.min(initialLegIndex, this.currentDayLegs.length - 1));
+      await this.drawSingleActiveLeg(this.activeLegIndex);
+    } else {
+      // Chế độ Toàn cảnh: Vẽ toàn bộ các chặng
+      await this.drawAllCurrentLegs();
+      this.updateLegStepperForFullView(isAllDays);
+    }
+  }
+
+  /**
+   * Vẽ 1 chặng đơn lẻ (A -> B) - Tối ưu 100% không bị chằng chịt
+   */
+  async drawSingleActiveLeg(legIndex) {
+    if (!this.currentDayLegs || this.currentDayLegs.length === 0) return;
+    this.activeLegIndex = Math.max(0, Math.min(legIndex, this.currentDayLegs.length - 1));
+    const leg = this.currentDayLegs[this.activeLegIndex];
+    if (!leg) return;
+
+    if (this.routesLayer) this.routesLayer.clearLayers();
+
+    // Lấy route geometry từ OSRM cho cặp điểm này
+    const legData = await this.fetchLegRoute(leg.from, leg.to);
+
+    const finalLatLngs = legData && legData.coordinates && legData.coordinates.length > 0
+      ? legData.coordinates
+      : [[leg.from.lat, leg.from.lng], [leg.to.lat, leg.to.lng]];
+
+    // 1. Lớp viền trắng tương phản (Casing)
+    L.polyline(finalLatLngs, {
+      color: '#FFFFFF',
+      weight: 7,
+      opacity: 0.95,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(this.routesLayer);
+
+    // 2. Tuyến đường chính của chặng với màu sắc riêng của ngày
+    const polyline = L.polyline(finalLatLngs, {
+      color: leg.dayStyle.stroke,
+      weight: 5,
+      opacity: 1,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(this.routesLayer);
+
+    const distText = legData && legData.distanceKm ? `${legData.distanceKm} km` : '';
+    const durText = legData && legData.durationMin ? `~${legData.durationMin} phút` : '';
+
+    polyline.bindTooltip(
+      `🚗 <b>Chặng ${leg.legIndex + 1}:</b> ${leg.fromName} ➔ ${leg.toName}${distText ? ` (${distText} · ${durText})` : ''}`,
+      { sticky: true }
+    );
+
+    // Zoom mượt mà vào đúng chặng này
+    this.map.fitBounds(polyline.getBounds(), { padding: [70, 70], maxZoom: 16 });
+
+    // Mở popup của điểm đến chặng này
+    this.highlightPoiPopup(leg.to.name);
+
+    // Cập nhật UI Stepper nổi trên bản đồ
+    this.showLegStepper({
+      legIndex: leg.legIndex,
+      totalLegs: this.currentDayLegs.length,
+      dayNum: leg.dayNum,
+      fromName: leg.fromName,
+      toName: leg.toName,
+      distanceKm: legData?.distanceKm,
+      durationMin: legData?.durationMin,
+      color: leg.dayStyle.stroke
+    });
+  }
+
+  /**
+   * Vẽ toàn cảnh các chặng
+   */
+  async drawAllCurrentLegs() {
+    if (!this.currentDayLegs || this.currentDayLegs.length === 0) return;
+    if (this.routesLayer) this.routesLayer.clearLayers();
+
+    const allBounds = [];
+
+    // Nhóm theo ngày để không bao giờ nối dính ngày 1 sang ngày 2
+    const legsByDay = new Map();
+    this.currentDayLegs.forEach(leg => {
+      if (!legsByDay.has(leg.dayNum)) legsByDay.set(leg.dayNum, []);
+      legsByDay.get(leg.dayNum).push(leg);
+    });
+
+    for (const [dayNum, legs] of legsByDay.entries()) {
+      const dayStyle = this.dayRouteColors[dayNum] || this.dayRouteColors.default;
+      for (const leg of legs) {
+        const legData = await this.fetchLegRoute(leg.from, leg.to);
+        const finalLatLngs = legData && legData.coordinates && legData.coordinates.length > 0
+          ? legData.coordinates
+          : [[leg.from.lat, leg.from.lng], [leg.to.lat, leg.to.lng]];
+
+        // Viền trắng
+        L.polyline(finalLatLngs, {
+          color: '#FFFFFF',
+          weight: 6,
+          opacity: 0.95,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(this.routesLayer);
+
+        // Nét vẽ chính
+        const poly = L.polyline(finalLatLngs, {
+          color: dayStyle.stroke,
+          weight: 4.5,
+          opacity: 0.9,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(this.routesLayer);
+
+        allBounds.push(poly.getBounds());
+      }
+    }
+
+    if (allBounds.length > 0) {
+      let combined = allBounds[0];
+      for (let i = 1; i < allBounds.length; i++) {
+        combined = combined.extend(allBounds[i]);
+      }
+      this.map.fitBounds(combined, { padding: [50, 50], maxZoom: 16 });
+    }
+  }
+
+  async fetchLegRoute(from, to) {
+    const key = `${Number(from.lat).toFixed(4)},${Number(from.lng).toFixed(4)}->${Number(to.lat).toFixed(4)},${Number(to.lng).toFixed(4)}`;
+    if (this.cachedLegRoutes.has(key)) {
+      return this.cachedLegRoutes.get(key);
+    }
+
+    try {
+      const url = `https://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=full&geometries=geojson`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+          const r = data.routes[0];
+          const result = {
+            coordinates: r.geometry.coordinates.map(([lng, lat]) => [lat, lng]),
+            distanceKm: (r.distance / 1000).toFixed(1),
+            durationMin: Math.max(1, Math.round(r.duration / 60))
+          };
+          this.cachedLegRoutes.set(key, result);
+          return result;
+        }
+      }
+    } catch (e) {
+      console.warn('Lỗi OSRM leg routing:', e);
+    }
+
+    const dist = this.haversineDistance(from.lat, from.lng, to.lat, to.lng);
+    const fallback = {
+      coordinates: [[from.lat, from.lng], [to.lat, to.lng]],
+      distanceKm: dist.toFixed(1),
+      durationMin: Math.max(2, Math.round(dist * 2.5))
+    };
+    this.cachedLegRoutes.set(key, fallback);
+    return fallback;
+  }
+
+  showLegStepper(info) {
+    const stepper = document.getElementById('map-leg-stepper');
+    if (!stepper) return;
+    stepper.style.display = 'flex';
+
+    const stepBadge = document.getElementById('leg-step-badge');
+    const dayBadge = document.getElementById('leg-day-badge');
+    const routeTitle = document.getElementById('leg-route-title');
+    const distanceText = document.getElementById('leg-distance-text');
+    const durationText = document.getElementById('leg-duration-text');
+    const prevBtn = document.getElementById('btn-prev-leg');
+    const nextBtn = document.getElementById('btn-next-leg');
+    const modeLabel = document.getElementById('route-mode-label');
+
+    if (stepBadge) {
+      stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>Chặng ${info.legIndex + 1}/${info.totalLegs}</span>`;
+      if (info.color) {
+        stepBadge.style.color = info.color;
+      }
+    }
+    if (dayBadge) {
+      dayBadge.textContent = `Ngày ${info.dayNum}`;
+    }
+    if (routeTitle) {
+      routeTitle.innerHTML = `<span class="leg-point-from">${info.fromName}</span><span class="leg-arrow-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span class="leg-point-to">${info.toName}</span>`;
+      routeTitle.title = `${info.fromName} đến ${info.toName}`;
+    }
+    if (distanceText) {
+      const distVal = info.distanceKm ? `${info.distanceKm} km` : 'Lộ trình';
+      distanceText.innerHTML = `
+        <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+        <span>${distVal}</span>
+      `;
+    }
+    if (durationText) {
+      if (info.durationMin) {
+        durationText.innerHTML = `
+          <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>~${info.durationMin} phút</span>
+        `;
+        durationText.style.display = 'inline-flex';
+      } else {
+        durationText.style.display = 'none';
+      }
+    }
+    if (prevBtn) {
+      prevBtn.disabled = info.legIndex <= 0;
+    }
+    if (nextBtn) {
+      nextBtn.disabled = info.legIndex >= info.totalLegs - 1;
+    }
+    if (modeLabel) {
+      modeLabel.textContent = 'Toàn cảnh';
+    }
+  }
+
+  updateLegStepperForFullView(isAllDays = false) {
+    const stepper = document.getElementById('map-leg-stepper');
+    if (!stepper) return;
+    stepper.style.display = 'flex';
+
+    const stepBadge = document.getElementById('leg-step-badge');
+    const dayBadge = document.getElementById('leg-day-badge');
+    const routeTitle = document.getElementById('leg-route-title');
+    const distanceText = document.getElementById('leg-distance-text');
+    const durationText = document.getElementById('leg-duration-text');
+    const prevBtn = document.getElementById('btn-prev-leg');
+    const nextBtn = document.getElementById('btn-next-leg');
+    const modeLabel = document.getElementById('route-mode-label');
+
+    if (stepBadge) {
+      stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>${isAllDays ? 'Tất cả ngày' : `Ngày ${this.currentItineraryDay}`}</span>`;
+      stepBadge.style.color = '#18181B';
+    }
+    if (dayBadge) {
+      dayBadge.textContent = `${this.currentDayLegs.length} chặng`;
+    }
+    if (routeTitle) {
+      routeTitle.innerHTML = `<span class="leg-point-to">${isAllDays ? 'Toàn bộ tour Cố Đô Huế' : `Toàn cảnh Ngày ${this.currentItineraryDay}`}</span>`;
+    }
+    if (distanceText) {
+      distanceText.innerHTML = `
+        <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        <span>Toàn cảnh lộ trình</span>
+      `;
+    }
+    if (durationText) durationText.style.display = 'none';
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
+    if (modeLabel) modeLabel.textContent = 'Từng chặng';
+  }
+
+  hideLegStepper() {
+    const stepper = document.getElementById('map-leg-stepper');
+    if (stepper) stepper.style.display = 'none';
+  }
+
+  nextLeg() {
+    if (this.activeLegIndex < this.currentDayLegs.length - 1) {
+      this.routeDisplayMode = 'leg';
+      this.drawSingleActiveLeg(this.activeLegIndex + 1);
+      this.syncTimelineHighlight();
+    }
+  }
+
+  prevLeg() {
+    if (this.activeLegIndex > 0) {
+      this.routeDisplayMode = 'leg';
+      this.drawSingleActiveLeg(this.activeLegIndex - 1);
+      this.syncTimelineHighlight();
+    }
+  }
+
+  toggleRouteDisplayMode() {
+    this.routeDisplayMode = this.routeDisplayMode === 'leg' ? 'all' : 'leg';
+    if (this.routeDisplayMode === 'leg') {
+      this.drawSingleActiveLeg(this.activeLegIndex);
+    } else {
+      this.drawAllCurrentLegs();
+      this.updateLegStepperForFullView(this.currentItineraryDay === 'all');
+    }
+  }
+
+  setActiveLegByDestination(destName) {
+    if (!this.currentDayLegs || this.currentDayLegs.length === 0) return;
+    const cleanTarget = (destName || '').toLowerCase().trim();
+    const idx = this.currentDayLegs.findIndex(leg => {
+      const to = (leg.toName || '').toLowerCase().trim();
+      return to.includes(cleanTarget) || cleanTarget.includes(to);
+    });
+    if (idx !== -1) {
+      this.routeDisplayMode = 'leg';
+      this.drawSingleActiveLeg(idx);
+    }
+  }
+
+  highlightPoiPopup(name) {
+    if (!name || !this.markersLayer) return;
+    const cleanTarget = name.toLowerCase().trim();
+    this.markersLayer.eachLayer(layer => {
+      if (layer.getPopup && layer.getPopup()) {
+        const content = layer.getPopup().getContent() || '';
+        if (content.toLowerCase().includes(cleanTarget)) {
+          layer.openPopup();
+        }
+      }
+    });
+  }
+
+  syncTimelineHighlight() {
+    const leg = this.currentDayLegs[this.activeLegIndex];
+    if (!leg) return;
+    const destName = (leg.toName || '').toLowerCase().trim();
+    document.querySelectorAll('.timeline-step').forEach(step => {
+      const poiName = (step.querySelector('.step-poi-name')?.textContent || '').toLowerCase().trim();
+      if (poiName.includes(destName) || destName.includes(poiName)) {
+        step.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        step.classList.add('step-active-highlight');
+        setTimeout(() => step.classList.remove('step-active-highlight'), 1800);
+      }
+    });
   }
 
   panTo(lat, lng, zoom = 16) {
@@ -844,5 +1342,6 @@ export class SpatialMapStudio {
     if (this.navigationLayer) this.navigationLayer.clearLayers();
     const banner = document.getElementById('map-nav-banner');
     if (banner) banner.style.display = 'none';
+    this.hideLegStepper();
   }
 }

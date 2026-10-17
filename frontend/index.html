@@ -146,6 +146,47 @@
 
       <div id="map-container" class="map-viewport" aria-label="Bản đồ tương tác Leaflet"></div>
 
+      <!-- Floating Leg Navigation Stepper (Tối ưu Lộ trình Từng chặng) -->
+      <!-- Floating Leg Navigation Stepper (Tối ưu Lộ trình Từng chặng) -->
+      <div id="map-leg-stepper" class="map-leg-stepper" style="display: none;">
+        <button type="button" class="btn-leg-nav" id="btn-prev-leg" title="Chặng trước" aria-label="Chặng trước">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <div class="leg-info-block">
+          <div class="leg-badge-row">
+            <span class="leg-step-badge" id="leg-step-badge">
+              <span class="step-badge-dot"></span>
+              <span>Chặng 1/4</span>
+            </span>
+            <span class="leg-day-badge" id="leg-day-badge">Ngày 1</span>
+          </div>
+          <div class="leg-route-title" id="leg-route-title">
+            <span class="leg-point-from">Điểm xuất phát</span>
+            <span class="leg-arrow-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            <span class="leg-point-to">Đại Nội Huế</span>
+          </div>
+          <div class="leg-meta-row" id="leg-meta-row">
+            <span class="leg-meta-item" id="leg-distance-text">
+              <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+              <span>3.0 km</span>
+            </span>
+            <span class="leg-meta-divider">·</span>
+            <span class="leg-meta-item" id="leg-duration-text">
+              <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>~6 phút</span>
+            </span>
+          </div>
+        </div>
+        <button type="button" class="btn-leg-nav" id="btn-next-leg" title="Chặng tiếp theo" aria-label="Chặng tiếp theo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+        <div class="leg-stepper-divider"></div>
+        <button type="button" class="btn-leg-mode-toggle" id="btn-toggle-route-mode" title="Chuyển đổi giữa Chế độ xem từng chặng và Toàn cảnh">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          <span id="route-mode-label">Toàn cảnh</span>
+        </button>
+      </div>
+
       <div class="map-legend">
         <div class="legend-item"><span class="legend-dot dot-attraction"></span> Di tích / Thắng cảnh</div>
         <div class="legend-item"><span class="legend-dot dot-restaurant"></span> Ẩm thực Cố Đô</div>
