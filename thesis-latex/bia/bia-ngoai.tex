@@ -1,0 +1,59 @@
+\begin{titlepage}
+\thispagestyle{empty}
+\newgeometry{top=2.1cm, bottom=2.1cm, left=2.7cm, right=1.6cm}
+
+% Hệ thống khung viền theo Mẫu 1 (gồm Cột gáy sách và Khung mặt bìa chính)
+\begin{tikzpicture}[remember picture, overlay]
+  % Cột gáy sách bên trái (chuẩn Mẫu 1 bìa cứng)
+  \draw[line width=1pt] 
+    ([xshift=1.2cm, yshift=-2.0cm]current page.north west) 
+    rectangle 
+    ([xshift=2.2cm, yshift=2.0cm]current page.south west);
+
+  % Dòng chữ trên gáy sách (in hoa, xoay dọc từ trên xuống dưới theo Mẫu 1)
+  \node[rotate=-90, font=\fontsize{10pt}{12pt}\selectfont\bfseries, anchor=center] 
+    at ([xshift=1.7cm]current page.west) 
+    {\sinhvien\ -- \loaihinhdoan\ -- \tenchuyennganh\ -- HUẾ \namtotnghiep};
+
+  % Khung viền chính bao quanh mặt bìa
+  \draw[line width=1.5pt] 
+    ([xshift=2.5cm, yshift=-2.0cm]current page.north west) 
+    rectangle 
+    ([xshift=-1.5cm, yshift=2.0cm]current page.south east);
+\end{tikzpicture}
+
+\begin{center}
+\vspace*{-0.9cm} % Đẩy chữ ĐẠI HỌC HUẾ sát ngay cạnh trên của khung viền chuẩn bản gốc
+
+% Khối 1: Trường - Khoa - Bộ môn (sát ngay mép khung trên)
+{\fontsize{14pt}{18pt}\selectfont \MakeUppercase{\tentruong}} \\[0.2cm]
+{\fontsize{14pt}{18pt}\selectfont \bfseries \MakeUppercase{\tenkhoa}} \\[0.2cm]
+{\fontsize{14pt}{18pt}\selectfont \bfseries \MakeUppercase{\tenbomon}}\\[-0.3cm]
+\rule{3cm}{0.8pt} \\[0.4cm]
+
+% Khối 2: Biểu trưng (Logo) HUET
+\includegraphics[width=4.5cm]{img/logo-huet-300x300.png} \\[1cm]
+
+% Khối 3: Họ và tên sinh viên (size 14, in đậm)
+{\fontsize{14pt}{18pt}\selectfont \bfseries \MakeUppercase{\sinhvien}}
+
+\vspace*{\stretch{0.1}}
+
+% Khối 4: Tên đề tài (size 24, in đậm, ngắt 3 dòng cân xứng ở trung tâm trang)
+{\fontsize{24pt}{32pt}\selectfont \bfseries \MakeUppercase{\tendetaiBia}\par}
+
+\vspace*{\stretch{0.5}}
+
+% Khối 5: Khóa luận / Đồ án tốt nghiệp & Tên chuyên ngành (size 24, liền một khối thống nhất)
+{\fontsize{24pt}{30pt}\selectfont \bfseries \MakeUppercase{\loaihinhdoan}\par}
+{\fontsize{24pt}{30pt}\selectfont \bfseries \MakeUppercase{\tenchuyennganhBia}\par}
+
+\vfill
+
+% Khối 6: Địa điểm và năm báo cáo (sát mép dưới khung viền theo Mẫu 1)
+{\fontsize{14pt}{18pt}\selectfont \bfseries \diadiemnam}
+\vspace*{-0.2cm}
+
+\end{center}
+\restoregeometry
+\end{titlepage}

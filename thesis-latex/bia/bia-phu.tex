@@ -1,0 +1,53 @@
+\begin{titlepage}
+\thispagestyle{empty}
+\newgeometry{top=2.1cm, bottom=2.1cm, left=3.0cm, right=2.0cm}
+
+% Khung viền bao quanh toàn bộ trang bìa phụ theo Mẫu 2
+\begin{tikzpicture}[remember picture, overlay]
+  \draw[line width=1.5pt] 
+    ([xshift=3.0cm, yshift=-2.0cm]current page.north west) 
+    rectangle 
+    ([xshift=-2.0cm, yshift=2.0cm]current page.south east);
+\end{tikzpicture}
+
+\begin{center}
+\vspace*{-0.9cm} % Đẩy chữ ĐẠI HỌC HUẾ sát ngay cạnh trên của khung viền chuẩn bản gốc
+
+% Khối 1: Trường - Khoa - Bộ môn (sát ngay mép khung trên)
+{\fontsize{14pt}{18pt}\selectfont \MakeUppercase{\tentruong}} \\[0.2cm]
+{\fontsize{14pt}{18pt}\selectfont \bfseries \MakeUppercase{\tenkhoa}} \\[0.2cm]
+{\fontsize{14pt}{18pt}\selectfont \bfseries \MakeUppercase{\tenbomon}}\\[-0.3cm]
+\rule{3cm}{0.8pt} \\[0.4cm]
+
+% Khối 2: Biểu trưng (Logo) HUET (kích thước lớn 4.5cm như bìa ngoài)
+\includegraphics[width=4.5cm]{img/logo-huet-300x300.png} \\[1cm]
+
+% Khối 3: Họ và tên sinh viên – Mã số sinh viên (size 14, in đậm)
+{\fontsize{14pt}{18pt}\selectfont \bfseries \MakeUppercase{\sinhvien\ -- \mssv}}
+
+\vspace*{\stretch{0.1}}
+
+% Khối 4: Tên đề tài (size 22, in đậm, ngắt 3 dòng cân xứng)
+{\fontsize{22pt}{29pt}\selectfont \bfseries \MakeUppercase{\tendetaiBia}\par}
+
+\vspace*{\stretch{0.5}}
+
+% Khối 5: Khóa luận / Đồ án tốt nghiệp & Tên chuyên ngành (size 20, liền một khối thống nhất)
+{\fontsize{20pt}{26pt}\selectfont \bfseries \MakeUppercase{\loaihinhdoan}\par}
+{\fontsize{20pt}{26pt}\selectfont \bfseries \MakeUppercase{\tenchuyennganhBia}\par}
+
+\vfill
+
+% Khối 6: Cụm Người hướng dẫn (căn giữa)
+{\fontsize{14pt}{18pt}\selectfont Người hướng dẫn:} \\[0.2cm]
+{\fontsize{14pt}{18pt}\selectfont \bfseries \nguoihuongdan}
+
+\vfill
+
+% Khối 7: Địa điểm và năm báo cáo (sát mép dưới khung viền theo Mẫu 2)
+{\fontsize{14pt}{18pt}\selectfont \bfseries \diadiemnam}
+\vspace*{-0.2cm}
+
+\end{center}
+\restoregeometry
+\end{titlepage}

@@ -32,6 +32,7 @@ def strip_accents(text: str) -> str:
     """Loại bỏ dấu tiếng Việt để tìm kiếm mờ (fuzzy keyword matching)."""
     if not text:
         return ""
+    text = text.replace('đ', 'd').replace('Đ', 'D')
     text = unicodedata.normalize('NFD', text)
     text = "".join(ch for ch in text if unicodedata.category(ch) != 'Mn')
     return unicodedata.normalize('NFC', text).lower().strip()
@@ -84,9 +85,9 @@ class SpatialGraphRetriever:
             data["node_id"] = node_id
             return data
         
-        # Thử tìm gần đúng
+        # Thử tìm gần đúng (chỉ áp dụng khi độ dài chuỗi đủ lớn)
         for p_name_norm, node_id in self._place_name_index.items():
-            if norm in p_name_norm or p_name_norm in norm:
+            if (len(norm) >= 5 and norm in p_name_norm) or (len(p_name_norm) >= 6 and p_name_norm in norm):
                 data = dict(self.G.nodes[node_id])
                 data["node_id"] = node_id
                 return data
@@ -98,6 +99,13 @@ class SpatialGraphRetriever:
         norm_q = strip_accents(query)
         norm_loc = strip_accents(locality) if locality else None
         norm_cat = category.lower() if category else None
+
+        # Danh sách từ dừng / từ chung không dùng để tính điểm trùng khớp riêng lẻ
+        STOP_TOKENS = {
+            "hue", "tp", "thanh", "pho", "tinh", "viet", "nam", 
+            "quan", "nha", "hang", "hotel", "resort", "cafe", "ca", "phe",
+            "bar", "an", "uong", "du", "lich", "di", "tich", "homestay", "hostel", "inn"
+        }
 
         candidates = []
         for node_id, data in self._all_place_nodes:
@@ -119,14 +127,23 @@ class SpatialGraphRetriever:
             score = 0
             if norm_q == norm_name:
                 score = 100
-            elif norm_q in norm_name:
-                score = 70 + len(norm_q) / max(len(norm_name), 1) * 20
-            elif any(part in norm_name for part in norm_q.split()):
-                score = 40
+            elif norm_q in norm_name and len(norm_q) >= 4:
+                score = 80 + (len(norm_q) / max(len(norm_name), 1)) * 15
+            elif norm_name in norm_q and len(norm_name) >= 5:
+                score = 75 + (len(norm_name) / max(len(norm_q), 1)) * 15
+            else:
+                q_tokens = [t for t in norm_q.split() if t not in STOP_TOKENS and len(t) > 1]
+                name_tokens = [t for t in norm_name.split() if t not in STOP_TOKENS and len(t) > 1]
+                if q_tokens and name_tokens:
+                    common_tokens = set(q_tokens).intersection(set(name_tokens))
+                    overlap_ratio = len(common_tokens) / len(q_tokens)
+                    # Yêu cầu ít nhất 50% số từ khóa thực chất phải trùng khớp
+                    if overlap_ratio >= 0.5:
+                        score = 45 + overlap_ratio * 30
 
             if score > 0:
-                # Ưu tiên rating và số review
-                rank_score = score + (data.get("rating_value", 0.0) * 2) + min(data.get("review_count", 0) / 100, 10)
+                # Ưu tiên rating và số review nhưng không để lấn át điểm khớp tên
+                rank_score = score + (data.get("rating_value", 0.0) * 1.5) + min(data.get("review_count", 0) / 200, 5)
                 item = dict(data)
                 item["node_id"] = node_id
                 item["_match_score"] = rank_score

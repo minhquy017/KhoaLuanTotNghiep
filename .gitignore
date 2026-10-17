@@ -65,3 +65,5 @@ docs/figures/
 scripts/generate_*.py
 scripts/build_presentation.py
 scripts/export_presentation_script_docx.py
+.agents/
+.ag-kit-backups/

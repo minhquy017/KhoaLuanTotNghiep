@@ -1,0 +1,42 @@
+\addtocontents{toc}{\protect\setlength{\cftchapindent}{0pt}}
+\phan{PHẦN V. KẾT LUẬN VÀ KIẾN NGHỊ}
+\label{phan:ket-luan}
+
+\section*{1. Kết luận và Đóng góp của đề tài}
+\addcontentsline{toc}{section}{1. Kết luận và Đóng góp của đề tài}
+
+Khóa luận tốt nghiệp đã hoàn thành toàn diện các mục tiêu nghiên cứu và nhiệm vụ kỹ thuật đã đề ra cho đề tài \textbf{\tendetai}. Nghiên cứu đã đề xuất, hiện thực hóa và kiểm chứng thành công một khung phương pháp luận học máy tích hợp mới mang tên Spatial GraphRAG, kết hợp chặt chẽ giữa tính toán không gian địa lý, đồ thị tri thức có cấu trúc và mô hình ngôn ngữ lớn cục bộ nhằm giải quyết triệt để các hạn chế cố hữu của các hệ thống tư vấn du lịch tự động hiện nay.
+
+Những đóng góp khoa học và thực tiễn trọng tâm của khóa luận bao gồm:
+
+Đóng góp thứ nhất là việc xây dựng thành công Đồ thị Tri thức Không gian Du lịch Du lịch Huế và các vùng phụ cận với quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ ngữ nghĩa. Việc tích hợp tọa độ GPS và thiết lập các cạnh lân cận mặt cầu Haversine trong bán kính $d \le 1,5\text{ km}$ đã tạo nên một cơ chế neo giữ chân lý (Grounding Anchor) vững chắc, loại bỏ hoàn toàn hiện tượng ảo giác thực thể và ngăn chặn triệt để các đề xuất di chuyển vượt cự ly phi lý.
+
+Đóng góp thứ hai là việc thiết lập giải thuật khai phá thực đơn ngầm từ kho ngữ liệu 1,69 triệu bài nhận xét du khách trên TripAdvisor dựa trên Bộ từ điển ẩm thực Việt Nam 570 món ăn. Đề tài đã chuyển hóa nguồn dữ liệu phản hồi phi cấu trúc của cộng đồng thành các cạnh quan hệ phục vụ món ăn $\text{SERVES}$ có trọng số tin cậy cao, bóc tách chính xác các món ăn đặc sản làm nên bản sắc của từng hàng quán tại Huế mà các danh bạ phân loại truyền thống không thể hiện được.
+
+Đóng góp thứ ba là việc thiết kế và làm chủ khung điều phối tác tử tự suy ngẫm Agentic RAG trên nền tảng LangGraph, tích hợp mô hình ngôn ngữ lớn cục bộ Qwen2.5-3B-Instruct vận hành trên máy trạm cá nhân (Zero API Cost). Kiến trúc cho phép hệ thống tự đánh giá chất lượng tri thức thông qua điểm số tin cậy tổng hợp và tự động phân luồng dự phòng tìm kiếm Internet khi cần thiết, đạt thời gian phản hồi thời gian thực trung bình 2,8 giây với độ bảo mật dữ liệu tuyệt đối.
+
+Đóng góp thứ tư là việc hiện thực hóa giải thuật lập lịch trình phân cụm địa lý theo hai bờ sông Hương (Spatial Itinerary Planner) và đóng gói Cổng API RESTful chuẩn mở trên FastAPI. Hệ thống sẵn sàng kết nối trực tiếp với nền tảng công dân số Hue-S nhằm cung cấp tính năng trợ lý ảo hỗ trợ du khách số hóa, đồng thời hỗ trợ chính quyền địa phương điều tiết dòng khách du lịch hợp lý giữa các cụm di sản Cố đô.
+
+\section*{2. Những hạn chế của nghiên cứu}
+\addcontentsline{toc}{section}{2. Những hạn chế của nghiên cứu}
+
+Bên cạnh những kết quả đạt được, nghiên cứu thẳng thắn nhìn nhận ba hạn chế khách quan bắt nguồn từ ranh giới dữ liệu và hạ tầng tính toán:
+
+Hạn chế thứ nhất là việc đo lường cự ly hiện tại chủ yếu dựa trên khoảng cách mặt cầu Haversine (đường chim bay). Trong môi trường đô thị thực tế, du khách di chuyển theo mạng lưới đường bộ và phải phụ thuộc vào các cây cầu cụ thể để vượt sông Hương (như cầu Trường Tiền, cầu Phú Xuân, cầu Dã Viên). Mặc dù giải thuật phân cụm địa lý đã ngăn chặn việc nhảy bờ vô lý, khoảng cách đường chim bay vẫn có thể sai lệch nhẹ so với cự ly di chuyển thực tế trên một số tuyến đường nhánh ngoằn ngoèo.
+
+Hạn chế thứ hai là hệ thống chưa tích hợp được các yếu tố động thời gian thực của đô thị như tình trạng ùn tắc giao thông cục bộ trong các khung giờ cao điểm, biến động thời tiết bất thường (như mùa mưa lũ đặc thù tại miền Trung), hay giờ mở cửa đột xuất của các di tích vào các dịp lễ Tết.
+
+Hạn chế thứ ba liên quan đến phạm vi thử nghiệm mô hình ngôn ngữ lớn khi hiện tại nghiên cứu tối ưu hóa trên mô hình Qwen2.5-3B. Dù đạt hiệu năng vượt trội trong nhóm mô hình nhỏ, năng lực lập luận đa bước trong các kịch bản du lịch phức tạp kéo dài 5 đến 7 ngày vẫn có thể được nâng cao hơn nữa nếu được kết hợp với các mô hình tham số lớn hơn (như Qwen2.5-14B hoặc Llama-3-8B) trên hạ tầng máy chủ chuyên dụng.
+
+\section*{3. Kiến nghị và Hướng phát triển tiếp theo}
+\addcontentsline{toc}{section}{3. Kiến nghị và Hướng phát triển tiếp theo}
+
+Từ các kết quả và hạn chế đã phân tích, bốn định hướng nghiên cứu và phát triển tiếp theo được đề xuất:
+
+Một là, tích hợp dịch vụ định tuyến đường bộ mã nguồn mở OSRM (Open Source Routing Machine) hoặc Google Routes API vào tầng tính toán không gian. Việc chuyển đổi từ khoảng cách Haversine sang ma trận thời gian di chuyển thực tế theo mạng lưới giao thông đường bộ sẽ giúp việc ước lượng thời gian đi bộ và đi xe của du khách đạt độ chính xác tuyệt đối.
+
+Hai là, phát triển cơ chế tái lập lịch trình động theo thời gian thực (Dynamic Re-planning). Tận dụng tín hiệu định vị GPS trực tiếp từ ứng dụng Hue-S của du khách, hệ thống có thể theo dõi tiến độ tham quan thực tế và tự động điều chỉnh các điểm đến tiếp theo nếu du khách nán lại một di tích lâu hơn dự kiến hoặc khi thời tiết chuyển mưa.
+
+Ba là, mở rộng phạm vi Đồ thị Tri thức Không gian cho toàn bộ hành lang di sản văn hóa miền Trung kết nối liên vùng Huế -- Đà Nẵng -- Hội An -- Quảng Bình, hỗ trợ du khách thiết kế các chuyến du lịch xuyên tỉnh đa ngày liền mạch.
+
+Bốn là, đẩy mạnh phối hợp kỹ thuật với Trung tâm Giám sát Điều hành Đô thị Thông minh (IOC) tỉnh Thừa Thiên Huế để triển khai thử nghiệm thực tế Cổng API trên môi trường Hue-S, tiến hành thu thập phản hồi của du khách thực tế trong các kỳ Festival Huế nhằm tối ưu hóa liên tục trải nghiệm người dùng.
