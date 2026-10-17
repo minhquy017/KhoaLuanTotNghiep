@@ -14,6 +14,8 @@ class ItineraryRequest(BaseModel):
         examples=[["Bún bò Huế", "Bánh bèo"]],
         description="Danh sách món ăn ưu tiên thưởng thức"
     )
+    user_lat: Optional[float] = Field(None, examples=[16.4674], description="Vĩ độ GPS của người dùng")
+    user_lng: Optional[float] = Field(None, examples=[107.5905], description="Kinh độ GPS của người dùng")
 
 
 class ItineraryResponse(BaseModel):

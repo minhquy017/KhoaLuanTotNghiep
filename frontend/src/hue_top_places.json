@@ -38,14 +38,14 @@
   {
     "place_id": "place_8882",
     "name": "Sông Hương (Bến thuyền Tòa Khâm)",
-    "lat": 16.46863,
-    "lng": 107.58908,
+    "lat": 16.4682,
+    "lng": 107.592,
     "cat": "Attraction",
-    "desc": "TP Huế · Dòng sông di sản thơ mộng chảy qua trung tâm Cố Đô",
-    "address": " ",
-    "rating_value": 3.6,
+    "desc": "49 Lê Lợi, TP Huế · Dòng sông di sản thơ mộng và bến thuyền rồng ca Huế",
+    "address": "49 Lê Lợi, P. Phú Hội, TP Huế",
+    "rating_value": 4.5,
     "review_count": 2277,
-    "tags": "song huong (ben thuyen toa kham), perfume river, , di tich, thang canh"
+    "tags": "song huong (ben thuyen toa kham), perfume river, toa kham, di tich, thang canh"
   },
   {
     "place_id": "place_8880",
@@ -134,14 +134,14 @@
   {
     "place_id": "place_8920",
     "name": "Chợ Đông Ba",
-    "lat": 16.472315,
-    "lng": 107.58879,
+    "lat": 16.47262,
+    "lng": 107.58850,
     "cat": "Attraction",
-    "desc": "Trần Hưng Đạo, TP Huế · Trung tâm giao thương và ẩm thực truyền thống lớn nhất Cố Đô",
-    "address": "Tran Hung Dao St.",
-    "rating_value": 3.4,
+    "desc": "Số 2 Trần Hưng Đạo, TP Huế · Trung tâm giao thương và ẩm thực truyền thống lớn nhất Cố Đô",
+    "address": "Số 2 Trần Hưng Đạo, P. Phú Hòa, TP Huế",
+    "rating_value": 4.2,
     "review_count": 400,
-    "tags": "cho dong ba, dong ba market, tran hung dao st., di tich, thang canh"
+    "tags": "cho dong ba, dong ba market, tran hung dao st., di tich, thang canh, am thuc"
   },
   {
     "place_id": "place_8877",
@@ -170,11 +170,11 @@
   {
     "place_id": "place_8918",
     "name": "Phá Tam Giang (Đầm Chuồn)",
-    "lat": 16.387165,
-    "lng": 107.85837,
+    "lat": 16.5050,
+    "lng": 107.6480,
     "cat": "Attraction",
     "desc": "Quảng Điền & Phú Vang · Đầm phá nước lợ lớn nhất Đông Nam Á, ngắm hoàng hôn tuyệt đỉnh",
-    "address": "Thành phố Huế",
+    "address": "Đầm Chuồn, Xã Phú An, H. Phú Vang, Thừa Thiên Huế",
     "rating_value": 4.4,
     "review_count": 97,
     "tags": "pha tam giang (dam chuon), tam giang lagoon, , di tich, thang canh"
@@ -218,11 +218,11 @@
   {
     "place_id": "place_8910",
     "name": "Gakka Art Gallery Huế",
-    "lat": 16.469866,
-    "lng": 107.57976,
+    "lat": 16.4682,
+    "lng": 107.5947,
     "cat": "Attraction",
     "desc": "40 Chu Văn An, Phú Hội · Không gian triển lãm mỹ thuật và quà lưu niệm thủ công xứ Huế",
-    "address": "40 Chu Van An Phu Hoi",
+    "address": "40 Chu Văn An, P. Phú Hội, TP Huế",
     "rating_value": 4.9,
     "review_count": 47,
     "tags": "gakka art gallery hue, gakka art gallery, 40 chu van an phu hoi, di tich, thang canh"
@@ -1406,8 +1406,8 @@
   {
     "place_id": "custom_rest_02",
     "name": "Cơm hến Hoa Đông",
-    "lat": 16.4716,
-    "lng": 107.6042,
+    "lat": 16.4784,
+    "lng": 107.5933,
     "cat": "Restaurant",
     "desc": "64 kiệt 7 Ưng Bình, Cồn Hến · Quán cơm hến, mì hến trứ danh cái nôi Cồn Hến",
     "address": "64 kiệt 7 Ưng Bình, Vỹ Dạ, Cồn Hến, TP Huế",

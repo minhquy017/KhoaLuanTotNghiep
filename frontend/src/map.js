@@ -142,7 +142,14 @@ export class SpatialMapStudio {
       </svg>
     `;
 
-    if (catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán')) {
+    if (catLower.includes('userlocation') || catLower.includes('khởi hành') || catLower.includes('xuất phát')) {
+      pinColor = '#2563EB'; // Điểm xuất phát: Xanh Sapphire GPS
+      svgIcon = `
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#FFFFFF">
+          <polygon points="12 2 19 21 12 17 5 21 12 2" />
+        </svg>
+      `;
+    } else if (catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán')) {
       pinColor = '#C2410C'; // Ẩm thực: Đỏ gạch / Đất nung
       svgIcon = `
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -343,6 +350,18 @@ export class SpatialMapStudio {
 
   addPoi(lat, lng, name, category = 'Attraction', address = '', stepNumber = null, placeId = null) {
     if (!lat || !lng) return null;
+
+    const isUserLoc = (category || '').toLowerCase().includes('userlocation') ||
+                      (category || '').toLowerCase().includes('khởi hành') ||
+                      (name || '').toLowerCase().includes('vị trí của bạn') ||
+                      (name || '').toLowerCase().includes('vị trí hiện tại');
+
+    // Nếu là vị trí người dùng, chỉ cập nhật duy nhất userLocationMarker, không tạo POI đè lên
+    if (isUserLoc) {
+      this.setUserLocation(lat, lng, name);
+      return this.userLocationMarker;
+    }
+
     const icon = this.createCustomIcon(category, '', stepNumber);
 
     const stepLabel = stepNumber !== null 
@@ -351,6 +370,12 @@ export class SpatialMapStudio {
 
     const safeName = (name || '').replace(/'/g, "\\'");
     const safePlaceId = (placeId || '').replace(/'/g, "\\'");
+    const detailBtnHtml = `
+      <button type="button" class="btn-open-detail-popup" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}', '${safePlaceId}')">
+        <span>Xem chi tiết</span> &rarr;
+      </button>
+    `;
+
     const popupHtml = `
       <div class="custom-leaflet-popup">
         ${stepLabel}
@@ -358,9 +383,7 @@ export class SpatialMapStudio {
         <div class="popup-category">${category}</div>
         <div class="popup-address">${address || 'Thành phố Huế'}</div>
         <div class="popup-actions">
-          <button type="button" class="btn-open-detail-popup" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}', '${safePlaceId}')">
-            <span>Xem chi tiết</span> &rarr;
-          </button>
+          ${detailBtnHtml}
           <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer" class="popup-gmaps-link">
             <span>Chỉ đường Google Maps</span>
           </a>
@@ -383,31 +406,70 @@ export class SpatialMapStudio {
     const validStops = stops.filter(s => s && s.lat && s.lng);
     if (validStops.length === 0) return;
 
-    // 1. Đánh dấu từng POI với số thứ tự chặng (1, 2, 3...)
-    validStops.forEach((stop, idx) => {
+    // 1. Phân loại điểm xuất phát người dùng và các điểm dừng tham quan thực tế
+    let userOriginStop = null;
+    const tourPois = [];
+
+    validStops.forEach((stop) => {
+      const isUserLoc = (stop.category || '').toLowerCase().includes('userlocation') ||
+                        (stop.category || '').toLowerCase().includes('khởi hành') ||
+                        (stop.name || '').toLowerCase().includes('vị trí của bạn') ||
+                        (stop.name || '').toLowerCase().includes('vị trí hiện tại');
+      if (isUserLoc) {
+        if (!userOriginStop) {
+          userOriginStop = stop;
+        }
+      } else {
+        tourPois.push(stop);
+      }
+    });
+
+    // Nếu có điểm xuất phát người dùng: Cập nhật beacon GPS duy nhất (không tạo marker POI đè lên)
+    if (userOriginStop) {
+      this.setUserLocation(userOriginStop.lat, userOriginStop.lng, userOriginStop.name || 'Vị trí của bạn (Điểm xuất phát)');
+    }
+
+    // 2. Đánh số thứ tự chặng cho các điểm tham quan / ẩm thực thực tế (Điểm dừng 1, Điểm dừng 2...)
+    const poiMarkers = [];
+    tourPois.forEach((stop, idx) => {
       const marker = this.addPoi(
         stop.lat, 
         stop.lng, 
         stop.name, 
         stop.category || 'Attraction', 
         stop.address,
-        idx + 1
+        idx + 1,
+        stop.placeId || stop.place_id
       );
-      if (idx === 0 && marker) marker.openPopup();
+      if (marker) poiMarkers.push(marker);
     });
 
-    if (validStops.length === 1) {
-      this.map.setView([validStops[0].lat, validStops[0].lng], 14);
+    // Mở popup cho điểm dừng tham quan đầu tiên (hoặc điểm GPS nếu tour chỉ có 1 điểm)
+    if (poiMarkers.length > 0) {
+      setTimeout(() => {
+        if (poiMarkers[0]) poiMarkers[0].openPopup();
+      }, 300);
+    } else if (this.userLocationMarker) {
+      setTimeout(() => {
+        if (this.userLocationMarker) this.userLocationMarker.openPopup();
+      }, 300);
+    }
+
+    // Danh sách tọa độ đầy đủ cho lộ trình di chuyển (bao gồm cả điểm xuất phát nếu có)
+    const allRoutePoints = userOriginStop ? [userOriginStop, ...tourPois] : tourPois;
+    if (allRoutePoints.length <= 1) {
+      const centerPt = allRoutePoints[0] || validStops[0];
+      this.map.setView([centerPt.lat, centerPt.lng], 14);
       return;
     }
 
-    // 2. Gọi OSRM Routing API để lấy lộ trình di chuyển thực tế theo mạng lưới giao thông Huế
+    // 3. Gọi OSRM Routing API để lấy lộ trình di chuyển thực tế theo mạng lưới giao thông Huế
     let routeLatLngs = null;
     let routeInfo = null;
 
     try {
       // OSRM nhận toạ độ dạng: lng,lat;lng,lat...
-      const coordString = validStops.map(s => `${s.lng},${s.lat}`).join(';');
+      const coordString = allRoutePoints.map(s => `${s.lng},${s.lat}`).join(';');
       const url = `https://router.project-osrm.org/route/v1/driving/${coordString}?overview=full&geometries=geojson`;
       
       const controller = new AbortController();
@@ -431,11 +493,11 @@ export class SpatialMapStudio {
       console.warn('Không thể nạp tuyến đường OSRM (sử dụng đường nối trực tiếp fallback):', err);
     }
 
-    // 3. Fallback sang đường nối trực tiếp nếu OSRM timeout / offline
+    // 4. Fallback sang đường nối trực tiếp nếu OSRM timeout / offline
     const isRealRoad = !!routeLatLngs && routeLatLngs.length > 0;
-    const finalLatLngs = isRealRoad ? routeLatLngs : validStops.map(s => [s.lat, s.lng]);
+    const finalLatLngs = isRealRoad ? routeLatLngs : allRoutePoints.map(s => [s.lat, s.lng]);
 
-    // 4. Vẽ Polyline sắc nét theo các cung đường thực tế
+    // 5. Vẽ Polyline sắc nét theo các cung đường thực tế
     // Lớp viền trắng tương phản (Casing) giúp nhìn rõ trên cả nền Google Maps lẫn Vệ Tinh
     L.polyline(finalLatLngs, {
       color: '#FFFFFF',
@@ -463,7 +525,7 @@ export class SpatialMapStudio {
       );
     }
 
-    // 5. Căn chỉnh góc nhìn bản đồ bao trọn lộ trình
+    // 6. Căn chỉnh góc nhìn bản đồ bao trọn lộ trình
     this.map.fitBounds(mainPolyline.getBounds(), { padding: [50, 50] });
   }
 

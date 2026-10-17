@@ -1,15 +1,16 @@
 /* =============================================================================
    CỐ ĐÔ HUẾ — EDITORIAL SPATIAL TOURISM DESIGN SYSTEM
-   Phong cách: Human-Crafted Editorial Heritage & Utilitarian Minimalism
-   Typography: Playfair Display + Be Vietnam Pro + JetBrains Mono
-   Palette: Warm Stone Neutral (#F8F7F4) + Imperial Ochre (#B45309) + Terracotta (#C2410C)
+   Phong cách: Modern High-Tech Editorial & Clean Spatial Intelligence
+   Typography: Plus Jakarta Sans (Display/Headings) + Be Vietnam Pro (Body) + JetBrains Mono (Code/Coords)
+   Palette: Warm Stone Neutral (#F8F7F4) + Deep Ink (#18181B) + Clean Monochrome
 ============================================================================= */
 
 :root {
-  /* Typography */
-  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  /* Modern High-Tech Typography */
+  --font-display: 'Plus Jakarta Sans', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-sans: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', Consolas, 'SF Mono', monospace;
+  --font-serif: var(--font-display); /* Giữ tương thích nhưng chuyển sang sans hiện đại */
 
   /* Surfaces & Canvas — Clean Minimalist Canvas */
   --color-canvas: #F8F9FA;
@@ -147,13 +148,13 @@ button, input, select, textarea {
 }
 
 .brand-title {
-  font-family: var(--font-serif);
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-ink);
-  letter-spacing: 0.08em;
+  letter-spacing: -0.02em;
   margin: 0;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .brand-kicker {
@@ -861,80 +862,158 @@ button, input, select, textarea {
   position: sticky;
   top: 72px;
   overflow: hidden;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-
-.tab-panel {
-  display: none;
   background-color: #FFFFFF;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  height: 100%;
+  padding: 1.15rem 1.35rem;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-.tab-panel.active {
+/* Unified Workbench Header */
+.workbench-header {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-#panel-itinerary.active {
-  padding: 1.5rem 1.65rem;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #D6D3D1 transparent;
-}
-
-#panel-itinerary::-webkit-scrollbar {
-  width: 6px;
-}
-#panel-itinerary::-webkit-scrollbar-thumb {
-  background-color: #D6D3D1;
-  border-radius: 3px;
-}
-#panel-itinerary::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-#panel-itinerary .panel-header,
-#panel-itinerary .itinerary-controls-card {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
-#panel-itinerary .results-container {
-  flex: 1;
+.workbench-header-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-#panel-chat.active {
-  padding: 1.25rem 1.45rem;
-  overflow: hidden;
-}
-
-.panel-header {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.panel-title {
-  font-family: var(--font-serif);
-  font-size: 1.55rem;
+.workbench-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
   font-weight: 700;
-  display: inline-block;
   color: var(--color-ink);
-  letter-spacing: -0.01em;
-  margin-bottom: 0.45rem;
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
-.panel-desc {
-  font-size: 0.88rem;
-  color: var(--color-ink-secondary);
-  line-height: 1.6;
-  margin-bottom: 0;
-  max-width: 65ch;
+.workbench-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
+
+.btn-workbench-action {
+  background: #FAFAF9;
+  border: 1px solid var(--color-border);
+  color: var(--color-ink);
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 0.38rem 0.7rem;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all var(--duration-fast) var(--ease-editorial);
+}
+
+.btn-workbench-action:hover {
+  background: #FFFFFF;
+  border-color: #D6D3D1;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-workbench-action.active,
+#btn-toggle-planner.active {
+  background: var(--color-primary-soft);
+  border-color: rgba(180, 83, 9, 0.4);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+/* Collapsible Quick Planner Card */
+.quick-planner-card {
+  background-color: #FAFAF9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.15rem;
+  margin-bottom: 0.85rem;
+  flex-shrink: 0;
+  animation: slideDownPlanner 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.quick-planner-card[hidden] {
+  display: none;
+}
+
+@keyframes slideDownPlanner {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.quick-planner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #E7E5E4;
+}
+
+.quick-planner-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.quick-planner-title svg {
+  color: var(--color-primary);
+}
+
+.btn-close-planner {
+  background: none;
+  border: none;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all var(--duration-fast);
+}
+
+.btn-close-planner:hover {
+  background: #E7E5E4;
+  color: var(--color-ink);
+}
+
+.quick-planner-form .form-group {
+  margin-bottom: 0.75rem;
+}
+
+.quick-planner-form .form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.quick-planner-actions {
+  margin-top: 0.85rem;
+}
+
+.btn-generate {
+  width: 100%;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
 
 /* Form Controls Card */
 .itinerary-controls-card {
@@ -1198,10 +1277,11 @@ button, input, select, textarea {
 }
 
 .empty-title {
-  font-family: var(--font-serif);
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-ink);
+  letter-spacing: -0.015em;
   margin-bottom: 0.35rem;
 }
 
@@ -1418,6 +1498,92 @@ button, input, select, textarea {
   background-color: rgba(180, 83, 9, 0.08);
   border-color: transparent;
   font-weight: 600;
+}
+
+.meta-pill.pill-origin {
+  color: #1D4ED8;
+  background-color: #EFF6FF;
+  border-color: #BFDBFE;
+  font-weight: 600;
+}
+
+.timeline-step.timeline-step-origin .step-time-badge {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #1D4ED8;
+  font-weight: 700;
+}
+
+.timeline-step.timeline-step-origin .step-content {
+  background: #F8FAFC;
+  border-left: 3px solid #2563EB;
+}
+
+.timeline-step.timeline-step-origin .step-poi-name {
+  color: #1D4ED8;
+}
+
+/* Quick Planner Origin Preview Banner */
+.planner-origin-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-xs);
+  margin-bottom: 0.85rem;
+  font-size: 0.78rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.planner-origin-preview .origin-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.planner-origin-preview .origin-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.3;
+}
+
+.planner-origin-preview .origin-label {
+  font-size: 0.65rem;
+  color: #64748B;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.planner-origin-preview .origin-name {
+  color: #0F172A;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.btn-refresh-origin {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-refresh-origin:hover {
+  background: #EFF6FF;
+  color: #2563EB;
+  border-color: #93C5FD;
+  transform: rotate(45deg);
 }
 
 .btn-locate {
@@ -1665,6 +1831,219 @@ button, input, select, textarea {
 .chat-message.user .message-bubble p {
   color: #FFFFFF;
   margin: 0;
+}
+
+/* Itinerary Deck Message Overrides */
+.chat-message.has-deck {
+  max-width: 98%;
+  width: 100%;
+}
+
+.chat-message.has-deck .message-bubble {
+  width: 100%;
+  padding: 0.85rem 1rem;
+}
+
+/* Interactive Itinerary Deck Card */
+.chat-itinerary-deck {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  transition: all var(--duration-fast) var(--ease-editorial);
+}
+
+.deck-header {
+  background: linear-gradient(135deg, #1C1917 0%, #292524 100%);
+  color: #FFFFFF;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.deck-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.deck-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.deck-subtitle {
+  font-size: 0.74rem;
+  color: #D6D3D1;
+}
+
+.deck-badge {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* Day Tabs inside Itinerary Card */
+.deck-day-tabs {
+  display: flex;
+  background: #F5F5F4;
+  border-bottom: 1px solid var(--color-border);
+  padding: 4px;
+  gap: 4px;
+}
+
+.deck-day-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-ink-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.deck-day-tab:hover {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--color-ink);
+}
+
+.deck-day-tab.active {
+  background: #FFFFFF;
+  color: var(--color-ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.deck-days-wrapper {
+  max-height: 360px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #D6D3D1 transparent;
+}
+
+.deck-days-wrapper::-webkit-scrollbar {
+  width: 5px;
+}
+.deck-days-wrapper::-webkit-scrollbar-thumb {
+  background-color: #D6D3D1;
+  border-radius: 3px;
+}
+
+.deck-day-content {
+  display: none;
+  padding: 0.85rem 0.95rem;
+}
+
+.deck-day-content.active {
+  display: block;
+  animation: fadeInDeckDay 0.2s ease-out;
+}
+
+@keyframes fadeInDeckDay {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.deck-day-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.deck-day-theme {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.4;
+}
+
+.deck-day-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.deck-day-content .timeline-step {
+  grid-template-columns: 84px 1fr;
+  gap: 0.65rem;
+}
+
+.deck-day-content .timeline-step::before {
+  left: 42px;
+}
+
+.deck-day-content .step-time-badge {
+  font-size: 0.65rem;
+  padding: 0.3rem 0.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.deck-day-content .step-content {
+  padding: 0.65rem 0.8rem;
+}
+
+/* Follow-up Chips under Itinerary Deck */
+.deck-followup {
+  background: #FAFAF9;
+  border-top: 1px solid var(--color-border);
+  padding: 0.65rem 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.deck-followup-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-deck-followup {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  color: var(--color-ink-secondary);
+  font-size: 0.73rem;
+  font-weight: 500;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--duration-fast);
+}
+
+.btn-deck-followup:hover {
+  background: var(--color-primary-soft);
+  border-color: rgba(180, 83, 9, 0.3);
+  color: var(--color-primary-dark);
+  transform: translateY(-1px);
 }
 
 .message-author {
@@ -2404,10 +2783,11 @@ button, input, select, textarea {
 }
 
 .poi-title {
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--color-ink);
+  letter-spacing: -0.02em;
   line-height: 1.25;
   margin: 0;
 }

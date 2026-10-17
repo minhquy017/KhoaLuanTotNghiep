@@ -36,46 +36,51 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   await checkBackendStatus();
 
-  // 3. ĐIỀU HƯỚNG TABS
-  const navTabs = document.querySelectorAll('.nav-tab');
-  const tabPanels = document.querySelectorAll('.tab-panel');
+  // 3. BỘ ĐIỀU KHIỂN TÁC VỤ AI (QUICK PLANNER COLLAPSIBLE & CHAT SYNC)
+  const quickPlannerCard = document.getElementById('quick-planner-card');
+  const btnTogglePlanner = document.getElementById('btn-toggle-planner');
+  const btnClosePlanner = document.getElementById('btn-close-planner');
+  const chipPlan2Days = document.getElementById('chip-plan-2days');
 
-  navTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.target;
+  function updatePlannerOriginDisplay() {
+    const originEl = document.getElementById('planner-origin-name');
+    if (!originEl) return;
+    if (mapStudio.userLocation && mapStudio.userLocation.name) {
+      originEl.textContent = mapStudio.userLocation.name;
+    } else {
+      originEl.textContent = 'Đang định vị GPS...';
+    }
+  }
 
-      navTabs.forEach(t => {
-        t.classList.remove('active');
-        t.setAttribute('aria-selected', 'false');
-      });
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
+  function togglePlanner(show) {
+    if (!quickPlannerCard) return;
+    const isHidden = quickPlannerCard.hasAttribute('hidden');
+    const shouldShow = typeof show === 'boolean' ? show : isHidden;
 
-      tabPanels.forEach(panel => {
-        if (panel.id === `panel-${target}`) {
-          panel.classList.add('active');
-          panel.removeAttribute('hidden');
-        } else {
-          panel.classList.remove('active');
-          panel.setAttribute('hidden', '');
-        }
-      });
+    if (shouldShow) {
+      updatePlannerOriginDisplay();
+      quickPlannerCard.removeAttribute('hidden');
+      btnTogglePlanner?.classList.add('active');
+      btnTogglePlanner?.setAttribute('aria-expanded', 'true');
+      quickPlannerCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      quickPlannerCard.setAttribute('hidden', '');
+      btnTogglePlanner?.classList.remove('active');
+      btnTogglePlanner?.setAttribute('aria-expanded', 'false');
+    }
+  }
 
-      // Nếu mở tab Chat, tự động cuộn xuống tin nhắn mới nhất và focus vào input
-      if (target === 'chat') {
-        setTimeout(() => {
-          const chatThread = document.getElementById('chat-thread');
-          const chatInput = document.getElementById('chat-input');
-          if (chatThread) chatThread.scrollTop = chatThread.scrollHeight;
-          if (chatInput) chatInput.focus();
-        }, 100);
-      }
+  btnTogglePlanner?.addEventListener('click', () => togglePlanner());
+  btnClosePlanner?.addEventListener('click', () => togglePlanner(false));
+  chipPlan2Days?.addEventListener('click', () => {
+    togglePlanner(true);
+    const selDays = document.getElementById('select-days');
+    if (selDays) selDays.value = '2';
+  });
 
-      // Kích hoạt lại map size khi đổi tab
-      setTimeout(() => {
-        if (mapStudio.map) mapStudio.map.invalidateSize();
-      }, 150);
-    });
+  const btnRefreshOrigin = document.getElementById('btn-refresh-origin');
+  btnRefreshOrigin?.addEventListener('click', () => {
+    locateUserPosition(false);
   });
 
   // 4. MAP STUDIO TOOLBAR, SEARCH & FILTER CONTROLS
@@ -112,6 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const locName = isNearHue ? 'Vị trí hiện tại của bạn' : 'Vị trí của bạn (Ngoài Huế)';
 
         mapStudio.setUserLocation(lat, lng, locName);
+        updatePlannerOriginDisplay();
         if (!silent) {
           mapStudio.panTo(lat, lng, 16);
           btnLocateUser?.classList.add('active');
@@ -121,11 +127,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       (err) => {
         btnLocateUser?.classList.remove('loading');
         console.warn('Geolocation error or denied:', err);
+        const defaultHueLat = 16.4674;
+        const defaultHueLng = 107.5905;
+        mapStudio.setUserLocation(defaultHueLat, defaultHueLng, 'Cầu Tràng Tiền (Trung tâm Huế)');
+        updatePlannerOriginDisplay();
+
         if (!silent) {
-          // Fallback vị trí trung tâm Huế: Cầu Tràng Tiền
-          const defaultHueLat = 16.4674;
-          const defaultHueLng = 107.5905;
-          mapStudio.setUserLocation(defaultHueLat, defaultHueLng, 'Cầu Tràng Tiền (Trung tâm Huế)');
           mapStudio.panTo(defaultHueLat, defaultHueLng, 16);
           btnLocateUser?.classList.add('active');
           btnLocateUser.title = 'Vị trí mặc định: Cầu Tràng Tiền, Huế';
@@ -329,61 +336,159 @@ document.addEventListener('DOMContentLoaded', async () => {
     return Array.from(activeTags).map(t => t.dataset.dish);
   }
 
-  // 6. LẬP LỊCH TRÌNH TOUR (SPATIAL ITINERARY PLANNER)
+  // 6. LẬP LỊCH TRÌNH TOUR VÀO LUỒNG CHAT (INTERACTIVE ITINERARY STREAM)
   const formItinerary = document.getElementById('form-itinerary');
   const btnGenItinerary = document.getElementById('btn-generate-itinerary');
-  const itineraryResults = document.getElementById('itinerary-results');
   const selectDays = document.getElementById('select-days');
   const selectTripType = document.getElementById('select-trip-type');
 
-  formItinerary?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const days = parseInt(selectDays.value, 10);
-    const tripType = selectTripType.value;
-    const preferredDishes = getSelectedDishes();
+  async function getUserCoordinates() {
+    if (mapStudio.userLocation && mapStudio.userLocation.lat && mapStudio.userLocation.lng) {
+      return {
+        lat: mapStudio.userLocation.lat,
+        lng: mapStudio.userLocation.lng,
+        name: mapStudio.userLocation.name || 'Vị trí hiện tại của bạn'
+      };
+    }
 
-    // 8-State: Loading
-    btnGenItinerary.classList.add('loading');
-    btnGenItinerary.disabled = true;
+    if (navigator.geolocation) {
+      try {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 2500,
+            maximumAge: 60000
+          });
+        });
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const isNearHue = (lat >= 15.8 && lat <= 16.8 && lng >= 107.0 && lng <= 108.3);
+        const locName = isNearHue ? 'Vị trí hiện tại của bạn' : 'Vị trí của bạn (Ngoài Huế)';
+        mapStudio.setUserLocation(lat, lng, locName);
+        updatePlannerOriginDisplay();
+        return { lat, lng, name: locName };
+      } catch (e) {
+        console.info('Không lấy được GPS tức thời, sử dụng vị trí mặc định Huế:', e);
+      }
+    }
 
-    itineraryResults.innerHTML = `
-      <div class="empty-state">
-        <div class="spinner-editorial"></div>
-        <h3 class="empty-title">Đang sắp xếp lịch trình...</h3>
-        <p class="empty-text">Hệ thống đang tối ưu đường đi và kết hợp các quán ăn theo sở thích của bạn.</p>
-      </div>
-    `;
+    // Fallback trung tâm Huế (Cầu Tràng Tiền)
+    const defLat = 16.4674;
+    const defLng = 107.5905;
+    const defName = 'Cầu Tràng Tiền (Trung tâm Huế)';
+    mapStudio.setUserLocation(defLat, defLng, defName);
+    updatePlannerOriginDisplay();
+    return { lat: defLat, lng: defLng, name: defName };
+  }
+
+  async function generateItineraryInChat(days, tripType, preferredDishes) {
+    const coords = await getUserCoordinates();
+    const userLat = coords.lat;
+    const userLng = coords.lng;
+    const userLocName = coords.name;
+
+    const dishLabel = preferredDishes && preferredDishes.length > 0
+      ? `ưu tiên các món: ${preferredDishes.join(', ')}`
+      : 'ẩm thực Cố Đô đặc sắc';
+    const userQueryText = `📅 Lập lịch trình khám phá Huế ${days} ngày cho ${tripType}, xuất phát từ ${userLocName}, ${dishLabel}.`;
+    appendUserMessage(userQueryText);
+
+    // Thu gọn quick planner card
+    togglePlanner(false);
+
+    const loadingId = appendAssistantLoading(
+      `Đang tối ưu hóa hành trình ${days} ngày xuất phát từ ${userLocName}, kết nối ẩm thực và vẽ lộ trình...`
+    );
+
+    if (btnGenItinerary) {
+      btnGenItinerary.classList.add('loading');
+      btnGenItinerary.disabled = true;
+    }
 
     try {
-      const data = await TourismApiClient.generateItinerary(days, preferredDishes, tripType);
-      renderItineraryCards(data);
+      const res = await TourismApiClient.generateItinerary(days, preferredDishes, tripType, userLat, userLng);
+      removeLoadingMessage(loadingId);
+      appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName);
     } catch (err) {
-      itineraryResults.innerHTML = `
-        <div class="empty-state state-error">
-          <h3 class="empty-title">Không thể lập lịch trình</h3>
-          <p class="empty-text">${err.message}. Đảm bảo máy chủ FastAPI đang hoạt động tại cổng 8000.</p>
-        </div>
-      `;
+      removeLoadingMessage(loadingId);
+      appendAssistantError(`Không thể tạo lịch trình: ${err.message}. Vui lòng thử lại.`);
     } finally {
-      btnGenItinerary.classList.remove('loading');
-      btnGenItinerary.disabled = false;
+      if (btnGenItinerary) {
+        btnGenItinerary.classList.remove('loading');
+        btnGenItinerary.disabled = false;
+      }
+      if (chatInput) chatInput.focus();
     }
+  }
+
+  formItinerary?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const days = parseInt(selectDays?.value, 10) || 2;
+    const tripType = selectTripType?.value || 'Couples';
+    const preferredDishes = getSelectedDishes();
+    generateItineraryInChat(days, tripType, preferredDishes);
   });
 
-  function renderItineraryCards(res) {
+  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn') {
     const plan = res.itinerary_data;
     if (!plan || !plan.days || plan.days.length === 0) {
-      itineraryResults.innerHTML = `<div class="empty-state"><p class="empty-text">Không tìm thấy dữ liệu lịch trình phù hợp.</p></div>`;
+      appendAssistantError('Không tìm thấy dữ liệu lịch trình phù hợp với tiêu chí đã chọn.');
       return;
     }
 
-    let html = '';
+    const deckId = `deck-${Date.now()}`;
     const allStopsForMap = [];
+    let totalStopsCount = 0;
+    let totalTripDistanceKm = 0;
+    let hasUserOrigin = false;
 
     plan.days.forEach(day => {
       const slots = day.slots || day.stops || [];
+      totalStopsCount += slots.length;
+      if (day.total_distance_km) totalTripDistanceKm += day.total_distance_km;
+
+      slots.forEach(slot => {
+        const isFood = (slot.category || '').toLowerCase().includes('restaurant') ||
+                       (slot.category || '').toLowerCase().includes('quán') ||
+                       (slot.activity_type || '').toLowerCase().includes('ẩm thực');
+        const isUserLoc = (slot.category || '').toLowerCase().includes('userlocation') ||
+                          (slot.activity_type || '').toLowerCase().includes('khởi hành');
+
+        // Chỉ cho phép điểm xuất phát người dùng xuất hiện 1 lần duy nhất ở đầu hành trình
+        if (isUserLoc) {
+          if (hasUserOrigin) return;
+          hasUserOrigin = true;
+        }
+
+        const lat = slot.latitude || slot.lat;
+        const lng = slot.longitude || slot.lng;
+        if (lat && lng) {
+          allStopsForMap.push({
+            lat, lng,
+            name: slot.place_name || slot.name,
+            category: isUserLoc ? 'UserLocation' : (slot.category || (isFood ? 'Restaurant' : 'Attraction')),
+            address: slot.address || '',
+            place_id: slot.place_id || slot.placeId
+          });
+        }
+      });
+    });
+
+    // Tạo HTML cho Day Tabs
+    let dayTabsHtml = '';
+    let dayContentsHtml = '';
+
+    plan.days.forEach((day, index) => {
+      const isFirstDay = index === 0;
+      const slots = day.slots || day.stops || [];
       const totalKm = day.total_distance_km ? ` · ${day.total_distance_km.toFixed(1)} km` : '';
-      
+
+      dayTabsHtml += `
+        <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}">
+          Ngày ${day.day_number}
+        </button>
+      `;
+
       const dayStops = [];
       slots.forEach(slot => {
         const lat = slot.latitude || slot.lat;
@@ -397,96 +502,186 @@ document.addEventListener('DOMContentLoaded', async () => {
         const dest = `${dayStops[dayStops.length - 1].lat},${dayStops[dayStops.length - 1].lng}`;
         const waypoints = dayStops.slice(1, -1).map(s => `${s.lat},${s.lng}`).join('|');
         const gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}${waypoints ? `&waypoints=${encodeURIComponent(waypoints)}` : ''}`;
-        gmapsRouteBtn = `<a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-gmaps-route" title="Mở chỉ đường toàn tuyến Ngày ${day.day_number} trên Google Maps"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg> Google Maps</a>`;
+        gmapsRouteBtn = `
+          <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-gmaps-route" title="Mở chỉ đường toàn tuyến Ngày ${day.day_number} trên Google Maps">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            <span>Google Maps</span>
+          </a>
+        `;
       }
 
-      html += `
-        <div class="day-card">
-          <div class="day-header">
-            <h3 class="day-title">Ngày ${day.day_number}: ${day.theme || day.cluster_name || 'Khám phá Cố Đô'}</h3>
-            <div class="day-header-actions">
-              ${gmapsRouteBtn}
-              <span class="day-badge">${slots.length} chặng${totalKm}</span>
-            </div>
-          </div>
-          <div class="day-body">
-      `;
-
-      slots.forEach(slot => {
-        const isFood = (slot.category || '').toLowerCase().includes('restaurant') || 
-                       (slot.category || '').toLowerCase().includes('quán') || 
+      let timelineStepsHtml = '';
+      slots.forEach((slot, slotIdx) => {
+        const isFood = (slot.category || '').toLowerCase().includes('restaurant') ||
+                       (slot.category || '').toLowerCase().includes('quán') ||
                        (slot.activity_type || '').toLowerCase().includes('ẩm thực');
+        const isUserOrigin = (slot.category || '').toLowerCase().includes('userlocation') ||
+                             (slot.activity_type || '').toLowerCase().includes('khởi hành');
         const lat = slot.latitude || slot.lat;
         const lng = slot.longitude || slot.lng;
 
-        if (lat && lng) {
-          allStopsForMap.push({
-            lat, lng,
-            name: slot.place_name || slot.name,
-            category: slot.category || (isFood ? 'Restaurant' : 'Attraction'),
-            address: slot.address || ''
-          });
+        let distanceBadge = '';
+        if (slot.distance_from_prev_km && slot.distance_from_prev_km > 0) {
+          const distLabel = (isFirstDay && slotIdx === 1)
+            ? `Cách vị trí bạn: ${slot.distance_from_prev_km.toFixed(1)} km`
+            : `${slot.distance_from_prev_km.toFixed(1)} km`;
+          distanceBadge = `<span class="meta-pill pill-distance">${distLabel}</span>`;
+        } else if (slot.distance_to_anchor_km) {
+          distanceBadge = `<span class="meta-pill pill-distance">${slot.distance_to_anchor_km.toFixed(1)} km</span>`;
         }
-
-        const distanceBadge = (slot.distance_from_prev_km && slot.distance_from_prev_km > 0)
-          ? `<span class="meta-pill pill-distance">${slot.distance_from_prev_km.toFixed(1)} km</span>`
-          : (slot.distance_to_anchor_km ? `<span class="meta-pill pill-distance">${slot.distance_to_anchor_km.toFixed(1)} km</span>` : '');
 
         const dishBadge = slot.dish_highlight || slot.specialty_dish
           ? `<span class="meta-pill pill-dish">Món: ${slot.dish_highlight || slot.specialty_dish}</span>`
           : '';
 
-        const ratingBadge = slot.rating
+        const ratingBadge = (!isUserOrigin && slot.rating)
           ? `<span class="meta-pill pill-rating">⭐ ${slot.rating.toFixed(1)}</span>`
           : '';
 
-        html += `
-          <div class="timeline-step">
-            <div class="step-time-badge">${slot.slot_name || slot.slot_time || 'Chặng tour'}</div>
+        const typeBadge = isUserOrigin
+          ? `<span class="meta-pill pill-origin">🚩 Điểm xuất phát</span>`
+          : `<span class="meta-pill">${slot.activity_type || slot.category || (isFood ? 'Ẩm thực' : 'Di tích')}</span>`;
+
+        const detailBtn = isUserOrigin
+          ? ''
+          : `<button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}">Xem chi tiết &rarr;</button>`;
+
+        const timeBadgeText = isUserOrigin
+          ? `🚩 ${slot.slot_name || 'Xuất phát'}`
+          : (slot.slot_name || slot.slot_time || 'Chặng tour');
+
+        timelineStepsHtml += `
+          <div class="timeline-step ${isUserOrigin ? 'timeline-step-origin' : ''}">
+            <div class="step-time-badge">${timeBadgeText}</div>
             <div class="step-content">
-              <h4 class="step-poi-name" data-name="${slot.place_name || slot.name}" title="Nhấp để xem hồ sơ & đánh giá chi tiết">${slot.place_name || slot.name}</h4>
+              <h4 class="step-poi-name ${isUserOrigin ? 'origin-name' : ''}" data-name="${slot.place_name || slot.name}" title="${isUserOrigin ? 'Điểm xuất phát tour của bạn' : 'Nhấp để xem hồ sơ & đánh giá chi tiết'}">${slot.place_name || slot.name}</h4>
               <p class="step-poi-desc">${slot.description || slot.address || 'Điểm trải nghiệm di sản Cố Đô'}</p>
               <div class="step-meta-row">
-                <span class="meta-pill">${slot.activity_type || slot.category || (isFood ? 'Ẩm thực' : 'Di tích')}</span>
+                ${typeBadge}
                 ${ratingBadge}
                 ${distanceBadge}
                 ${dishBadge}
                 ${lat && lng ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}">Định vị</button>` : ''}
-                <button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}">Xem chi tiết &rarr;</button>
+                ${detailBtn}
               </div>
             </div>
           </div>
         `;
       });
 
-      html += `
+      dayContentsHtml += `
+        <div class="deck-day-content ${isFirstDay ? 'active' : ''}" id="${deckId}-day-${day.day_number}">
+          <div class="deck-day-summary">
+            <div class="deck-day-theme">Ngày ${day.day_number}: ${day.theme || day.cluster_name || 'Khám phá Cố Đô'}</div>
+            <div class="deck-day-actions">
+              ${gmapsRouteBtn}
+              <span class="day-badge">${slots.length} chặng${totalKm}</span>
+            </div>
+          </div>
+          <div class="day-body" style="padding: 0;">
+            ${timelineStepsHtml}
           </div>
         </div>
       `;
     });
 
-    itineraryResults.innerHTML = html;
+    const totalKmText = totalTripDistanceKm > 0 ? ` · ~${totalTripDistanceKm.toFixed(1)} km` : '';
 
-    // Gán sự kiện click định vị từng điểm
-    itineraryResults.querySelectorAll('.btn-locate').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const lat = parseFloat(btn.dataset.lat);
-        const lng = parseFloat(btn.dataset.lng);
-        mapStudio.panTo(lat, lng, 16);
+    const msg = document.createElement('div');
+    msg.className = 'chat-message assistant has-deck';
+    msg.innerHTML = `
+      <div class="message-avatar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+          <line x1="9" y1="3" x2="9" y2="18" />
+          <line x1="15" y1="6" x2="15" y2="21" />
+        </svg>
+      </div>
+      <div class="message-bubble">
+        <div class="message-author">Lịch trình Tour Cố Đô</div>
+        <p>Mình đã tối ưu hóa lịch trình <strong>${days} ngày</strong> cho <strong>${tripType}</strong> xuất phát từ <strong>${userLocName || 'Vị trí của bạn'}</strong> theo khoảng cách di chuyển thực tế. Toàn bộ lộ trình đã được đồng bộ lên bản đồ bên cạnh.</p>
+        
+        <div class="chat-itinerary-deck" id="${deckId}">
+          <div class="deck-header">
+            <div class="deck-header-info">
+              <h3 class="deck-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                Lộ trình Khám phá Huế (${days} ngày)
+              </h3>
+              <span class="deck-subtitle">Đối tượng: ${tripType} · ${totalStopsCount} điểm đến</span>
+            </div>
+            <div class="deck-badge">${days} Ngày${totalKmText}</div>
+          </div>
+
+          <div class="deck-day-tabs">
+            ${dayTabsHtml}
+          </div>
+
+          <div class="deck-days-wrapper">
+            ${dayContentsHtml}
+          </div>
+
+          <div class="deck-followup">
+            <span class="deck-followup-label">Hỏi tiếp:</span>
+            <button type="button" class="btn-deck-followup">Chi phí dự kiến chuyến đi này khoảng bao nhiêu?</button>
+            <button type="button" class="btn-deck-followup">Thời điểm tham quan Đại Nội đẹp nhất trong ngày?</button>
+            <button type="button" class="btn-deck-followup">Phương tiện di chuyển hợp lý nhất ở Huế?</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    chatThread.appendChild(msg);
+    setTimeout(() => {
+      msg.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+
+    // Gán sự kiện chuyển Day Tabs trong thẻ lịch trình
+    const deckEl = document.getElementById(deckId);
+    if (deckEl) {
+      const tabs = deckEl.querySelectorAll('.deck-day-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const dayNum = tab.dataset.day;
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+
+          const contents = deckEl.querySelectorAll('.deck-day-content');
+          contents.forEach(c => c.classList.remove('active'));
+
+          const targetContent = document.getElementById(`${deckId}-day-${dayNum}`);
+          if (targetContent) targetContent.classList.add('active');
+        });
       });
-    });
 
-    // Gán sự kiện click xem chi tiết từng điểm trong lịch trình
-    itineraryResults.querySelectorAll('.btn-step-detail, .step-poi-name').forEach(el => {
-      el.addEventListener('click', () => {
-        const name = el.dataset.name;
-        if (name && window.openPoiDetail) {
-          window.openPoiDetail(name);
-        }
+      // Gán sự kiện click định vị từng điểm trên Leaflet
+      deckEl.querySelectorAll('.btn-locate').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lat = parseFloat(btn.dataset.lat);
+          const lng = parseFloat(btn.dataset.lng);
+          mapStudio.panTo(lat, lng, 16);
+        });
       });
-    });
 
-    // Vẽ toàn bộ tuyến tour lên bản đồ Leaflet
+      // Gán sự kiện click xem chi tiết từng điểm (mở Drawer POI)
+      deckEl.querySelectorAll('.btn-step-detail, .step-poi-name').forEach(el => {
+        el.addEventListener('click', () => {
+          const name = el.dataset.name;
+          if (name && window.openPoiDetail) {
+            window.openPoiDetail(name);
+          }
+        });
+      });
+
+      // Gán sự kiện cho các nút hỏi tiếp theo
+      deckEl.querySelectorAll('.btn-deck-followup').forEach(btn => {
+        btn.addEventListener('click', () => {
+          sendChatQuery(btn.textContent.trim());
+        });
+      });
+    }
+
+    // Tự động vẽ toàn bộ tuyến tour lên bản đồ Leaflet
     if (allStopsForMap.length > 0) {
       mapStudio.drawTourRoute(allStopsForMap);
     }
@@ -523,6 +718,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function sendChatQuery(query) {
     if (!query) return;
 
+    // Kiểm tra nếu người dùng yêu cầu lập lịch trình qua câu chat
+    const lowerQuery = query.toLowerCase();
+    const isPlanIntent = (
+      lowerQuery.includes('lập lịch trình') ||
+      lowerQuery.includes('tạo lịch trình') ||
+      lowerQuery.includes('gợi ý lịch trình') ||
+      lowerQuery.includes('lên lịch trình') ||
+      lowerQuery.includes('lên tour') ||
+      lowerQuery.includes('lập tour') ||
+      lowerQuery.includes('tour du lịch')
+    );
+
+    if (isPlanIntent) {
+      let days = 2;
+      if (lowerQuery.includes('1 ngày') || lowerQuery.includes('một ngày')) days = 1;
+      else if (lowerQuery.includes('3 ngày') || lowerQuery.includes('ba ngày')) days = 3;
+      else if (lowerQuery.includes('2 ngày') || lowerQuery.includes('hai ngày')) days = 2;
+      
+      const tripType = selectTripType ? selectTripType.value : 'Couples';
+      const preferredDishes = getSelectedDishes();
+      if (chatInput) chatInput.value = '';
+      generateItineraryInChat(days, tripType, preferredDishes);
+      return;
+    }
+
     // Hiển thị tin nhắn người dùng
     appendUserMessage(query);
     if (chatInput) chatInput.value = '';
@@ -550,6 +770,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   promptChips.forEach(chip => {
     chip.addEventListener('click', () => {
+      if (chip.classList.contains('chip-planner-trigger')) return; // handled by chipPlan2Days
       // Lấy text loại bỏ emoji
       const text = chip.textContent.replace(/^[\s\uFE00-\uFE0F\u1F300-\u1F9FF\u2600-\u26FF\u2700-\u27BF]+/, '').trim();
       sendChatQuery(text);
@@ -577,7 +798,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     chatThread.scrollTop = chatThread.scrollHeight;
   }
 
-  function appendAssistantLoading() {
+  function appendAssistantLoading(customText = 'Đang phân tích không gian và tổng hợp gợi ý...') {
     const id = `loading-${Date.now()}`;
     const msg = document.createElement('div');
     msg.id = id;
@@ -588,7 +809,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
       <div class="message-bubble">
         <div class="message-author">Trợ lý Cố Đô</div>
-        <p class="loading-text">Đang phân tích không gian và tổng hợp gợi ý...</p>
+        <p class="loading-text">${customText}</p>
       </div>
     `;
     chatThread.appendChild(msg);
