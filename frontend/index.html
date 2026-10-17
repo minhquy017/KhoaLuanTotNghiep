@@ -78,36 +78,34 @@
     <section class="spatial-canvas-panel" aria-label="Bản đồ không gian Cố đô Huế">
       <div class="map-toolbar">
         <div class="toolbar-title">
-          <span class="toolbar-meta" id="map-active-meta">Toàn cảnh Di sản & Ẩm thực</span>
+          <span class="toolbar-meta" id="map-active-meta" title="Toàn cảnh Di sản & Ẩm thực">Toàn cảnh Di sản & Ẩm thực</span>
         </div>
         <div class="toolbar-actions">
           <select class="map-style-select" id="select-map-style" title="Chọn phong cách giao diện bản đồ">
-            <option value="google_streets" selected>Bản đồ đường phố</option>
-            <option value="google_satellite">Vệ tinh chân thực</option>
+            <option value="google_streets" selected>Đường phố</option>
+            <option value="google_satellite">Vệ tinh</option>
           </select>
-          <button class="map-btn" id="btn-reset-map" title="Về trung tâm Huế">
+          <button class="map-btn" id="btn-reset-map" title="Về trung tâm Cố đô Huế">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <path d="M3 3v5h5" />
             </svg>
             <span>Trung tâm</span>
           </button>
-          <div class="radius-control-pill" title="Phân tích bán kính không gian xung quanh trục Sông Hương">
-            <button class="map-btn btn-radius-toggle" id="btn-toggle-radius" title="Bật/Tắt vòng tròn bán kính">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-              </svg>
-              <span id="radius-btn-label">Bán Kính</span>
-            </button>
-            <select class="map-radius-select" id="select-radius-range" title="Chọn cự ly bán kính phân tích">
-              <option value="500">500 m</option>
-              <option value="1000">1.0 km</option>
-              <option value="1500" selected>1.5 km</option>
-              <option value="2500">2.5 km</option>
-              <option value="5000">5.0 km</option>
-            </select>
-          </div>
+          <button class="map-btn btn-locate-user" id="btn-locate-user" title="Định vị vị trí hiện tại (GPS)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="3" fill="currentColor" />
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+              <circle cx="12" cy="12" r="7" stroke-dasharray="2 2" />
+            </svg>
+            <span id="locate-btn-label">Vị trí của tôi</span>
+          </button>
+          <button class="map-btn btn-toggle-workbench" id="btn-toggle-workbench" title="Thu gọn / Mở rộng bảng điều khiển bên phải" aria-label="Toàn cảnh bản đồ">
+            <svg class="icon-toggle-expand" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+            </svg>
+            <span id="workbench-toggle-text">Toàn cảnh</span>
+          </button>
         </div>
       </div>
 
@@ -174,8 +172,6 @@
         <div class="legend-item"><span class="legend-dot dot-cafe"></span> Cà phê & Sunset</div>
         <div class="legend-item"><span class="legend-dot dot-hotel"></span> Khách sạn / Nghỉ dưỡng</div>
         <div class="legend-item"><span class="legend-line line-route"></span> Tuyến Tour Tối Ưu</div>
-        <div class="legend-item"><span class="legend-circle circle-radius"></span> Vùng R ≤ <span
-            id="legend-radius-val">1.5</span>km</div>
       </div>
     </section>
 
@@ -262,48 +258,74 @@
 
       <!-- PANEL 2: TRỢ LÝ HỎI ĐÁP DU LỊCH (CHATBOT) -->
       <article class="tab-panel" id="panel-chat" role="tabpanel" aria-labelledby="tab-btn-chat" hidden>
-        <div class="panel-header">
-          <h2 class="panel-title">Hỏi đáp về Huế</h2>
-          <p class="panel-desc">
-            Hỏi bất cứ gì về di tích, quán ăn, đường đi — trợ lý sẽ tìm và chỉ trên bản đồ.
-          </p>
+        <div class="panel-header chat-panel-header">
+          <div class="chat-header-main">
+            <div class="chat-badge-pill">
+              <span class="chat-badge-dot"></span>
+              <span>Trợ lý Tri thức Cố Đô</span>
+            </div>
+            <h2 class="panel-title">Hỏi đáp & Tra cứu Không gian</h2>
+            <p class="panel-desc">
+              Hỏi bất kỳ điều gì về di tích, món ăn, tuyến đường — thông tin đồng bộ trực tiếp với bản đồ bên cạnh.
+            </p>
+          </div>
+          <button type="button" class="btn-clear-chat" id="btn-clear-chat" title="Làm mới cuộc trò chuyện" aria-label="Xóa đoạn hội thoại">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            <span>Làm mới</span>
+          </button>
         </div>
 
         <!-- Suggested queries chips -->
         <div class="prompt-chips">
-          <span class="chips-label">Thử hỏi:</span>
-          <button type="button" class="chip-item">Bún bò ngon gần Đại Nội?</button>
-          <button type="button" class="chip-item">Chiều nay đi đâu, ăn gì?</button>
-          <button type="button" class="chip-item">Chùa Thiên Mụ gần quán chay nào?</button>
+          <span class="chips-label">Gợi ý nhanh:</span>
+          <button type="button" class="chip-item">
+            <span class="chip-emoji">🧭</span> Chỉ đường đến chùa Thiên Mụ?
+          </button>
+          <button type="button" class="chip-item">
+            <span class="chip-emoji">🚗</span> Từ Đại Nội đi chợ Đông Ba thế nào?
+          </button>
+          <button type="button" class="chip-item">
+            <span class="chip-emoji">🍜</span> Bún bò ngon gần Đại Nội?
+          </button>
+          <button type="button" class="chip-item">
+            <span class="chip-emoji">☕</span> Quán cà phê ngắm hoàng hôn sông Hương?
+          </button>
         </div>
 
         <!-- Chat conversation history -->
         <div class="chat-thread" id="chat-thread" role="log" aria-live="polite">
           <div class="chat-message assistant">
             <div class="message-avatar">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z" />
               </svg>
             </div>
             <div class="message-bubble">
-              <p>Chào bạn! Mình có thể giúp bạn tìm quán ăn, di tích, hoặc gợi ý chỗ đi chơi ở Huế. Cứ hỏi thoải mái
-                nhé.</p>
+              <div class="message-author">Trợ lý Cố Đô</div>
+              <p>Xin chào! Mình có thể hỗ trợ bạn tìm kiếm di tích lịch sử, quán ăn truyền thống, quán cà phê hoặc lên lộ trình tham quan Huế. Bất kỳ địa điểm nào được nhắc tới sẽ được định vị trực tiếp trên bản đồ bên cạnh.</p>
             </div>
           </div>
         </div>
 
-        <!-- Chat input box -->
-        <form id="chat-form" class="chat-input-wrapper">
-          <input type="text" id="chat-input" class="chat-input" placeholder="Hỏi gì về Huế..." autocomplete="off"
-            required />
-          <button type="submit" id="chat-send-btn" class="btn btn-primary btn-send" aria-label="Gửi câu hỏi">
-            <span class="btn-text">Gửi</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="22" y1="2" x2="11" y2="13" />
-              <polygon points="22 2 15 22 11 13 2 9 22 2" />
-            </svg>
-          </button>
-        </form>
+        <!-- Chat input box container -->
+        <div class="chat-input-container">
+          <form id="chat-form" class="chat-input-wrapper">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Hỏi về điểm đến, đặc sản, khoảng cách ở Huế... (Nhấn Enter để gửi)" autocomplete="off" required />
+            <button type="submit" id="chat-send-btn" class="btn btn-primary btn-send" aria-label="Gửi câu hỏi">
+              <span class="btn-text">Gửi</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </button>
+          </form>
+          <div class="chat-input-hints">
+            <span>💡 Nhấp vào thẻ địa điểm trong câu trả lời để phóng to & xem chi tiết trên bản đồ</span>
+          </div>
+        </div>
       </article>
 
 
@@ -380,6 +402,12 @@
           </svg>
           <span>Chỉ Đường Google Maps</span>
         </a>
+        <button type="button" class="btn-drawer btn-direct-nav" id="poi-btn-direct-nav" title="Vẽ tuyến đường từ vị trí của bạn trên bản đồ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="3 11 22 2 13 21 11 13 3 11" />
+          </svg>
+          <span>Chỉ đường</span>
+        </button>
         <button type="button" class="btn-drawer btn-add-tour" id="poi-btn-add-tour">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10" />

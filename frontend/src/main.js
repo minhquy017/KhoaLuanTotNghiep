@@ -61,24 +61,89 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
 
+      // Nếu mở tab Chat, tự động cuộn xuống tin nhắn mới nhất và focus vào input
+      if (target === 'chat') {
+        setTimeout(() => {
+          const chatThread = document.getElementById('chat-thread');
+          const chatInput = document.getElementById('chat-input');
+          if (chatThread) chatThread.scrollTop = chatThread.scrollHeight;
+          if (chatInput) chatInput.focus();
+        }, 100);
+      }
+
       // Kích hoạt lại map size khi đổi tab
       setTimeout(() => {
         if (mapStudio.map) mapStudio.map.invalidateSize();
-      }, 100);
+      }, 150);
     });
   });
 
   // 4. MAP STUDIO TOOLBAR, SEARCH & FILTER CONTROLS
   const btnResetMap = document.getElementById('btn-reset-map');
-  const btnToggleRadius = document.getElementById('btn-toggle-radius');
-  const selectRadiusRange = document.getElementById('select-radius-range');
-  const legendRadiusVal = document.getElementById('legend-radius-val');
+  const btnLocateUser = document.getElementById('btn-locate-user');
   const selectMapStyle = document.getElementById('select-map-style');
   const mapActiveMeta = document.getElementById('map-active-meta');
   const filterChips = document.querySelectorAll('.filter-chip');
   const mapSearchInput = document.getElementById('map-search-input');
   const mapSearchDropdown = document.getElementById('map-search-dropdown');
   const btnClearSearch = document.getElementById('btn-clear-search');
+
+  // Định vị GPS người dùng (HTML5 Geolocation với Fallback Cầu Tràng Tiền)
+  function locateUserPosition(silent = false) {
+    if (!navigator.geolocation) {
+      if (!silent) {
+        alert('Trình duyệt của bạn không hỗ trợ Geolocation API.');
+      }
+      return;
+    }
+
+    if (!silent) {
+      btnLocateUser?.classList.add('loading');
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        btnLocateUser?.classList.remove('loading');
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        // Kiểm tra xem vị trí có nằm trong hoặc gần tỉnh Thừa Thiên Huế (15.8 - 16.8 N, 107.0 - 108.3 E)
+        const isNearHue = (lat >= 15.8 && lat <= 16.8 && lng >= 107.0 && lng <= 108.3);
+        const locName = isNearHue ? 'Vị trí hiện tại của bạn' : 'Vị trí của bạn (Ngoài Huế)';
+
+        mapStudio.setUserLocation(lat, lng, locName);
+        if (!silent) {
+          mapStudio.panTo(lat, lng, 16);
+          btnLocateUser?.classList.add('active');
+        }
+        btnLocateUser.title = `Đã định vị: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      },
+      (err) => {
+        btnLocateUser?.classList.remove('loading');
+        console.warn('Geolocation error or denied:', err);
+        if (!silent) {
+          // Fallback vị trí trung tâm Huế: Cầu Tràng Tiền
+          const defaultHueLat = 16.4674;
+          const defaultHueLng = 107.5905;
+          mapStudio.setUserLocation(defaultHueLat, defaultHueLng, 'Cầu Tràng Tiền (Trung tâm Huế)');
+          mapStudio.panTo(defaultHueLat, defaultHueLng, 16);
+          btnLocateUser?.classList.add('active');
+          btnLocateUser.title = 'Vị trí mặc định: Cầu Tràng Tiền, Huế';
+          alert('Không thể lấy vị trí thực tế của bạn (trình duyệt chặn hoặc chưa cấp quyền). Hệ thống đã đặt vị trí xuất phát mặc định tại Cầu Tràng Tiền, trung tâm Huế!');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+    );
+  }
+
+  btnLocateUser?.addEventListener('click', () => {
+    locateUserPosition(false);
+  });
+
+  // Tự động định vị vị trí người dùng ở chế độ im lặng khi vừa vào ứng dụng (không di chuyển map hoặc highlight nút)
+  setTimeout(() => {
+    locateUserPosition(true);
+  }, 1200);
 
   // Đổi phong cách bản đồ (Google Maps / Vệ Tinh)
   selectMapStyle?.addEventListener('change', (e) => {
@@ -103,28 +168,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       mapStudio.filterByCategory(cat);
       if (mapActiveMeta) {
-        mapActiveMeta.textContent = categoryTitles[cat] || 'Địa điểm Cố Đô';
+        const title = categoryTitles[cat] || 'Địa điểm Cố Đô';
+        mapActiveMeta.textContent = title;
+        mapActiveMeta.title = title;
       }
     });
-  });
-
-  // Tùy chỉnh cự ly bán kính phân tích không gian
-  selectRadiusRange?.addEventListener('change', (e) => {
-    const meters = parseInt(e.target.value, 10);
-    mapStudio.setRadiusDistance(meters);
-    if (legendRadiusVal) {
-      legendRadiusVal.textContent = (meters / 1000).toFixed(1);
-    }
-    // Tự động kích hoạt hiển thị vòng bán kính nếu đang tắt
-    if (!mapStudio.showRadius) {
-      const isShowing = mapStudio.toggleRadius();
-      btnToggleRadius?.classList.toggle('active', isShowing);
-    }
-  });
-
-  btnToggleRadius?.addEventListener('click', () => {
-    const isShowing = mapStudio.toggleRadius();
-    btnToggleRadius.classList.toggle('active', isShowing);
   });
 
   // Đặt lại góc nhìn bản đồ trung tâm và khôi phục bộ lọc
@@ -136,12 +184,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     if (mapActiveMeta) {
       mapActiveMeta.textContent = 'Toàn cảnh Di sản & Ẩm thực';
+      mapActiveMeta.title = 'Toàn cảnh Di sản & Ẩm thực';
     }
+    btnLocateUser?.classList.remove('active');
     if (mapSearchInput) {
       mapSearchInput.value = '';
       if (btnClearSearch) btnClearSearch.style.display = 'none';
     }
     if (mapSearchDropdown) mapSearchDropdown.style.display = 'none';
+  });
+
+  // Bật/tắt chế độ Bản đồ Toàn cảnh (Thu gọn / Mở rộng bảng điều khiển bên phải)
+  const btnToggleWorkbench = document.getElementById('btn-toggle-workbench');
+  const workbenchToggleText = document.getElementById('workbench-toggle-text');
+  const studioLayout = document.querySelector('.studio-layout');
+
+  btnToggleWorkbench?.addEventListener('click', () => {
+    if (!studioLayout) return;
+    const isCollapsed = studioLayout.classList.toggle('workbench-collapsed');
+    btnToggleWorkbench.classList.toggle('active', isCollapsed);
+    if (workbenchToggleText) {
+      workbenchToggleText.textContent = isCollapsed ? 'Hiện trợ lý' : 'Toàn cảnh';
+    }
+    btnToggleWorkbench.title = isCollapsed 
+      ? 'Mở lại bảng trợ lý & lịch trình bên phải' 
+      : 'Thu gọn bảng trợ lý để xem bản đồ toàn cảnh';
+
+    // Đợi transition CSS kết thúc rồi cập nhật lại Leaflet Map Viewport
+    setTimeout(() => {
+      if (mapStudio && mapStudio.map) {
+        mapStudio.map.invalidateSize({ animate: true });
+      }
+    }, 360);
   });
 
   // Xử lý ô Tìm kiếm nhanh với Autocomplete Dropdown
@@ -424,37 +498,68 @@ document.addEventListener('DOMContentLoaded', async () => {
   const chatThread = document.getElementById('chat-thread');
   const chatSendBtn = document.getElementById('chat-send-btn');
   const promptChips = document.querySelectorAll('.chip-item');
+  const btnClearChat = document.getElementById('btn-clear-chat');
 
-  promptChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chatInput.value = chip.textContent.trim();
-      chatForm.dispatchEvent(new Event('submit'));
-    });
+  // Làm mới đoạn hội thoại
+  btnClearChat?.addEventListener('click', () => {
+    if (chatThread) {
+      chatThread.innerHTML = `
+        <div class="chat-message assistant">
+          <div class="message-avatar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z" />
+            </svg>
+          </div>
+          <div class="message-bubble">
+            <div class="message-author">Trợ lý Cố Đô</div>
+            <p>Đoạn hội thoại đã được làm mới. Bạn cần hỗ trợ thông tin gì về ẩm thực hoặc danh lam thắng cảnh Huế?</p>
+          </div>
+        </div>
+      `;
+      if (chatInput) chatInput.focus();
+    }
   });
 
-  chatForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const query = chatInput.value.trim();
+  async function sendChatQuery(query) {
     if (!query) return;
 
     // Hiển thị tin nhắn người dùng
     appendUserMessage(query);
-    chatInput.value = '';
-    chatSendBtn.disabled = true;
+    if (chatInput) chatInput.value = '';
+    if (chatSendBtn) chatSendBtn.disabled = true;
 
     // Hiển thị loading placeholder
     const loadingId = appendAssistantLoading();
 
     try {
-      const res = await TourismApiClient.askAssistant(query);
+      // Truyền tọa độ GPS người dùng nếu đã có định vị
+      const userLat = mapStudio.userLocation ? mapStudio.userLocation.lat : null;
+      const userLng = mapStudio.userLocation ? mapStudio.userLocation.lng : null;
+
+      const res = await TourismApiClient.askAssistant(query, 'Thành phố Huế', userLat, userLng);
       removeLoadingMessage(loadingId);
       appendAssistantResponse(res);
     } catch (err) {
       removeLoadingMessage(loadingId);
       appendAssistantError(err.message);
     } finally {
-      chatSendBtn.disabled = false;
+      if (chatSendBtn) chatSendBtn.disabled = false;
+      if (chatInput) chatInput.focus();
     }
+  }
+
+  promptChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      // Lấy text loại bỏ emoji
+      const text = chip.textContent.replace(/^[\s\uFE00-\uFE0F\u1F300-\u1F9FF\u2600-\u26FF\u2700-\u27BF]+/, '').trim();
+      sendChatQuery(text);
+    });
+  });
+
+  chatForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = chatInput?.value?.trim() || '';
+    sendChatQuery(query);
   });
 
   function appendUserMessage(text) {
@@ -479,10 +584,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     msg.className = 'chat-message assistant';
     msg.innerHTML = `
       <div class="message-avatar">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
       </div>
       <div class="message-bubble">
-        <p class="loading-text">Đang tìm kiếm thông tin và phân tích...</p>
+        <div class="message-author">Trợ lý Cố Đô</div>
+        <p class="loading-text">Đang phân tích không gian và tổng hợp gợi ý...</p>
       </div>
     `;
     chatThread.appendChild(msg);
@@ -506,13 +612,121 @@ document.addEventListener('DOMContentLoaded', async () => {
           .replace(/\n/g, '<br/>')
       : '';
 
-    // Tạo các pill bấm nhanh định vị các địa điểm trên bản đồ
+    // Khối thẻ chỉ đường nếu phản hồi có điều hướng (Navigation Intent)
+    let navCardHtml = '';
+    const nav = res.navigation;
+    const isNav = Boolean(nav && nav.is_navigation && nav.origin && nav.destination);
+
+    if (isNav) {
+      const origin = nav.origin;
+      const destination = nav.destination;
+      const profile = nav.profile || 'driving';
+      const isWalking = profile === 'walking';
+
+      // Chuẩn hóa tên trường tọa độ (lat/latitude, lng/longitude)
+      origin.lat = origin.lat || origin.latitude;
+      origin.lng = origin.lng || origin.longitude;
+      destination.lat = destination.lat || destination.latitude;
+      destination.lng = destination.lng || destination.longitude;
+
+      // Nếu origin chưa có tọa độ nhưng người dùng đã định vị, điền tọa độ GPS người dùng
+      if ((!origin.lat || !origin.lng) && mapStudio.userLocation) {
+        origin.lat = mapStudio.userLocation.lat;
+        origin.lng = mapStudio.userLocation.lng;
+        origin.name = mapStudio.userLocation.name || 'Vị trí của bạn';
+      }
+
+      // Fallback nếu vẫn thiếu tọa độ origin: Cầu Tràng Tiền (Trung tâm Huế)
+      if (!origin.lat || !origin.lng) {
+        origin.lat = 16.4674;
+        origin.lng = 107.5905;
+        origin.name = origin.name || 'Cầu Tràng Tiền (Trung tâm Huế)';
+      }
+
+      // Tính khoảng cách ước lượng ban đầu
+      const R = 6371;
+      const dLat = (destination.lat - origin.lat) * Math.PI / 180;
+      const dLon = (destination.lng - origin.lng) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(origin.lat * Math.PI / 180) * Math.cos(destination.lat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const estDistKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1);
+      const estDurationMin = Math.max(2, Math.round(parseFloat(estDistKm) * 2.5));
+
+      const gmapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}`;
+
+      navCardHtml = `
+        <div class="chat-nav-card">
+          <div class="nav-card-header">
+            <div class="nav-card-header-main">
+              <div class="nav-card-icon-badge">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+              </div>
+              <div>
+                <div class="nav-card-title">Lộ trình Chỉ đường Tối ưu</div>
+                <div class="nav-card-subtitle">${isWalking ? 'Tuyến đi bộ ngắm cảnh' : 'Xe máy / Ô tô theo đường nội đô Huế'}</div>
+              </div>
+            </div>
+            <div class="nav-card-badge-metrics">
+              <span class="nav-metric-pill">~${estDistKm} km</span>
+              <span class="nav-metric-pill highlight">~${estDurationMin} phút</span>
+            </div>
+          </div>
+
+          <div class="nav-card-body">
+            <div class="nav-route-row origin">
+              <div class="route-marker-badge origin">A</div>
+              <div class="route-point-content">
+                <div class="route-point-label">Điểm khởi hành</div>
+                <div class="route-point-name">${origin.name}</div>
+              </div>
+            </div>
+
+            <div class="nav-route-divider">
+              <div class="divider-line"></div>
+              <div class="divider-arrow">↓</div>
+              <div class="divider-line"></div>
+            </div>
+
+            <div class="nav-route-row destination">
+              <div class="route-marker-badge dest">B</div>
+              <div class="route-point-content">
+                <div class="route-point-label">Điểm đến</div>
+                <div class="route-point-name">${destination.name}</div>
+                ${destination.address ? `<div class="route-point-address">📍 ${destination.address}</div>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-card-actions">
+            <button type="button" class="btn-nav-replot" data-origin-lat="${origin.lat}" data-origin-lng="${origin.lng}" data-origin-name="${origin.name}" data-dest-lat="${destination.lat}" data-dest-lng="${destination.lng}" data-dest-name="${destination.name}" data-profile="${profile}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+              <span>Vẽ lại trên Bản đồ</span>
+            </button>
+            <a href="${gmapsDirUrl}" target="_blank" rel="noopener noreferrer" class="btn-nav-gmaps" title="Mở chỉ đường trên ứng dụng Google Maps">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+              <span>Mở Google Maps</span> &rarr;
+            </a>
+          </div>
+        </div>
+      `;
+
+      // Tự động vẽ lộ trình thực tế lên bản đồ Leaflet ngay lập tức!
+      setTimeout(() => {
+        mapStudio.drawNavigationRoute(origin, destination, profile);
+      }, 200);
+    }
+
+    // Chỉ hiển thị các pill gợi ý địa điểm khi KHÔNG PHẢI câu hỏi chỉ đường (tránh làm loãng thông tin)
     let placesPillsHtml = '';
     const matched = res.matched_places || [];
-    if (matched.length > 0) {
+    if (matched.length > 0 && !isNav) {
       placesPillsHtml = `
         <div class="chat-suggested-places">
-          <div class="suggested-places-label">Địa điểm liên quan trên bản đồ:</div>
+          <div class="suggested-places-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+            <span>Điểm đến gợi ý trên bản đồ:</span>
+          </div>
           <div class="suggested-places-list">
             ${matched.map(p => {
               const catLower = (p.category || '').toLowerCase();
@@ -535,9 +749,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               }
 
               return `
-                <button type="button" class="chat-poi-btn ${catClass}" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}">
+                <button type="button" class="chat-poi-btn ${catClass}" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}" title="Ghim điểm này lên bản đồ">
                   <span class="poi-btn-icon">${iconSvg}</span>
                   <span class="poi-btn-name">${p.name}</span>
+                  <span class="poi-btn-action">&rarr;</span>
                 </button>
               `;
             }).join('')}
@@ -548,15 +763,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     msg.innerHTML = `
       <div class="message-avatar">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
       </div>
       <div class="message-bubble">
+        <div class="message-author">Trợ lý Cố Đô</div>
         <div class="answer-content">${formattedAnswer}</div>
+        ${navCardHtml}
         ${placesPillsHtml}
       </div>
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
+
+    // Gán sự kiện click nút vẽ lại trên bản đồ trong thẻ lộ trình
+    msg.querySelectorAll('.btn-nav-replot').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const oLat = parseFloat(btn.dataset.originLat);
+        const oLng = parseFloat(btn.dataset.originLng);
+        const oName = btn.dataset.originName;
+        const dLat = parseFloat(btn.dataset.destLat);
+        const dLng = parseFloat(btn.dataset.destLng);
+        const dName = btn.dataset.destName;
+        const prof = btn.dataset.profile || 'driving';
+
+        mapStudio.drawNavigationRoute(
+          { lat: oLat, lng: oLng, name: oName },
+          { lat: dLat, lng: dLng, name: dName },
+          prof
+        );
+      });
+    });
 
     // Gán sự kiện click vào các nút địa điểm trong chat bubble: Ghim bản đồ + Mở Drawer
     msg.querySelectorAll('.chat-poi-btn').forEach(btn => {
@@ -572,7 +808,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // TỰ ĐỘNG VẼ CÁC ĐỊA ĐIỂM ĐƯỢC GỢI Ý LÊN BẢN ĐỒ BÊN CẠNH NGAY LẬP TỨC
-    if (matched.length > 0) {
+    if (matched.length > 0 && !(nav && nav.is_navigation)) {
       mapStudio.highlightChatPlaces(matched);
     }
   }
@@ -608,6 +844,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const poiSectionNearby = document.getElementById('poi-section-nearby');
   const poiNearbyList = document.getElementById('poi-nearby-list');
   const poiBtnGoogleMaps = document.getElementById('poi-btn-google-maps');
+  const poiBtnDirectNav = document.getElementById('poi-btn-direct-nav');
   const poiBtnAddTour = document.getElementById('poi-btn-add-tour');
   const poiBtnAskAi = document.getElementById('poi-btn-ask-ai');
 
@@ -779,6 +1016,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.key === 'Escape' && poiDrawer?.classList.contains('open')) {
       closePoiDetail();
     }
+  });
+
+  // Action: Chỉ đường trực tiếp từ vị trí của bạn đến điểm này
+  poiBtnDirectNav?.addEventListener('click', () => {
+    if (!currentPoiData) return;
+    const destLat = currentPoiData.latitude || currentPoiData.lat;
+    const destLng = currentPoiData.longitude || currentPoiData.lng;
+    const destName = currentPoiData.name;
+
+    if (!destLat || !destLng) {
+      alert('Địa điểm này chưa có thông tin tọa độ chính xác để chỉ đường.');
+      return;
+    }
+
+    // Đóng drawer
+    closePoiDetail();
+
+    // Điểm xuất phát: Vị trí người dùng đã định vị, hoặc fallback Cầu Tràng Tiền
+    const origin = mapStudio.userLocation || {
+      lat: 16.4674,
+      lng: 107.5905,
+      name: 'Cầu Tràng Tiền (Trung tâm Huế)'
+    };
+
+    const destination = {
+      lat: destLat,
+      lng: destLng,
+      name: destName,
+      address: currentPoiData.address || ''
+    };
+
+    mapStudio.drawNavigationRoute(origin, destination, 'driving');
   });
 
   // Action: Thêm vào tour

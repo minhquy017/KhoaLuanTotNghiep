@@ -55,18 +55,26 @@ export class TourismApiClient {
    * Gửi câu hỏi đến Trợ lý Du lịch Thông minh (Spatial Agentic RAG)
    * @param {string} query - Câu hỏi tự nhiên
    * @param {string} locality - Vùng địa lý ("Thành phố Huế")
+   * @param {number|null} userLat - Vĩ độ GPS người dùng
+   * @param {number|null} userLng - Kinh độ GPS người dùng
    */
-  static async askAssistant(query, locality = 'Thành phố Huế') {
+  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null) {
+    const payload = {
+      query: query,
+      locality: locality
+    };
+    if (userLat !== null && userLng !== null) {
+      payload.user_lat = userLat;
+      payload.user_lng = userLng;
+    }
+
     const res = await fetch(`${API_BASE_URL}/api/v1/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify({
-        query: query,
-        locality: locality
-      })
+      body: JSON.stringify(payload)
     });
 
     if (!res.ok) {

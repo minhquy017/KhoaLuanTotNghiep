@@ -16,14 +16,14 @@ export class SpatialMapStudio {
     this.map = null;
     this.markersLayer = null;
     this.routesLayer = null;
-    this.radiusLayer = null;
     this.centerHue = [16.4637, 107.5909];
     this.defaultZoom = 13;
-    this.showRadius = false;
-    this.currentRadiusMeters = 1500;
     this.activeCategoryFilter = 'all';
     this.currentTileLayer = null;
     this.markerInstances = new Map();
+    this.userLocation = null;
+    this.userLocationMarker = null;
+    this.navigationLayer = null;
 
     // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố Đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
     this.masterLandmarks = hueTopPlaces;
@@ -102,7 +102,7 @@ export class SpatialMapStudio {
       this.markersLayer = L.layerGroup().addTo(this.map);
     }
     this.routesLayer = L.layerGroup().addTo(this.map);
-    this.radiusLayer = L.layerGroup().addTo(this.map);
+    this.navigationLayer = L.layerGroup().addTo(this.map);
 
     // Nạp sẵn toàn bộ địa danh biểu tượng của Cố đô Huế
     this.renderDefaultHeritageSites();
@@ -235,55 +235,6 @@ export class SpatialMapStudio {
       this.filterByCategory('all');
       this.map.setView(this.centerHue, this.defaultZoom, { animate: true });
     }
-  }
-
-  /**
-   * Cập nhật cự ly bán kính phân tích không gian (500m, 1000m, 1500m, 2500m, 5000m)
-   */
-  setRadiusDistance(radiusInMeters = 1500) {
-    this.currentRadiusMeters = radiusInMeters;
-    if (this.showRadius) {
-      this.renderRadiusCircles();
-    }
-  }
-
-  /**
-   * Bật / tắt hiển thị bán kính không gian
-   */
-  toggleRadius() {
-    this.showRadius = !this.showRadius;
-    if (!this.showRadius) {
-      this.radiusLayer.clearLayers();
-    } else {
-      this.renderRadiusCircles();
-    }
-    return this.showRadius;
-  }
-
-  renderRadiusCircles() {
-    this.radiusLayer.clearLayers();
-    const r = this.currentRadiusMeters || 1500;
-    const rKm = (r / 1000).toFixed(1);
-
-    // Vòng tròn bán kính quanh Đại Nội Huế (Bờ Bắc)
-    L.circle([16.4690, 107.5781], {
-      radius: r,
-      color: '#D97706',
-      weight: 2,
-      dashArray: '6, 6',
-      fillColor: '#F59E0B',
-      fillOpacity: 0.12
-    }).bindTooltip(`📍 Bờ Bắc: Vùng quanh Đại Nội (R = ${rKm} km)`, { permanent: false }).addTo(this.radiusLayer);
-
-    // Vòng tròn bán kính quanh Trung tâm Bờ Nam (Lê Lợi / Hùng Vương)
-    L.circle([16.4637, 107.5909], {
-      radius: r,
-      color: '#0E8B7D',
-      weight: 2,
-      dashArray: '6, 6',
-      fillColor: '#0E8B7D',
-      fillOpacity: 0.10
-    }).bindTooltip(`📍 Bờ Nam: Trung tâm Du lịch (R = ${rKm} km)`, { permanent: false }).addTo(this.radiusLayer);
   }
 
   /**
@@ -577,8 +528,259 @@ export class SpatialMapStudio {
     }
   }
 
+  /**
+   * Thiết lập và hiển thị vị trí người dùng trên bản đồ (với radar pulse beacon & callout nổi bật)
+   */
+  setUserLocation(lat, lng, name = 'Vị trí của bạn') {
+    if (!lat || !lng) return null;
+    this.userLocation = { lat, lng, name };
+
+    if (this.userLocationMarker) {
+      this.userLocationMarker.remove();
+    }
+
+    const icon = L.divIcon({
+      className: 'user-gps-marker-container',
+      html: `
+        <div class="user-gps-pulse-outer"></div>
+        <div class="user-gps-pulse-inner"></div>
+        <div class="user-gps-core">
+          <div class="user-gps-core-dot">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFFFFF">
+              <polygon points="12 2 19 21 12 17 5 21 12 2" />
+            </svg>
+          </div>
+        </div>
+        <div class="user-gps-callout-pill">
+          <span class="user-gps-callout-radar"></span>
+          <span class="user-gps-callout-text">${name}</span>
+        </div>
+      `,
+      iconSize: [40, 40],
+      iconAnchor: [20, 20]
+    });
+
+    const popupHtml = `
+      <div class="custom-leaflet-popup user-location-popup">
+        <div class="popup-gps-header">
+          <span class="popup-gps-badge">Định vị GPS</span>
+          <h4 class="popup-gps-title">📍 ${name}</h4>
+        </div>
+        <p class="popup-gps-coords">Tọa độ: ${lat.toFixed(4)}°B, ${lng.toFixed(4)}°Đ</p>
+        <div class="popup-gps-hint">✓ Hệ thống tính khoảng cách và dẫn đường từ điểm này</div>
+      </div>
+    `;
+
+    this.userLocationMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 })
+      .bindPopup(popupHtml)
+      .addTo(this.map);
+
+    return this.userLocation;
+  }
+
+  /**
+   * Vẽ tuyến đường chỉ dẫn chi tiết (Navigation Route) từ Origin đến Destination qua OSRM
+   */
+  async drawNavigationRoute(origin, destination, profile = 'driving') {
+    if (!origin || !destination) return null;
+    const originLat = origin.latitude || origin.lat;
+    const originLng = origin.longitude || origin.lng;
+    const destLat = destination.latitude || destination.lat;
+    const destLng = destination.longitude || destination.lng;
+
+    if (!originLat || !originLng || !destLat || !destLng) return null;
+
+    if (this.navigationLayer) {
+      this.navigationLayer.clearLayers();
+    } else {
+      this.navigationLayer = L.layerGroup().addTo(this.map);
+    }
+
+    // 1. Tạo Start Marker (Cờ xuất phát / Origin)
+    const originName = origin.name || 'Điểm xuất phát';
+    const originIcon = L.divIcon({
+      className: 'nav-flag-marker',
+      html: `
+        <div class="nav-flag-pin start" title="Điểm xuất phát: ${originName}">
+          <span class="flag-icon">🚩</span>
+          <span class="flag-label">${originName.substring(0, 16)}</span>
+        </div>
+      `,
+      iconSize: [110, 34],
+      iconAnchor: [16, 32]
+    });
+
+    L.marker([originLat, originLng], { icon: originIcon })
+      .bindPopup(`<div class="custom-leaflet-popup"><b>🚩 Điểm xuất phát:</b><br/>${originName}</div>`)
+      .addTo(this.navigationLayer);
+
+    // 2. Tạo End Marker (Cờ đích đến / Destination)
+    const destName = destination.name || 'Điểm đến';
+    const destIcon = L.divIcon({
+      className: 'nav-flag-marker',
+      html: `
+        <div class="nav-flag-pin destination" title="Điểm đến: ${destName}">
+          <span class="flag-icon">🏁</span>
+          <span class="flag-label">${destName.substring(0, 16)}</span>
+        </div>
+      `,
+      iconSize: [110, 34],
+      iconAnchor: [16, 32]
+    });
+
+    L.marker([destLat, destLng], { icon: destIcon })
+      .bindPopup(`<div class="custom-leaflet-popup"><b>🏁 Điểm đến:</b><br/>${destName}<p style="margin:2px 0 0 0;font-size:0.75rem;color:#71717A;">${destination.address || ''}</p></div>`)
+      .addTo(this.navigationLayer);
+
+    // 3. Gọi OSRM Routing Engine
+    let routeCoords = null;
+    let distanceKm = (this.calcDistance(originLat, originLng, destLat, destLng)).toFixed(1);
+    let durationMin = Math.max(2, Math.round(distanceKm * 2.5)); // Tốc độ nội đô Huế ~25km/h
+
+    try {
+      const url = `https://router.project-osrm.org/route/v1/${profile}/${originLng},${originLat};${destLng},${destLat}?overview=full&geometries=geojson&steps=true`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4500);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
+          const r = data.routes[0];
+          routeCoords = r.geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+          distanceKm = (r.distance / 1000).toFixed(1);
+          durationMin = Math.round(r.duration / 60);
+        }
+      }
+    } catch (err) {
+      console.warn('Lỗi kết nối OSRM, sử dụng tuyến nối trực tiếp fallback:', err);
+    }
+
+    const finalPath = (routeCoords && routeCoords.length > 0) 
+      ? routeCoords 
+      : [[originLat, originLng], [destLat, destLng]];
+
+    // 4. Vẽ Polyline chỉ đường sắc nét
+    // Casing viền trắng nổi bật
+    L.polyline(finalPath, {
+      color: '#FFFFFF',
+      weight: 7,
+      opacity: 0.95,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(this.navigationLayer);
+
+    // Tuyến chính màu xanh Sapphire rực rỡ
+    const mainNavLine = L.polyline(finalPath, {
+      color: '#2563EB',
+      weight: 4.8,
+      opacity: 1,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(this.navigationLayer);
+
+    // 5. Căn bản đồ bao trọn lộ trình
+    this.map.fitBounds(mainNavLine.getBounds(), { padding: [60, 60] });
+
+    // 6. Hiển thị Navigation Banner nổi trên đầu bản đồ
+    this.showNavigationBanner({
+      originName,
+      destName,
+      distanceKm,
+      durationMin,
+      originLat, originLng,
+      destLat, destLng
+    });
+
+    return {
+      distanceKm,
+      durationMin,
+      gmapsUrl: `https://www.google.com/maps/dir/?api=1&origin=${originLat},${originLng}&destination=${destLat},${destLng}`
+    };
+  }
+
+  showNavigationBanner(info) {
+    let banner = document.getElementById('map-nav-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'map-nav-banner';
+      banner.className = 'map-nav-banner';
+      const container = document.getElementById(this.containerId);
+      if (container) container.appendChild(banner);
+    }
+
+    const gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${info.originLat},${info.originLng}&destination=${info.destLat},${info.destLng}`;
+
+    banner.innerHTML = `
+      <div class="nav-banner-left">
+        <div class="nav-banner-badge" title="Đang chỉ đường di chuyển">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+          </svg>
+        </div>
+        <div class="nav-banner-details">
+          <div class="nav-banner-route">
+            <span class="route-origin">${info.originName}</span>
+            <span class="route-arrow-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+            <span class="route-destination">${info.destName}</span>
+          </div>
+          <div class="nav-banner-metrics">
+            <span class="metric-chip dist">${info.distanceKm} km</span>
+            <span class="metric-chip time">~${info.durationMin} phút</span>
+          </div>
+        </div>
+      </div>
+      <div class="nav-banner-right">
+        <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-banner-gmaps" title="Mở chỉ đường Turn-by-Turn trên Google Maps">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+          </svg>
+          <span>Google Maps</span>
+        </a>
+        <button type="button" class="btn-banner-close" id="btn-close-nav-banner" title="Tắt lộ trình chỉ đường" aria-label="Đóng">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    `;
+    banner.style.display = 'flex';
+
+    document.getElementById('btn-close-nav-banner')?.addEventListener('click', () => {
+      this.clearNavigationRoute();
+    });
+  }
+
+  clearNavigationRoute() {
+    if (this.navigationLayer) {
+      this.navigationLayer.clearLayers();
+    }
+    const banner = document.getElementById('map-nav-banner');
+    if (banner) banner.style.display = 'none';
+  }
+
+  calcDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
   clearAll() {
     if (this.markersLayer) this.markersLayer.clearLayers();
     if (this.routesLayer) this.routesLayer.clearLayers();
+    if (this.navigationLayer) this.navigationLayer.clearLayers();
+    const banner = document.getElementById('map-nav-banner');
+    if (banner) banner.style.display = 'none';
   }
 }

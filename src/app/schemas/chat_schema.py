@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 class ChatRequest(BaseModel):
     query: str = Field(..., examples=["Tôi vừa tham quan Đại Nội xong, muốn ăn bún bò gần đây thì đi quán nào?"])
     locality: Optional[str] = Field("Thành phố Huế", examples=["Thành phố Huế"])
+    user_lat: Optional[float] = Field(None, examples=[16.4674])
+    user_lng: Optional[float] = Field(None, examples=[107.5905])
 
 
 class PlaceItem(BaseModel):
@@ -28,3 +30,4 @@ class ChatResponse(BaseModel):
     route_taken: str
     confidence_score: float
     matched_places: List[Dict[str, Any]]
+    navigation: Optional[Dict[str, Any]] = None

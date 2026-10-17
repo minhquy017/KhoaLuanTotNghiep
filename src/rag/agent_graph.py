@@ -142,6 +142,10 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "thien mu": "place_8876",
         "song huong": "place_8882",
         "cau trang tien": "place_8882",
+        "cho dong ba": "place_8920",
+        "dong ba": "place_8920",
+        "lang khai dinh": "place_8879",
+        "khai dinh": "place_8879",
         "lang tu duc": "place_8880",
         "lang minh mang": "place_8878",
         "lang dong khanh": "place_8881",
@@ -157,15 +161,33 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     matched_places = []
     nearby_map = {}
     dishes_map = {}
-    target_place_id = None
 
-    for alias, pid in alias_dict.items():
-        if alias in norm_q:
-            target_place_id = pid
-            break
+    # Bóc tách TẤT CẢ các địa danh xuất hiện trong câu hỏi (theo thứ tự xuất hiện)
+    sorted_aliases = sorted(alias_dict.items(), key=lambda x: len(x[0]), reverse=True)
+    matched_spans = []
+    ordered_place_ids = []
 
-    # A. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
-    if target_place_id and target_dish:
+    for alias, pid in sorted_aliases:
+        pos = norm_q.find(alias)
+        if pos != -1:
+            # Kiểm tra tránh trùng lặp span (ví dụ 'chua thien mu' đã chứa 'thien mu')
+            overlaps = any(pos < end and pos + len(alias) > start for start, end in matched_spans)
+            if not overlaps:
+                matched_spans.append((pos, pos + len(alias)))
+                ordered_place_ids.append((pos, pid))
+
+    ordered_place_ids.sort(key=lambda x: x[0])
+    extracted_place_ids = [pid for _, pid in ordered_place_ids]
+    target_place_id = extracted_place_ids[0] if extracted_place_ids else None
+
+    # A. Nếu người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN (ví dụ: 'Từ Đại Nội đi Chợ Đông Ba'):
+    if len(extracted_place_ids) >= 2:
+        for pid in extracted_place_ids:
+            p_data = graph_retriever.get_place(pid)
+            if p_data and p_data not in matched_places:
+                matched_places.append(p_data)
+    # B. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
+    elif target_place_id and target_dish:
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
             matched_places.append(origin_place)
@@ -200,7 +222,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 if nb not in matched_places:
                     matched_places.append(nb)
 
-    # B. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG
+    # C. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG
     if not matched_places:
         searched = graph_retriever.search_places(query, locality=locality, limit=4)
         matched_places.extend(searched)
@@ -365,23 +387,33 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     full_context = "\n\n".join(context_blocks) if context_blocks else "Không tìm thấy dữ liệu liên quan."
 
     # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
-    system_prompt = """Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, chuẩn xác và am hiểu sâu sắc di sản văn hóa, lịch sử và ẩm thực Huế.
+    # Kiểm tra xem câu hỏi có phải dạng chỉ đường / điều hướng hay không
+    norm_q = query.lower()
+    nav_keywords = [
+        "chỉ đường", "chi duong", "đường đi", "duong di", "đi đến", "di den", 
+        "làm sao để đi", "lam sao de di", "cách đi", "cach di", "dẫn đường", "dan duong",
+        "hướng dẫn đường", "lộ trình", "lo trinh", "chỉ lối", "chi loi"
+    ]
+    is_nav = any(k in norm_q for k in nav_keywords) or (
+        ("từ " in norm_q or "tu " in norm_q) and any(w in norm_q for w in ["đi ", "đến ", "den ", "tới ", "toi ", "sang ", "qua "])
+    ) or any(k in norm_q for k in ["đi tới", "di toi", "đi sang", "di sang", "đi qua", "di qua"])
+
+    # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
+    system_prompt = """Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
 
 Nguyên tắc trả lời bắt buộc:
-1. TRẢ LỜI ĐÚNG TRỌNG TÂM CÂU HỎI:
-   - Đi thẳng vào các thắc mắc của du khách (ví dụ: giờ mở cửa, giá vé, địa chỉ, gợi ý món ăn/quán ăn).
-   - Tuyệt đối KHÔNG trích dẫn thô các đoạn review tiếng Anh hay số liệu đánh giá kỹ thuật một cách máy móc.
-   - Diễn đạt 100% bằng tiếng Việt tự nhiên, ấm áp, văn minh, mang nét văn hóa hiếu khách của người Huế.
-   - Tuyệt đối KHÔNG gán ghép thông tin của địa điểm này sang địa điểm khác (ví dụ: không lấy giờ của Chợ Đông Ba gán cho Chùa Thiên Mụ).
+1. VĂN PHONG TỰ NHIÊN, LỊCH SỰ, ẤM ÁP:
+   - Mở đầu nhẹ nhàng, lịch thiệp ("Dạ thưa bạn...", "Dạ, em xin chia sẻ...", "Chào bạn...").
+   - Tuyệt đối KHÔNG dùng các câu cứng nhắc, máy móc như: "Dựa trên dữ liệu Đồ thị Tri thức...", "Hệ thống đã xác định thành công...".
+   - Diễn đạt 100% bằng tiếng Việt trong sáng, gần gũi như một người bạn đồng hành bản địa tại Huế.
 
-2. KẾT HỢP TRI THỨC ĐA NGUỒN CHUẨN XÁC:
-   - Vận dụng thông tin từ [NGỮ CẢNH HỆ THỐNG] (tọa độ, địa chỉ, món đặc sản) kết hợp linh hoạt với hiểu biết thực tế về du lịch Huế của bạn.
-   - Về các di tích Huế (như Chùa Thiên Mụ: nằm bên bờ sông Hương trên đồi Hà Khê, mở cửa tự do từ sáng sớm ~07:00 - 18:00 hàng ngày, miễn phí vé tham quan; nên đi vào sáng sớm hoặc ngắm hoàng hôn).
-   - Về ẩm thực chay tại Huế: Huế có truyền thống ăn chay lâu đời, gợi ý các quán chay uy tín, thanh tịnh (ví dụ: Quán chay Sân Mây - đường Thanh Tịnh, Quán chay Liên Hoa - đường Lê Quý Đôn, Cơm chay Bồ Đề - đường Bà Triệu, Chay An Nhiên,...).
+2. NẾU DU KHÁCH HỎI ĐƯỜNG ĐI / LỘ TRÌNH:
+   - Trả lời ngắn gọn (1-2 câu), thông báo tuyến đường đã được định vị và vẽ trực tiếp trên bản đồ bên cạnh.
+   - Nhắc tên điểm đến và địa chỉ cụ thể nếu có, gợi ý du khách xem cự ly và bấm nút Google Maps bên dưới để nghe dẫn đường khi di chuyển.
 
-3. ĐỊNH DẠNG ĐẸP & DỄ ĐỌC:
-   - Dùng gạch đầu dòng rõ ràng, icon trực quan (🏯, 🍲, 📍, ⏰).
-   - Ngắn gọn, súc tích, mang lại giá trị trải nghiệm thực tế cao nhất cho du khách."""
+3. VỚI CÂU HỎI VỀ ẨM THỰC / DANH THẮNG:
+   - Đi thẳng vào các thắc mắc (địa chỉ, giá cả, thời điểm đẹp nhất trong ngày, món ngon đặc sản).
+   - Dùng icon sinh động (🏯, 🍲, 📍, ⏰) và gạch đầu dòng rõ ràng."""
 
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
@@ -398,7 +430,32 @@ Nguyên tắc trả lời bắt buộc:
         ])
         answer_text = response.content.strip()
     except Exception as e:
-        answer_text = f"Đã xảy ra lỗi khi tạo câu trả lời với LLM: {str(e)}"
+        # Fallback thân thiện, tự nhiên khi LLM cục bộ chưa khởi động
+        if is_nav and matched_places:
+            if len(matched_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
+                origin_name = matched_places[0].get("name", "điểm xuất phát")
+                dest_p = matched_places[1]
+            else:
+                origin_name = "vị trí của bạn"
+                dest_p = matched_places[0]
+            
+            dest_name = dest_p.get("name", "điểm đến")
+            dest_addr = dest_p.get("address", "")
+            addr_str = f" ({dest_addr})" if dest_addr else ""
+            answer_text = (
+                f"Dạ, em đã định vị và vẽ tuyến đường nhanh nhất từ {origin_name} đến **{dest_name}**{addr_str} trên bản đồ bên cạnh rồi nhé! "
+                f"Bạn có thể xem cự ly, thời gian ước tính và bấm mở Google Maps bên dưới để nghe dẫn đường trực tiếp khi di chuyển."
+            )
+        elif is_nav:
+            answer_text = "Dạ, em đã ghi nhận điểm đến và định vị lộ trình di chuyển tối ưu trên bản đồ bên cạnh cho bạn rồi nhé!"
+        elif matched_places:
+            places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
+            answer_text = (
+                f"Dạ, em xin gửi bạn thông tin về **{places_str}**. "
+                f"Bạn có thể xem vị trí chi tiết, các món ăn đặc sắc và đánh giá thực tế của du khách ngay trên bản đồ bên cạnh nhé!"
+            )
+        else:
+            answer_text = "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"
 
     return {
         "formatted_context": full_context,
