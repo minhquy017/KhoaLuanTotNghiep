@@ -219,10 +219,49 @@ button, input, select, textarea {
   color: #FFFFFF;
 }
 
-/* System Status Indicator */
+/* System Status Indicator & Header Actions */
 .header-status {
   display: flex;
   align-items: center;
+  gap: 0.65rem;
+}
+
+.header-map-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #FAFAF9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 0.32rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-editorial);
+}
+
+.header-map-toggle-btn svg {
+  color: var(--color-ink-secondary);
+  transition: color var(--duration-fast);
+}
+
+.header-map-toggle-btn:hover {
+  background-color: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #18181B;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-xs);
+}
+
+.header-map-toggle-btn.active {
+  background-color: #18181B;
+  color: #FFFFFF;
+  border-color: #18181B;
+}
+
+.header-map-toggle-btn.active svg {
+  color: #FFFFFF;
 }
 
 .status-pill {
@@ -250,7 +289,7 @@ button, input, select, textarea {
 }
 
 /* =============================================================================
-   STUDIO LAYOUT — SYNCHRONIZED SPLIT STUDIO
+   STUDIO LAYOUT — CONTEXT-AWARE DYNAMIC STUDIO (CHATBOT FIRST)
 ============================================================================= */
 .studio-layout {
   flex: 1;
@@ -259,10 +298,38 @@ button, input, select, textarea {
   margin: 0 auto;
   padding: 1.15rem 1.5rem;
   display: grid;
-  grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
+  /* Active Split View: Chatbot (1.45fr ~ 59%) is wider and dominant over Map (1fr ~ 41%) */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
   gap: 1.25rem;
   align-items: stretch;
-  transition: grid-template-columns 0.35s cubic-bezier(0.16, 1, 0.3, 1), gap 0.35s ease;
+  transition: grid-template-columns 0.38s cubic-bezier(0.16, 1, 0.3, 1), gap 0.38s ease;
+}
+
+/* Map Collapsed State: Chatbot Centered Hero Mode */
+.studio-layout.map-collapsed {
+  grid-template-columns: 0fr minmax(0, 1fr);
+  gap: 0;
+}
+
+.studio-layout.map-collapsed .spatial-canvas-panel {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transform: translateX(-35px) scale(0.98);
+  width: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.studio-layout.map-collapsed .editorial-workbench-panel {
+  max-width: 1040px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .studio-layout.workbench-collapsed {
@@ -292,7 +359,8 @@ button, input, select, textarea {
   position: sticky;
   top: 72px;
   box-shadow: var(--shadow-sm);
-  transition: width 0.35s ease;
+  min-width: 0;
+  transition: opacity 0.35s ease, transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s, width 0.38s ease, min-width 0.38s ease;
 }
 
 /* Map Toolbar */
@@ -425,6 +493,23 @@ button, input, select, textarea {
 
 .btn-toggle-workbench.active svg {
   stroke: #FFFFFF;
+}
+
+.btn-close-map-panel {
+  background-color: #FAFAF9;
+  border-color: var(--color-border);
+  color: #57534E;
+  font-weight: 600;
+}
+
+.btn-close-map-panel:hover {
+  background-color: #FEE2E2;
+  border-color: #FCA5A5;
+  color: #B91C1C;
+}
+
+.btn-close-map-panel:hover svg {
+  stroke: #B91C1C;
 }
 
 /* Enhanced GPS Locate Button */
@@ -3420,6 +3505,16 @@ button, input, select, textarea {
   .studio-layout {
     grid-template-columns: 1fr;
     padding: 1rem;
+    gap: 1.25rem;
+  }
+
+  .studio-layout.map-collapsed {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .studio-layout.map-collapsed .spatial-canvas-panel {
+    display: none !important;
   }
 
   .studio-layout.workbench-collapsed {

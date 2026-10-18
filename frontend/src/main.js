@@ -36,6 +36,73 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   await checkBackendStatus();
 
+  // ===========================================================================
+  // 2.5 HƯỚNG 1: BẢN ĐỒ THÍCH ỨNG THEO NGỮ CẢNH (CONTEXT-AWARE DYNAMIC MAP)
+  // Chatbot là trung tâm chính (Hero), Bản đồ tự động mở khi có câu hỏi/tác vụ không gian
+  // ===========================================================================
+  const studioLayout = document.querySelector('.studio-layout');
+  const btnHeaderToggleMap = document.getElementById('btn-header-toggle-map');
+  const headerMapToggleLabel = document.getElementById('header-map-toggle-label');
+  const btnWorkbenchToggleMap = document.getElementById('btn-workbench-toggle-map');
+  const btnCloseMapPanel = document.getElementById('btn-close-map-panel');
+
+  function updateMapToggleUI(isOpen) {
+    if (btnHeaderToggleMap) {
+      btnHeaderToggleMap.classList.toggle('active', isOpen);
+      btnHeaderToggleMap.title = isOpen ? 'Thu gọn bản đồ (Tập trung giao diện Chatbot)' : 'Mở bản đồ không gian Cố Đô';
+      if (headerMapToggleLabel) {
+        headerMapToggleLabel.textContent = isOpen ? 'Thu gọn Bản đồ' : 'Mở Bản đồ';
+      }
+    }
+    if (btnWorkbenchToggleMap) {
+      btnWorkbenchToggleMap.classList.toggle('active', isOpen);
+      btnWorkbenchToggleMap.title = isOpen ? 'Thu gọn bản đồ bên cạnh' : 'Mở bản đồ bên cạnh';
+    }
+  }
+
+  function showMapPanel(animate = true) {
+    if (!studioLayout) return;
+    if (studioLayout.classList.contains('map-collapsed')) {
+      studioLayout.classList.remove('map-collapsed');
+      updateMapToggleUI(true);
+      setTimeout(() => {
+        if (mapStudio && mapStudio.map) {
+          mapStudio.map.invalidateSize({ animate });
+        }
+      }, 380);
+    } else {
+      // Đã mở, vẫn đảm bảo kích thước canvas luôn chuẩn xác
+      if (mapStudio && mapStudio.map) {
+        mapStudio.map.invalidateSize({ animate: false });
+      }
+    }
+  }
+
+  function hideMapPanel() {
+    if (!studioLayout) return;
+    if (!studioLayout.classList.contains('map-collapsed')) {
+      studioLayout.classList.add('map-collapsed');
+      updateMapToggleUI(false);
+    }
+  }
+
+  function toggleMapPanel() {
+    if (!studioLayout) return;
+    if (studioLayout.classList.contains('map-collapsed')) {
+      showMapPanel(true);
+    } else {
+      hideMapPanel();
+    }
+  }
+
+  btnHeaderToggleMap?.addEventListener('click', toggleMapPanel);
+  btnWorkbenchToggleMap?.addEventListener('click', toggleMapPanel);
+  btnCloseMapPanel?.addEventListener('click', hideMapPanel);
+
+  // Khởi tạo trạng thái nút toggle theo layout ban đầu
+  const isInitiallyMapOpen = !studioLayout?.classList.contains('map-collapsed');
+  updateMapToggleUI(isInitiallyMapOpen);
+
   // 3. BỘ ĐIỀU KHIỂN TÁC VỤ AI (QUICK PLANNER COLLAPSIBLE & CHAT SYNC)
   const quickPlannerCard = document.getElementById('quick-planner-card');
   const btnTogglePlanner = document.getElementById('btn-toggle-planner');
@@ -58,6 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const shouldShow = typeof show === 'boolean' ? show : isHidden;
 
     if (shouldShow) {
+      showMapPanel(true); // Tự động mở bản đồ khi bắt đầu tạo lịch trình
       updatePlannerOriginDisplay();
       quickPlannerCard.removeAttribute('hidden');
       btnTogglePlanner?.classList.add('active');
@@ -204,7 +272,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Bật/tắt chế độ Bản đồ Toàn cảnh (Thu gọn / Mở rộng bảng điều khiển bên phải)
   const btnToggleWorkbench = document.getElementById('btn-toggle-workbench');
   const workbenchToggleText = document.getElementById('workbench-toggle-text');
-  const studioLayout = document.querySelector('.studio-layout');
 
   btnToggleWorkbench?.addEventListener('click', () => {
     if (!studioLayout) return;
@@ -382,6 +449,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function generateItineraryInChat(days, tripType, preferredDishes) {
+    showMapPanel(true); // Tự động mở bản đồ khi tạo lịch trình
     const coords = await getUserCoordinates();
     const userLat = coords.lat;
     const userLng = coords.lng;
@@ -767,6 +835,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function sendChatQuery(query) {
     if (!query) return;
 
+    // Kiểm tra câu hỏi có liên quan đến vị trí/không gian/chỉ đường/bản đồ
+    const isSpatialQuery = /chỉ đường|đường đi|đi đến|từ .+ đi|khoảng cách|cách bao xa|gần đây|quanh đây|ở đâu|vị trí|tọa độ|bản đồ|lộ trình|tour|thuê xe/i.test(query);
+
     // Kiểm tra nếu người dùng yêu cầu lập lịch trình qua câu chat
     const lowerQuery = query.toLowerCase();
     const isPlanIntent = (
@@ -778,6 +849,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       lowerQuery.includes('lập tour') ||
       lowerQuery.includes('tour du lịch')
     );
+
+    if (isPlanIntent || isSpatialQuery) {
+      showMapPanel(true); // Tự động mở bản đồ theo ngữ cảnh không gian
+    }
 
     if (isPlanIntent) {
       let days = 2;
@@ -888,6 +963,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isNav = Boolean(nav && nav.is_navigation && nav.origin && nav.destination);
 
     if (isNav) {
+      showMapPanel(true); // Tự động mở bản đồ theo ngữ cảnh chỉ đường
       const origin = nav.origin;
       const destination = nav.destination;
       const profile = nav.profile || 'driving';
@@ -1048,6 +1124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Gán sự kiện click nút vẽ lại trên bản đồ trong thẻ lộ trình
     msg.querySelectorAll('.btn-nav-replot').forEach(btn => {
       btn.addEventListener('click', () => {
+        showMapPanel(true);
         const oLat = parseFloat(btn.dataset.originLat);
         const oLng = parseFloat(btn.dataset.originLng);
         const oName = btn.dataset.originName;
@@ -1067,6 +1144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Gán sự kiện click vào các nút địa điểm trong chat bubble: Ghim bản đồ + Mở Drawer
     msg.querySelectorAll('.chat-poi-btn').forEach(btn => {
       btn.addEventListener('click', () => {
+        showMapPanel(true);
         const lat = parseFloat(btn.dataset.lat);
         const lng = parseFloat(btn.dataset.lng);
         const name = btn.dataset.name;
@@ -1122,6 +1200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function openPoiDetail(name, placeId = null) {
     if (!name && !placeId) return;
+    showMapPanel(true); // Hiển thị bản đồ để người dùng quan sát vị trí địa điểm
 
     // 1. Mở Drawer ngay lập tức với trạng thái sẵn sàng
     poiDrawer?.classList.add('open');
@@ -1347,6 +1426,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Action: Click vào các thẻ địa điểm nổi bật ở màn hình chào mừng
   document.querySelectorAll('.featured-place-card').forEach(card => {
     card.addEventListener('click', () => {
+      showMapPanel(true);
       const name = card.dataset.name;
       const lat = parseFloat(card.dataset.lat);
       const lng = parseFloat(card.dataset.lng);
@@ -1362,6 +1442,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.openPoiDetail = openPoiDetail;
 
   window.locatePoi = (lat, lng) => {
+    showMapPanel(true);
     mapStudio.panTo(lat, lng, 16);
   };
 

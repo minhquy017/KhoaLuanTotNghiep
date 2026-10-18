@@ -44,6 +44,14 @@
 
 
       <div class="header-status">
+        <button type="button" class="header-map-toggle-btn" id="btn-header-toggle-map" title="Mở / Thu gọn bản đồ không gian" aria-label="Mở bản đồ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+            <line x1="9" y1="3" x2="9" y2="18" />
+            <line x1="15" y1="6" x2="15" y2="21" />
+          </svg>
+          <span id="header-map-toggle-label">Mở Bản đồ</span>
+        </button>
         <div class="status-pill" id="system-status-pill" title="Trạng thái hệ thống">
           <span class="status-dot"></span>
           <span class="status-text" id="status-label">Trực tuyến</span>
@@ -52,8 +60,8 @@
     </div>
   </header>
 
-  <!-- Main Studio Layout: Balanced Split Grid -->
-  <main class="studio-layout">
+  <!-- Main Studio Layout: Context-Aware Dynamic Studio (Chatbot First) -->
+  <main class="studio-layout map-collapsed">
     <!-- Left Panel: Spatial Map Canvas Studio -->
     <section class="spatial-canvas-panel" aria-label="Bản đồ không gian Cố đô Huế">
       <div class="map-toolbar">
@@ -85,6 +93,12 @@
               <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
             </svg>
             <span id="workbench-toggle-text">Toàn cảnh</span>
+          </button>
+          <button class="map-btn btn-close-map-panel" id="btn-close-map-panel" title="Thu gọn bản đồ (Tập trung giao diện Chatbot)" aria-label="Thu gọn bản đồ">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+            <span>Thu gọn</span>
           </button>
         </div>
       </div>
@@ -204,6 +218,14 @@
           <h2 class="workbench-title">Hỏi đáp & Lịch trình Thông minh</h2>
         </div>
         <div class="workbench-header-actions">
+          <button type="button" class="btn-workbench-action" id="btn-workbench-toggle-map" title="Mở / Thu gọn bản đồ bên cạnh" aria-label="Bản đồ">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+              <line x1="9" y1="3" x2="9" y2="18" />
+              <line x1="15" y1="6" x2="15" y2="21" />
+            </svg>
+            <span id="workbench-map-toggle-label">Bản đồ</span>
+          </button>
           <button type="button" class="btn-workbench-action" id="btn-toggle-planner" title="Mở bộ công cụ tạo lịch trình" aria-expanded="false">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
