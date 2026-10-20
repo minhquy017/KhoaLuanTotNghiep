@@ -767,6 +767,9 @@ export class SpatialMapStudio {
       durationMin: legData?.durationMin,
       color: leg.dayStyle.stroke
     });
+
+    // Đồng bộ highlight thẻ tương ứng trên Timeline Deck
+    this.syncTimelineHighlight();
   }
 
   /**
@@ -869,6 +872,9 @@ export class SpatialMapStudio {
     if (!stepper) return;
     stepper.style.display = 'flex';
 
+    const panel = document.querySelector('.spatial-canvas-panel');
+    if (panel) panel.classList.add('has-stepper');
+
     const stepBadge = document.getElementById('leg-step-badge');
     const dayBadge = document.getElementById('leg-day-badge');
     const routeTitle = document.getElementById('leg-route-title');
@@ -880,15 +886,13 @@ export class SpatialMapStudio {
 
     if (stepBadge) {
       stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>Chặng ${info.legIndex + 1}/${info.totalLegs}</span>`;
-      if (info.color) {
-        stepBadge.style.color = info.color;
-      }
+      stepBadge.style.color = '#FFFFFF';
     }
     if (dayBadge) {
       dayBadge.textContent = `Ngày ${info.dayNum}`;
     }
     if (routeTitle) {
-      routeTitle.innerHTML = `<span class="leg-point-from">${info.fromName}</span><span class="leg-arrow-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span class="leg-point-to">${info.toName}</span>`;
+      routeTitle.innerHTML = `<span class="leg-point-from">${info.fromName}</span><span class="leg-arrow-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span class="leg-point-to">${info.toName}</span>`;
       routeTitle.title = `${info.fromName} đến ${info.toName}`;
     }
     if (distanceText) {
@@ -925,6 +929,9 @@ export class SpatialMapStudio {
     if (!stepper) return;
     stepper.style.display = 'flex';
 
+    const panel = document.querySelector('.spatial-canvas-panel');
+    if (panel) panel.classList.add('has-stepper');
+
     const stepBadge = document.getElementById('leg-step-badge');
     const dayBadge = document.getElementById('leg-day-badge');
     const routeTitle = document.getElementById('leg-route-title');
@@ -936,7 +943,7 @@ export class SpatialMapStudio {
 
     if (stepBadge) {
       stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>${isAllDays ? 'Tất cả ngày' : `Ngày ${this.currentItineraryDay}`}</span>`;
-      stepBadge.style.color = '#18181B';
+      stepBadge.style.color = '#FFFFFF';
     }
     if (dayBadge) {
       dayBadge.textContent = `${this.currentDayLegs.length} chặng`;
@@ -954,18 +961,22 @@ export class SpatialMapStudio {
     if (prevBtn) prevBtn.disabled = true;
     if (nextBtn) nextBtn.disabled = true;
     if (modeLabel) modeLabel.textContent = 'Từng chặng';
+    this.clearTimelineHighlight();
   }
 
   hideLegStepper() {
     const stepper = document.getElementById('map-leg-stepper');
     if (stepper) stepper.style.display = 'none';
+
+    const panel = document.querySelector('.spatial-canvas-panel');
+    if (panel) panel.classList.remove('has-stepper');
+    this.clearTimelineHighlight();
   }
 
   nextLeg() {
     if (this.activeLegIndex < this.currentDayLegs.length - 1) {
       this.routeDisplayMode = 'leg';
       this.drawSingleActiveLeg(this.activeLegIndex + 1);
-      this.syncTimelineHighlight();
     }
   }
 
@@ -973,7 +984,6 @@ export class SpatialMapStudio {
     if (this.activeLegIndex > 0) {
       this.routeDisplayMode = 'leg';
       this.drawSingleActiveLeg(this.activeLegIndex - 1);
-      this.syncTimelineHighlight();
     }
   }
 
@@ -1013,16 +1023,32 @@ export class SpatialMapStudio {
     });
   }
 
+  clearTimelineHighlight() {
+    document.querySelectorAll('.timeline-step').forEach(step => {
+      step.classList.remove('is-active-leg');
+    });
+  }
+
   syncTimelineHighlight() {
+    // 1. Luôn gỡ bỏ class active cũ trên tất cả các thẻ (kể cả điểm xuất phát)
+    this.clearTimelineHighlight();
+
+    if (!this.currentDayLegs || this.currentDayLegs.length === 0) return;
     const leg = this.currentDayLegs[this.activeLegIndex];
     if (!leg) return;
+
     const destName = (leg.toName || '').toLowerCase().trim();
+    if (!destName) return;
+
+    // 2. Kích hoạt thẻ điểm đến của chặng hiện tại
+    let activated = false;
     document.querySelectorAll('.timeline-step').forEach(step => {
-      const poiName = (step.querySelector('.step-poi-name')?.textContent || '').toLowerCase().trim();
-      if (poiName.includes(destName) || destName.includes(poiName)) {
+      const nameEl = step.querySelector('.step-poi-name');
+      const poiName = (nameEl?.dataset?.name || nameEl?.textContent || '').toLowerCase().trim();
+      if (!activated && (poiName.includes(destName) || destName.includes(poiName))) {
+        step.classList.add('is-active-leg');
         step.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        step.classList.add('step-active-highlight');
-        setTimeout(() => step.classList.remove('step-active-highlight'), 1800);
+        activated = true;
       }
     });
   }

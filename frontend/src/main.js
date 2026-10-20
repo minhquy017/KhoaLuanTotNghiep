@@ -6,8 +6,15 @@
 import './style.css';
 import { TourismApiClient } from './api.js';
 import { SpatialMapStudio } from './map.js';
+import { AuthController } from './auth.js';
+import { saveItinerary } from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // 0. KHỞI TẠO HỆ THỐNG XÁC THỰC (AUTH CONTROLLER - GOOGLE GMAIL & EMAIL)
+  const authController = new AuthController();
+  authController.init();
+  window.authController = authController;
+
   // 1. KHỞI TẠO BẢN ĐỒ KHÔNG GIAN
   const mapStudio = new SpatialMapStudio('map-container');
   mapStudio.init();
@@ -227,11 +234,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Danh mục tiêu đề bản đồ tương ứng
   const categoryTitles = {
-    all: 'Toàn cảnh Di sản & Ẩm thực',
-    attraction: 'Di tích Lịch sử, Thắng cảnh & Lăng tẩm',
-    restaurant: 'Ẩm thực Truyền thống & Quán ăn Cố Đô',
-    cafe: 'Cà phê View đẹp & Điểm ngắm Hoàng hôn',
-    hotel: 'Khách sạn Boutique & Resort Nghỉ dưỡng'
+    all: 'Bản đồ Di sản',
+    attraction: 'Di tích Cố Đô',
+    restaurant: 'Ẩm thực Cố Đô',
+    cafe: 'Cà phê & Sunset',
+    hotel: 'Khách sạn & Resort'
   };
 
   // Xử lý click chọn bộ lọc danh mục
@@ -258,8 +265,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       else c.classList.remove('active');
     });
     if (mapActiveMeta) {
-      mapActiveMeta.textContent = 'Toàn cảnh Di sản & Ẩm thực';
-      mapActiveMeta.title = 'Toàn cảnh Di sản & Ẩm thực';
+      mapActiveMeta.textContent = 'Bản đồ Di sản';
+      mapActiveMeta.title = 'Bản đồ Di sản';
     }
     btnLocateUser?.classList.remove('active');
     if (mapSearchInput) {
@@ -547,7 +554,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let dayContentsHtml = '';
 
     const dayColors = {
-      1: '#2563EB',
+      1: '#18181B',
       2: '#D97706',
       3: '#0D9488'
     };
@@ -556,7 +563,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isFirstDay = index === 0;
       const slots = day.slots || day.stops || [];
       const totalKm = day.total_distance_km ? ` · ${day.total_distance_km.toFixed(1)} km` : '';
-      const dotColor = dayColors[day.day_number] || '#4F46E5';
+      const dotColor = dayColors[day.day_number] || '#18181B';
 
       dayTabsHtml += `
         <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}" title="Xem lịch trình và lộ trình Ngày ${day.day_number}">
@@ -596,6 +603,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         const lat = slot.latitude || slot.lat;
         const lng = slot.longitude || slot.lng;
 
+        const hasOriginInDay = slots.some(s => {
+          return (s.category || '').toLowerCase().includes('userlocation') ||
+                 (s.activity_type || '').toLowerCase().includes('khởi hành') ||
+                 (s.slot_name || '').toLowerCase().includes('xuất phát') ||
+                 (s.place_name || s.name || '').toLowerCase().includes('vị trí của bạn');
+        });
+        const legNum = hasOriginInDay ? slotIdx : (slotIdx + 1);
+        const legBadge = isUserOrigin
+          ? ''
+          : `<span class="meta-pill pill-leg-num">Chặng ${legNum}</span>`;
+
         let distanceBadge = '';
         if (slot.distance_from_prev_km && slot.distance_from_prev_km > 0) {
           const distLabel = (isFirstDay && slotIdx === 1)
@@ -615,30 +633,57 @@ document.addEventListener('DOMContentLoaded', async () => {
           : '';
 
         const typeBadge = isUserOrigin
-          ? `<span class="meta-pill pill-origin">🚩 Điểm xuất phát</span>`
+          ? `<span class="meta-pill pill-origin">Điểm xuất phát</span>`
           : `<span class="meta-pill">${slot.activity_type || slot.category || (isFood ? 'Ẩm thực' : 'Di tích')}</span>`;
+
+        let timeBadgeHtml = '';
+        if (isUserOrigin) {
+          const rawMatch = (slot.slot_name || '').match(/\((.*?)\)/);
+          const timeRange = (rawMatch ? rawMatch[1] : '07:30 – 08:00').replace(/-/g, '–').trim();
+          timeBadgeHtml = `<span class="badge-period">Khởi hành</span><span class="badge-time">${timeRange}</span>`;
+        } else {
+          const raw = slot.slot_name || slot.slot_time || 'Chặng tour';
+          const match = raw.match(/^(.*?)\s*\((.*?)\)$/);
+          if (match) {
+            const timeRange = match[2].replace(/-/g, '–').trim();
+            timeBadgeHtml = `<span class="badge-period">${match[1]}</span><span class="badge-time">${timeRange}</span>`;
+          } else {
+            timeBadgeHtml = `<span class="badge-period">${raw}</span>`;
+          }
+        }
+
+        const locateBtn = (lat && lng)
+          ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}" title="Xem vị trí trên bản đồ">
+               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2 2"/></svg>
+               <span>Định vị</span>
+             </button>`
+          : '';
 
         const detailBtn = isUserOrigin
           ? ''
-          : `<button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}">Xem chi tiết &rarr;</button>`;
-
-        const timeBadgeText = isUserOrigin
-          ? `🚩 ${slot.slot_name || 'Xuất phát'}`
-          : (slot.slot_name || slot.slot_time || 'Chặng tour');
+          : `<button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}">
+               <span>Xem chi tiết</span>
+               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+             </button>`;
 
         timelineStepsHtml += `
-          <div class="timeline-step ${isUserOrigin ? 'timeline-step-origin' : ''}">
-            <div class="step-time-badge">${timeBadgeText}</div>
+          <div class="timeline-step ${isUserOrigin ? 'timeline-step-origin' : ''}" data-name="${slot.place_name || slot.name}" data-step-index="${slotIdx}">
+            <div class="step-time-badge">${timeBadgeHtml}</div>
             <div class="step-content">
               <h4 class="step-poi-name ${isUserOrigin ? 'origin-name' : ''}" data-name="${slot.place_name || slot.name}" title="${isUserOrigin ? 'Điểm xuất phát tour của bạn' : 'Nhấp để xem hồ sơ & đánh giá chi tiết'}">${slot.place_name || slot.name}</h4>
               <p class="step-poi-desc">${slot.description || slot.address || 'Điểm trải nghiệm di sản Cố Đô'}</p>
               <div class="step-meta-row">
-                ${typeBadge}
-                ${ratingBadge}
-                ${distanceBadge}
-                ${dishBadge}
-                ${lat && lng ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}">Định vị</button>` : ''}
-                ${detailBtn}
+                <div class="step-meta-tags">
+                  ${legBadge}
+                  ${typeBadge}
+                  ${ratingBadge}
+                  ${distanceBadge}
+                  ${dishBadge}
+                </div>
+                <div class="step-meta-actions">
+                  ${locateBtn}
+                  ${detailBtn}
+                </div>
               </div>
             </div>
           </div>
@@ -664,7 +709,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (plan.days.length > 1) {
       dayTabsHtml += `
         <button type="button" class="deck-day-tab" data-deck="${deckId}" data-day="all" title="Xem tuyến đường toàn bộ các ngày cùng lúc">
-          <span class="day-tab-dot" style="background: linear-gradient(135deg, #2563EB, #D97706);"></span>
+          <span class="day-tab-dot" style="background: #18181B;"></span>
           <span>Tất cả ngày</span>
         </button>
       `;
@@ -695,7 +740,15 @@ document.addEventListener('DOMContentLoaded', async () => {
               </h3>
               <span class="deck-subtitle">Đối tượng: ${tripType} · ${totalStopsCount} điểm đến</span>
             </div>
-            <div class="deck-badge">${days} Ngày${totalKmText}</div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <div class="deck-badge">${days} Ngày${totalKmText}</div>
+              <button type="button" class="btn-deck-save-tour" id="btn-save-${deckId}" title="Lưu lịch trình này vào tài khoản cá nhân">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Lưu Tour</span>
+              </button>
+            </div>
           </div>
 
           <div class="deck-day-tabs">
@@ -720,6 +773,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
       msg.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 60);
+
+    // Đồng bộ ngay lập tức thẻ active của Chặng 1 sau khi deck xuất hiện
+    setTimeout(() => {
+      if (mapStudio && mapStudio.routeDisplayMode === 'leg') {
+        mapStudio.syncTimelineHighlight();
+      }
+    }, 250);
 
     // Gán sự kiện chuyển Day Tabs trong thẻ lịch trình
     const deckEl = document.getElementById(deckId);
@@ -751,6 +811,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           const lat = parseFloat(btn.dataset.lat);
           const lng = parseFloat(btn.dataset.lng);
           const dayContent = btn.closest('.deck-day-content');
+          const stepEl = btn.closest('.timeline-step');
+
           const dayIdMatch = dayContent?.id?.match(/-day-(\d+)/);
           if (dayIdMatch && mapStudio.currentItineraryDay !== 'all') {
             const targetDay = parseInt(dayIdMatch[1], 10);
@@ -766,6 +828,15 @@ document.addEventListener('DOMContentLoaded', async () => {
               }
             }
           }
+
+          if (stepEl?.classList.contains('timeline-step-origin')) {
+            // Khi click định vị điểm xuất phát: highlight thẻ origin và pan map tới vị trí xuất phát
+            mapStudio.clearTimelineHighlight();
+            stepEl.classList.add('is-active-leg');
+            mapStudio.panTo(lat, lng, 16);
+            return;
+          }
+
           const name = btn.dataset.name;
           if (name && mapStudio.routeDisplayMode === 'leg') {
             mapStudio.setActiveLegByDestination(name);
@@ -794,6 +865,43 @@ document.addEventListener('DOMContentLoaded', async () => {
           sendChatQuery(btn.textContent.trim());
         });
       });
+
+      // Gán sự kiện cho nút Lưu Tour vào tài khoản Google / Cloud
+      const btnSaveTour = document.getElementById(`btn-save-${deckId}`);
+      btnSaveTour?.addEventListener('click', async () => {
+        if (!authController.currentUser) {
+          authController.openAuthModal('login');
+          authController.showToast('Vui lòng đăng nhập để lưu lịch trình vào tài khoản.');
+          return;
+        }
+
+        try {
+          btnSaveTour.disabled = true;
+          btnSaveTour.innerHTML = '<span>Đang lưu...</span>';
+          await saveItinerary(authController.currentUser.uid, {
+            title: `Lịch trình Huế ${days} ngày (${tripType})`,
+            days,
+            tripType,
+            userLocationName: userLocName || 'Thành phố Huế',
+            stopsCount: totalStopsCount,
+            totalKm: totalTripDistanceKm,
+            rawResult: res,
+            items: allStopsForMap
+          });
+          btnSaveTour.classList.add('saved');
+          btnSaveTour.innerHTML = `
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Đã lưu</span>
+          `;
+          authController.showToast('Đã lưu lịch trình thành công vào tài khoản!');
+        } catch (err) {
+          btnSaveTour.disabled = false;
+          btnSaveTour.innerHTML = '<span>Lưu Tour</span>';
+          authController.showToast(`Lỗi khi lưu lịch trình: ${err.message}`);
+        }
+      });
     }
 
     // Tự động vẽ lộ trình phân tách theo Ngày (Mặc định hiển thị Ngày 1 để thoáng mắt, không chằng chịt)
@@ -804,36 +912,103 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // Lắng nghe sự kiện mở lại lịch trình đã lưu từ Auth Modal
+  window.addEventListener('load-saved-tour', (e) => {
+    const tour = e.detail;
+    if (!tour) return;
+    showMapPanel(true);
+    if (tour.rawResult) {
+      appendItineraryDeckMessage(tour.rawResult, tour.days, tour.tripType, [], tour.userLocationName);
+    } else if (tour.items && tour.items.length > 0) {
+      mapStudio.drawTourRoute(tour.items);
+    }
+  });
+
   // 7. TRỢ LÝ HỎI ĐÁP (CHAT ASSISTANT)
   const chatForm = document.getElementById('chat-form');
   const chatInput = document.getElementById('chat-input');
   const chatThread = document.getElementById('chat-thread');
   const chatSendBtn = document.getElementById('chat-send-btn');
-  const promptChips = document.querySelectorAll('.chip-item');
   const btnClearChat = document.getElementById('btn-clear-chat');
+
+  function initPromptCards() {
+    if (!chatThread) return;
+    chatThread.querySelectorAll('.prompt-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const prompt = card.dataset.prompt;
+        if (prompt) sendChatQuery(prompt);
+      });
+    });
+  }
+
+  function renderWelcomeHero() {
+    if (!chatThread) return;
+    chatThread.innerHTML = `
+      <div class="chat-welcome-hero" id="chat-welcome-hero">
+        <div class="welcome-badge">
+          <span class="welcome-badge-dot"></span>
+          <span>Cố Đô Huế AI Copilot</span>
+        </div>
+        <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
+        <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.</p>
+
+        <div class="welcome-prompt-grid">
+          <button type="button" class="prompt-card" data-prompt="Lập lịch trình khám phá Huế 2 ngày 1 đêm tối ưu cho gia đình">
+            <div class="prompt-card-icon">🏛️</div>
+            <div class="prompt-card-content">
+              <div class="prompt-card-title">Hành trình Di sản 2 Ngày</div>
+              <div class="prompt-card-desc">Đại Nội, Lăng Khải Định, Tự Đức & Chùa Thiên Mụ</div>
+            </div>
+            <span class="prompt-card-arrow">↗</span>
+          </button>
+
+          <button type="button" class="prompt-card" data-prompt="Gợi ý các quán ăn đặc sản Huế chuẩn vị: bún bò mụ Rơi, bánh bèo nậm lọc, cơm hến và chè hẻm">
+            <div class="prompt-card-icon">🍜</div>
+            <div class="prompt-card-content">
+              <div class="prompt-card-title">Bản đồ Ẩm thực Cố Đô</div>
+              <div class="prompt-card-desc">Bún bò mụ Rơi, bánh ép, cơm hến & chè hẻm nổi tiếng</div>
+            </div>
+            <span class="prompt-card-arrow">↗</span>
+          </button>
+
+          <button type="button" class="prompt-card" data-prompt="Những quán cà phê và điểm ngắm hoàng hôn đẹp nhất bên bờ sông Hương">
+            <div class="prompt-card-icon">🌅</div>
+            <div class="prompt-card-content">
+              <div class="prompt-card-title">Sunset & Cà phê Sông Hương</div>
+              <div class="prompt-card-desc">Điểm ngắm hoàng hôn đồi Vọng Cảnh & bến thuyền thơ mộng</div>
+            </div>
+            <span class="prompt-card-arrow">↗</span>
+          </button>
+
+          <button type="button" class="prompt-card" data-prompt="Từ Đại Nội đi Chợ Đông Ba như thế nào, khoảng cách bao xa và nên ghé những điểm nào dọc đường?">
+            <div class="prompt-card-icon">🧭</div>
+            <div class="prompt-card-content">
+              <div class="prompt-card-title">Chỉ đường & Khoảng cách</div>
+              <div class="prompt-card-desc">Lộ trình từ Đại Nội qua Chợ Đông Ba và cầu Tràng Tiền</div>
+            </div>
+            <span class="prompt-card-arrow">↗</span>
+          </button>
+        </div>
+      </div>
+    `;
+    initPromptCards();
+  }
+
+  // Khởi tạo sự kiện cho các thẻ gợi ý ban đầu
+  initPromptCards();
 
   // Làm mới đoạn hội thoại
   btnClearChat?.addEventListener('click', () => {
-    if (chatThread) {
-      chatThread.innerHTML = `
-        <div class="chat-message assistant">
-          <div class="message-avatar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z" />
-            </svg>
-          </div>
-          <div class="message-bubble">
-            <div class="message-author">Trợ lý Cố Đô</div>
-            <p>Đoạn hội thoại đã được làm mới. Bạn cần hỗ trợ thông tin gì về ẩm thực hoặc danh lam thắng cảnh Huế?</p>
-          </div>
-        </div>
-      `;
-      if (chatInput) chatInput.focus();
-    }
+    renderWelcomeHero();
+    if (chatInput) chatInput.focus();
   });
 
   async function sendChatQuery(query) {
     if (!query) return;
+
+    // Xóa Welcome Hero khi bắt đầu chat
+    const hero = document.getElementById('chat-welcome-hero');
+    if (hero) hero.remove();
 
     // Kiểm tra câu hỏi có liên quan đến vị trí/không gian/chỉ đường/bản đồ
     const isSpatialQuery = /chỉ đường|đường đi|đi đến|từ .+ đi|khoảng cách|cách bao xa|gần đây|quanh đây|ở đâu|vị trí|tọa độ|bản đồ|lộ trình|tour|thuê xe/i.test(query);
@@ -891,15 +1066,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (chatInput) chatInput.focus();
     }
   }
-
-  promptChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      if (chip.classList.contains('chip-planner-trigger')) return; // handled by chipPlan2Days
-      // Lấy text loại bỏ emoji
-      const text = chip.textContent.replace(/^[\s\uFE00-\uFE0F\u1F300-\u1F9FF\u2600-\u26FF\u2700-\u27BF]+/, '').trim();
-      sendChatQuery(text);
-    });
-  });
 
   chatForm?.addEventListener('submit', (e) => {
     e.preventDefault();
