@@ -37,7 +37,7 @@ export class SpatialMapStudio {
       default: { stroke: '#4F46E5', bg: '#4F46E5', casing: '#FFFFFF', name: 'Lộ trình' }
     };
 
-    // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố Đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
+    // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
     this.masterLandmarks = hueTopPlaces;
   }
 
@@ -150,12 +150,12 @@ export class SpatialMapStudio {
   }
 
   /**
-   * Tạo Custom Architectural SVG Marker chuẩn di sản Cố Đô (sắc sảo, tối giản, thanh lịch)
+   * Tạo Custom Architectural SVG Marker chuẩn di sản Cố đô (sắc sảo, tối giản, thanh lịch)
    */
   createCustomIcon(category = 'Attraction', label = '', stepNumber = null, badgeBg = null) {
     const catLower = (category || '').toLowerCase();
     
-    // Bảng màu di sản Cố Đô có kỷ luật (chất gốm sứ, ngói lưu ly và thổ nhưỡng)
+    // Bảng màu di sản Cố đô có kỷ luật (chất gốm sứ, ngói lưu ly và thổ nhưỡng)
     let pinColor = '#B45309'; // Di tích: Vàng thổ hoàng / Hoàng cung
     let svgIcon = `
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -949,7 +949,7 @@ export class SpatialMapStudio {
       dayBadge.textContent = `${this.currentDayLegs.length} chặng`;
     }
     if (routeTitle) {
-      routeTitle.innerHTML = `<span class="leg-point-to">${isAllDays ? 'Toàn bộ tour Cố Đô Huế' : `Toàn cảnh Ngày ${this.currentItineraryDay}`}</span>`;
+      routeTitle.innerHTML = `<span class="leg-point-to">${isAllDays ? 'Toàn bộ tour Cố đô Huế' : `Toàn cảnh Ngày ${this.currentItineraryDay}`}</span>`;
     }
     if (distanceText) {
       distanceText.innerHTML = `

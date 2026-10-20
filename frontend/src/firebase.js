@@ -249,7 +249,7 @@ export async function logoutUser() {
 // CHẾ ĐỘ DEMO USER (DÀNH CHO KIỂM THỬ TRƯỚC KHI CẤU HÌNH FIREBASE)
 // =============================================================================
 
-export function loginWithDemoUser(email = 'dukhach.hue@gmail.com', name = 'Du Khách Cố Đô') {
+export function loginWithDemoUser(email = 'dukhach.hue@gmail.com', name = 'Du khách Cố đô') {
   const demoUser = {
     uid: 'demo_user_hue_2026',
     email: email,

@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function updateMapToggleUI(isOpen) {
     if (btnHeaderToggleMap) {
       btnHeaderToggleMap.classList.toggle('active', isOpen);
-      btnHeaderToggleMap.title = isOpen ? 'Thu gọn bản đồ (Tập trung giao diện Chatbot)' : 'Mở bản đồ không gian Cố Đô';
+      btnHeaderToggleMap.title = isOpen ? 'Thu gọn bản đồ (Tập trung giao diện Chatbot)' : 'Mở bản đồ không gian Cố đô';
       if (headerMapToggleLabel) {
         headerMapToggleLabel.textContent = isOpen ? 'Thu gọn Bản đồ' : 'Mở Bản đồ';
       }
@@ -235,8 +235,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Danh mục tiêu đề bản đồ tương ứng
   const categoryTitles = {
     all: 'Bản đồ Di sản',
-    attraction: 'Di tích Cố Đô',
-    restaurant: 'Ẩm thực Cố Đô',
+    attraction: 'Di tích Cố đô',
+    restaurant: 'Ẩm thực Cố đô',
     cafe: 'Cà phê & Sunset',
     hotel: 'Khách sạn & Resort'
   };
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       mapStudio.filterByCategory(cat);
       if (mapActiveMeta) {
-        const title = categoryTitles[cat] || 'Địa điểm Cố Đô';
+        const title = categoryTitles[cat] || 'Địa điểm Cố đô';
         mapActiveMeta.textContent = title;
         mapActiveMeta.title = title;
       }
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const dishLabel = preferredDishes && preferredDishes.length > 0
       ? `ưu tiên các món: ${preferredDishes.join(', ')}`
-      : 'ẩm thực Cố Đô đặc sắc';
+      : 'ẩm thực Cố đô đặc sắc';
     const userQueryText = `📅 Lập lịch trình khám phá Huế ${days} ngày cho ${tripType}, xuất phát từ ${userLocName}, ${dishLabel}.`;
     appendUserMessage(userQueryText);
 
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="step-time-badge">${timeBadgeHtml}</div>
             <div class="step-content">
               <h4 class="step-poi-name ${isUserOrigin ? 'origin-name' : ''}" data-name="${slot.place_name || slot.name}" title="${isUserOrigin ? 'Điểm xuất phát tour của bạn' : 'Nhấp để xem hồ sơ & đánh giá chi tiết'}">${slot.place_name || slot.name}</h4>
-              <p class="step-poi-desc">${slot.description || slot.address || 'Điểm trải nghiệm di sản Cố Đô'}</p>
+              <p class="step-poi-desc">${slot.description || slot.address || 'Điểm trải nghiệm di sản Cố đô'}</p>
               <div class="step-meta-row">
                 <div class="step-meta-tags">
                   ${legBadge}
@@ -693,7 +693,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       dayContentsHtml += `
         <div class="deck-day-content ${isFirstDay ? 'active' : ''}" id="${deckId}-day-${day.day_number}">
           <div class="deck-day-summary">
-            <div class="deck-day-theme">Ngày ${day.day_number}: ${day.theme || day.cluster_name || 'Khám phá Cố Đô'}</div>
+            <div class="deck-day-theme">Ngày ${day.day_number}: ${day.theme || day.cluster_name || 'Khám phá Cố đô'}</div>
             <div class="deck-day-actions">
               ${gmapsRouteBtn}
               <span class="day-badge">${slots.length} chặng${totalKm}</span>
@@ -728,7 +728,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </svg>
       </div>
       <div class="message-bubble">
-        <div class="message-author">Lịch trình Tour Cố Đô</div>
+        <div class="message-author">Lịch trình Tour Cố đô</div>
         <p>Mình đã tối ưu hóa lịch trình <strong>${days} ngày</strong> cho <strong>${tripType}</strong> xuất phát từ <strong>${userLocName || 'Vị trí của bạn'}</strong> theo khoảng cách di chuyển thực tế. Toàn bộ lộ trình đã được đồng bộ lên bản đồ bên cạnh.</p>
         
         <div class="chat-itinerary-deck" id="${deckId}">
@@ -947,7 +947,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="chat-welcome-hero" id="chat-welcome-hero">
         <div class="welcome-badge">
           <span class="welcome-badge-dot"></span>
-          <span>Cố Đô Huế AI Copilot</span>
+          <span>Cố đô Huế AI Copilot</span>
         </div>
         <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
         <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.</p>
@@ -965,7 +965,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <button type="button" class="prompt-card" data-prompt="Gợi ý các quán ăn đặc sản Huế chuẩn vị: bún bò mụ Rơi, bánh bèo nậm lọc, cơm hến và chè hẻm">
             <div class="prompt-card-icon">🍜</div>
             <div class="prompt-card-content">
-              <div class="prompt-card-title">Bản đồ Ẩm thực Cố Đô</div>
+              <div class="prompt-card-title">Bản đồ Ẩm thực Cố đô</div>
               <div class="prompt-card-desc">Bún bò mụ Rơi, bánh ép, cơm hến & chè hẻm nổi tiếng</div>
             </div>
             <span class="prompt-card-arrow">↗</span>
@@ -997,7 +997,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Khởi tạo sự kiện cho các thẻ gợi ý ban đầu
   initPromptCards();
 
-  // Làm mới đoạn hội thoại
+  // Làm mới đoạn hội thoại khi bấm Làm mới
   btnClearChat?.addEventListener('click', () => {
     renderWelcomeHero();
     if (chatInput) chatInput.focus();
@@ -1098,7 +1098,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
       </div>
       <div class="message-bubble">
-        <div class="message-author">Trợ lý Cố Đô</div>
+        <div class="message-author">Trợ lý Cố đô</div>
         <p class="loading-text">${customText}</p>
       </div>
     `;
@@ -1278,7 +1278,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
       </div>
       <div class="message-bubble">
-        <div class="message-author">Trợ lý Cố Đô</div>
+        <div class="message-author">Trợ lý Cố đô</div>
         <div class="answer-content">${formattedAnswer}</div>
         ${navCardHtml}
         ${placesPillsHtml}
@@ -1391,7 +1391,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (initialCat.includes('restaurant') || initialCat.includes('ẩm thực') || initialCat.includes('quán')) {
       initialCatClass = 'restaurant';
       initialCatIcon = '🍲';
-      initialCatLabel = 'Ẩm thực Cố Đô';
+      initialCatLabel = 'Ẩm thực Cố đô';
     } else if (initialCat.includes('cafe') || initialCat.includes('cà phê') || initialCat.includes('sunset')) {
       initialCatClass = 'cafe';
       initialCatIcon = '☕';
@@ -1430,7 +1430,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) {
         catClass = 'restaurant';
         catIcon = '🍲';
-        catLabel = 'Ẩm thực Cố Đô';
+        catLabel = 'Ẩm thực Cố đô';
       } else if (cat.includes('cafe') || cat.includes('cà phê') || cat.includes('sunset')) {
         catClass = 'cafe';
         catIcon = '☕';

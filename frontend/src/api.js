@@ -116,7 +116,7 @@ export class TourismApiClient {
     const fullDays = [
       {
         day_number: 1,
-        theme: "Kinh Thành Huế & Hương vị Ẩm thực Cố Đô",
+        theme: "Kinh Thành Huế & Hương vị Ẩm thực Cố đô",
         total_distance_km: 7.2,
         slots: [
           {
@@ -219,7 +219,7 @@ export class TourismApiClient {
       },
       {
         day_number: 3,
-        theme: "Di sản Chiều sâu, Làng nghề & Phố đêm Cố Đô",
+        theme: "Di sản Chiều sâu, Làng nghề & Phố đêm Cố đô",
         total_distance_km: 15.1,
         slots: [
           {
@@ -242,7 +242,7 @@ export class TourismApiClient {
             longitude: 107.5912,
             specialty_dish: "Cơm chay Huế",
             distance_from_prev_km: 9.1,
-            description: "Ẩm thực chay thanh đạm, trình bày nghệ thuật cầu kỳ chuẩn phong cách ẩm thực thiền Cố Đô."
+            description: "Ẩm thực chay thanh đạm, trình bày nghệ thuật cầu kỳ chuẩn phong cách ẩm thực thiền Cố đô."
           },
           {
             slot_name: "Chiều (14:30 - 16:30)",
@@ -382,7 +382,7 @@ export class TourismApiClient {
 
       return {
         status: 'success',
-        answer: `Dạ, nếu bạn muốn thưởng thức **Bún bò Huế** ngon và chuẩn vị nhất tại Cố Đô Huế, em xin gợi ý các quán trứ danh được du khách đánh giá cao nhất:\n\n• **Bún bò Huế Bà Tuyết** (Nguyễn Công Trứ): Nước dùng đậm đà hương sả ruốc, thịt bắp hoa giòn ngọt và chả cua thơm béo.\n• **Quán Cẩm - Bún bò Huế** (Trần Cao Vân): Quán bún bò lâu đời nức tiếng, nước lèo ngọt thanh từ xương hầm tự nhiên.\n• **Bún bò Huế Sen** (Võ Thị Sáu): Không gian sạch sẽ, tô bún đầy đặn giò gân bắp đậm đà hương vị Huế.\n• **Bún bò Huế Mụ Rơi** (Nguyễn Chí Diểu): Quán mộc mạc mang phong vị truyền thống thân thuộc của người dân Cố Đô.\n\nBạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!`,
+        answer: `Dạ, nếu bạn muốn thưởng thức **Bún bò Huế** ngon và chuẩn vị nhất tại Cố đô Huế, em xin gợi ý các quán trứ danh được du khách đánh giá cao nhất:\n\n• **Bún bò Huế Bà Tuyết** (Nguyễn Công Trứ): Nước dùng đậm đà hương sả ruốc, thịt bắp hoa giòn ngọt và chả cua thơm béo.\n• **Quán Cẩm - Bún bò Huế** (Trần Cao Vân): Quán bún bò lâu đời nức tiếng, nước lèo ngọt thanh từ xương hầm tự nhiên.\n• **Bún bò Huế Sen** (Võ Thị Sáu): Không gian sạch sẽ, tô bún đầy đặn giò gân bắp đậm đà hương vị Huế.\n• **Bún bò Huế Mụ Rơi** (Nguyễn Chí Diểu): Quán mộc mạc mang phong vị truyền thống thân thuộc của người dân Cố đô.\n\nBạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!`,
         matched_places: places
       };
     }
@@ -427,7 +427,7 @@ export class TourismApiClient {
 
       return {
         status: 'success',
-        answer: `Dạ, thưởng thức **Chè Cố Đô Huế** ngọt bùi thanh mát, bạn đừng bỏ qua những địa chỉ trứ danh:\n\n• **Chè Hẻm Huế** (Hùng Vương): Quán chè huyền thoại với món chè bột lọc bọc thịt heo quay độc nhất vô nhị.\n• **Chè Cung Đình Huế 20 Món** (Lê Lợi): Đa dạng các loại chè hạt sen nhãn lồng, chè bắp, chè khoai tía...\n• **Chè Mụ Linh** (Nguyễn Huệ): Quán chè quen thuộc của người dân Huế với hương vị ngọt thanh nhẹ nhàng.\n\nBạn có thể bấm vào các nút bên dưới để xem vị trí nhé!`,
+        answer: `Dạ, thưởng thức **Chè Cố đô Huế** ngọt bùi thanh mát, bạn đừng bỏ qua những địa chỉ trứ danh:\n\n• **Chè Hẻm Huế** (Hùng Vương): Quán chè huyền thoại với món chè bột lọc bọc thịt heo quay độc nhất vô nhị.\n• **Chè Cung Đình Huế 20 Món** (Lê Lợi): Đa dạng các loại chè hạt sen nhãn lồng, chè bắp, chè khoai tía...\n• **Chè Mụ Linh** (Nguyễn Huệ): Quán chè quen thuộc của người dân Huế với hương vị ngọt thanh nhẹ nhàng.\n\nBạn có thể bấm vào các nút bên dưới để xem vị trí nhé!`,
         matched_places: places
       };
     }
@@ -472,7 +472,7 @@ export class TourismApiClient {
 
     return {
       status: 'success',
-      answer: `Chào bạn! Cố Đô Huế có bề dày lịch sử và di sản phong phú. Bạn có thể tham quan **Đại Nội**, các khu **Lăng tẩm triều Nguyễn** (Tự Đức, Khải Định, Minh Mạng), vãn cảnh chùa cổ **Thiên Mụ** hoặc bấm nút **"Tạo lịch trình"** ở phía trên để mình sắp xếp tour tham quan tối ưu theo ngày cho bạn nhé!`,
+      answer: `Chào bạn! Cố đô Huế có bề dày lịch sử và di sản phong phú. Bạn có thể tham quan **Đại Nội**, các khu **Lăng tẩm triều Nguyễn** (Tự Đức, Khải Định, Minh Mạng), vãn cảnh chùa cổ **Thiên Mụ** hoặc bấm nút **"Tạo lịch trình"** ở phía trên để mình sắp xếp tour tham quan tối ưu theo ngày cho bạn nhé!`,
       matched_places: defaultPlaces
     };
   }
