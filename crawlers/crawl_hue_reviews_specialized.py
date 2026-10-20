@@ -1,13 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-CRAWLER CHUYÊN BIỆT: THU THẬP BỔ SUNG REVIEW CỐ ĐÔ HUẾ
+CRAWLER CHUYÊN BIỆT CỐ ĐÔ HUẾ - BẢN NÂNG CẤP CHỐNG CHẶN & TỰ ĐỘNG VƯỢT CAPTCHA
 Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu và Trí tuệ Nhân tạo (DS&AI K3 - HUET)
 -----------------------------------------------------------------------------------------------------
-- Mục tiêu: Thu thập khoảng 15.000 - 20.000 bài review thực tế của du khách tại Thừa Thiên Huế:
-    + 29 Điểm tham quan (Attractions): Top di sản lấy 300 - 500 review; các điểm khác lấy 100 - 200 review.
-    + 380 Nhà hàng (Restaurants): Quán nổi tiếng lấy 150 - 200 review; quán vừa lấy 50 - 100; quán nhỏ lấy hết.
-- Dữ liệu đích: data/raw/hue_reviews_supplement.json
-- Checkpoint: data/raw/progress_hue_reviews.json (Lưu sau mỗi địa điểm, tự động resume khi chạy lại).
+CÁC CẢI TIẾN CHỐNG CHẶN TOÀN DIỆN (ANTI-BLOCKING SYSTEM):
+1. Persistent Chrome Profile (.chrome_data):
+   - Lưu trữ vĩnh viễn cookies, session và mã xác nhận Cloudflare (cf_clearance).
+   - Loại bỏ hoàn toàn dấu hiệu "trình duyệt khách vô danh" (empty guest profile).
+2. Tự động vượt & Hỗ trợ giải Captcha tức thì (Interactive Verification):
+   - Khi gặp thử thách Cloudflare/Turnstile ("Verify you are human"):
+     + Script tự động tìm và click ô checkbox xác minh.
+     + Đồng thời phát chuông báo và hiển thị thông báo hướng dẫn người dùng click trực tiếp.
+     + Tự động tiếp tục cào NGAY LẬP TỨC khi mở khoá (chỉ mất 2-3 giây thay vì chờ 5 phút vô ích).
+3. Cuộn tự nhiên & Tải lười (Lazy-load Reviews):
+   - Tự động cuộn mượt đến khu vực Đánh giá để kích hoạt TripAdvisor render thẻ review.
+   - Parser thế hệ mới: Nhận diện review card đa tầng (kể cả layout mới như Vườn quốc gia Bạch Mã).
+4. Phân trang mượt mà (Next Page Link):
+   - Tận dụng liên kết Next Page tự nhiên của TripAdvisor, tránh việc spam tải lại trang liên tục.
+5. Triệt tiêu lỗi WinError 6 trên Windows:
+   - Bọc an toàn quá trình thoát Chrome để không sinh crash traceback.
+6. Ràng buộc dữ liệu:
+   - Lưu trực tiếp và tiếp nối vào data/raw/hue_reviews_supplement.json.
+   - Khử trùng lặp 100%.
 """
 
 import os
@@ -16,11 +30,21 @@ import re
 import json
 import time
 import random
+import argparse
 import winreg
-import subprocess
 from bs4 import BeautifulSoup
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
+
+# Khử lỗi WinError 6 khi đóng Chrome trên Windows
+_orig_del = getattr(uc.Chrome, "__del__", None)
+def _safe_del(self):
+    try:
+        if _orig_del:
+            _orig_del(self)
+    except Exception:
+        pass
+uc.Chrome.__del__ = _safe_del
 
 try:
     from langdetect import detect
@@ -35,33 +59,39 @@ except Exception:
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+PROFILE_DIR = os.path.join(BASE_DIR, ".chrome_data")
+os.makedirs(PROFILE_DIR, exist_ok=True)
+
 TARGETS_FILE = os.path.join(PROJECT_ROOT, "data", "processed", "hue_crawl_targets.json")
 OUTPUT_FILE = os.path.join(PROJECT_ROOT, "data", "raw", "hue_reviews_supplement.json")
 PROGRESS_FILE = os.path.join(PROJECT_ROOT, "data", "raw", "progress_hue_reviews.json")
 PARTIAL_FILE = os.path.join(PROJECT_ROOT, "data", "raw", "partial_hue_reviews.json")
+EXHAUSTED_FILE = os.path.join(PROJECT_ROOT, "data", "raw", "exhausted_hue_places.json")
 
 DOMAIN = "www.tripadvisor.com"
 
 # Cấu hình hạn mức (Quotas)
-MAX_REVIEWS_TOP_ATTRACTION = 400    # Đại Nội, Thiên Mụ, Lăng Minh Mạng...
-MAX_REVIEWS_NORMAL_ATTRACTION = 150 # Các điểm tham quan khác
-MAX_REVIEWS_TOP_RESTAURANT = 180    # Quán ăn nổi tiếng > 500 review
-MAX_REVIEWS_MID_RESTAURANT = 80     # Quán ăn 50 - 500 review
-MAX_REVIEWS_SMALL_RESTAURANT = 30   # Quán ăn < 50 review
+MAX_REVIEWS_TOP_ATTRACTION = 1500     # Đại Nội, Thiên Mụ, Lăng Khải Định, Minh Mạng, Tự Đức...
+MAX_REVIEWS_NORMAL_ATTRACTION = 400   # Các điểm tham quan, danh lam, di tích khác
+MAX_REVIEWS_TOP_HOTEL = 350           # Khách sạn lớn > 1000 reviews (Melia Vinpearl, Eldora, Moonlight...)
+MAX_REVIEWS_NORMAL_HOTEL = 150        # Khách sạn vừa và nhỏ
+MAX_REVIEWS_TOP_RESTAURANT = 400      # Quán ăn nổi tiếng > 500 reviews (Madame Thu, Hạnh, Huyền Anh...)
+MAX_REVIEWS_MID_RESTAURANT = 150      # Quán ăn 100 - 500 reviews
+MAX_REVIEWS_SMALL_RESTAURANT = 50     # Quán ăn < 100 reviews
+MAX_REVIEWS_CAFE = 150                # Cà phê, trà Huế (Cà phê Muối, Vỹ Dạ Xưa...)
 
-REQUEST_GAP = (3.5, 6.0)
-LONG_REST = (30.0, 60.0)
-REST_EVERY_N_PLACES = 15
-BLOCK_COOLDOWN = (300.0, 600.0)
+REQUEST_GAP = (4.0, 7.5)              # Giãn cách tự nhiên giữa các trang
+PAGE_BREATHE_INTERVAL = 8             # Cứ sau 8 trang nghỉ ngắn một nhịp
+
 BLOCK_MARKERS = (
     "pardon our interruption", "access denied", "please verify you are a human",
     "verify you are a human", "unusual activity", "px-captcha", "captcha-delivery",
     "reference #", "bị từ chối truy cập", "access is temporarily restricted",
+    "just a moment...", "security check"
 )
 
 DATE_LABELS = ("Date of stay:", "Ngày lưu trú:", "Date of experience:")
 TRIP_LABELS = ("Trip type:", "Loại chuyến đi:")
-WROTE_MARK = ("wrote a review", "đã viết đánh giá", "đã viết một đánh giá")
 
 LANG_MAP = {
     'en': 'English', 'vi': 'Vietnamese', 'es': 'Spanish', 'fr': 'French', 'ja': 'Japanese',
@@ -81,13 +111,17 @@ def get_chrome_version():
     return 133
 
 
-def make_driver():
+def make_driver(headless=False):
     ver = get_chrome_version()
     options = uc.ChromeOptions()
+    options.add_argument(f"--user-data-dir={PROFILE_DIR}")
     options.add_argument("--window-size=1366,900")
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-blink-features=AutomationControlled")
-    print(f"-> Khởi tạo Undetected ChromeDriver (Chrome Version: {ver})...")
+    options.add_argument("--lang=vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7")
+    if headless:
+        options.add_argument("--headless=new")
+    print(f"-> Khởi tạo Chrome Profile bền vững tại: {PROFILE_DIR} (Chrome Version: {ver})...")
     driver = uc.Chrome(options=options, version_main=ver)
     driver.set_page_load_timeout(35)
     return driver
@@ -133,6 +167,126 @@ def review_page_url(base_url, offset):
     return u.replace("-Reviews-", f"-Reviews-or{offset}-", 1)
 
 
+def is_blocked(driver):
+    try:
+        title = (driver.title or "").lower()
+        src = driver.page_source[:5000].lower()
+        return any(m in title or m in src for m in BLOCK_MARKERS)
+    except Exception:
+        return False
+
+
+def try_solve_turnstile(driver):
+    """Cố gắng tự động click ô xác minh Cloudflare Turnstile nếu có."""
+    try:
+        iframes = driver.find_elements(By.CSS_SELECTOR, "iframe[src*='challenges.cloudflare.com'], iframe[src*='turnstile']")
+        for ifr in iframes:
+            try:
+                driver.switch_to.frame(ifr)
+                boxes = driver.find_elements(By.CSS_SELECTOR, "input[type='checkbox'], #challenge-stage, .ctp-checkbox-label")
+                for b in boxes:
+                    try:
+                        b.click()
+                        time.sleep(1.0)
+                    except Exception:
+                        pass
+                driver.switch_to.default_content()
+            except Exception:
+                driver.switch_to.default_content()
+    except Exception:
+        try:
+            driver.switch_to.default_content()
+        except Exception:
+            pass
+
+
+def handle_challenge_if_any(driver, max_wait=60):
+    """
+    Nếu gặp Cloudflare / PerimeterX:
+    - Báo động console + âm thanh.
+    - Chờ người dùng click checkbox hoặc tự click.
+    - Tiếp tục ngay lập tức khi giải xong (chỉ 2 giây).
+    """
+    if not is_blocked(driver):
+        return True
+
+    print("\n" + "=" * 80)
+    print("🛡️ TRIPADVISOR YÊU CẦU XÁC MINH NGƯỜI DÙNG (CLOUDFLARE / CAPTCHA)")
+    print("👉 Xin hãy click vào ô 'Verify you are human' (hoặc nhấn giữ) trên cửa sổ Chrome đang mở.")
+    print(f"⏳ Hệ thống đang chờ bạn xác nhận (tối đa {max_wait}s)... Sẽ tự động tiếp tục cào ngay khi mở!")
+    print("=" * 80 + "\n")
+
+    try:
+        import winsound
+        winsound.Beep(1000, 350)
+    except Exception:
+        pass
+
+    waited = 0
+    while waited < max_wait:
+        try_solve_turnstile(driver)
+        time.sleep(2.0)
+        waited += 2
+        if not is_blocked(driver):
+            print(f"✅ XÁC MINH THÀNH CÔNG (sau {waited}s)! Token cf_clearance đã được lưu vào profile. Tiếp tục cào...\n")
+            time.sleep(1.5)
+            return True
+
+    print("❌ Hết thời gian chờ xác minh (60s). Tạm thời hoãn địa điểm này để tránh gián đoạn hệ thống.")
+    return False
+
+
+def human_scroll(driver):
+    """Mô phỏng cuộn trang tự nhiên để kích hoạt lazy-load reviews."""
+    try:
+        # Cuộn nửa trang đầu
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight / 2);")
+        time.sleep(random.uniform(0.8, 1.4))
+        # Cuộn nhẹ thêm một đoạn
+        delta = random.randint(300, 600)
+        driver.execute_script(f"window.scrollBy(0, {delta});")
+        time.sleep(random.uniform(0.5, 0.9))
+    except Exception:
+        pass
+
+
+def expand_read_more(driver):
+    xp = ("//button[.//span[contains(text(),'Read more') or contains(text(),'Đọc thêm')]]"
+          " | //span[contains(text(),'Read more') or contains(text(),'Đọc thêm')]")
+    try:
+        for btn in driver.find_elements(By.XPATH, xp):
+            try:
+                driver.execute_script("arguments[0].click();", btn)
+                time.sleep(0.12)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
+def dismiss_popup(driver):
+    try:
+        driver.execute_script("""
+          const sel = '[role="dialog"], div[class*="modal"], div[class*="Modal"], div[class*="overlay"]';
+          document.querySelectorAll(sel).forEach(d => {
+            const t = (d.innerText || '');
+            if (t.includes('preferred browser language') || t.includes('Visit our English')
+                || t.includes('accurate experience')) {
+              d.querySelectorAll('button, [aria-label], span').forEach(b => {
+                const al = (b.getAttribute('aria-label') || '').toLowerCase();
+                const tx = (b.innerText || '').trim();
+                if (al.includes('close') || al.includes('đóng') || tx === '×' || tx === '✕' || tx === 'X') {
+                  try { b.click(); } catch(e){}
+                }
+              });
+              try { d.remove(); } catch(e){}
+            }
+          });
+        """)
+    except Exception:
+        pass
+
+
 def get_rating(card):
     for svg in card.find_all("svg"):
         t = svg.find("title")
@@ -159,15 +313,22 @@ def _sibling_text(info):
 
 
 def parse_reviews(soup, place_url):
+    """
+    Parser đa tầng thích ứng cả layout truyền thống và layout mới của TripAdvisor.
+    """
     out = []
     cards = soup.find_all("div", attrs={"data-test-target": re.compile(r".*_CC_CARD")})
     if not cards:
         cards = soup.find_all("div", attrs={"data-reviewid": True})
+    
+    # Fallback mạnh mẽ: Tìm theo thẻ tiêu đề review-title
     if not cards:
         for title_el in soup.find_all(attrs={"data-test-target": "review-title"}):
             p = title_el.parent
-            while p and p.name != 'body':
-                if p.find(attrs={"data-test-target": "review-body"}) or p.find("span", class_="JguWG") or p.find(href=re.compile(r"/Profile/")):
+            for _ in range(7):
+                if not p or p.name == "body":
+                    break
+                if p.find("svg") or p.find("span", class_=re.compile(r"bubble")):
                     if p not in cards:
                         cards.append(p)
                     break
@@ -208,6 +369,17 @@ def parse_reviews(soup, place_url):
         if cspan:
             comment = cspan.get_text(" ", strip=True)
 
+        # Fallback nội dung comment nếu không khớp class trên
+        if not comment:
+            text_candidates = [
+                sp.get_text(" ", strip=True) for sp in card.find_all(["span", "div", "p"])
+                if len(sp.get_text(strip=True)) > 40 and title not in sp.get_text(strip=True)
+            ]
+            if text_candidates:
+                # Lấy đoạn dài nhất
+                text_candidates.sort(key=len, reverse=True)
+                comment = text_candidates[0]
+
         if not comment and not title:
             continue
 
@@ -232,67 +404,38 @@ def parse_reviews(soup, place_url):
     return out
 
 
-def expand_read_more(driver):
-    xp = ("//button[.//span[contains(text(),'Read more') or contains(text(),'Đọc thêm')]]"
-          " | //span[contains(text(),'Read more') or contains(text(),'Đọc thêm')]")
-    try:
-        for btn in driver.find_elements(By.XPATH, xp):
-            try:
-                driver.execute_script("arguments[0].click();", btn)
-                time.sleep(0.15)
-            except Exception:
-                pass
-    except Exception:
-        pass
-
-
-def dismiss_popup(driver):
-    try:
-        driver.execute_script("""
-          const sel = '[role="dialog"], div[class*="modal"], div[class*="Modal"], div[class*="overlay"]';
-          document.querySelectorAll(sel).forEach(d => {
-            const t = (d.innerText || '');
-            if (t.includes('preferred browser language') || t.includes('Visit our English')
-                || t.includes('accurate experience')) {
-              d.querySelectorAll('button, [aria-label], span').forEach(b => {
-                const al = (b.getAttribute('aria-label') || '').toLowerCase();
-                const tx = (b.innerText || '').trim();
-                if (al.includes('close') || al.includes('đóng') || tx === '×' || tx === '✕' || tx === 'X') {
-                  try { b.click(); } catch(e){}
-                }
-              });
-              try { d.remove(); } catch(e){}
-            }
-          });
-        """)
-    except Exception:
-        pass
-
-
-def is_blocked(driver):
-    try:
-        title = (driver.title or "").lower()
-        src = driver.page_source[:5000].lower()
-        return any(m in title or m in src for m in BLOCK_MARKERS)
-    except Exception:
-        return False
-
-
 def get_target_quota(item):
     cat = item.get("category", "")
-    rev_cnt = item.get("review_count", 0)
+    rev_cnt = int(item.get("review_count", 0) or 0)
     if cat == "attraction":
         return MAX_REVIEWS_TOP_ATTRACTION if rev_cnt >= 1000 else MAX_REVIEWS_NORMAL_ATTRACTION
-    else:
+    elif cat == "hotel":
+        return MAX_REVIEWS_TOP_HOTEL if rev_cnt >= 1000 else MAX_REVIEWS_NORMAL_HOTEL
+    elif cat == "cafe":
+        return min(rev_cnt, MAX_REVIEWS_CAFE) if rev_cnt > 0 else 100
+    else:  # restaurant
         if rev_cnt >= 500:
             return MAX_REVIEWS_TOP_RESTAURANT
         elif rev_cnt >= 100:
             return MAX_REVIEWS_MID_RESTAURANT
         else:
-            return min(rev_cnt, MAX_REVIEWS_SMALL_RESTAURANT)
+            return min(rev_cnt, MAX_REVIEWS_SMALL_RESTAURANT) if rev_cnt > 0 else 30
 
 
-def crawl_place(driver, place, all_reviews, partial):
+def find_next_page_url(driver):
+    """Tìm liên kết trang tiếp theo trên thanh phân trang TripAdvisor."""
+    try:
+        next_links = driver.find_elements(By.CSS_SELECTOR, 'a[aria-label="Next page"], a[data-smoke-attr="pagination-next-button"], a.ui_pagination.next')
+        for link in next_links:
+            href = link.get_attribute("href")
+            if href and "-Reviews-or" in href:
+                return href
+    except Exception:
+        pass
+    return None
+
+
+def crawl_place(driver, place, all_reviews, partial, exhausted_set):
     purl = place["url"]
     pid = place_id_from_url(purl)
     max_rev = get_target_quota(place)
@@ -301,46 +444,55 @@ def crawl_place(driver, place, all_reviews, partial):
     have = 0
     for r in all_reviews:
         if r.get("place_url") == purl:
-            seen.add((r.get("reviewer_url"), r.get("title"), r.get("comment", "")[:50]))
+            seen.add((r.get("reviewer_url"), r.get("title"), r.get("comment", "")[:60]))
             have += 1
 
     if have >= max_rev:
-        return have, False
+        return have, False, False
 
-    offset = int(partial.get(pid, 0))
+    saved_offset = int(partial.get(pid, 0))
+    resume_offset = (have // 10) * 10
+    offset = max(saved_offset, resume_offset)
     step = 10
     saw_block = False
+    reached_end = False
+    consecutive_empty = 0
+    pages_crawled_this_place = 0
+
+    target_url = review_page_url(purl, offset)
 
     while have < max_rev:
-        target_url = review_page_url(purl, offset)
         try:
             driver.get(target_url)
         except Exception as e:
-            print(f"   [Lỗi tải]: {e}")
+            print(f"   [Lỗi kết nối tải trang]: {e}")
             break
 
         time.sleep(random.uniform(*REQUEST_GAP))
         dismiss_popup(driver)
 
+        # Kiểm tra thử thách và hỗ trợ giải quyết ngay
         if is_blocked(driver):
-            saw_block = True
-            print("   [!] BỊ CHẶN: Phát hiện trang kiểm tra captcha/Cloudflare!")
-            break
+            resolved = handle_challenge_if_any(driver, max_wait=60)
+            if not resolved:
+                saw_block = True
+                break
 
-        driver.execute_script("window.scrollBy(0, 700);")
-        time.sleep(1.0)
+        # Cuộn trang tự nhiên để kích hoạt render review cards
+        human_scroll(driver)
         expand_read_more(driver)
 
         soup = BeautifulSoup(driver.page_source, "html.parser")
         page_revs = parse_reviews(soup, purl)
 
         if not page_revs:
-            # Không còn review ở offset này
+            # Kiểm tra xem có phải trang rỗng do hết review thật không
+            reached_end = True
             break
 
         new_count = 0
         for r in page_revs:
-            key = (r.get("reviewer_url"), r.get("title"), r.get("comment", "")[:50])
+            key = (r.get("reviewer_url"), r.get("title"), r.get("comment", "")[:60])
             if key not in seen:
                 seen.add(key)
                 all_reviews.append(r)
@@ -350,21 +502,54 @@ def crawl_place(driver, place, all_reviews, partial):
                     break
 
         if new_count == 0:
-            # Đã lặp lại toàn bộ review
-            break
+            consecutive_empty += 1
+            if consecutive_empty >= 3:
+                # 3 trang liên tiếp không có review mới -> kết thúc địa điểm
+                reached_end = True
+                break
+        else:
+            consecutive_empty = 0
 
         offset += step
         partial[pid] = offset
+
+        # Lưu an toàn vào file dữ liệu gốc
         save_json(OUTPUT_FILE, all_reviews)
         save_json(PARTIAL_FILE, partial)
 
-    return have, saw_block
+        pages_crawled_this_place += 1
+        if pages_crawled_this_place % PAGE_BREATHE_INTERVAL == 0:
+            breathe_pause = random.uniform(8.0, 15.0)
+            print(f"   ... Nhịp thở tự nhiên {breathe_pause:.1f}s để giữ an toàn IP ...")
+            time.sleep(breathe_pause)
+
+        # Chuẩn bị URL cho trang kế tiếp: Ưu tiên link từ nút Next
+        next_url = find_next_page_url(driver)
+        if next_url:
+            target_url = next_url
+        else:
+            target_url = review_page_url(purl, offset)
+
+    if reached_end:
+        # Chỉ đánh dấu cạn kiệt nếu đã cào được review (>0) hoặc điểm này thực tế trên web rất ít review (<= 10)
+        real_cnt = int(place.get("review_count", 0) or 0)
+        if have > 0 or real_cnt <= 10:
+            exhausted_set.add(pid)
+        partial.pop(pid, None)
+
+    return have, saw_block, reached_end
 
 
 def main():
-    print("=" * 75)
-    print("CHƯƠNG TRÌNH THU THẬP BỔ SUNG REVIEW CỐ ĐÔ HUẾ (CASE STUDY HUET)")
-    print("=" * 75)
+    parser = argparse.ArgumentParser(description="Specialized Hue Reviews Crawler (Anti-Blocking System)")
+    parser.add_argument("--limit-places", type=int, default=0, help="Giới hạn số địa điểm cào (0 = không giới hạn)")
+    parser.add_argument("--category", type=str, default="all", choices=["all", "attraction", "hotel", "cafe", "restaurant"], help="Lọc danh mục cào")
+    parser.add_argument("--headless", action="store_true", help="Chạy ẩn (khuyên dùng có giao diện để dễ xác minh)")
+    args = parser.parse_args()
+
+    print("=" * 80)
+    print("CHƯƠNG TRÌNH THU THẬP BỔ SUNG REVIEW CỐ ĐÔ HUẾ (ANTI-BLOCKING PRO)")
+    print("=" * 80)
 
     if not os.path.exists(TARGETS_FILE):
         print(f"[LỖI] Không tìm thấy file mục tiêu: {TARGETS_FILE}")
@@ -374,69 +559,93 @@ def main():
         targets_data = json.load(f)
 
     attractions = targets_data.get("attractions", [])
+    hotels = targets_data.get("hotels", [])
+    cafes = targets_data.get("cafes", [])
     restaurants = targets_data.get("restaurants", [])
     
-    # Ưu tiên cào 29 điểm tham quan trước, sau đó tới các nhà hàng
-    queue = attractions + restaurants
-    print(f"Tổng số địa điểm cần cào: {len(queue)} (29 Attractions + {len(restaurants)} Restaurants)")
+    if args.category == "attraction":
+        queue = attractions
+    elif args.category == "hotel":
+        queue = hotels
+    elif args.category == "cafe":
+        queue = cafes
+    elif args.category == "restaurant":
+        queue = restaurants
+    else:
+        queue = attractions + hotels + cafes + restaurants
+
+    print(f"Tổng số địa điểm mục tiêu: {len(queue)} ({len(attractions)} Attractions + {len(hotels)} Hotels + {len(cafes)} Cafes + {len(restaurants)} Restaurants)")
 
     all_reviews = load_json(OUTPUT_FILE, [])
-    done_places = set(load_json(PROGRESS_FILE, []))
     partial = load_json(PARTIAL_FILE, {})
+    exhausted_set = set(load_json(EXHAUSTED_FILE, []))
 
-    print(f"-> Đã có sẵn: {len(all_reviews):,} review từ {len(done_places)} địa điểm đã hoàn thành.")
+    have_by_url = {}
+    for r in all_reviews:
+        u = r.get("place_url")
+        if u:
+            have_by_url[u] = have_by_url.get(u, 0) + 1
 
-    driver = make_driver()
+    print(f"-> Dữ liệu hiện có: {len(all_reviews):,} reviews từ {len(have_by_url)} địa điểm trong {OUTPUT_FILE}.")
+
+    driver = make_driver(headless=args.headless)
 
     try:
         processed = 0
         for idx, place in enumerate(queue, 1):
+            if args.limit_places > 0 and processed >= args.limit_places:
+                print(f"\n[DỪNG THEO HẠN MỨC]: Đã cào đủ {args.limit_places} địa điểm cho phiên này.")
+                break
+
             purl = place["url"]
             pid = place_id_from_url(purl)
             name = place["name"]
-            cat = place["category"]
+            cat = place.get("category", "place")
             quota = get_target_quota(place)
+            have = have_by_url.get(purl, 0)
 
-            if pid in done_places or purl in done_places:
+            # Bỏ qua nếu đã đạt hạn mức
+            if have >= quota:
                 continue
 
-            print(f"\n[{idx}/{len(queue)}] [{cat.upper()}] {name} (Mục tiêu: {quota} reviews)")
+            # Bỏ qua nếu đã cạn kiệt review
+            if pid in exhausted_set:
+                continue
 
-            have, blocked = crawl_place(driver, place, all_reviews, partial)
+            print(f"\n[{idx}/{len(queue)}] [{cat.upper()}] {name}")
+            print(f"   -> Đang có: {have}/{quota} reviews (Cần cào thêm tối đa: {quota - have})")
+
+            have, blocked, reached_end = crawl_place(driver, place, all_reviews, partial, exhausted_set)
+            have_by_url[purl] = have
 
             if blocked:
-                print(f"   [!] Nghỉ chống chặn {BLOCK_COOLDOWN[0]/60:.1f} phút...")
-                time.sleep(random.uniform(*BLOCK_COOLDOWN))
-                driver.quit()
-                driver = make_driver()
-                have, blocked = crawl_place(driver, place, all_reviews, partial)
+                print(f"   [!] Tạm hoãn {name} do gặp thử thách bảo mật chưa mở. Tự động chuyển địa điểm tiếp theo...")
+                time.sleep(15.0)
 
-            # Hoàn thành địa điểm này
-            partial.pop(pid, None)
-            done_places.add(pid)
-            save_json(PROGRESS_FILE, list(done_places))
-            save_json(PARTIAL_FILE, partial)
+            if reached_end or have >= quota:
+                partial.pop(pid, None)
+
             save_json(OUTPUT_FILE, all_reviews)
+            save_json(EXHAUSTED_FILE, list(exhausted_set))
+            save_json(PARTIAL_FILE, partial)
 
-            print(f"   -> Hoàn thành {name}: đã lấy {have} reviews. (Tổng toàn bộ Huế: {len(all_reviews):,})")
+            print(f"   -> Cập nhật {name}: hiện có {have} reviews. (Tổng toàn bộ Huế: {len(all_reviews):,})")
 
             processed += 1
-            if processed % REST_EVERY_N_PLACES == 0:
-                rest_time = random.uniform(*LONG_REST)
-                print(f"\n   ... Nghỉ giải lao chống bot {rest_time:.0f} giây ...")
-                time.sleep(rest_time)
+            # Nghỉ ngắn giữa các địa điểm
+            time.sleep(random.uniform(4.0, 8.0))
 
     except KeyboardInterrupt:
         print("\n[DỪNG THỦ CÔNG] Đang lưu tiến độ an toàn...")
     finally:
         save_json(OUTPUT_FILE, all_reviews)
-        save_json(PROGRESS_FILE, list(done_places))
+        save_json(EXHAUSTED_FILE, list(exhausted_set))
         save_json(PARTIAL_FILE, partial)
         try:
             driver.quit()
         except Exception:
             pass
-        print(f"\n✅ ĐÃ HOÀN TẤT PHIÊN CRAWL: Tổng cộng {len(all_reviews):,} review đã được lưu tại {OUTPUT_FILE}")
+        print(f"\n✅ ĐÃ LƯU TIẾN ĐỘ AN TOÀN: Tổng cộng {len(all_reviews):,} review trong {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

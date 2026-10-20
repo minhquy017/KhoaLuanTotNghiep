@@ -1446,4 +1446,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     mapStudio.panTo(lat, lng, 16);
   };
 
+  /**
+   * Điều hướng và vẽ lộ trình trực tiếp trên bản đồ từ vị trí người dùng đến POI đích
+   */
+  window.navigateToDestination = (destLat, destLng, destName = '', destAddress = '') => {
+    if (!destLat || !destLng) {
+      alert('Địa điểm này chưa có tọa độ chính xác để chỉ đường.');
+      return;
+    }
+
+    // 1. Tự động mở bảng bản đồ nếu đang bị ẩn
+    showMapPanel(true);
+
+    // 2. Đóng popup hiện tại để tránh che khuất tuyến đường
+    if (mapStudio.map) {
+      mapStudio.map.closePopup();
+    }
+
+    // 3. Đóng ngăn chi tiết (nếu đang mở)
+    closePoiDetail();
+
+    // 4. Xác định điểm xuất phát: Vị trí người dùng (GPS) hoặc mặc định Cầu Tràng Tiền (Trung tâm Huế)
+    const origin = mapStudio.userLocation || {
+      lat: 16.4674,
+      lng: 107.5905,
+      name: 'Cầu Tràng Tiền (Trung tâm Huế)'
+    };
+
+    const destination = {
+      lat: parseFloat(destLat),
+      lng: parseFloat(destLng),
+      name: destName || 'Điểm đến',
+      address: destAddress || ''
+    };
+
+    // 5. Vẽ tuyến đường thực tế qua OSRM và hiển thị Banner điều hướng
+    mapStudio.drawNavigationRoute(origin, destination, 'driving');
+  };
+
 });

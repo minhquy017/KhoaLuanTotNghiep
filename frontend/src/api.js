@@ -37,7 +37,7 @@ export class TourismApiClient {
   static async generateItinerary(numDays = 2, preferredDishes = [], tripType = 'Couples', userLat = null, userLng = null) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
       const payload = {
         num_days: parseInt(numDays, 10),
@@ -77,7 +77,7 @@ export class TourismApiClient {
   static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
       const payload = { query, locality };
       if (userLat !== null && userLng !== null) {
@@ -100,7 +100,7 @@ export class TourismApiClient {
         return await res.json();
       }
     } catch (err) {
-      console.info('Backend unavailable, using spatial conversational fallback:', err);
+      console.info('Backend unavailable or timed out, using spatial conversational fallback:', err);
     }
 
     // Client-side Fallback Chat
@@ -370,18 +370,80 @@ export class TourismApiClient {
       };
     }
 
-    // 2. Tra cứu quán ăn / địa điểm ẩm thực
-    if (q.includes('bún bò') || q.includes('ăn gì') || q.includes('quán ăn') || q.includes('ẩm thực') || q.includes('cơm hến') || q.includes('bánh bèo')) {
+    // 2. Tra cứu quán Bún bò Huế
+    if (q.includes('bún bò') || q.includes('bun bo')) {
       const places = [
+        { name: "Quan Cam - Bun Bo Hue", latitude: 16.466637, longitude: 107.59296, category: "Restaurant", address: "38 Trần Cao Vân, TP. Huế" },
         { name: "Bún bò Huế Bà Tuyết", latitude: 16.4628, longitude: 107.5852, category: "Restaurant", address: "47 Nguyễn Công Trứ, TP. Huế" },
-        { name: "Quán Hạnh - Bánh bèo, nậm, lọc", latitude: 16.4655, longitude: 107.5921, category: "Restaurant", address: "11 Phù Đổng Thiên Vương, TP. Huế" },
-        { name: "Cơm hến Hoa Đông", latitude: 16.4784, longitude: 107.5933, category: "Restaurant", address: "64 kiệt 7 Ưng Bình, Vỹ Dạ, TP. Huế" },
-        { name: "Bánh bèo Bà Đỏ", latitude: 16.4735, longitude: 107.6012, category: "Restaurant", address: "8 Nguyễn Bỉnh Khiêm, TP. Huế" }
+        { name: "BUN BÒ HUẾ SEN RESTAURANT", latitude: 16.470995, longitude: 107.596176, category: "Restaurant", address: "69 Võ Thị Sáu, TP. Huế" },
+        { name: "Bún bò Huế Mụ Rơi", latitude: 16.4741, longitude: 107.5795, category: "Restaurant", address: "40 Nguyễn Chí Diểu, TP. Huế" },
+        { name: "Bún bò O Cương Chú Điệp", latitude: 16.4619, longitude: 107.5898, category: "Restaurant", address: "6 Trần Thúc Nhẫn, TP. Huế" }
       ];
 
       return {
         status: 'success',
-        answer: `Ở Huế có rất nhiều quán ẩm thực truyền thống trứ danh:\n\n• **Bún bò Huế Bà Tuyết** (Nguyễn Công Trứ): Nước dùng đậm đà hương sả ruốc, thịt bắp hoa giòn ngọt.\n• **Quán Hạnh** (Phù Đổng Thiên Vương): Đầy đủ các loại bánh bèo chén tôm chấy, bánh nậm mướt mát và bánh khoái giòn rụm.\n• **Cơm hến Hoa Đông** (Cồn Hến): Quán cơm hến gia truyền lâu đời bậc nhất Vỹ Dạ.\n\nBạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!`,
+        answer: `Dạ, nếu bạn muốn thưởng thức **Bún bò Huế** ngon và chuẩn vị nhất tại Cố Đô Huế, em xin gợi ý các quán trứ danh được du khách đánh giá cao nhất:\n\n• **Bún bò Huế Bà Tuyết** (Nguyễn Công Trứ): Nước dùng đậm đà hương sả ruốc, thịt bắp hoa giòn ngọt và chả cua thơm béo.\n• **Quán Cẩm - Bún bò Huế** (Trần Cao Vân): Quán bún bò lâu đời nức tiếng, nước lèo ngọt thanh từ xương hầm tự nhiên.\n• **Bún bò Huế Sen** (Võ Thị Sáu): Không gian sạch sẽ, tô bún đầy đặn giò gân bắp đậm đà hương vị Huế.\n• **Bún bò Huế Mụ Rơi** (Nguyễn Chí Diểu): Quán mộc mạc mang phong vị truyền thống thân thuộc của người dân Cố Đô.\n\nBạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!`,
+        matched_places: places
+      };
+    }
+
+    // 2b. Tra cứu Cơm hến / Bún hến
+    if (q.includes('cơm hến') || q.includes('com hen') || q.includes('bún hến') || q.includes('bun hen')) {
+      const places = [
+        { name: "Cơm hến Hoa Đông", latitude: 16.4784, longitude: 107.5933, category: "Restaurant", address: "64 kiệt 7 Ưng Bình, Vỹ Dạ, TP. Huế" },
+        { name: "Cơm hến Đập Đá", latitude: 16.4712, longitude: 107.5985, category: "Restaurant", address: "1 Hàn Mặc Tử, Vỹ Dạ, TP. Huế" },
+        { name: "Cơm hến Quán Nhỏ", latitude: 16.4641, longitude: 107.5892, category: "Restaurant", address: "28 Phạm Hồng Thái, TP. Huế" }
+      ];
+
+      return {
+        status: 'success',
+        answer: `Dạ, nhắc đến **Cơm hến & Bún hến** - món ăn dân dã nồng nàn vị cay nồng đặc trưng của Huế, bạn nhất định không nên bỏ lỡ:\n\n• **Cơm hến Hoa Đông** (Cồn Hến, Vỹ Dạ): Quán cơm hến gia truyền lâu đời bậc nhất xứ Huế, chuẩn vị ruốc ớt cay nồng và tóp mỡ giòn rụm.\n• **Cơm hến Đập Đá** (1 Hàn Mặc Tử): Điểm ăn sáng quen thuộc ven sông Như Ý với hến tươi ngọt.\n• **Cơm hến Quán Nhỏ** (28 Phạm Hồng Thái): Cơm hến, bún hến và mì hến đậm đà, giá cả rất bình dân.\n\nBạn có thể nhấp vào các nút bên dưới để ghim vị trí trên bản đồ nhé!`,
+        matched_places: places
+      };
+    }
+
+    // 2c. Tra cứu Bánh bèo, nậm, lọc, bánh khoái
+    if (q.includes('bánh bèo') || q.includes('banh beo') || q.includes('bánh nậm') || q.includes('bánh lọc') || q.includes('bánh khoái') || q.includes('banh khoai')) {
+      const places = [
+        { name: "Quán Hạnh - Bánh bèo, nậm, lọc", latitude: 16.4655, longitude: 107.5921, category: "Restaurant", address: "11 Phù Đổng Thiên Vương, TP. Huế" },
+        { name: "Bánh bèo Bà Đỏ", latitude: 16.4735, longitude: 107.6012, category: "Restaurant", address: "8 Nguyễn Bỉnh Khiêm, TP. Huế" },
+        { name: "Bánh bèo Chi", latitude: 16.4601, longitude: 107.5975, category: "Restaurant", address: "52 Lê Viết Lượng, TP. Huế" }
+      ];
+
+      return {
+        status: 'success',
+        answer: `Dạ, để thưởng thức các món **Bánh đặc sản Huế** (bánh bèo, nậm, lọc, bánh khoái), đây là những địa chỉ nổi tiếng nhất:\n\n• **Quán Hạnh** (Phù Đổng Thiên Vương): Đầy đủ mẹt bánh bèo chén tôm chấy, bánh nậm mướt mát và bánh khoái giòn rụm.\n• **Bánh bèo Bà Đỏ** (Nguyễn Bỉnh Khiêm): Nổi tiếng với bánh bèo tôm cháy thơm lừng và nem lụi nướng than hoa.\n• **Bánh bèo Chi** (Lê Viết Lượng): Quán bánh khay gia truyền bình dị, nước mắm ớt ngọt cay dịu đúng điệu xứ Huế.\n\nBạn có thể bấm vào các nút bên dưới để xem đường đi trên bản đồ nhé!`,
+        matched_places: places
+      };
+    }
+
+    // 2d. Tra cứu Chè Huế
+    if (q.includes('chè') || q.includes('che ')) {
+      const places = [
+        { name: "Chè Hẻm Huế", latitude: 16.4648, longitude: 107.5901, category: "Restaurant", address: "1 kiệt 29 Hùng Vương, TP. Huế" },
+        { name: "Chè Cung Đình Huế 20 Món", latitude: 16.4682, longitude: 107.5912, category: "Restaurant", address: "Lê Lợi, TP. Huế" },
+        { name: "Chè Mụ Linh", latitude: 16.4715, longitude: 107.5884, category: "Restaurant", address: "Nguyễn Huệ, TP. Huế" }
+      ];
+
+      return {
+        status: 'success',
+        answer: `Dạ, thưởng thức **Chè Cố Đô Huế** ngọt bùi thanh mát, bạn đừng bỏ qua những địa chỉ trứ danh:\n\n• **Chè Hẻm Huế** (Hùng Vương): Quán chè huyền thoại với món chè bột lọc bọc thịt heo quay độc nhất vô nhị.\n• **Chè Cung Đình Huế 20 Món** (Lê Lợi): Đa dạng các loại chè hạt sen nhãn lồng, chè bắp, chè khoai tía...\n• **Chè Mụ Linh** (Nguyễn Huệ): Quán chè quen thuộc của người dân Huế với hương vị ngọt thanh nhẹ nhàng.\n\nBạn có thể bấm vào các nút bên dưới để xem vị trí nhé!`,
+        matched_places: places
+      };
+    }
+
+    // 2e. Tra cứu ẩm thực chung chung (ăn gì, quán ăn, ẩm thực)
+    if (q.includes('ăn gì') || q.includes('quán ăn') || q.includes('ẩm thực') || q.includes('món ngon') || q.includes('dac san')) {
+      const places = [
+        { name: "Bún bò Huế Bà Tuyết", latitude: 16.4628, longitude: 107.5852, category: "Restaurant", address: "47 Nguyễn Công Trứ, TP. Huế" },
+        { name: "Quán Hạnh - Bánh bèo, nậm, lọc", latitude: 16.4655, longitude: 107.5921, category: "Restaurant", address: "11 Phù Đổng Thiên Vương, TP. Huế" },
+        { name: "Cơm hến Hoa Đông", latitude: 16.4784, longitude: 107.5933, category: "Restaurant", address: "64 kiệt 7 Ưng Bình, Vỹ Dạ, TP. Huế" },
+        { name: "Chè Hẻm Huế", latitude: 16.4648, longitude: 107.5901, category: "Restaurant", address: "1 kiệt 29 Hùng Vương, TP. Huế" }
+      ];
+
+      return {
+        status: 'success',
+        answer: `Ở Huế có một nền ẩm thực vô cùng đặc sắc và phong phú, nếu có dịp ghé thăm bạn nên thử các món đặc sản tiêu biểu sau:\n\n• **Bún bò Huế Bà Tuyết** (Nguyễn Công Trứ): Nước dùng đậm đà hương sả ruốc, thịt bắp hoa giòn ngọt.\n• **Quán Hạnh** (Phù Đổng Thiên Vương): Đầy đủ các loại bánh bèo chén tôm chấy, bánh nậm mướt mát và bánh khoái giòn rụm.\n• **Cơm hến Hoa Đông** (Cồn Hến): Quán cơm hến gia truyền lâu đời bậc nhất Vỹ Dạ.\n• **Chè Hẻm** (Hùng Vương): Thưởng thức chè bột lọc heo quay và chè hạt sen trứ danh.\n\nBạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!`,
         matched_places: places
       };
     }

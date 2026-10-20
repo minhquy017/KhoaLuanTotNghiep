@@ -3071,8 +3071,10 @@ button, input, select, textarea {
   border-radius: 7px;
   font-size: 0.72rem;
   font-weight: 600;
+  font-family: inherit;
   color: #1D4ED8;
   text-decoration: none;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;

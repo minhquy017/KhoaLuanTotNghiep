@@ -1,43 +1,130 @@
 \phan{PHẦN III. ĐỐI TƯỢNG, PHẠM VI VÀ PHƯƠNG PHÁP NGHIÊN CỨU}
 \label{phan:phuong-phap}
 
-\section*{1. Đối tượng và Thực trạng tập dữ liệu nghiên cứu}
-\addcontentsline{toc}{section}{1. Đối tượng và Thực trạng tập dữ liệu nghiên cứu}
+\section*{1. Đối tượng và Thực trạng các nguồn dữ liệu nghiên cứu}
+\addcontentsline{toc}{section}{1. Đối tượng và Thực trạng các nguồn dữ liệu nghiên cứu}
 
-\subsection*{1.1. Hiện trạng các nguồn dữ liệu thu thập}
-\addcontentsline{toc}{subsection}{1.1. Hiện trạng các nguồn dữ liệu thu thập}
+\subsection*{1.1. Hiện trạng đa nguồn dữ liệu và Quy mô tổng thể}
+\addcontentsline{toc}{subsection}{1.1. Hiện trạng đa nguồn dữ liệu và Quy mô tổng thể}
 
-Nghiên cứu sử dụng một hệ thống dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp giữa dữ liệu địa lý chính xác, kho dữ liệu nhận xét trải nghiệm thực tế và từ điển thực thể chuyên ngành. Nguồn dữ liệu thứ nhất bao gồm tập dữ liệu vị trí địa lý thu thập từ OpenStreetMap và Google Maps, cung cấp thông tin định danh, danh mục dịch vụ và tọa độ GPS chuẩn WGS84 cho 9.525 thực thể du lịch trên phạm vi các tỉnh thành trọng điểm của Việt Nam, trong đó trọng tâm đặc biệt là địa bàn thành phố Huế và tỉnh Thừa Thiên Huế.
+Nghiên cứu được thiết lập dựa trên một cơ sở dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp chặt chẽ giữa thông tin tọa độ không gian chính xác, kho ngữ liệu nhận xét trải nghiệm thực tế từ cộng đồng du khách và hệ thống từ điển ẩm thực chuẩn hóa. Toàn bộ cơ sở dữ liệu được cấu thành từ bốn nguồn dữ liệu thành phần:
 
-Nguồn dữ liệu thứ hai là kho ngữ liệu nhận xét du khách khổng lồ được trích xuất từ nền tảng du lịch TripAdvisor, bao gồm 1.692.415 bài đánh giá bằng văn bản của du khách trong và ngoài nước trong giai đoạn từ năm 2015 đến năm 2026. Mỗi bản ghi nhận xét chứa đựng các trường thông tin phong phú gồm mã định danh địa điểm, tiêu đề nhận xét, nội dung chi tiết, điểm đánh giá xếp hạng sao (từ 1 đến 5 sao), thời điểm đăng tải, và kiểu hình chuyến đi của du khách (đi gia đình, cặp đôi, nhóm bạn bè, công tác hoặc đi một mình).
+Nguồn dữ liệu thứ nhất là tập dữ liệu vị trí địa lý thu thập từ OpenStreetMap và Google Maps, cung cấp thông tin định danh, tên gọi chính thức, danh mục dịch vụ và cặp tọa độ địa lý WGS84 cho 9.525 thực thể du lịch trên phạm vi toàn quốc, trong đó trọng tâm khảo sát đặc biệt chuyên sâu là 610 địa điểm du lịch, ẩm thực và lưu trú phân bổ trên địa bàn thành phố Huế và các vùng di sản phụ cận thuộc tỉnh Thừa Thiên Huế.
 
-Nguồn dữ liệu thứ ba là Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer) do nghiên cứu tự xây dựng và chuẩn hóa, bao gồm 570 món ăn đặc sản tiêu biểu trên khắp ba miền đất nước, với sự tập trung sâu sắc vào hơn 60 món ăn truyền thống đặc trưng của xứ Huế như Bún bò Huế, Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Bánh khoái, Chè bột lọc heo quay, Nem lụi, Vả trộn, Tré Huế và Bún mắm nêm. Bộ từ điển đóng vai trò là một không gian thực thể chuẩn tắc để định danh và liên kết các món ăn xuất hiện rải rác trong văn bản nhận xét của du khách.
+Nguồn dữ liệu thứ hai là kho ngữ liệu nhận xét du khách khổng lồ được trích xuất từ nền tảng du lịch trực tuyến TripAdvisor~\cite{tripadvisor2024}, bao gồm 1.692.415 bài đánh giá bằng văn bản của du khách trong và ngoài nước trong giai đoạn từ năm 2015 đến năm 2026. Nhằm phục vụ trực tiếp cho bài toán thực tiễn tại Cố đô Huế, một tập dữ liệu chuyên sâu gồm 44.355 bài nhận xét thực tế đã được bóc tách toàn diện từ 500 địa điểm dịch vụ du lịch trọng điểm trên địa bàn thành phố Huế.
 
-Các thông số tổng hợp về quy mô lưu trữ và số lượng bản ghi của các tệp dữ liệu được thống kê định lượng tại Bảng \ref{tab:dataset-summary}.
+Nguồn dữ liệu thứ ba là Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer) do nghiên cứu tự xây dựng và chuẩn hóa, bao gồm 570 món ăn đặc sản tiêu biểu của cả ba miền đất nước, với sự tập trung sâu sắc vào hơn 60 món ăn truyền thống đặc trưng của xứ Huế như Bún bò Huế, Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Bánh khoái, Chè bột lọc heo quay, Nem lụi, Vả trộn, Tré Huế và Bún mắm nêm.
+
+Nguồn dữ liệu thứ tư là cấu trúc Đồ thị Tri thức Không gian (Spatial Knowledge Graph -- SKG) được mô hình hóa và liên kết tự động bằng thư viện NetworkX, đạt quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ ngữ nghĩa và không gian hình học.
+
+Các thông số tổng hợp về quy mô lưu trữ, số lượng bản ghi và định dạng cấu trúc của các nguồn dữ liệu thành phần được thống kê chi tiết tại Bảng \ref{tab:dataset-summary}.
 
 \begin{table}[htbp]
 \centering
-\caption{Tổng mục các nguồn dữ liệu gốc sử dụng trong nghiên cứu}
+\caption{Tổng mục các nguồn dữ liệu thành phần sử dụng trong nghiên cứu}
 \label{tab:dataset-summary}
 \small
 \begin{tabularx}{\textwidth}{l l r X}
 \hline
-\textbf{Nguồn dữ liệu} & \textbf{Định dạng} & \textbf{Số lượng bản ghi} & \textbf{Mô tả phạm vi nội dung} \\
+\textbf{Nguồn dữ liệu} & \textbf{Định dạng tệp} & \textbf{Quy mô bản ghi} & \textbf{Mô tả phạm vi và đặc trưng nội dung} \\
 \hline
-TripAdvisor Reviews & SQLite / JSON & 1.692.415 bài & Đánh giá trải nghiệm du khách (2015 -- 2026) \\
-OpenStreetMap / Maps & GeoJSON / CSV & 9.525 địa điểm & Tọa độ GPS, danh mục và địa chỉ thực thể \\
-Culinary Gazetteer & JSON / Từ điển & 570 món ăn & Danh mục thực đơn đặc sản chuẩn hóa \\
-Đồ thị Tri thức SKG & NetworkX GML & 9.525 nút / 90.948 cạnh & Đồ thị không gian và quan hệ ngữ nghĩa \\
+TripAdvisor Toàn quốc & SQLite / JSON & 1.692.415 bài & Ngữ liệu đánh giá trải nghiệm du khách (2015 -- 2026) \\
+TripAdvisor Huế & JSON / Danh sách & 44.355 bài & Đánh giá thực tế bóc tách tại 500 địa điểm ở Huế \\
+Địa điểm Du lịch Toàn quốc & GeoJSON / CSV & 8.921 thực thể & Tọa độ GPS, danh mục và địa chỉ đã làm sạch \\
+Địa điểm Du lịch tại Huế & GeoJSON / JSON & 610 thực thể & Thực thể du lịch, ẩm thực, lưu trú chuẩn hóa tại Huế \\
+Culinary Gazetteer & JSON / Cấu trúc & 570 món ăn & Từ điển thực đơn ẩm thực và biến thể nhận diện \\
+Đồ thị Tri thức Không gian & NetworkX / PKL & 9.525 nút / 90.948 cạnh & Đồ thị thực thể, topo lân cận và quan hệ thực đơn \\
 \hline
 \end{tabularx}
 \end{table}
 
-Từ số liệu tại Bảng \ref{tab:dataset-summary}, việc tổng hợp đa nguồn dữ liệu nhằm phục vụ hai mục đích phương pháp luận cốt lõi. Một mặt, dữ liệu tọa độ không gian cung cấp nền tảng hình học tuyệt đối để thiết lập các liên kết lân cận thực tế, loại trừ hoàn toàn nguy cơ sai lệch khoảng cách. Mặt khác, tập ngữ liệu hơn 1,69 triệu nhận xét đóng vai trò là nguồn tri thức xã hội sống động, cho phép mô hình bóc tách khẩu vị thực tế của du khách để làm giàu ngữ cảnh phục vụ các thuật toán gợi ý.
+Từ số liệu tại Bảng \ref{tab:dataset-summary}, việc kết hợp đa nguồn dữ liệu cho phép hệ thống khắc phục triệt để các hạn chế của từng nguồn đơn lẻ: dữ liệu bản đồ số bảo đảm tính chuẩn xác tuyệt đối về mặt tọa độ trắc địa, trong khi tập ngữ liệu hàng chục ngàn bài đánh giá cung cấp nguồn tri thức sống động về chất lượng dịch vụ và thị hiếu ẩm thực thực tế của du khách.
 
-\subsection*{1.2. Thống kê đặc trưng và Cơ cấu dữ liệu du lịch Huế}
-\addcontentsline{toc}{subsection}{1.2. Thống kê đặc trưng và Cơ cấu dữ liệu du lịch Huế}
+\subsection*{1.2. Giải phẫu cấu trúc tập dữ liệu 44.355 bài đánh giá thực tế tại Huế}
+\addcontentsline{toc}{subsection}{1.2. Giải phẫu cấu trúc tập dữ liệu 44.355 bài đánh giá thực tế tại Huế}
 
-Xét riêng trên địa bàn thành phố Huế và các khu vực di sản phụ cận, tập dữ liệu bao quát toàn diện các phân khúc dịch vụ du lịch then chốt. Sự phân bố danh mục các địa điểm du lịch tại Huế được trực quan hóa chi tiết trên Hình \ref{fig:hue-places-category}.
+Tập dữ liệu 44.355 bài nhận xét du khách tại Huế là nguồn tài nguyên cốt lõi phục vụ bài toán khai phá thực đơn ngầm và neo giữ ngữ cảnh cho mô hình ngôn ngữ lớn. Mỗi bản ghi nhận xét trong tệp dữ liệu được tổ chức theo một lược đồ cấu trúc thống nhất gồm tám trường thông tin thuộc tính chính:
+Trường \textit{place\_url} lưu trữ định danh URL chính thức của địa điểm trên TripAdvisor; trường \textit{reviewer\_url} lưu trữ định danh hồ sơ của du khách giúp theo dõi tính độc lập của người đánh giá; trường \textit{title} lưu trữ tiêu đề bài viết thể hiện cảm nhận ngắn gọn; trường \textit{comment} chứa toàn bộ nội dung nhận xét chi tiết bằng ngôn ngữ tự nhiên với độ dài trung bình 86 từ mỗi bài; trường \textit{reviews\_rating} phản ánh điểm đánh giá số học theo thang điểm 5 sao; trường \textit{trip\_type} phân loại kiểu hình chuyến đi; trường \textit{visit\_date} ghi nhận thời điểm du khách trải nghiệm thực tế; và trường \textit{language} xác định ngôn ngữ bài viết.
+
+Phân tích định lượng về phân bố điểm số đánh giá của tập ngữ liệu được tổng hợp chi tiết tại Bảng \ref{tab:rating-distribution}.
+
+\begin{table}[htbp]
+\centering
+\caption{Phân bố xếp hạng sao của 44.355 bài đánh giá du lịch thực tế tại Huế}
+\label{tab:rating-distribution}
+\small
+\begin{tabularx}{\textwidth}{l r r X}
+\hline
+\textbf{Mức xếp hạng (Rating)} & \textbf{Số lượng bài viết} & \textbf{Tỷ lệ phần trăm} & \textbf{Ý nghĩa đánh giá và phân cực cảm xúc} \\
+\hline
+5.0 sao (Tuyệt hảo) & 31.877 bài & 71,87\% & Trải nghiệm rất hài lòng, khen ngợi sâu sắc về món ăn và dịch vụ \\
+4.0 sao (Rất tốt) & 7.867 bài & 17,74\% & Trải nghiệm tích cực, đánh giá cao chất lượng tổng thể \\
+3.0 sao (Trung bình) & 2.747 bài & 6,19\% & Mức độ hài lòng vừa phải, có một số điểm chưa ưng ý \\
+2.0 sao (Kém) & 974 bài & 2,20\% & Trải nghiệm không tốt về giá cả, vệ sinh hoặc thời gian chờ \\
+1.0 sao (Rất tệ) & 890 bài & 2,00\% & Đánh giá tiêu cực, phản ánh sự thất vọng nghiêm trọng \\
+\hline
+\textbf{Tổng cộng} & \textbf{44.355 bài} & \textbf{100,00\%} & \textbf{Điểm đánh giá trung bình toàn tập đạt 4,51 / 5,0 sao} \\
+\hline
+\end{tabularx}
+\end{table}
+
+Các số liệu thống kê tại Bảng \ref{tab:rating-distribution} cho thấy một đặc tính thực nghiệm nổi bật: tỷ lệ bài đánh giá tích cực từ 4.0 sao trở lên chiếm tới 89,61\% tổng số bài nhận xét, đưa điểm trung bình toàn mạng lưới đạt mức ấn tượng 4,51 sao. Điều này khẳng định sức hấp dẫn mạnh mẽ của du lịch và ẩm thực Huế đối với du khách, đồng thời chứng minh rằng tập ngữ liệu có mật độ thông tin khen ngợi đặc sản rất dày đặc, tạo điều kiện thuận lợi để giải thuật khai phá thực đơn ngầm bóc tách các món ăn làm nên thương hiệu của từng quán ăn.
+
+Song song với xếp hạng sao, thông tin về kiểu hình chuyến đi của du khách cung cấp bức tranh rõ nét về hành vi lữ hành tại Cố đô, được thống kê định lượng tại Bảng \ref{tab:trip-type-distribution}.
+
+\begin{table}[htbp]
+\centering
+\caption{Phân bố kiểu hình chuyến đi của du khách trong tập dữ liệu nhận xét tại Huế}
+\label{tab:trip-type-distribution}
+\small
+\begin{tabularx}{\textwidth}{l r r X}
+\hline
+\textbf{Kiểu hình chuyến đi (Trip Type)} & \textbf{Số lượng lượt} & \textbf{Tỷ lệ phần trăm} & \textbf{Đặc trưng hành vi và nhu cầu trải nghiệm} \\
+\hline
+Cặp đôi (Couples) & 13.994 lượt & 31,55\% & Ưu tiên không gian lãng mạn, ẩm thực tinh tế và ngắm cảnh \\
+Nhóm bạn bè (Friends) & 6.427 lượt & 14,49\% & Ưu tiên ẩm thực đường phố, trải nghiệm sôi động và khám phá \\
+Gia đình (Family) & 4.281 lượt & 9,65\% & Chú trọng sự tiện lợi, an toàn, lịch trình thong thả và quán ăn lớn \\
+Đi một mình (Solo) & 2.766 lượt & 6,24\% & Khám phá văn hóa sâu sắc, linh hoạt di chuyển bằng xe máy \\
+Công tác (Business) & 368 lượt & 0,83\% & Thời gian lưu trú ngắn, yêu cầu vị trí gần trung tâm hội nghị \\
+Không khai báo / Khác & 16.519 lượt & 37,24\% & Du khách không cung cấp phân loại nhóm chuyến đi \\
+\hline
+\textbf{Tổng cộng} & \textbf{44.355 lượt} & \textbf{100,00\%} & \textbf{Bao phủ 500 địa điểm dịch vụ du lịch trọng điểm tại Huế} \\
+\hline
+\end{tabularx}
+\end{table}
+
+Từ Bảng \ref{tab:trip-type-distribution}, trong số các bản ghi có khai báo rõ kiểu hình chuyến đi, nhóm du khách đi theo cặp đôi và nhóm bạn bè chiếm tỷ trọng áp đảo (hơn 46\% tổng số). Thực tế này đặt ra yêu cầu hệ thống gợi ý lịch trình phải ưu tiên các chuỗi hành trình kết hợp hài hòa giữa tham quan di tích lịch sử ban ngày và trải nghiệm ẩm thực, phố đi bộ ven sông Hương vào buổi tối nhằm đáp ứng trúng thị hiếu của các phân khúc khách hàng chủ đạo.
+
+\subsection*{1.3. Thống kê đặc trưng và Cơ cấu 610 địa điểm du lịch tại Huế}
+\addcontentsline{toc}{subsection}{1.3. Thống kê đặc trưng và Cơ cấu 610 địa điểm du lịch tại Huế}
+
+Xét riêng trên địa bàn thành phố Huế và các vùng phụ cận, tập dữ liệu bao gồm 610 thực thể địa lý đã được chuẩn hóa toàn diện về tọa độ GPS và địa chỉ hành chính. Sự phân bố số lượng cơ sở dịch vụ theo từng phân loại danh mục và theo đơn vị hành chính được tổng hợp tại Bảng \ref{tab:hue-places-distribution}.
+
+\begin{table}[htbp]
+\centering
+\caption{Cơ cấu phân loại và phân bố địa giới của 610 địa điểm du lịch tại Huế}
+\label{tab:hue-places-distribution}
+\small
+\begin{tabularx}{\textwidth}{l r X}
+\hline
+\textbf{Tiêu chí phân loại địa điểm} & \textbf{Số lượng thực thể} & \textbf{Phạm vi không gian và địa danh tiêu biểu} \\
+\hline
+\textit{Phân loại theo danh mục dịch vụ:} & & \\
+Ẩm thực và Nhà hàng (Restaurant) & 477 cơ sở & Quán bún bò, bánh bèo chén, cơm hến, nhà hàng cung đình \\
+Cơ sở lưu trú và Khách sạn (Hotel) & 104 cơ sở & Khách sạn trung tâm, homestay bờ sông, resort ven biển \\
+Điểm tham quan danh thắng (Attraction) & 29 địa danh & Đại Nội, Chùa Thiên Mụ, Lăng Tự Đức, Lăng Khải Định, Đồi Vọng Cảnh \\
+\hline
+\textit{Phân loại theo địa giới hành chính:} & & \\
+Quận Thuận Hóa & 388 địa điểm & Khu vực bờ Nam sông Hương, phố đi bộ, trung tâm dịch vụ mới \\
+Quận Phú Xuân & 183 địa điểm & Khu vực bờ Bắc sông Hương, Quần thể Kinh thành, Chợ Đông Ba \\
+Các huyện thị di sản phụ cận & 39 địa điểm & Lăng Cô (Phú Lộc), Cầu ngói Thanh Toàn, Đầm Chuồn, Phước Tích \\
+\hline
+\textbf{Tổng số địa điểm tại Huế} & \textbf{610 địa điểm} & \textbf{100\% đã chuẩn hóa tọa độ GPS theo hệ quy chiếu WGS84} \\
+\hline
+\end{tabularx}
+\end{table}
+
+Số liệu tại Bảng \ref{tab:hue-places-distribution} làm sáng tỏ sự phân hóa địa lý sâu sắc của dịch vụ du lịch Huế: Quận Thuận Hóa ở bờ Nam sông Hương tập trung tới 63,61\% tổng số cơ sở dịch vụ (chủ yếu là các nhà hàng, quán cà phê hiện đại và khách sạn cao tầng), trong khi Quận Phú Xuân ở bờ Bắc là cái nôi di sản chiếm 30,00\% với mật độ dày đặc của các di tích triều Nguyễn và các quán ẩm thực truyền thống lâu đời. Sự phân bố này được trực quan hóa chi tiết thông qua biểu đồ cơ cấu tại Hình \ref{fig:hue-places-category}.
 
 \begin{figure}[htbp]
 \centering
@@ -46,9 +133,7 @@ Xét riêng trên địa bàn thành phố Huế và các khu vực di sản ph�
 \label{fig:hue-places-category}
 \end{figure}
 
-Từ biểu đồ phân bố tại Hình \ref{fig:hue-places-category}, có thể thấy cơ cấu dịch vụ du lịch tại Huế có sự cân bằng cao giữa ba nhóm trụ cột: dịch vụ ẩm thực (nhà hàng, quán ăn, quán cà phê truyền thống) chiếm tỷ trọng lớn nhất với khoảng 42\%, tiếp nối bởi các di tích văn hóa lịch sử và điểm tham quan danh thắng chiếm 33\%, và các cơ sở lưu trú (khách sạn, homestay, resort) chiếm 25\%. Sự đan xen mật thiết về mặt địa lý giữa các điểm di tích cổ kính và các hàng quán ẩm thực dân dã trong lòng đô thị Huế khẳng định tính cấp thiết của việc áp dụng bán kính lân cận không gian nhằm kết nối linh hoạt giữa tham quan và ăn uống.
-
-Song song với cơ cấu địa điểm, kết quả khai phá từ 1,69 triệu bài nhận xét du khách đối với ẩm thực Huế đã bóc tách được tần suất nhắc đến của các món ăn đặc sản tiêu biểu, được tổng hợp trên Hình \ref{fig:top10-dishes-hue}.
+Từ Hình \ref{fig:hue-places-category}, sự áp đảo của phân khúc ẩm thực (chiếm gần 80\% tổng số cơ sở dịch vụ) khẳng định vị thế của Huế như một kinh đô ẩm thực hàng đầu Việt Nam. Đi sâu vào phân tích 44.355 bài nhận xét, kết quả khai phá dữ liệu đã bóc tách được tần suất nhắc đến của các món ăn đặc sản tiêu biểu nhất tại Huế, được tổng hợp trên biểu đồ Hình \ref{fig:top10-dishes-hue}.
 
 \begin{figure}[htbp]
 \centering
@@ -57,23 +142,73 @@ Song song với cơ cấu địa điểm, kết quả khai phá từ 1,69 triệ
 \label{fig:top10-dishes-hue}
 \end{figure}
 
-Biểu đồ tại Hình \ref{fig:top10-dishes-hue} làm sáng tỏ bức tranh khẩu vị thực tế của du khách khi đến Huế: Bún bò Huế dẫn đầu tuyệt đối với hàng chục nghìn lượt đề cập tích cực, theo sau sát sao bởi Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc và Bánh khoái. Sự định lượng này cung cấp cơ sở dữ liệu khách quan để thuật toán gợi ý ưu tiên đề xuất đúng các món ăn mang tính biểu tượng văn hóa cao nhất cho du khách lần đầu đặt chân đến Cố đô.
+Quan sát Hình \ref{fig:top10-dishes-hue}, Bún bò Huế dẫn đầu áp đảo về số lượt bảo chứng với hàng chục ngàn lượt nhắc đến tích cực, tiếp theo sau là Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Bánh khoái, Nem lụi và Chè bột lọc heo quay. Sự định lượng khách quan này cung cấp cơ sở dữ liệu xác thực để hệ thống tự động ưu tiên gợi ý đúng những món ăn mang tính quốc hồn quốc túy của Cố đô khi du khách đưa ra các câu hỏi mở về ẩm thực.
 
-\section*{2. Quy trình tiền xử lý và Làm sạch dữ liệu}
-\addcontentsline{toc}{section}{2. Quy trình tiền xử lý và Làm sạch dữ liệu}
+\subsection*{1.4. Bộ từ điển Ẩm thực Việt Nam và Đặc sản Cố đô Huế}
+\addcontentsline{toc}{subsection}{1.4. Bộ từ điển Ẩm thực Việt Nam và Đặc sản Cố đô Huế}
 
-\subsection*{2.1. Khử trùng lặp thực thể và Chuẩn hóa tọa độ địa lý}
-\addcontentsline{toc}{subsection}{2.1. Khử trùng lặp thực thể và Chuẩn hóa tọa độ địa lý}
+Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer gồm 570 món ăn) đóng vai trò là không gian nhãn chuẩn tắc để thuật toán thực thi liên kết thực thể mờ (Entity Linking). Mỗi bản ghi món ăn trong từ điển được cấu trúc chặt chẽ gồm: tên định danh chuẩn hóa tiếng Việt, danh sách các tên gọi biến thể viết tắt hoặc không dấu (Aliases/Synonyms), nhóm phân loại món (món nước, món bánh, món cơm, chè tráng miệng), và danh sách từ khóa kích hoạt nhận diện. Bảng \ref{tab:culinary-sample} trích dẫn một số món ăn tiêu biểu của Huế trong bộ từ điển kèm các biến thể đối sánh chuỗi.
 
-Do dữ liệu địa điểm được thu thập từ nhiều nguồn cấp khác nhau, hiện tượng trùng lặp bản ghi và sai lệch định dạng tên gọi xảy ra phổ biến (ví dụ: ``Đại Nội Huế'', ``Hoàng Thành Huế'' hay ``Hue Imperial City'' thực chất đều chỉ một thực thể duy nhất). Để hợp nhất thực thể chuẩn xác, nghiên cứu áp dụng quy trình khử trùng lặp hai giai đoạn:
+\begin{table}[htbp]
+\centering
+\caption{Mẫu cấu trúc định danh một số món đặc sản Huế trong Bộ từ điển ẩm thực}
+\label{tab:culinary-sample}
+\small
+\begin{tabularx}{\textwidth}{l l X c}
+\hline
+\textbf{Tên món ăn chuẩn hóa} & \textbf{Phân loại ẩm thực} & \textbf{Danh sách các tên gọi biến thể (Aliases)} & \textbf{Số quán phục vụ} \\
+\hline
+Bún bò Huế & Món sợi, nước & bun bo hue, bún giò heo, bún bò giò chả, bún bò cua & 184 quán \\
+Cơm hến & Món cơm truyền thống & com hen, com hen hoa dong, cơm hến cồn hến & 62 quán \\
+Bánh bèo chén & Bánh truyền thống & banh beo, banh beo chen, bánh bèo khay & 78 quán \\
+Bánh khoái & Món chiên, ăn vặt & banh khoai, banh khoai xu hue, bánh khoái hạnh & 54 quán \\
+Chè bột lọc heo quay & Chè, tráng miệng & che heo quay, che bot loc heo quay, chè hẻm & 36 quán \\
+Bánh bột lọc gói & Bánh truyền thống & banh loc, banh bot loc la chuoi, bánh lọc trần & 92 quán \\
+\hline
+\end{tabularx}
+\end{table}
 
-Giai đoạn thứ nhất là lọc không gian thô: Hệ thống nhóm các thực thể có khoảng cách trắc địa Haversine $d(u, v) < 50\text{ mét}$ vào cùng một cụm ứng viên.
-Giai đoạn thứ hai là so khớp ngữ nghĩa chuỗi mờ kết hợp chuẩn hóa Unicode: Tên gọi của các địa điểm trong cùng cụm được chuyển về chữ thường, loại bỏ các ký tự đặc biệt, giải mã thực thể HTML và tính toán chỉ số tương đồng Levenshtein. Nếu hệ số tương đồng vượt ngưỡng 0,85, hai thực thể được sáp nhập thành một nút duy nhất, bảo lưu tọa độ GPS chuẩn xác nhất và hợp nhất toàn bộ các bài nhận xét liên quan. Kết quả đã loại bỏ thành công hơn 1.200 bản ghi trùng lặp, bảo đảm tính toàn vẹn của đồ thị.
+Thông qua bảng đối soát tại Bảng \ref{tab:culinary-sample}, việc thiết lập danh sách biến thể phong phú cho phép hệ thống nhận diện chính xác món ăn ngay cả khi du khách gõ sai chính tả, gõ tiếng Việt không dấu hoặc sử dụng các từ ngữ địa phương dân dã.
 
-\subsection*{2.2. Phân mảnh văn bản phân tử (Atomic Chunking Pipeline)}
-\addcontentsline{toc}{subsection}{2.2. Phân mảnh văn bản phân tử (Atomic Chunking Pipeline)}
+\section*{2. Quy trình thu thập và Tiền xử lý dữ liệu}
+\addcontentsline{toc}{section}{2. Quy trình thu thập và Tiền xử lý dữ liệu}
 
-Trong các bài nhận xét của du khách, một văn bản có thể kéo dài hàng nghìn từ và đề cập đến nhiều khía cạnh khác nhau như chất lượng món ăn, thái độ phục vụ của nhân viên, giá cả và vị trí cảnh quan. Nếu áp dụng kỹ thuật cắt đoạn cố định theo độ dài ký tự của Naive RAG, một câu nhận xét về món ăn có thể bị cắt làm đôi, làm phân mảnh ngữ cảnh và giảm độ chính xác của mô hình nhúng vector.
+\subsection*{2.1. Quy trình Thu thập dữ liệu Tự động (Automated Crawling Pipeline)}
+\addcontentsline{toc}{subsection}{2.1. Quy trình Thu thập dữ liệu Tự động (Automated Crawling Pipeline)}
+
+Để xây dựng tập dữ liệu 44.355 bài nhận xét tại 500 địa điểm ở Huế từ TripAdvisor, một hệ thống cào dữ liệu tự động chuyên biệt (Web Scraping Pipeline) đã được nghiên cứu và phát triển bằng ngôn ngữ Python. Quy trình thu thập vận hành qua bốn giai đoạn xử lý kỹ thuật nghiêm ngặt:
+
+Giai đoạn 1 -- Khám phá và Định danh mục tiêu (Target Discovery): Hệ thống phân tích cấu trúc cây thư mục địa lý của TripAdvisor để bóc tách danh sách 500 liên kết URL đại diện cho các nhà hàng, quán ăn, khách sạn và di tích lịch sử trên địa bàn Thừa Thiên Huế.
+
+Giai đoạn 2 -- Thu thập đa luồng có kiểm soát (Rate-limited Multithreaded Crawling): Nhằm tuân thủ chuẩn mực truy cập và ngăn ngừa nguy cơ bị chặn địa chỉ IP (IP Rate-limiting), hệ thống tích hợp cơ chế xoay vòng ngẫu nhiên tập hợp User-Agent Header mô phỏng hành vi của nhiều trình duyệt phổ biến. Đồng thời, một khoảng thời gian chờ ngẫu nhiên (Jitter Delay) từ 1,5 đến 3,0 giây được áp dụng giữa các lượt gửi yêu cầu HTTP.
+
+Giai đoạn 3 -- Xử lý phân trang động (Dynamic Pagination Handling): Đối với mỗi địa điểm, bộ thu thập tự động đọc thông số tổng số bài nhận xét hiện có, tính toán số trang phân đoạn và tuần tự gửi yêu cầu trích xuất toàn bộ các khối nhận xét con (mỗi trang chứa 10 đến 15 bài) cho đến khi thu thập cạn kiệt toàn bộ lịch sử đánh giá của địa điểm đó.
+
+Giai đoạn 4 -- Ghi vết Checkpoint và Tự phục hồi lỗi (Fault-tolerant Checkpointing): Nhằm bảo đảm tính toàn vẹn của dữ liệu trong các phiên thu thập kéo dài nhiều ngày, hệ thống định kỳ kết xuất trạng thái tiến trình vào tệp JSON checkpoint sau mỗi 50 bài đánh giá mới thu thập. Khi xảy ra sự cố đứt kết nối mạng hoặc lỗi từ máy chủ từ xa, hệ thống có khả năng tự động khôi phục và tiếp tục quy trình thu thập từ vị trí bản ghi gần nhất mà hoàn toàn không làm gián đoạn hay trùng lặp dữ liệu.
+
+\subsection*{2.2. Kiểm toán Chất lượng Dữ liệu và Chuẩn hóa Tọa độ GPS}
+\addcontentsline{toc}{subsection}{2.2. Kiểm toán Chất lượng Dữ liệu và Chuẩn hóa Tọa độ GPS}
+
+Sau khi hoàn tất quá trình thu thập, toàn bộ dữ liệu thô được đưa qua một quy trình Kiểm toán Chất lượng Dữ liệu (Data Quality Audit) nghiêm ngặt gồm ba bước kiểm tra:
+
+Bước 1 -- Kiểm toán tỷ lệ khuyết thiếu (Missing Value Audit): Kiểm tra tính toàn vẹn của các trường bắt buộc. Toàn bộ 610 địa điểm du lịch tại Huế đạt tỷ lệ có đầy đủ tên gọi, danh mục và tọa độ GPS là 100,0\%. Đối với các bài nhận xét, 100\% các bản ghi thu thập đều có đầy đủ trường nội dung văn bản và điểm số xếp hạng sao; trường kiểu hình chuyến đi bị khuyết (chiếm 37,24\%) được gán nhãn chuẩn hóa là Chưa phân loại.
+
+Bước 2 -- Kiểm toán tính hợp lệ của tọa độ trắc địa (Bounding Box Validation): Để loại trừ hoàn toàn các sai lệch về tọa độ (như hiện tượng đảo ngược vĩ độ/kinh độ hoặc sai lệch vị trí sang tỉnh thành khác), giải thuật áp dụng bộ lọc Hộp giới hạn địa lý hình chữ nhật bao quanh tỉnh Thừa Thiên Huế:
+\begin{equation}
+    (\phi_v, \lambda_v) \text{ hợp lệ} \iff \begin{cases}
+        16,00^{\circ}\text{N} \le \phi_v \le 16,85^{\circ}\text{N} \\
+        107,00^{\circ}\text{E} \le \lambda_v \le 108,25^{\circ}\text{E}
+    \end{cases}
+    \label{eq:bounding-box}
+\end{equation}
+Toàn bộ các tọa độ nằm ngoài hộp giới hạn đều được tự động đối soát và chuẩn hóa lại thông qua Geocoding API để bảo đảm độ tin cậy tuyệt đối trước khi đưa vào tính toán khoảng cách mặt cầu Haversine.
+
+Bước 3 -- Khử trùng lặp thực thể (Entity Deduplication): Bằng cách kết hợp bán kính không gian nhỏ ($d < 50\text{ mét}$) với độ đo tương đồng chuỗi Levenshtein trên tên gọi chuẩn hóa, hệ thống đã loại bỏ thành công hơn 1.200 bản ghi trùng lặp giữa OpenStreetMap và Google Maps, đồng nhất các thực thể trùng tên vào một nút duy nhất.
+
+\subsection*{2.3. Phân mảnh văn bản phân tử (Atomic Chunking Pipeline)}
+\addcontentsline{toc}{subsection}{2.3. Phân mảnh văn bản phân tử (Atomic Chunking Pipeline)}
+
+Trong các bài nhận xét của du khách, một văn bản có thể kéo dài hàng nghìn từ và đề cập đồng thời đến nhiều khía cạnh khác nhau như chất lượng món ăn, thái độ phục vụ của nhân viên, giá cả và vị trí cảnh quan. Nếu áp dụng kỹ thuật cắt đoạn cố định theo số lượng ký tự thông thường của Naive RAG, một câu nhận xét về món ăn có thể bị cắt làm đôi, làm phân mảnh ngữ cảnh và giảm độ chính xác của mô hình nhúng véc-tơ.
 
 Để khắc phục rào cản này, nghiên cứu phát triển quy trình phân mảnh văn bản phân tử (Atomic Chunking Pipeline), được minh họa chi tiết trên Hình \ref{fig:atomic-chunking}.
 
@@ -84,19 +219,19 @@ Trong các bài nhận xét của du khách, một văn bản có thể kéo dà
 \label{fig:atomic-chunking}
 \end{figure}
 
-Theo quy trình tại Hình \ref{fig:atomic-chunking}, mỗi bài nhận xét thô trước tiên được làm sạch các thẻ HTML, liên kết URL rác và ký tự vô nghĩa. Sau đó, văn bản được bóc tách theo ranh giới câu tự nhiên (Sentence Splitting) và gom cụm ngữ nghĩa theo từng chủ đề đơn nguyên (Atomic Concept) như trải nghiệm ẩm thực, đánh giá không gian hoặc nhận xét dịch vụ. Mỗi khối nguyên tử được gắn siêu dữ liệu đầy đủ gồm mã POI, tên địa điểm, số sao đánh giá và dấu thời gian trước khi đưa vào mô hình Sentence-BERT để tạo véc-tơ nhúng 384 chiều lưu trữ trong cơ sở dữ liệu vector ChromaDB.
+Theo quy trình tại Hình \ref{fig:atomic-chunking}, mỗi bài nhận xét thô trước tiên được làm sạch các thẻ HTML, liên kết URL rác, biểu tượng cảm xúc và ký tự vô nghĩa. Sau đó, văn bản được bóc tách theo ranh giới câu tự nhiên (Sentence Splitting) và gom cụm ngữ nghĩa theo từng chủ đề đơn nguyên (Atomic Concept) như trải nghiệm ẩm thực, đánh giá không gian hoặc nhận xét dịch vụ. Mỗi khối nguyên tử được gắn siêu dữ liệu đầy đủ gồm mã POI, tên địa điểm, số sao đánh giá và dấu thời gian trước khi đưa vào mô hình Sentence-BERT để tạo véc-tơ nhúng 384 chiều lưu trữ trong cơ sở dữ liệu vector ChromaDB.
 
 \section*{3. Phương pháp luận nghiên cứu và Thiết kế hệ thống}
 \addcontentsline{toc}{section}{3. Phương pháp luận nghiên cứu và Thiết kế hệ thống}
 
 Nghiên cứu được triển khai theo một khung phương pháp luận khoa học gồm năm giai đoạn tuần tự và khép kín:
 
-Giai đoạn 1 (Thu thập và Kiểm toán dữ liệu): Tiến hành thu thập 9.525 thực thể địa lý từ OpenStreetMap và 1,69 triệu bài nhận xét từ TripAdvisor; thực hiện kiểm toán toàn vẹn dữ liệu, kiểm tra tính hợp lệ của tọa độ GPS và xử lý các trường dữ liệu khuyết thiếu.
+Giai đoạn 1 (Thu thập và Kiểm toán dữ liệu): Tiến hành thu thập 610 thực thể địa lý tại Huế (trong tổng số 8.921 địa điểm toàn quốc) và 44.355 bài nhận xét chuyên sâu tại Huế (trong tổng số 1,69 triệu bài toàn quốc); thực hiện kiểm toán toàn vẹn dữ liệu, kiểm tra hộp giới hạn tọa độ GPS và xử lý khử trùng lặp bản ghi.
 
-Giai đoạn 2 (Xây dựng Đồ thị Tri thức Không gian): Áp dụng công thức khoảng cách mặt cầu Haversine để tính toán ma trận cự ly giữa toàn bộ các cặp thực thể; thiết lập các cạnh liên kết lân cận $\text{NEAR\_BY}$ với ngưỡng $d \le 1,5\text{ km}$; xây dựng các quan hệ phân cấp địa giới $\text{LOCATED\_IN}$ kết nối điểm đến với các phường xã và thành phố Huế, tạo thành cấu trúc đồ thị gồm 9.525 nút và 90.948 cạnh lưu trữ bằng thư viện NetworkX.
+Giai đoạn 2 (Xây dựng Đồ thị Tri thức Không gian): Áp dụng công thức khoảng cách mặt cầu Haversine để tính toán ma trận cự ly giữa toàn bộ các cặp thực thể; thiết lập các cạnh liên kết lân cận $\text{NEAR\_BY}$ với ngưỡng $d \le 1,5\text{ km}$; xây dựng các quan hệ phân cấp địa giới $\text{LOCATED\_IN}$ kết nối điểm đến với các phường xã và quận huyện tại thành phố Huế, tạo thành cấu trúc đồ thị gồm 9.525 nút và 90.948 cạnh lưu trữ bằng thư viện NetworkX.
 
-Giai đoạn 3 (Khai phá Thực đơn ngầm và Nhúng ngữ nghĩa): Ứng dụng Bộ từ điển ẩm thực 570 món ăn để quét qua toàn bộ tập ngữ liệu nhận xét du khách; tính toán điểm số tin cậy theo công thức (\ref{eq:dish-confidence}) để gán các cạnh quan hệ $\text{SERVES}$ giữa nhà hàng và món đặc sản; đồng thời thực hiện quy trình Atomic Chunking và tạo lập chỉ mục vector trên ChromaDB bằng mô hình \texttt{paraphrase-multilingual-MiniLM-L12-v2}.
+Giai đoạn 3 (Khai phá Thực đơn ngầm và Nhúng ngữ nghĩa): Ứng dụng Bộ từ điển ẩm thực 570 món ăn để quét qua toàn bộ 44.355 bài nhận xét du khách tại Huế; tính toán điểm số tin cậy theo công thức (\ref{eq:dish-confidence}) để gán các cạnh quan hệ $\text{SERVES}$ giữa nhà hàng và món đặc sản; đồng thời thực hiện quy trình Atomic Chunking và tạo lập chỉ mục vector trên ChromaDB bằng mô hình nhúng đa ngôn ngữ.
 
-Giai đoạn 4 (Thiết kế Khung tác tử Agentic RAG): Xây dựng máy trạng thái hữu hạn trên LangGraph với năm nút chức năng chính; tích hợp bộ chấm điểm tin cậy để đánh giá mức độ tương thích giữa câu hỏi và tri thức đồ thị; thiết lập nhánh rẽ phân luồng dự phòng tìm kiếm Internet khi thông tin nội bộ không đủ tin cậy; và kết nối mô hình ngôn ngữ lớn Qwen2.5-3B-Instruct chạy nội bộ qua Ollama trên GPU RTX 3050.
+Giai đoạn 4 (Thiết kế Khung tác tử Agentic RAG): Xây dựng máy trạng thái hữu hạn trên LangGraph với năm nút chức năng chính; tích hợp bộ chấm điểm tin cậy để đánh giá mức độ tương thích giữa câu hỏi và tri thức đồ thị; thiết lập nhánh rẽ phân luồng dự phòng tìm kiếm Internet khi thông tin nội bộ không đủ tin cậy; và kết nối mô hình ngôn ngữ lớn Qwen2.5-3B-Instruct chạy nội bộ qua Ollama trên GPU NVIDIA GeForce RTX 3050.
 
 Giai đoạn 5 (Lập lịch trình không gian, Đóng gói API và Đánh giá Benchmark): Phát triển giải thuật phân cụm lịch trình theo bờ sông Hương nhằm tối ưu hóa cự ly di chuyển; đóng gói toàn bộ chức năng thành Cổng API RESTful chuẩn hóa bằng FastAPI sẵn sàng tích hợp với nền tảng Hue-S; và tiến hành kiểm thử thực nghiệm đối sánh định lượng trên bộ Benchmark 12 kịch bản du lịch thực tế tại Huế so với các mô hình đối chứng Naive RAG và Zero-shot LLM.

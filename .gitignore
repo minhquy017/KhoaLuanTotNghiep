@@ -54,11 +54,26 @@ Desktop.ini
 data/raw/*_supplement.json*
 data/raw/partial_*.json*
 data/raw/progress_*.json*
+data/raw/exhausted_*.json
+crawlers/.chrome_data/
 
 # Presentation slides and Word documents
 *.pptx
 *.docx
 docs/*.docx
+!docs/KHOA_LUAN_TOT_NGHIEP_TOAN_VAN.docx
+
+# LaTeX compilation artifacts
+thesis-latex/*.aux
+thesis-latex/**/*.aux
+thesis-latex/*.bbl
+thesis-latex/*.blg
+thesis-latex/*.lof
+thesis-latex/*.lot
+thesis-latex/*.out
+thesis-latex/*.toc
+thesis-latex/*.log
+thesis-latex/*.synctex.gz
 
 # Presentation figures & generation scripts
 docs/figures/

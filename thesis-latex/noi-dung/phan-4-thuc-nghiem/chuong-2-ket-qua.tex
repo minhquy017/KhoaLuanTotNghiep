@@ -9,11 +9,7 @@
 
 Thành phố Huế sở hữu một đặc trưng địa lý tự nhiên chi phối toàn bộ cấu trúc giao thông đô thị: sông Hương chảy qua trung tâm, chia cắt thành phố thành hai bờ Bắc và bờ Nam với số lượng cầu kết nối có hạn. Bờ Bắc là không gian văn hóa di sản cung đình cổ kính tập trung xung quanh Quần thể Kinh thành Huế, Chùa Thiên Mụ và Chợ Đông Ba; trong khi bờ Nam là khu đô thị hiện đại và hành lang phát triển về phía các quần thể lăng tẩm triều Nguyễn (Lăng Tự Đức, Lăng Khải Định) cùng các làng nghề truyền thống như Làng hương Thủy Xuân.
 
-Nếu du khách hoặc các trợ lý ảo lập lịch trình di chuyển xen kẽ tùy tiện giữa hai bờ trong cùng một buổi sáng hoặc buổi chiều, thời gian lãng phí cho việc vượt cầu qua lại và nguy cơ tắc nghẽn giao thông giờ cao điểm sẽ làm giảm sút nghiêm trọng trải nghiệm du lịch. Để giải quyết triệt để vấn đề này, giải thuật Spatial Itinerary Planner phân chia không gian du lịch Huế thành ba cụm địa lý độc lập (Spatial Clusters):
-
-Cụm 1 -- Bờ Bắc (Di sản Kinh thành và Cổ tự): Bao gồm Đại Nội Huế, Kỳ Đài, Bảo tàng Cổ vật Cung đình Huế, Chợ Đông Ba, Hồ Tịnh Tâm và Chùa Thiên Mụ. Toàn bộ các điểm đến trong cụm này nằm gọn trong bán kính 3~km bên bờ Bắc sông Hương.
-Cụm 2 -- Bờ Nam (Lăng tẩm vương triều và Làng nghề): Bao gồm Lăng Tự Đức, Lăng Đồng Khánh, Đồi Vọng Cảnh, Làng hương Thủy Xuân và Lăng Khải Định. Các điểm đến này liên kết thuận tiện theo trục đường Huyền Trân Công Chúa và Khải Định.
-Cụm 3 -- Ngoại ô và Văn hóa Làng quê: Bao gồm Lăng Minh Mạng, Cầu ngói Thanh Toàn, Đầm Chuồn (phá Tam Giang) và Làng cổ Phước Tích, thích hợp cho các chuyến khám phá bán nhật hoặc nguyên nhật dã ngoại.
+Nếu du khách hoặc các trợ lý ảo lập lịch trình di chuyển xen kẽ tùy tiện giữa hai bờ trong cùng một buổi sáng hoặc buổi chiều, thời gian lãng phí cho việc vượt cầu qua lại và nguy cơ tắc nghẽn giao thông giờ cao điểm sẽ làm giảm sút nghiêm trọng trải nghiệm du lịch. Nhằm khắc phục triệt để hiện tượng này, giải thuật phân chia không gian du lịch Huế thành ba cụm địa lý độc lập. Cụm bờ Bắc đại diện cho không gian di sản Kinh thành và cổ tự, quy tụ các điểm đến như Đại Nội Huế, Kỳ Đài, Bảo tàng Cổ vật Cung đình Huế, Chợ Đông Ba, Hồ Tịnh Tâm và Chùa Thiên Mụ với bán kính phân bổ khoảng 3~km dọc bờ Bắc sông Hương. Trong khi đó, cụm bờ Nam tập trung hệ thống lăng tẩm vương triều và làng nghề truyền thống dọc trục đường Huyền Trân Công Chúa và Khải Định, tiêu biểu như Lăng Tự Đức, Lăng Đồng Khánh, Đồi Vọng Cảnh, Làng hương Thủy Xuân và Lăng Khải Định. Ngoài ra, cụm ngoại ô mở rộng về phía đầm phá và làng quê sinh thái, bao quát Lăng Minh Mạng, Cầu ngói Thanh Toàn, Đầm Chuồn thuộc hệ đầm phá Tam Giang và Làng cổ Phước Tích, tạo điều kiện thuận lợi cho các chuyến tham quan bán nhật hoặc nguyên nhật dã ngoại.
 
 Quy trình phân luồng và trải nghiệm thực tế của người dùng được mô tả trực quan trên Hình \ref{fig:user-scenario-flow}.
 
@@ -29,18 +25,12 @@ Từ luồng kịch bản tại Hình \ref{fig:user-scenario-flow}, giải thu�
 \subsection{Giải thuật tối ưu hóa lịch trình đa ngày}
 \label{subsec:ch2-algorithm}
 
-Thuật toán lập lịch trình nhận đầu vào gồm số ngày lưu trú $K \in \{1, 2, 3\}$, danh sách các sở thích cá nhân (ẩm thực, di tích lịch sử, cảnh quan thiên nhiên), và địa điểm xuất phát (khách sạn lưu trú). Giải thuật trải qua ba bước xử lý chính:
-
-Bước 1: Lựa chọn cụm không gian tối ưu cho từng ngày tham quan. Với lịch trình 1 ngày, hệ thống ưu tiên Cụm 1 (Bờ Bắc) cho buổi sáng và Cụm 2 (Bờ Nam) cho buổi chiều để bảo đảm trải nghiệm các di sản cốt lõi nhất. Với lịch trình 2 ngày hoặc 3 ngày, mỗi cụm được phân bổ trọn vẹn cho một ngày riêng biệt.
-
-Bước 2: Sắp xếp thứ tự tham quan bên trong cụm (Intra-cluster Routing). Dựa trên ma trận khoảng cách Haversine giữa các điểm đến trong cụm, giải thuật áp dụng phương pháp tham lam kết hợp tìm kiếm cục bộ (Greedy Nearest Neighbor with 2-Opt refinement) để tìm chu trình di chuyển có tổng khoảng cách ngắn nhất:
+Thuật toán lập lịch trình tiếp nhận đầu vào gồm số ngày lưu trú $K \in \{1, 2, 3\}$, danh sách sở thích của du khách cùng tọa độ xuất phát từ cơ sở lưu trú. Quá trình tính toán vận hành tuần tự qua ba giai đoạn liên hoàn. Khởi đầu, hệ thống lựa chọn cụm không gian tối ưu cho từng ngày tham quan, trong đó các chuyến đi một ngày được ưu tiên phân bổ khám phá cụm bờ Bắc vào buổi sáng và cụm bờ Nam vào buổi chiều, còn các chuyến đi hai hoặc ba ngày sẽ gán trọn vẹn mỗi cụm địa lý cho một ngày độc lập. Sau khi xác lập tập hợp các điểm đến trong ngày, giải thuật tiến hành sắp xếp thứ tự tham quan thông qua phương pháp tham lam kết hợp tìm kiếm cục bộ (Greedy Nearest Neighbor with 2-Opt refinement) nhằm cực tiểu hóa tổng quãng đường di chuyển dựa trên ma trận khoảng cách trắc địa Haversine:
 \begin{equation}
     \min_{\pi} \sum_{i=1}^{m-1} d(v_{\pi(i)}, v_{\pi(i+1)})
     \label{eq:routing-opt}
 \end{equation}
-trong đó $\pi = (\pi(1), \pi(2), \dots, \pi(m))$ là hoán vị thứ tự ghé thăm $m$ điểm tham quan trong ngày, và $d(\cdot, \cdot)$ là khoảng cách Haversine tính theo công thức (\ref{eq:haversine}).
-
-Bước 3: Ghép nối ẩm thực thông minh (Culinary Ingestion). Tại điểm dừng chân buổi trưa (thường là điểm di tích thứ hai trong buổi sáng) và điểm kết thúc buổi chiều, giải thuật truy vấn cạnh $\text{NEAR\_BY}$ kết hợp cạnh $\text{SERVES}$ để chọn ra nhà hàng có điểm tin cậy $\text{Conf}(u, m) \ge 0,70$ và khoảng cách $d \le 1,5\text{ km}$ gần nhất.
+trong đó $\pi = (\pi(1), \pi(2), \dots, \pi(m))$ biểu diễn hoán vị thứ tự ghé thăm $m$ điểm tham quan trong ngày, và $d(\cdot, \cdot)$ là hàm khoảng cách Haversine xác định theo công thức (\ref{eq:haversine}). Cuối cùng, hệ thống thực hiện ghép nối ẩm thực tự động tại các mốc nghỉ trưa và kết thúc hành trình buổi chiều bằng cách kích hoạt truy vấn đồng thời quan hệ lân cận không gian $\text{NEAR\_BY}$ và quan hệ phục vụ món ăn $\text{SERVES}$, lựa chọn cơ sở ẩm thực gần nhất trong bán kính $d \le 1,5\text{ km}$ có điểm bảo chứng thực đơn ngầm $\text{Conf}(u, m) \ge 0,70$.
 
 \section{Thiết lập thực nghiệm và Bộ dữ liệu kiểm thử chuẩn}
 \label{sec:ch2-setup}
@@ -55,11 +45,47 @@ Mô hình ngôn ngữ lớn được sử dụng là Qwen2.5-3B-Instruct (phiên
 \subsection{Bộ kiểm thử Benchmark 12 kịch bản du lịch Huế}
 \label{subsec:ch2-benchmark-suite}
 
-Để đánh giá toàn diện năng lực của hệ thống, nghiên cứu xây dựng một bộ dữ liệu kiểm thử chuẩn (Benchmark Test Suite) bao gồm 12 kịch bản đại diện thực tế, bao quát ba nhóm bài toán du lịch phổ biến nhất:
+Khác với các bộ dữ liệu kiểm thử hỏi đáp du lịch thông thường trên thế giới vốn chỉ tập trung vào sự tương đồng ngữ nghĩa từ vựng mà bỏ qua yếu tố không gian, nghiên cứu này xây dựng một Bộ dữ liệu kiểm thử chuẩn (Benchmark Test Suite) gồm 12 kịch bản thực tế đại diện tại Cố đô Huế. Bộ kiểm thử được thiết kế dựa trên sự khảo sát hành vi truy vấn thực tế của du khách, mô phỏng các tình huống đời thực khi du khách di chuyển trong đô thị di sản đặc thù bị chia cắt bởi dòng sông Hương.
 
-Nhóm 1 -- Không gian kết hợp Ẩm thực (Spatial + Culinary Query): Gồm 4 câu hỏi kiểm tra khả năng tìm kiếm quán ăn phục vụ đúng món đặc sản lân cận một điểm di tích (ví dụ: tìm quán bún bò chuẩn vị gần Đại Nội, quán bánh bèo gần lăng Tự Đức, quán cơm hến gần cồn Hến).
-Nhóm 2 -- Khám phá lân cận (Spatial Proximity Exploration): Gồm 4 câu hỏi kiểm tra khả năng đề xuất các điểm danh thắng lân cận trong bán kính đi bộ quanh một điểm mốc (ví dụ: các điểm tham quan gần Chùa Thiên Mụ, các điểm ngắm hoàng hôn gần Đồi Vọng Cảnh).
-Nhóm 3 -- Lập lịch trình tổng hợp (Itinerary Planning): Gồm 4 câu hỏi yêu cầu thiết kế lịch trình 1 ngày, 2 ngày và 3 ngày tại Huế có tích hợp đầy đủ di tích, ẩm thực và phương án di chuyển.
+Mỗi kịch bản trong bộ kiểm thử đòi hỏi hệ thống phải đồng thời giải quyết ba tầng bài toán kỹ thuật: bóc tách chính xác thực thể địa danh và món ăn đặc sản từ ngôn ngữ tự nhiên tiếng Việt; định vị và tra cứu đồ thị không gian trong bán kính vật lý cho phép; và lập luận đề xuất lời giải tối ưu không vi phạm các rào cản địa lý tự nhiên. Toàn bộ 12 kịch bản được phân bổ có chủ đích vào ba nhóm bài toán nghiệp vụ cốt lõi. Nhóm bài toán thứ nhất, bao gồm các kịch bản từ TC-01 đến TC-04, tập trung vào truy vấn ẩm thực kết hợp ràng buộc không gian nhằm đánh giá năng lực liên kết thực thể món ăn với các cơ sở ẩm thực lân cận trong bán kính đi bộ $d \le 1,5\text{ km}$, đồng thời kiểm tra khả năng khống chế hiện tượng gợi ý nhảy qua cầu Trường Tiền hay cầu Phú Xuân sang bờ đối diện. Nhóm bài toán thứ hai, từ kịch bản TC-05 đến TC-08, hướng đến việc khám phá danh thắng không gian lân cận thông qua cơ chế duyệt đồ thị topo để xác định các điểm đến di sản, cảnh quan sinh thái hoặc làng nghề truyền thống nằm trên cùng trục giao thông quanh một điểm neo ban đầu. Nhóm bài toán thứ ba, từ kịch bản TC-09 đến TC-12, giải quyết bài toán lập lịch trình du lịch đa ngày tổng hợp dựa trên mô hình Orienteering Problem, kết hợp phân cụm địa lý hai bờ sông Hương và ghép nối các bữa ăn đặc sản chuẩn vị cho các khung thời gian từ nửa ngày đến ba ngày.
+
+Đặc tả chi tiết về câu hỏi ngôn ngữ tự nhiên của du khách, điểm neo không gian, món ăn hoặc dịch vụ yêu cầu, và kết quả kỳ vọng cùng tiêu chuẩn nghiệm đúng của toàn bộ 12 kịch bản kiểm thử được trình bày tại Bảng \ref{tab:benchmark-suite-specs}.
+
+\begin{table}[htbp]
+\centering
+\caption{Đặc tả chi tiết 12 kịch bản trong Bộ dữ liệu kiểm thử chuẩn (Benchmark Suite) cho du lịch Huế}
+\label{tab:benchmark-suite-specs}
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{c X p{2.2cm} p{2.1cm} X}
+\hline
+\textbf{Mã} & \textbf{Câu hỏi truy vấn của du khách (Prompt)} & \textbf{Điểm neo (Anchor POI)} & \textbf{Món / Dịch vụ yêu cầu} & \textbf{Kết quả kỳ vọng và Tiêu chuẩn nghiệm đúng} \\
+\hline
+TC-01 & Tôi đang ở Đại Nội Huế, muốn tìm quán bún bò chuẩn vị gần đây để đi bộ ăn trưa. & Đại Nội Huế (Cửa Thượng Tứ, bờ Bắc) & Bún bò Huế & Gợi ý quán bún bò có thật ở bờ Bắc (như Bún bò Mụ Rơi, Bún bò Cẩm, Bún bò Đông Ba); cự ly $d \le 1,5\text{ km}$; tuyệt đối không gợi ý nhảy qua cầu sang bờ Nam. \\
+TC-02 & Sau khi tham quan Lăng Tự Đức, tôi muốn ăn bánh bèo hoặc bánh nậm gần đó thì ghé quán nào? & Lăng Tự Đức (Thôn Thượng 2, Thủy Xuân) & Bánh bèo, bánh nậm Huế & Gợi ý quán bánh bèo/nậm trên trục Lê Ngô Cát hoặc Huyền Trân Công Chúa (Quán Bánh Chi, Bánh Thủy Xuân); cự ly $d \le 1,5\text{ km}$; loại trừ quán Bà Đỏ ($> 5\text{ km}$). \\
+TC-03 & Tôi đang ở khu vực Cồn Hến, muốn thưởng thức cơm hến và chè bắp đúng gốc Huế. & Cồn Hến (Phường Vĩ Dạ) & Cơm hến, chè bắp Cồn Hến & Gợi ý đúng quán cơm hến truyền thống tại đảo Cồn Hến (Hoa Đông, Quán Nhỏ); cự ly $d \le 800\text{ m}$; xác thực có bán đồng thời cả hai món với $\text{Conf} \ge 0,75$. \\
+TC-04 & Gợi ý quán bánh khoái và nem lụi ngon ở bờ Nam gần khu phố Tây Chu Văn An. & Phố đi bộ Chu Văn An -- Võ Thị Sáu & Bánh khoái, nem lụi Huế & Gợi ý quán bánh khoái, nem lụi bờ Nam trong cự ly $d \le 1,2\text{ km}$ (Bánh khoái Hạnh đường Phó Đức Chính); không nhầm sang quán bún bò hay cà phê lân cận. \\
+\hline
+TC-05 & Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không? & Chùa Thiên Mụ (Đồi Hà Khê, bờ Bắc) & Di tích, điểm văn hóa kế cận & Gợi ý các điểm văn hóa cùng hành lang thượng nguồn bờ Bắc trong cự ly $d \le 2,0\text{ km}$ (Văn Thánh Huế, Nhà vườn An Hiên, Bến Kim Long); không điều hướng sang lăng tẩm bờ Nam. \\
+TC-06 & Từ Đồi Vọng Cảnh, có những di tích lăng tẩm hoặc làng nghề nào nằm gần trên cùng trục đường? & Đồi Vọng Cảnh (Đường Huyền Trân Công Chúa) & Lăng tẩm và làng nghề truyền thống & Gợi ý các điểm thuộc Cụm bờ Nam liên kết trên trục giao thông trong cự ly $d \le 2,5\text{ km}$ (Lăng Tự Đức, Lăng Đồng Khánh, Làng hương Thủy Xuân); thứ tự di chuyển logic. \\
+TC-07 & Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút. & Chợ Đông Ba (Đường Trần Hưng Đạo) & Di tích lịch sử cự ly đi bộ ngắn & Gợi ý các điểm văn hóa cửa ngõ Đông Nam Kinh thành trong cự ly $d \le 1,2\text{ km}$ (Cầu Trường Tiền, Cửa Thượng Tứ, Bảo tàng Cổ vật Cung đình); không gợi ý Chùa Thiên Mụ ($> 5\text{ km}$). \\
+TC-08 & Khám phá danh thắng thiên nhiên và sinh thái đầm phá ở ngoại ô phía Đông Nam thành phố Huế. & Đầm Chuồn (Phá Tam Giang, Phú Vang) & Du lịch sinh thái dã ngoại, làng chài & Gợi ý chuỗi liên kết ngoại ô: Làng chài Đầm Chuồn (ẩm thực cá kình đầm phá), kết hợp tham quan Cầu ngói Thanh Toàn trên cùng hành lang sinh thái; hướng dẫn phương tiện di chuyển. \\
+\hline
+TC-09 & Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam. & Khách sạn trung tâm bờ Nam TP. Huế & Lịch trình 1 ngày tối ưu không gian & Chia 2 buổi rành mạch: Sáng khám phá Cụm Kinh thành bờ Bắc (Đại Nội, Chùa Thiên Mụ, ăn bún bò); Chiều về Cụm Lăng tẩm bờ Nam (Làng hương, Lăng Tự Đức); vượt sông tối đa 1 lần/ngày. \\
+TC-10 & Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống. & Không gian đô thị Cố đô Huế & Lịch trình 2 ngày phân cụm triệt để & Ngày 1 dành trọn vẹn bờ Bắc (Đại Nội, Bảo tàng Cổ vật, Nhà vườn, ẩm thực chợ Đông Ba); Ngày 2 dành trọn bờ Nam (Lăng Tự Đức, Khải Định, Đồi Vọng Cảnh, ẩm thực Cồn Hến); 0 lần đổi bờ mỗi ngày. \\
+TC-11 & Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái. & Cố đô Huế và vùng phụ cận đầm phá & Lịch trình 3 ngày mở rộng ngoại ô & Ngày 1: Quần thể di sản Kinh thành bờ Bắc; Ngày 2: Lăng tẩm triều Nguyễn bờ Nam; Ngày 3: Vùng sinh thái Cầu ngói Thanh Toàn và Đầm Chuồn; thời gian biểu khoa học, không quay vòng ngược đường. \\
+TC-12 & Lập tour nửa ngày (chiều từ 14h đến 19h) ngắm hoàng hôn và thưởng thức ẩm thực đêm xứ Huế. & Trục đồi Tây Nam bờ Nam (Thủy Xuân) & Tour bán nhật chiều -- tối chi tiết & Chuỗi mốc giờ chặt chẽ: 14h00 Làng hương $\to$ 15h30 Lăng Tự Đức $\to$ 17h00 hoàng hôn Đồi Vọng Cảnh $\to$ 18h30 ẩm thực đặc sản bánh Huế bờ Nam; các điểm cách nhau $< 2,5\text{ km}$, tổng di chuyển $< 20$ phút. \\
+\hline
+\end{tabularx}
+\end{table}
+
+Từ dữ liệu đặc tả tại Bảng \ref{tab:benchmark-suite-specs}, quy trình chấm điểm và đánh giá nghiệm đúng cho từng kịch bản được thiết lập chặt chẽ dựa trên các tiêu chuẩn định lượng minh bạch:
+
+Thứ nhất, đối với nhóm bài toán ẩm thực (từ TC-01 đến TC-04), một đề xuất được công nhận là nghiệm đúng khi và chỉ khi thỏa mãn đồng thời ba điều kiện nghiêm ngặt: cơ sở ẩm thực được gợi ý phải là thực thể có thật tồn tại trong đồ thị tri thức với tọa độ GPS đã xác minh; khoảng cách Haversine tính từ điểm neo Anchor POI đến quán ăn không vượt quá $1,5\text{ km}$ và tuyệt đối nằm cùng bờ sông Hương; và món ăn du khách yêu cầu phải có điểm tin cậy khai phá thực đơn ngầm $\text{Conf}(u,m) \ge 0,70$. Ví dụ trong kịch bản TC-01, nếu mô hình đề xuất quán Bún bò Cẩm hoặc Bún bò Mụ Rơi ở đường Mai Thúc Loan (bờ Bắc, cách Ngọ Môn khoảng $800\text{ m}$), kết quả được tính là chính xác; ngược lại, nếu mô hình đề xuất quán Bún bò O Cương Chú Điệp ở đường Đống Đa (thuộc bờ Nam, cách hơn $3,2\text{ km}$ và phải vượt cầu Phú Xuân), đề xuất sẽ bị chấm là vi phạm không gian (Spatial Violation) bất kể quán ăn đó có chất lượng đánh giá cao đến đâu.
+
+Thứ hai, đối với nhóm bài toán khám phá không gian lân cận (từ TC-05 đến TC-08), tiêu chuẩn nghiệm đúng đo lường khả năng bám sát hành lang giao thông thực tế. Tại các điểm danh lam như Đồi Vọng Cảnh hay Chùa Thiên Mụ, hệ thống phải đề xuất các điểm đến nằm trên cùng trục đường giao thông liên hoàn (như trục Huyền Trân Công Chúa hoặc trục đường Kim Long -- Nguyễn Phúc Nguyên) với khoảng cách không quá $2,5\text{ km}$. Mô hình sẽ bị trừ điểm nếu gợi ý các điểm đến tuy gần về khoảng cách trắc địa đường chim bay nhưng bị ngăn cách bởi chướng ngại tự nhiên không có cầu nối trực tiếp.
+
+Thứ ba, đối với nhóm bài toán lập lịch trình đa ngày (từ TC-09 đến TC-12), tiêu chí nghiệm đúng đánh giá cấu trúc thời gian và tính tối ưu tổng thể của hành trình. Một lịch trình được coi là hợp lệ khi đáp ứng bốn chuẩn mực: sự phân cụm không gian triệt để (các điểm tham quan trong một buổi sáng hoặc chiều phải cùng thuộc một Spatial Cluster); khống chế tần suất vượt sông Hương (không quá 1 lần trong tour 1 ngày và bằng 0 trong từng ngày của tour 2--3 ngày); ghép nối bữa ăn hợp lý (điểm ăn trưa hoặc ăn tối phải nằm trong bán kính $d \le 1,5\text{ km}$ quanh điểm tham quan liền kề); và tổng thời gian di chuyển cộng thời gian tham quan thực tế không vượt quá quỹ thời gian của chuyến đi. Toàn bộ các tiêu chí này tạo thành một khung đánh giá toàn diện, bảo đảm tính khách quan tuyệt đối khi đo lường hiệu năng của các mô hình đối sánh.
 
 \section{Kết quả thực nghiệm đối sánh định lượng}
 \label{sec:ch2-results}
@@ -67,18 +93,9 @@ Nhóm 3 -- Lập lịch trình tổng hợp (Itinerary Planning): Gồm 4 câu h
 \subsection{Hệ thống các mô hình đối chuẩn và Tiêu chí đo lường}
 \label{subsec:ch2-metrics}
 
-Nghiên cứu tiến hành đo lường và đối sánh định lượng giữa ba phương pháp phương pháp luận đại diện:
-Mô hình M1: Zero-shot LLM (Sử dụng trực tiếp mô hình Qwen2.5-3B-Instruct không có cơ chế RAG).
-Mô hình M2: Naive RAG (Cơ chế RAG vector truyền thống sử dụng ChromaDB với độ đo Cosine Similarity).
-Mô hình M3: Spatial GraphRAG (Phương pháp đề xuất của khóa luận kết hợp Đồ thị Tri thức Không gian và LangGraph).
+Nghiên cứu tiến hành đo lường và đối sánh định lượng giữa ba phương pháp đại diện gồm mô hình suy luận trực tiếp Qwen2.5-3B-Instruct không có cơ chế tăng cường tri thức (Zero-shot LLM), hệ thống RAG véc-tơ truyền thống kết hợp ChromaDB dựa trên độ đo tương đồng Cosine (Naive RAG), và giải pháp đề xuất Spatial GraphRAG kết hợp Đồ thị Tri thức Không gian với máy trạng thái LangGraph.
 
-Hiệu năng của các phương pháp được đánh giá đa chiều thông qua sáu chỉ số định lượng:
-Tỷ lệ thực thể có thật (Grounding Rate \% -- càng cao càng tốt): Tỷ lệ các địa danh xuất hiện trong câu trả lời được xác minh có thật trong cơ sở dữ liệu thực tế.
-Tỷ lệ ảo giác thực thể (Hallucination Rate \% -- càng thấp càng tốt): Tỷ lệ các địa danh bị mô hình tự bịa đặt hoặc gán nhầm sang tỉnh thành khác.
-Tỷ lệ vi phạm cự ly (Spatial Violation Rate \% -- càng thấp càng tốt): Tỷ lệ các đề xuất quán ăn hoặc điểm đến lân cận vượt quá bán kính cho phép $1,5\text{ km}$.
-Cự ly trung bình đến Anchor POI (km -- càng thấp càng tốt): Khoảng cách trắc địa Haversine trung bình từ điểm di tích chính đến các quán ăn được gợi ý.
-Độ chính xác món ăn đặc sản (Dish Alignment Rate \% -- càng cao càng tốt): Tỷ lệ các quán ăn được gợi ý thực sự có phục vụ món đặc sản đúng như yêu cầu của du khách.
-Thời gian đáp ứng (Inference Latency -- tính bằng giây): Thời gian trung bình từ khi gửi truy vấn đến khi hoàn tất câu trả lời.
+Hiệu năng của từng phương pháp được phân tích toàn diện dựa trên sáu chỉ số định lượng then chốt. Về độ tin cậy tri thức, nghiên cứu đo lường tỷ lệ thực thể có thật trong cơ sở dữ liệu địa phương (Grounding Rate) và tỷ lệ ảo giác khi mô hình tự bịa đặt địa danh hoặc gán nhầm sang địa phương khác (Hallucination Rate). Về tính chính xác không gian, hệ thống đánh giá tỷ lệ vi phạm cự ly vượt quá bán kính cho phép $1,5\text{ km}$ (Spatial Violation Rate) cùng khoảng cách trắc địa Haversine trung bình từ điểm neo đến cơ sở được gợi ý. Cuối cùng, mức độ phù hợp ẩm thực được định lượng qua tỷ lệ quán ăn thực sự phục vụ đúng món đặc sản yêu cầu (Dish Alignment Rate), kết hợp cùng thời gian đáp ứng suy luận trung bình tính bằng giây (Inference Latency) nhằm đánh giá tính khả thi trong môi trường tương tác thời gian thực.
 
 \subsection{Bảng kết quả đối sánh định lượng và Phân tích chuyên sâu}
 \label{subsec:ch2-benchmark-table}
@@ -113,13 +130,7 @@ Sự so sánh trực quan đa chiều giữa các phương pháp được thể 
 \label{fig:benchmark-comparison}
 \end{figure}
 
-Từ kết quả thực nghiệm tại Bảng \ref{tab:benchmark-results} và biểu đồ đối sánh trên Hình \ref{fig:benchmark-comparison}, nghiên cứu rút ra ba phát hiện khoa học mang tính quyết định:
-
-Phát hiện 1: Triệt tiêu hoàn toàn ảo giác địa danh (Zero Hallucination). Trong khi Zero-shot LLM có tỷ lệ ảo giác lên tới 57,5\% (tự bịa đặt các địa danh không có thật như ``Quán Bún Bò Cố Đô 123'') và Naive RAG vẫn còn 22\% ảo giác do nhiễu văn bản, mô hình Spatial GraphRAG đề xuất đạt Grounding Rate 100,0\% và Hallucination Rate 0,0\%. Kết quả này có được là nhờ cơ chế lọc ràng buộc của Đồ thị Tri thức: mô hình ngôn ngữ lớn chỉ được phép lựa chọn và thuyết minh dựa trên các nút thực thể đã được xác thực tọa độ GPS trong đồ thị NetworkX.
-
-Phát hiện 2: Tối ưu hóa không gian và cự ly di chuyển vượt trội. Cả Zero-shot LLM và Naive RAG đều vi phạm cự ly di chuyển nghiêm trọng (tương ứng 78,0\% và 54,0\%), với khoảng cách gợi ý trung bình lên tới 4,5 đến 6,8~km, liên tục mắc lỗi gợi ý nhảy bờ sông Hương. Ngược lại, Spatial GraphRAG đạt tỷ lệ vi phạm 0,0\% và cự ly trung bình chỉ ở mức lý tưởng 1,25~km. Điều này khẳng định hiệu quả tuyệt đối của ràng buộc topo cạnh $\text{NEAR\_BY}$ trong việc giữ các đề xuất nằm gọn trong bán kính đi bộ của du khách, chứng minh tính đúng đắn của Giả thuyết $H_1$.
-
-Phát hiện 3: Tốc độ suy luận thời gian thực và độ chính xác ẩm thực cao. Spatial GraphRAG đạt độ chính xác khớp nối món ăn đặc sản lên tới 96,5\% (nhờ dữ liệu khai phá từ 1,69 triệu reviews) với thời gian phản hồi trung bình chỉ 2,8 giây, nhanh hơn đáng kể so với Naive RAG (4,1 giây). Lý do là vì việc lọc không gian trên đồ thị đã thu hẹp không gian tìm kiếm ngữ cảnh trước khi đưa vào LLM, giúp giảm thiểu độ dài ngữ cảnh đầu vào và tăng tốc độ tạo sinh của mô hình.
+Từ kết quả thực nghiệm tại Bảng \ref{tab:benchmark-results} và biểu đồ đối sánh trên Hình \ref{fig:benchmark-comparison}, nghiên cứu rút ra ba kết luận khoa học mang tính quyết định. Trước hết, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh. Trong khi mô hình Zero-shot ghi nhận tỷ lệ ảo giác lên tới 57,5\% với các địa chỉ bịa đặt không có thật trên bản đồ Huế và Naive RAG vẫn còn 22,0\% ảo giác do nhiễu văn bản ngữ cảnh, Spatial GraphRAG đạt tỷ lệ thực thể có thật tuyệt đối 100,0\% và tỷ lệ ảo giác 0,0\%. Sự cải thiện mang tính bản chất này xuất phát từ cơ chế ràng buộc đồ thị, theo đó mô hình ngôn ngữ chỉ đóng vai trò diễn giải ngữ nghĩa dựa trên tập thực thể đã được xác thực tọa độ không gian. Bên cạnh đó, hiệu quả tối ưu hóa cự ly di chuyển thể hiện rõ rệt khi tỷ lệ vi phạm không gian của Spatial GraphRAG giảm về mức 0,0\% so với mức 78,0\% của Zero-shot và 54,0\% của Naive RAG, rút ngắn khoảng cách trung bình đến điểm neo từ 6,82~km xuống 1,25~km. Điều này chứng minh rằng việc áp dụng ràng buộc topo trên cạnh $\text{NEAR\_BY}$ đã giữ chặt các đề xuất trong bán kính đi bộ, loại bỏ hoàn toàn lỗi điều hướng nhảy bờ sông Hương ziczac. Cuối cùng, việc tích hợp tri thức thực đơn ngầm giúp Spatial GraphRAG đạt độ chính xác ẩm thực 96,5\% với thời gian đáp ứng trung bình chỉ 2,80 giây, nhanh hơn đáng kể so với Naive RAG (4,10 giây) nhờ không gian tìm kiếm ngữ cảnh được thu hẹp tối đa trước khi đưa vào mô hình ngôn ngữ.
 
 \section{Hiện thực hóa Cổng API RESTful và Sẵn sàng Tích hợp Hue-S}
 \label{sec:ch2-api-hues}
@@ -127,10 +138,7 @@ Phát hiện 3: Tốc độ suy luận thời gian thực và độ chính xác 
 \subsection{Kiến trúc Cổng API chuẩn hóa trên FastAPI}
 \label{subsec:ch2-api-architecture}
 
-Nhằm chuyển giao kết quả nghiên cứu thành một sản phẩm phần mềm có tính ứng dụng thực tiễn cao, hệ thống được đóng gói thành Cổng API RESTful chuẩn công nghiệp bằng thư viện FastAPI. Cổng API cung cấp ba điểm cuối dịch vụ (endpoints) chính:
-Điểm cuối \texttt{/api/chat}: Tiếp nhận câu hỏi ngôn ngữ tự nhiên từ du khách và trả về câu trả lời đã được neo giữ tri thức kèm danh sách các địa điểm liên quan.
-Điểm cuối \texttt{/api/itinerary}: Nhận các tham số về số ngày du lịch, sở thích và điểm lưu trú để tự động sinh cấu trúc lịch trình chi tiết theo từng buổi sáng, trưa, chiều và tối.
-Điểm cuối \texttt{/api/places/nearby}: Hỗ trợ tra cứu nhanh các cơ sở ẩm thực hoặc điểm tham quan trong bán kính $R$ mét quanh một tọa độ GPS cho trước.
+Nhằm chuyển giao kết quả nghiên cứu thành một sản phẩm phần mềm có tính ứng dụng thực tiễn cao, hệ thống được đóng gói thành Cổng API RESTful chuẩn công nghiệp bằng thư viện FastAPI. Cổng API cung cấp ba dịch vụ trọng tâm gồm điểm cuối \texttt{/api/chat} tiếp nhận câu hỏi tự nhiên để phản hồi văn bản đã được neo giữ tri thức kèm danh sách tọa độ địa lý, điểm cuối \texttt{/api/itinerary} tự động khởi tạo cấu trúc lịch trình tối ưu theo từng buổi dựa trên quỹ thời gian và sở thích cá nhân, cùng điểm cuối \texttt{/api/places/nearby} phục vụ tra cứu tức thời các dịch vụ ẩm thực và tham quan trong bán kính định sẵn quanh tọa độ người dùng.
 
 Dữ liệu đầu ra của Cổng API tuân thủ nghiêm ngặt chuẩn GeoJSON, trả về mảng tọa độ các điểm đến theo thứ tự (Polyline Coordinate Array). Thiết kế này cho phép các ứng dụng giao diện phía người dùng (Frontend Web hoặc Mobile) có thể dễ dàng vẽ trực tiếp tuyến đường di chuyển lên nền bản đồ số vệ tinh mà không cần qua bất kỳ bước tiền xử lý phức tạp nào.
 

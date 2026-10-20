@@ -407,6 +407,7 @@ export class SpatialMapStudio {
 
     const safeName = (name || '').replace(/'/g, "\\'");
     const safePlaceId = (placeId || '').replace(/'/g, "\\'");
+    const safeAddress = (address || '').replace(/'/g, "\\'");
     const detailBtnHtml = `
       <button type="button" class="btn-popup-detail" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}', '${safePlaceId}')">
         <span>Chi tiết</span>
@@ -414,12 +415,11 @@ export class SpatialMapStudio {
       </button>
     `;
 
-    const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-    const gmapsBtnHtml = `
-      <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-popup-gmaps" title="Chỉ đường qua Google Maps">
+    const navBtnHtml = `
+      <button type="button" class="btn-popup-gmaps" onclick="window.navigateToDestination && window.navigateToDestination(${lat}, ${lng}, '${safeName}', '${safeAddress}')" title="Chỉ đường từ vị trí của bạn trực tiếp trên bản đồ">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
         <span>Chỉ đường</span>
-      </a>
+      </button>
     `;
 
     const popupHtml = `
@@ -435,7 +435,7 @@ export class SpatialMapStudio {
         </div>
         <div class="popup-actions">
           ${detailBtnHtml}
-          ${gmapsBtnHtml}
+          ${navBtnHtml}
         </div>
       </div>
     `;
