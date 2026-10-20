@@ -70,7 +70,7 @@ class SpatialItineraryPlanner:
                 "desc": "Ngôi quốc tự cổ kính hơn 400 năm tuổi soi bóng bên dòng sông Hương thơ mộng."
             },
             "cho_dong_ba": {
-                "node_id": "place_8884", # Hoặc tìm qua tên
+                "node_id": "place_8920",
                 "name": "Chợ Đông Ba",
                 "cluster": "Bờ Bắc (Thương mại)",
                 "suggested_duration_hours": 1.5,
@@ -183,10 +183,13 @@ class SpatialItineraryPlanner:
 
     def plan_itinerary(self, num_days: int = 1, 
                        preferred_dishes: Optional[List[str]] = None,
-                       trip_type: str = "Couples") -> Dict[str, Any]:
+                       trip_type: str = "Couples",
+                       user_lat: Optional[float] = None,
+                       user_lng: Optional[float] = None) -> Dict[str, Any]:
         """
         Lập lịch trình tour du lịch thông minh (1 - 3 ngày tại Huế):
-        Tự động ghép nối các chặng (Sáng - Trưa - Chiều - Tối) dựa trên Spatial KG.
+        Tự động ghép nối các chặng (Sáng - Trưa - Chiều - Tối) dựa trên Spatial KG,
+        bắt đầu từ vị trí định vị thực tế của người dùng.
         """
         num_days = max(1, min(3, num_days))
         used_place_ids = set()
@@ -238,6 +241,28 @@ class SpatialItineraryPlanner:
             total_dist_day = 0.0
 
             # -------------------------------------------------------------
+            # ĐIỂM XUẤT PHÁT: VỊ TRÍ ĐỊNH VỊ THỰC TẾ CỦA NGƯỜI DÙNG
+            # -------------------------------------------------------------
+            if day_idx == 0 and user_lat is not None and user_lng is not None:
+                day_slots.append({
+                    "slot_time": "07:30 - 08:00",
+                    "slot_name": "Điểm Xuất Phát",
+                    "activity_type": "Khởi hành",
+                    "place_name": "Vị trí của bạn (Điểm xuất phát)",
+                    "category": "UserLocation",
+                    "address": f"Tọa độ GPS: {user_lat:.4f}, {user_lng:.4f}",
+                    "latitude": user_lat,
+                    "longitude": user_lng,
+                    "rating": 5.0,
+                    "review_count": 0,
+                    "description": "Bắt đầu hành trình tour từ vị trí định vị thực tế của bạn.",
+                    "distance_from_prev_km": 0.0,
+                    "travel_time_min": 0
+                })
+                day_coords.append([user_lat, user_lng])
+                prev_point = (user_lat, user_lng)
+
+            # -------------------------------------------------------------
             # CHẶNG 1: SÁNG (08:00 - 11:30) - THAM QUAN DI TÍCH TRỌNG ĐIỂM
             # -------------------------------------------------------------
             m_hub_key = tpl["morning_hub"]
@@ -247,6 +272,14 @@ class SpatialItineraryPlanner:
                 used_place_ids.add(m_place["node_id"])
                 lat, lon = m_place.get("latitude", 16.468), m_place.get("longitude", 107.578)
                 day_coords.append([lat, lon])
+
+                dist_from_prev = 0.0
+                drive_min = 0
+                if prev_point is not None:
+                    dist_from_prev = haversine_distance_km(prev_point[0], prev_point[1], lat, lon)
+                    drive_min = round(dist_from_prev / 25.0 * 60, 1)
+                    total_dist_day += dist_from_prev
+
                 prev_point = (lat, lon)
 
                 day_slots.append({
@@ -261,8 +294,8 @@ class SpatialItineraryPlanner:
                     "rating": m_place.get("rating_value", 4.5),
                     "review_count": m_place.get("review_count", 0),
                     "description": m_hub["desc"],
-                    "distance_from_prev_km": 0.0,
-                    "travel_time_min": 0
+                    "distance_from_prev_km": dist_from_prev,
+                    "travel_time_min": drive_min
                 })
 
             # -------------------------------------------------------------
@@ -439,7 +472,18 @@ class SpatialItineraryPlanner:
                 dish_hl = slot.get("dish_highlight")
 
                 # Biểu tượng tương ứng
-                icon = "🏛️" if "Tham quan" in slot["activity_type"] else ("🍲" if "Ẩm thực" in slot["activity_type"] else "🌙")
+                if slot.get("category") == "UserLocation" or slot.get("activity_type") == "Khởi hành":
+                    icon = "🚩"
+                    md_lines.append(f"**{icon} {time_range} — {slot_name}: {place_name}**")
+                    md_lines.append(f"• *Vị trí GPS:* {slot.get('address', 'Vị trí hiện tại')}")
+                    md_lines.append(f"• *Ghi chú:* {desc}\n")
+                    continue
+                elif "Tham quan" in slot.get("activity_type", ""):
+                    icon = "🏛️"
+                elif "Ẩm thực" in slot.get("activity_type", ""):
+                    icon = "🍲"
+                else:
+                    icon = "🌙"
                 
                 md_lines.append(f"**{icon} {time_range} — {slot_name}: {place_name}** ({cat})")
                 

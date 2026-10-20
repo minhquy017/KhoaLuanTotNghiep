@@ -38,18 +38,7 @@ Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Applicatio
 \label{fig:spatial-kg-schema}
 \end{figure}
 
-Theo lược đồ tại Hình \ref{fig:spatial-kg-schema}, hệ thống bao gồm năm lớp nút thực thể chính:
-Một là lớp Điểm tham quan (Attraction), đại diện cho các di tích lịch sử, danh lam thắng cảnh, đền chùa, lăng tẩm và bảo tàng tại Huế (như Đại Nội Huế, Chùa Thiên Mụ, Lăng Tự Đức, Đồi Vọng Cảnh, Chợ Đông Ba).
-Hai là lớp Cơ sở ẩm thực (Restaurant), bao gồm các nhà hàng, quán ăn truyền thống, quán cà phê và điểm ẩm thực đường phố.
-Ba là lớp Cơ sở lưu trú (Hotel), gồm các khách sạn, khu nghỉ dưỡng, nhà nghỉ và homestay.
-Bốn là lớp Món ăn đặc sản (Dish), là các thực thể ẩm thực chuẩn hóa thuộc Bộ từ điển ẩm thực Việt Nam (như Bún bò Huế, Cơm hến, Bánh bột lọc, Chè heo quay).
-Năm là lớp Khu vực địa lý (Locality), gồm các đơn vị hành chính phường, xã, quận huyện thuộc tỉnh Thừa Thiên Huế và các địa phương phụ cận.
-
-Giữa các lớp thực thể, đồ thị xác lập bốn mối quan hệ ngữ nghĩa cơ bản:
-Quan hệ phân cấp địa giới $(u, \text{LOCATED\_IN}, v)$: Kết nối một điểm tham quan hoặc cơ sở dịch vụ $u$ với đơn vị hành chính $v$ chứa nó.
-Quan hệ lân cận không gian $(u, \text{NEAR\_BY}, v)$: Được thiết lập tự động giữa hai địa điểm $u$ và $v$ nếu khoảng cách mặt cầu Haversine $d(u, v) \le 1,5\text{ km}$. Cạnh này mang trọng số thực $w = d(u, v)$ phản ánh chính xác cự ly vật lý.
-Quan hệ phục vụ ẩm thực $(u, \text{SERVES}, m)$: Kết nối một nhà hàng $u$ với một món ăn đặc sản $m$ nếu món ăn đó được xác nhận thông qua quy trình khai phá dữ liệu nhận xét với điểm tin cậy cao.
-Quan hệ phản hồi trải nghiệm $(u, \text{HAS\_REVIEW}, r)$: Kết nối một địa điểm $u$ với các khối văn bản nhận xét phân tử $r$ chứa đựng đánh giá thực tế của du khách.
+Theo lược đồ tại Hình \ref{fig:spatial-kg-schema}, hệ thống mô hình hóa không gian du lịch Cố đô thông qua năm lớp nút thực thể chính, bao gồm lớp Điểm tham quan (Attraction) đại diện cho các di tích lịch sử và danh lam cổ kính, lớp Cơ sở ẩm thực (Restaurant) bao quát các nhà hàng và quán ăn truyền thống, lớp Cơ sở lưu trú (Hotel) quản lý hệ thống khách sạn và homestay, lớp Món ăn đặc sản (Dish) chuẩn hóa 570 món ăn Cố đô, cùng lớp Khu vực địa lý (Locality) định danh các đơn vị hành chính xã phường. Giữa các thực thể này, cấu trúc đồ thị xác lập bốn mối quan hệ ngữ nghĩa cốt lõi, bao gồm quan hệ phân cấp địa giới $(u, \text{LOCATED\_IN}, v)$ định vị cơ sở trong phân vùng hành chính, quan hệ lân cận không gian $(u, \text{NEAR\_BY}, v)$ liên kết hai địa điểm có khoảng cách trắc địa Haversine $d(u, v) \le 1,5\text{ km}$ với trọng số cự ly vật lý thực tế, quan hệ phục vụ ẩm thực $(u, \text{SERVES}, m)$ kết nối cơ sở ăn uống với món ăn đặc sản thông qua điểm bảo chứng thực đơn ngầm, và quan hệ phản hồi trải nghiệm $(u, \text{HAS\_REVIEW}, r)$ gắn kết thực thể với các khối nhận xét phân tử của du khách.
 
 \subsection{Đặc tính topo và Quy mô dữ liệu đồ thị}
 \label{subsec:ch1-topo}

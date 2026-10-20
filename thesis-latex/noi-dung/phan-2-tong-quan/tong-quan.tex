@@ -57,12 +57,84 @@ Về mô hình suy luận ngôn ngữ, nghiên cứu tích hợp mô hình mã n
 
 Một trong những hạn chế lớn của các hệ thống gợi ý ẩm thực hiện nay là sự phụ thuộc vào các menu tĩnh đăng ký trên giấy phép kinh doanh, vốn chỉ liệt kê tên quán và danh mục chung mà không phản ánh được món ăn thực sự làm nên danh tiếng của quán. Trong thực tế, du khách đến một quán ăn cụ thể thường vì một hoặc hai món đặc sản gia truyền được cộng đồng truyền tai nhau.
 
-Để giải quyết khoảng trống này, kỹ thuật Khai phá thực đơn ngầm (Implicit Menu Mining) được đề xuất thông qua việc kết hợp Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer gồm 570 món ăn chuẩn hóa) với thuật toán đối sánh chuỗi thực thể mờ (Fuzzy String Entity Linking) trên tập ngữ liệu 1,69 triệu bài nhận xét du khách từ TripAdvisor~\cite{tripadvisor2024}. Một cạnh quan hệ $\mathbf{e}_{\text{SERVES}} = (u, \text{SERVES}, m)$ liên kết giữa nhà hàng $u$ và món ăn $m$ chỉ được hình thành trên đồ thị khi thỏa mãn điều kiện ngưỡng tần suất và chỉ số tin cậy thống kê:
+Để giải quyết khoảng trống này, kỹ thuật Khai phá thực đơn ngầm (Implicit Menu Mining) được đề xuất thông qua việc kết hợp Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer gồm 570 món ăn chuẩn hóa) với thuật toán đối sánh chuỗi thực thể mờ (Fuzzy String Entity Linking) trên tập ngữ liệu đánh giá du khách từ TripAdvisor~\cite{tripadvisor2024}. Một cạnh quan hệ $\mathbf{e}_{\text{SERVES}} = (u, \text{SERVES}, m)$ liên kết giữa nhà hàng $u$ và món ăn $m$ chỉ được hình thành trên đồ thị khi thỏa mãn điều kiện ngưỡng tần suất và chỉ số tin cậy thống kê:
 \begin{equation}
     \text{Conf}(u, m) = \frac{\sum_{k \in \mathcal{K}_u} \mathbb{I}(m \in \text{text}_k) \cdot \text{Rating}_k}{\sum_{k \in \mathcal{K}_u} \text{Rating}_k} \ge \tau_{\text{dish}}
     \label{eq:dish-confidence}
 \end{equation}
 trong đó $\mathcal{K}_u$ là tập hợp toàn bộ các bài đánh giá viết về nhà hàng $u$; $\mathbb{I}(\cdot)$ là hàm chỉ thị nhị phân có giá trị bằng 1 nếu món ăn $m$ xuất hiện trong nội dung bài nhận xét thứ $k$ và bằng 0 trong trường hợp ngược lại; $\text{Rating}_k \in [1, 5]$ là điểm số hài lòng của du khách trong bài nhận xét $k$; và $\tau_{\text{dish}}$ là ngưỡng tin cậy tối thiểu để xác lập quan hệ phục vụ món ăn. Nhờ cơ chế này, đồ thị tri thức không chỉ biết nhà hàng bán món gì, mà còn định lượng được mức độ bảo chứng của cộng đồng du khách đối với từng món đặc sản cụ thể.
+
+\subsection*{1.5. Mô hình Không gian Véc-tơ và Kỹ thuật Nhúng Ngữ nghĩa Đa ngôn ngữ}
+\addcontentsline{toc}{subsection}{1.5. Mô hình Không gian Véc-tơ và Kỹ thuật Nhúng Ngữ nghĩa Đa ngôn ngữ}
+
+Trong các hệ thống xử lý ngôn ngữ tự nhiên hiện đại, Mô hình Không gian Véc-tơ (Vector Space Model -- VSM) biểu diễn các đơn vị ngôn ngữ (từ, đoạn văn bản, hoặc câu hỏi truy vấn) dưới dạng các véc-tơ liên tục trong không gian véc-tơ thực $D$ chiều~\cite{reimers2019sentencebert}. Quá trình ánh xạ này được thực thi bởi mạng nơ-ron Transformer thông qua hàm ánh xạ mã hóa ngữ nghĩa:
+\begin{equation}
+    f_{\text{embed}}: \mathcal{S} \to \mathbb{R}^D, \quad \mathbf{e} = f_{\text{embed}}(s)
+    \label{eq:embedding-func}
+\end{equation}
+trong đó $\mathcal{S}$ là tập hợp chuỗi văn bản đầu vào; $s \in \mathcal{S}$ là câu truy vấn hoặc đoạn văn bản cẩm nang du lịch; và $\mathbf{e} \in \mathbb{R}^D$ là véc-tơ nhúng ngữ nghĩa tương ứng. Để khử bỏ ảnh hưởng của độ dài chuỗi văn bản đến độ lớn véc-tơ, chuẩn hóa $L_2$ luôn được áp dụng: $\hat{\mathbf{e}} = \mathbf{e} / \|\mathbf{e}\|_2$.
+
+Nhằm tối ưu hóa năng lực nắm bắt ngữ nghĩa đối với ngôn ngữ tiếng Việt trong miền du lịch địa phương, các mô hình nhúng tiên tiến đa ngôn ngữ như BGE-M3 (BAAI General Embedding)~\cite{chen2024bgem3} kết hợp đồng thời ba cơ chế biểu diễn: biểu diễn dày (Dense Representation) để nắm bắt ngữ nghĩa toàn cục, biểu diễn thưa đa chức năng (Sparse Representation) tương tự trọng số TF-IDF / BM25 để bảo toàn các từ khóa thực thể đặc biệt (tên lăng vua, tên chùa cổ), và cơ chế biểu diễn đa cấp hạt (Multi-granularity) phục vụ đối sánh từ cấp độ từ khóa đến cấp độ khối văn bản. 
+
+Tuy nhiên, như đã phân tích, mô hình véc-tơ thuần túy chỉ giải quyết được sự tương đồng phân bố từ vựng trong không gian ngữ nghĩa mà hoàn toàn không thể mã hóa được các tiên đề tô-pô không gian địa lý. Do đó, việc kết hợp mô hình không gian véc-tơ với Đồ thị Tri thức Không gian là điều kiện tiên quyết để đạt được khả năng truy xuất chính xác cả về mặt ngữ nghĩa lẫn cự ly thực tế.
+
+\subsection*{1.6. Cơ chế Tự suy ngẫm và Phân loại Đánh giá Tin cậy trong Agentic RAG}
+\addcontentsline{toc}{subsection}{1.6. Cơ chế Tự suy ngẫm và Phân loại Đánh giá Tin cậy trong Agentic RAG}
+
+Khác biệt cốt lõi giữa hệ thống RAG thụ động truyền thống và hệ thống RAG hướng tác tử (Agentic RAG) nằm ở khả năng Tự suy ngẫm (Self-Reflection) và Đánh giá chất lượng tài liệu trước khi tạo sinh (Document and Context Grading)~\cite{asai2024selfrag}. Thay vì trực tiếp đưa toàn bộ ngữ cảnh truy xuất vào dấu nhắc sinh câu trả lời của mô hình ngôn ngữ lớn, tác tử sẽ thực thi một bước phản tư nhằm đánh giá độ tương thích giữa ngữ cảnh $\mathcal{C}$ thu được từ đồ thị với câu hỏi $q$ của người dùng.
+
+Hàm đánh giá độ tin cậy được mô hình hóa toán học thông qua phân phối xác suất dự đoán của bộ phân loại:
+\begin{equation}
+    \text{Score}(\mathcal{C}, q) = \sigma \left( \mathbf{W}_g \cdot [\mathbf{h}_q; \mathbf{h}_{\mathcal{C}}] + b_g \right)
+    \label{eq:grading-score}
+\end{equation}
+trong đó $\mathbf{h}_q \in \mathbb{R}^D$ và $\mathbf{h}_{\mathcal{C}} \in \mathbb{R}^D$ lần lượt là biểu diễn véc-tơ ẩn của câu truy vấn và ngữ cảnh trích xuất; $[\cdot ; \cdot]$ là phép nối véc-tơ; $\mathbf{W}_g \in \mathbb{R}^{1 \times 2D}$ và $b_g \in \mathbb{R}$ là ma trận trọng số và độ lệch của bộ phân loại; $\sigma(z) = (1 + e^{-z})^{-1}$ là hàm kích hoạt sigmoid đưa giá trị về đoạn $[0, 1]$.
+
+Dựa trên giá trị của hàm tin cậy $\text{Score}(\mathcal{C}, q)$, đồ thị trạng thái LangGraph định tuyến luồng thực thi theo ba nhánh điều kiện:
+\begin{equation}
+    \text{Route}(\mathcal{C}, q) = \begin{cases}
+        \text{Generate Answer}, & \text{khi } \text{Score}(\mathcal{C}, q) \ge \theta_{\text{high}} \\
+        \text{Web Search Fallback}, & \text{khi } \theta_{\text{low}} \le \text{Score}(\mathcal{C}, q) < \theta_{\text{high}} \\
+        \text{Rewrite Query}, & \text{khi } \text{Score}(\mathcal{C}, q) < \theta_{\text{low}}
+    \end{cases}
+    \label{eq:branching-logic}
+\end{equation}
+trong đó $\theta_{\text{high}} = 0,7$ và $\theta_{\text{low}} = 0,3$ là các ngưỡng quyết định định tuyến. Cơ chế này bảo đảm triệt tiêu hiện tượng tạo sinh ảo giác khi cơ sở tri thức nội bộ không đủ thông tin, đồng thời tối ưu hóa việc phân phối tài nguyên tính toán cục bộ.
+
+\subsection*{1.7. Mô hình hóa Toán học Bài toán Thiết kế Chuyến đi Du lịch có Ràng buộc}
+\addcontentsline{toc}{subsection}{1.7. Mô hình hóa Toán học Bài toán Thiết kế Chuyến đi Du lịch có Ràng buộc}
+
+Bài toán Thiết kế Chuyến đi Du lịch (Tourist Trip Design Problem -- TTDP) là bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem -- OP)~\cite{vansteenwegen2011orienteering}. Trong nghiên cứu này, bài toán TTDP được mô hình hóa trên mạng lưới địa lý của thành phố Huế có xét đến các ràng buộc thời gian, điểm ưa thích của du khách và cự ly di chuyển thực tế.
+
+Cho đồ thị có hướng $\mathcal{G}_{\text{tour}} = (\mathcal{V}_{\text{tour}}, \mathcal{A})$, trong đó $\mathcal{V}_{\text{tour}} = \{v_0, v_1, \dots, v_n\}$ là tập hợp các điểm đến tiềm năng, bao gồm điểm xuất phát $v_0$ (ví dụ: khách sạn lưu trú của du khách) và điểm kết thúc $v_n$. Mỗi địa điểm $v_i \in \mathcal{V}_{\text{tour}}$ được gán kèm một điểm số ưa thích $S_i \ge 0$ phản ánh mức độ phù hợp với sở thích của du khách và thời gian lưu lại tham quan hoặc thưởng thức ẩm thực $T_i \ge 0$. Mỗi cung liên kết có hướng $(v_i, v_j) \in \mathcal{A}$ đặc trưng cho hành trình di chuyển từ $v_i$ đến $v_j$ với thời gian di chuyển $t_{ij} \ge 0$ được tính toán dựa trên cự ly khoảng cách mặt cầu Haversine và vận tốc di chuyển đô thị.
+
+Bài toán TTDP hướng đến việc xác định chuỗi hành trình tối ưu nhằm tối đa hóa tổng điểm số ưa thích tích lũy trong khi tổng thời gian hành trình không vượt quá ngân sách thời gian cho phép $T_{\max}$:
+\begin{equation}
+    \max \sum_{i=1}^{n-1} S_i y_i
+    \label{eq:ttdp-objective}
+\end{equation}
+với hệ thống các điều kiện ràng buộc:
+\begin{equation}
+    \sum_{j=1}^n x_{0j} = 1, \quad \sum_{i=0}^{n-1} x_{in} = 1
+    \label{eq:ttdp-start-end}
+\end{equation}
+\begin{equation}
+    \sum_{i=0, i \ne k}^{n-1} x_{ik} = \sum_{j=1, j \ne k}^n x_{kj} = y_k, \quad \forall k \in \{1, \dots, n-1\}
+    \label{eq:ttdp-conservation}
+\end{equation}
+\begin{equation}
+    \sum_{i=0}^{n-1} \sum_{j=1, j \ne i}^n t_{ij} x_{ij} + \sum_{i=1}^{n-1} T_i y_i \le T_{\max}
+    \label{eq:ttdp-time-budget}
+\end{equation}
+\begin{equation}
+    x_{ij} \in \{0, 1\}, \quad \forall (v_i, v_j) \in \mathcal{A}; \quad y_i \in \{0, 1\}, \quad \forall v_i \in \mathcal{V}_{\text{tour}}
+    \label{eq:ttdp-binary}
+\end{equation}
+\begin{equation}
+    (v_i, v_j) \in \mathcal{A} \implies d(v_i, v_j) \le \tau_{\text{spatial}}
+    \label{eq:ttdp-spatial-constraint}
+\end{equation}
+trong đó $x_{ij}$ là biến quyết định nhị phân có giá trị bằng 1 nếu hành trình di chuyển trực tiếp từ điểm $v_i$ sang điểm $v_j$ và bằng 0 trong trường hợp ngược lại; $y_i$ là biến nhị phân chỉ thị điểm đến $v_i$ có được lựa chọn ghé thăm trong hành trình hay không; phương trình (\ref{eq:ttdp-start-end}) bảo đảm chuyến đi xuất phát duy nhất tại $v_0$ và kết thúc tại $v_n$; phương trình (\ref{eq:ttdp-conservation}) bảo đảm tính liên tục của luồng di chuyển tại mỗi điểm ghé thăm; bất đẳng thức (\ref{eq:ttdp-time-budget}) khống chế tổng thời gian di chuyển và lưu trú không vượt quá ngân sách $T_{\max}$; và điều kiện (\ref{eq:ttdp-spatial-constraint}) bảo đảm các điểm dừng liên tiếp phải nằm trong bán kính lân cận hợp lý nhằm triệt tiêu hiện tượng di chuyển ziczac qua sông Hương.
 
 \section*{2. Tổng quan các công trình nghiên cứu liên quan}
 \addcontentsline{toc}{section}{2. Tổng quan các công trình nghiên cứu liên quan}
@@ -77,7 +149,7 @@ Sự xuất hiện của GraphRAG do Edge và các đồng nghiệp đề xuất
 \subsection*{2.2. Các giải pháp định tuyến và Lập lịch trình du lịch thông minh}
 \addcontentsline{toc}{subsection}{2.2. Các giải pháp định tuyến và Lập lịch trình du lịch thông minh}
 
-Bài toán Lập lịch trình du lịch tự động (Tourist Trip Design Problem -- TTDP) là một bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem). Các tiếp cận truyền thống thường sử dụng các thuật giải di truyền (Genetic Algorithms), tối ưu hóa bầy đàn (Particle Swarm Optimization) hoặc quy hoạch động để tìm kiếm tuyến đường tối đa hóa điểm số ưa thích của du khách trong giới hạn ngân sách thời gian.
+Bài toán Lập lịch trình du lịch tự động (Tourist Trip Design Problem -- TTDP) là một bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem)~\cite{vansteenwegen2011orienteering}. Các tiếp cận truyền thống thường sử dụng các thuật giải di truyền (Genetic Algorithms), tối ưu hóa bầy đàn (Particle Swarm Optimization) hoặc quy hoạch động để tìm kiếm tuyến đường tối đa hóa điểm số ưa thích của du khách trong giới hạn ngân sách thời gian.
 
 Trong những năm gần đây, xu hướng tích hợp LLM vào bài toán TTDP đã mở ra khả năng hiểu sâu ngôn ngữ tự nhiên và nắm bắt sở thích phức tạp của người dùng. Tuy nhiên, việc để LLM tự do sinh lịch trình mà không có sự kiểm soát của giải thuật không gian thường dẫn đến các tuyến đường đi lại ziczac, phân bố thời gian phi thực tế và vi phạm nghiêm trọng cự ly di chuyển giữa các điểm đến. Nghiên cứu của Ballatore và các đồng sự~\cite{ballatore2014spatial} đã nhấn mạnh tầm quan trọng của việc kiểm soát chất lượng dữ liệu không gian trong các dịch vụ định vị. Do đó, việc kết hợp giữa năng lực hiểu ngôn ngữ của LLM và thuật toán phân cụm địa lý có kiểm soát ràng buộc cự ly là hướng đi tất yếu để tạo ra các lịch trình du lịch khả thi trong thực tiễn.
 

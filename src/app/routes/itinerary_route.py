@@ -22,7 +22,9 @@ def generate_itinerary(req: ItineraryRequest):
         plan_data = planner.plan_itinerary(
             num_days=req.num_days,
             preferred_dishes=req.preferred_dishes,
-            trip_type=req.trip_type or "Couples"
+            trip_type=req.trip_type or "Couples",
+            user_lat=req.user_lat,
+            user_lng=req.user_lng
         )
         md_text = planner.format_itinerary_markdown(plan_data)
 

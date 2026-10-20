@@ -360,6 +360,8 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     reviews = state.get("reviews", [])
     web_results = state.get("web_results", [])
 
+    target_dish = state.get("target_dish")
+
     # Gom ngữ cảnh
     context_blocks = []
 
@@ -387,7 +389,6 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     full_context = "\n\n".join(context_blocks) if context_blocks else "Không tìm thấy dữ liệu liên quan."
 
     # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
-    # Kiểm tra xem câu hỏi có phải dạng chỉ đường / điều hướng hay không
     norm_q = query.lower()
     nav_keywords = [
         "chỉ đường", "chi duong", "đường đi", "duong di", "đi đến", "di den", 
@@ -398,8 +399,15 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
         ("từ " in norm_q or "tu " in norm_q) and any(w in norm_q for w in ["đi ", "đến ", "den ", "tới ", "toi ", "sang ", "qua "])
     ) or any(k in norm_q for k in ["đi tới", "di toi", "đi sang", "di sang", "đi qua", "di qua"])
 
-    # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
-    system_prompt = """Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
+    dish_rule = ""
+    if target_dish:
+        dish_rule = f"""
+4. YÊU CẦU ĐẶC BIỆT VỀ MÓN ĂN:
+   - Du khách đang hỏi về món: "{target_dish}".
+   - Bạn CHỈ ĐƯỢC PHÉP giới thiệu các quán ăn phục vụ món {target_dish} từ danh sách ngữ cảnh.
+   - Tuyệt đối KHÔNG ĐƯỢC nhắc đến các món ăn hay quán ăn khác (như cơm hến, bánh bèo, chè...) không liên quan đến {target_dish}."""
+
+    system_prompt = f"""Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
 
 Nguyên tắc trả lời bắt buộc:
 1. VĂN PHONG TỰ NHIÊN, LỊCH SỰ, ẤM ÁP:
@@ -413,7 +421,7 @@ Nguyên tắc trả lời bắt buộc:
 
 3. VỚI CÂU HỎI VỀ ẨM THỰC / DANH THẮNG:
    - Đi thẳng vào các thắc mắc (địa chỉ, giá cả, thời điểm đẹp nhất trong ngày, món ngon đặc sản).
-   - Dùng icon sinh động (🏯, 🍲, 📍, ⏰) và gạch đầu dòng rõ ràng."""
+   - Dùng icon sinh động (🏯, 🍲, 📍, ⏰) và gạch đầu dòng rõ ràng.{dish_rule}"""
 
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
@@ -448,6 +456,13 @@ Nguyên tắc trả lời bắt buộc:
             )
         elif is_nav:
             answer_text = "Dạ, em đã ghi nhận điểm đến và định vị lộ trình di chuyển tối ưu trên bản đồ bên cạnh cho bạn rồi nhé!"
+        elif target_dish and matched_places:
+            places_bullets = "\n".join([f"• **{p.get('name')}** ({p.get('address', p.get('street_address', 'TP. Huế'))})" for p in matched_places[:5]])
+            answer_text = (
+                f"Dạ, em xin gợi ý danh sách các quán **{target_dish}** ngon và chuẩn vị nhất tại Huế dành cho bạn:\n\n"
+                f"{places_bullets}\n\n"
+                f"Bạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!"
+            )
         elif matched_places:
             places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
             answer_text = (

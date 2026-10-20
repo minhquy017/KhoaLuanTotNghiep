@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Du Lịch Cố Đô Huế</title>
   <meta name="description" content="Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Cố đô Huế thông minh." />
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
 
   <!-- Preconnect Google Fonts for Typography Excellence -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
 
   <!-- Leaflet CSS -->
@@ -42,43 +43,95 @@
         </div>
       </div>
 
-      <nav class="nav-tabs" role="tablist" aria-label="Tính năng chính">
-        <button class="nav-tab active" role="tab" id="tab-btn-itinerary" aria-selected="true"
-          aria-controls="panel-itinerary" data-target="itinerary">
-          <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+      <div class="header-status">
+        <button type="button" class="header-map-toggle-btn" id="btn-header-toggle-map"
+          title="Mở / Thu gọn bản đồ không gian" aria-label="Mở bản đồ">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
             <line x1="9" y1="3" x2="9" y2="18" />
             <line x1="15" y1="6" x2="15" y2="21" />
           </svg>
-          <span class="tab-label">Lịch trình</span>
+          <span id="header-map-toggle-label">Mở Bản đồ</span>
         </button>
-        <button class="nav-tab" role="tab" id="tab-btn-chat" aria-selected="false" aria-controls="panel-chat"
-          data-target="chat">
-          <svg class="tab-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-          <span class="tab-label">Hỏi đáp</span>
-        </button>
-      </nav>
-
-      <div class="header-status">
         <div class="status-pill" id="system-status-pill" title="Trạng thái hệ thống">
           <span class="status-dot"></span>
           <span class="status-text" id="status-label">Trực tuyến</span>
+        </div>
+
+        <!-- Header Auth Container (Log in & Sign up phong cách ChatGPT / Cố Đô) -->
+        <div class="header-auth-container" id="header-auth-container">
+          <!-- Khi chưa đăng nhập: 2 nút Log in & Sign up -->
+          <button type="button" class="btn-auth-header btn-header-login" id="btn-header-login"
+            title="Đăng nhập tài khoản">
+            <span>Đăng nhập</span>
+          </button>
+          <button type="button" class="btn-auth-header btn-header-signup" id="btn-header-signup"
+            title="Đăng ký tài khoản mới">
+            <span>Đăng ký</span>
+          </button>
+
+          <!-- Khi đã đăng nhập: User Profile Chip & Dropdown Menu -->
+          <div class="header-user-chip hidden" id="header-user-chip" role="button" aria-haspopup="true"
+            aria-expanded="false" title="Menu tài khoản cá nhân">
+            <div class="user-avatar-wrap">
+              <img id="user-avatar-img" class="user-avatar hidden" alt="Avatar" />
+              <div id="user-avatar-fallback" class="user-avatar user-avatar-fallback">U</div>
+            </div>
+            <span class="user-name-label" id="user-name-label">Người dùng</span>
+            <svg class="chevron-down-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <!-- User Dropdown Menu -->
+          <div class="user-dropdown-menu" id="user-dropdown-menu">
+            <div class="dropdown-header">
+              <div class="dropdown-user-info">
+                <div class="dropdown-user-name" id="dropdown-user-name">Người dùng</div>
+                <div class="dropdown-user-email" id="dropdown-user-email">email@example.com</div>
+              </div>
+              <span class="dropdown-badge-google hidden" id="dropdown-badge-google">Google</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" id="btn-open-saved-tours">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>Lịch trình đã lưu</span>
+            </button>
+            <button type="button" class="dropdown-item" id="btn-open-firebase-config">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                </path>
+              </svg>
+              <span>Cài đặt Firebase / Cloud DB</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item dropdown-item-danger" id="btn-header-logout">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Đăng xuất</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Studio Layout: Balanced Split Grid -->
-  <main class="studio-layout">
+  <!-- Main Studio Layout: Context-Aware Dynamic Studio (Chatbot First) -->
+  <main class="studio-layout map-collapsed">
     <!-- Left Panel: Spatial Map Canvas Studio -->
     <section class="spatial-canvas-panel" aria-label="Bản đồ không gian Cố đô Huế">
       <div class="map-toolbar">
         <div class="toolbar-title">
-          <span class="toolbar-meta" id="map-active-meta" title="Toàn cảnh Di sản & Ẩm thực">Toàn cảnh Di sản & Ẩm thực</span>
+          <span class="toolbar-meta" id="map-active-meta" title="Bản đồ Di sản">Bản đồ Di sản</span>
         </div>
         <div class="toolbar-actions">
           <select class="map-style-select" id="select-map-style" title="Chọn phong cách giao diện bản đồ">
@@ -100,11 +153,20 @@
             </svg>
             <span id="locate-btn-label">Vị trí của tôi</span>
           </button>
-          <button class="map-btn btn-toggle-workbench" id="btn-toggle-workbench" title="Thu gọn / Mở rộng bảng điều khiển bên phải" aria-label="Toàn cảnh bản đồ">
-            <svg class="icon-toggle-expand" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button class="map-btn btn-toggle-workbench" id="btn-toggle-workbench"
+            title="Thu gọn / Mở rộng bảng điều khiển bên phải" aria-label="Toàn cảnh bản đồ">
+            <svg class="icon-toggle-expand" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
               <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
             </svg>
             <span id="workbench-toggle-text">Toàn cảnh</span>
+          </button>
+          <button class="map-btn btn-close-map-panel" id="btn-close-map-panel"
+            title="Thu gọn bản đồ (Tập trung giao diện Chatbot)" aria-label="Thu gọn bản đồ">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+            <span>Thu gọn</span>
           </button>
         </div>
       </div>
@@ -166,6 +228,80 @@
 
       <div id="map-container" class="map-viewport" aria-label="Bản đồ tương tác Leaflet"></div>
 
+      <!-- Floating Leg Navigation Stepper (Tối ưu Lộ trình Từng chặng) -->
+      <!-- Floating Route Navigation Card (Modern Clean Editorial Style) -->
+      <div id="map-leg-stepper" class="map-leg-stepper" style="display: none;">
+        <!-- Card Header: Badges, Distance/Duration & Mode Toggle -->
+        <div class="leg-card-header">
+          <div class="leg-card-meta-group">
+            <span class="leg-step-badge" id="leg-step-badge">
+              <span class="step-badge-dot"></span>
+              <span>Chặng 1/4</span>
+            </span>
+            <span class="leg-day-badge" id="leg-day-badge">Ngày 1</span>
+            <span class="leg-meta-dot">•</span>
+            <div class="leg-meta-row" id="leg-meta-row">
+              <span class="leg-meta-item" id="leg-distance-text">
+                <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <path
+                    d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                  <circle cx="7" cy="17" r="2" />
+                  <circle cx="17" cy="17" r="2" />
+                </svg>
+                <span>3.0 km</span>
+              </span>
+              <span class="leg-meta-divider">·</span>
+              <span class="leg-meta-item" id="leg-duration-text">
+                <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span>~6 phút</span>
+              </span>
+            </div>
+          </div>
+          <button type="button" class="btn-leg-mode-toggle" id="btn-toggle-route-mode"
+            title="Chuyển đổi giữa Chế độ xem từng chặng và Toàn cảnh">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+              <path d="M2 12h20" />
+            </svg>
+            <span id="route-mode-label">Toàn cảnh</span>
+          </button>
+        </div>
+
+        <!-- Card Body: Prev Navigation, Origin -> Destination, Next Navigation -->
+        <div class="leg-card-body">
+          <button type="button" class="btn-leg-nav" id="btn-prev-leg" title="Chặng trước" aria-label="Chặng trước">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div class="leg-route-title" id="leg-route-title">
+            <span class="leg-point-from">Điểm xuất phát</span>
+            <span class="leg-arrow-icon">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </span>
+            <span class="leg-point-to">Đại Nội Huế</span>
+          </div>
+
+          <button type="button" class="btn-leg-nav" id="btn-next-leg" title="Chặng tiếp theo"
+            aria-label="Chặng tiếp theo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
       <div class="map-legend">
         <div class="legend-item"><span class="legend-dot dot-attraction"></span> Di tích / Thắng cảnh</div>
         <div class="legend-item"><span class="legend-dot dot-restaurant"></span> Ẩm thực Cố Đô</div>
@@ -175,22 +311,72 @@
       </div>
     </section>
 
-    <!-- Right Panel: Editorial Workbench & Assistant -->
-    <section class="editorial-workbench-panel" aria-label="Bảng điều khiển tác vụ">
-
-      <!-- PANEL 1: LẬP LỊCH TRÌNH TOUR -->
-      <article class="tab-panel active" id="panel-itinerary" role="tabpanel" aria-labelledby="tab-btn-itinerary">
-        <div class="panel-header">
-          <h2 class="panel-title">Gợi ý lịch trình</h2>
-          <p class="panel-desc">
-            Chọn số ngày và món ăn bạn thích — hệ thống sẽ sắp xếp tuyến đường hợp lý theo khoảng cách thực tế.
-          </p>
+    <!-- Right Panel: Unified Editorial Workbench & AI Copilot Workspace -->
+    <section class="editorial-workbench-panel" aria-label="Bảng điều khiển tác vụ AI">
+      <!-- Workspace Header -->
+      <div class="workbench-header">
+        <div class="workbench-header-main">
+          <h2 class="workbench-title">Hỏi đáp & Lịch trình Thông minh</h2>
         </div>
+        <div class="workbench-header-actions">
+          <button type="button" class="btn-workbench-action" id="btn-workbench-toggle-map"
+            title="Mở / Thu gọn bản đồ bên cạnh" aria-label="Bản đồ">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+              <line x1="9" y1="3" x2="9" y2="18" />
+              <line x1="15" y1="6" x2="15" y2="21" />
+            </svg>
+            <span id="workbench-map-toggle-label">Bản đồ</span>
+          </button>
+          <button type="button" class="btn-workbench-action" id="btn-toggle-planner"
+            title="Mở bộ công cụ tạo lịch trình" aria-expanded="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+              <line x1="9" y1="3" x2="9" y2="18" />
+              <line x1="15" y1="6" x2="15" y2="21" />
+            </svg>
+            <span>Tạo lịch trình</span>
+          </button>
+          <button type="button" class="btn-workbench-action" id="btn-clear-chat" title="Làm mới cuộc trò chuyện"
+            aria-label="Xóa đoạn hội thoại">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            <span>Làm mới</span>
+          </button>
+        </div>
+      </div>
 
-        <form id="form-itinerary" class="itinerary-controls-card">
+      <!-- Collapsible Quick Planner Card -->
+      <div class="quick-planner-card" id="quick-planner-card" hidden>
+        <div class="quick-planner-header">
+          <div class="quick-planner-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+            </svg>
+            <span>Lập lịch trình tour tối ưu</span>
+          </div>
+          <button type="button" class="btn-close-planner" id="btn-close-planner" title="Đóng bảng lập lịch">✕</button>
+        </div>
+        <form id="form-itinerary" class="quick-planner-form">
+          <div class="planner-origin-preview">
+            <span class="origin-icon">📍</span>
+            <div class="origin-text">
+              <span class="origin-label">Điểm xuất phát Tour</span>
+              <strong class="origin-name" id="planner-origin-name">Vị trí hiện tại của bạn</strong>
+            </div>
+            <button type="button" class="btn-refresh-origin" id="btn-refresh-origin" title="Cập nhật tọa độ GPS">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+              </svg>
+            </button>
+          </div>
+
           <div class="form-row-grid">
             <div class="form-group">
-              <label for="select-days" class="form-label">Số ngày</label>
+              <label for="select-days" class="form-label">Số ngày du lịch</label>
               <select id="select-days" class="form-select">
                 <option value="1">1 ngày</option>
                 <option value="2" selected>2 ngày</option>
@@ -210,7 +396,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Món muốn ăn</label>
+            <label class="form-label">Món ưu tiên thưởng thức</label>
             <div class="dish-tag-cloud" id="dish-tag-cloud">
               <button type="button" class="dish-tag active" data-dish="Bún bò Huế">Bún bò Huế</button>
               <button type="button" class="dish-tag active" data-dish="Bánh bèo, nậm, lọc">Bánh bèo, nậm, lọc</button>
@@ -221,115 +407,94 @@
             </div>
           </div>
 
-          <div class="form-actions">
-            <button type="submit" id="btn-generate-itinerary" class="btn btn-primary">
+          <div class="quick-planner-actions">
+            <button type="submit" id="btn-generate-itinerary" class="btn btn-primary btn-generate">
               <span class="btn-spinner"></span>
               <span class="btn-text">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
                   <line x1="9" y1="3" x2="9" y2="18" />
                   <line x1="15" y1="6" x2="15" y2="21" />
                 </svg>
-                Tạo lịch trình
+                Tạo lịch trình vào Luồng Chat
               </span>
             </button>
           </div>
         </form>
+      </div>
 
-        <!-- Itinerary Results Container -->
-        <div id="itinerary-results" class="results-container">
-          <div class="empty-state">
-            <div class="empty-art" aria-hidden="true">
-              <svg width="54" height="54" viewBox="0 0 48 48" fill="none">
-                <rect x="4" y="4" width="40" height="40" rx="10" stroke="#E7E5E4" stroke-width="1.5" fill="#FAFAF9" />
-                <path d="M12 32H36" stroke="#18181B" stroke-width="1.5" stroke-linecap="round" />
-                <path d="M14 26H34" stroke="#1C1917" stroke-width="1.5" stroke-linecap="round" />
-                <path d="M18 26V32M30 26V32" stroke="#1C1917" stroke-width="1.5" />
-                <path d="M11 26C16 20 20 18 24 18C28 18 32 20 37 26" stroke="#18181B" stroke-width="1.5"
-                  stroke-linecap="round" />
-                <circle cx="24" cy="13" r="2" fill="#18181B" />
-              </svg>
-            </div>
-            <h3 class="empty-title">Chưa có lịch trình</h3>
-            <p class="empty-text">Chọn số ngày, món ăn rồi bấm <strong>Tạo lịch trình</strong> để bắt đầu.</p>
+      <!-- Chat Conversation History (Messages & Interactive Itinerary Deck Cards) -->
+      <div class="chat-thread" id="chat-thread" role="log" aria-live="polite">
+        <div class="chat-welcome-hero" id="chat-welcome-hero">
+          <div class="welcome-badge">
+            <span class="welcome-badge-dot"></span>
+            <span>Cố Đô Huế AI</span>
           </div>
-        </div>
-      </article>
+          <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
+          <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ
+            trình tham quan cho bạn.</p>
 
-      <!-- PANEL 2: TRỢ LÝ HỎI ĐÁP DU LỊCH (CHATBOT) -->
-      <article class="tab-panel" id="panel-chat" role="tabpanel" aria-labelledby="tab-btn-chat" hidden>
-        <div class="panel-header chat-panel-header">
-          <div class="chat-header-main">
-            <div class="chat-badge-pill">
-              <span class="chat-badge-dot"></span>
-              <span>Trợ lý Tri thức Cố Đô</span>
-            </div>
-            <h2 class="panel-title">Hỏi đáp & Tra cứu Không gian</h2>
-            <p class="panel-desc">
-              Hỏi bất kỳ điều gì về di tích, món ăn, tuyến đường — thông tin đồng bộ trực tiếp với bản đồ bên cạnh.
-            </p>
-          </div>
-          <button type="button" class="btn-clear-chat" id="btn-clear-chat" title="Làm mới cuộc trò chuyện" aria-label="Xóa đoạn hội thoại">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-            </svg>
-            <span>Làm mới</span>
-          </button>
-        </div>
-
-        <!-- Suggested queries chips -->
-        <div class="prompt-chips">
-          <span class="chips-label">Gợi ý nhanh:</span>
-          <button type="button" class="chip-item">
-            <span class="chip-emoji">🧭</span> Chỉ đường đến chùa Thiên Mụ?
-          </button>
-          <button type="button" class="chip-item">
-            <span class="chip-emoji">🚗</span> Từ Đại Nội đi chợ Đông Ba thế nào?
-          </button>
-          <button type="button" class="chip-item">
-            <span class="chip-emoji">🍜</span> Bún bò ngon gần Đại Nội?
-          </button>
-          <button type="button" class="chip-item">
-            <span class="chip-emoji">☕</span> Quán cà phê ngắm hoàng hôn sông Hương?
-          </button>
-        </div>
-
-        <!-- Chat conversation history -->
-        <div class="chat-thread" id="chat-thread" role="log" aria-live="polite">
-          <div class="chat-message assistant">
-            <div class="message-avatar">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z" />
-              </svg>
-            </div>
-            <div class="message-bubble">
-              <div class="message-author">Trợ lý Cố Đô</div>
-              <p>Xin chào! Mình có thể hỗ trợ bạn tìm kiếm di tích lịch sử, quán ăn truyền thống, quán cà phê hoặc lên lộ trình tham quan Huế. Bất kỳ địa điểm nào được nhắc tới sẽ được định vị trực tiếp trên bản đồ bên cạnh.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Chat input box container -->
-        <div class="chat-input-container">
-          <form id="chat-form" class="chat-input-wrapper">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Hỏi về điểm đến, đặc sản, khoảng cách ở Huế... (Nhấn Enter để gửi)" autocomplete="off" required />
-            <button type="submit" id="chat-send-btn" class="btn btn-primary btn-send" aria-label="Gửi câu hỏi">
-              <span class="btn-text">Gửi</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
+          <div class="welcome-prompt-grid">
+            <button type="button" class="prompt-card"
+              data-prompt="Lập lịch trình khám phá Huế 2 ngày 1 đêm tối ưu cho gia đình">
+              <div class="prompt-card-icon">🏛️</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Hành trình Di sản 2 Ngày</div>
+                <div class="prompt-card-desc">Đại Nội, Lăng Khải Định, Tự Đức & Chùa Thiên Mụ</div>
+              </div>
+              <span class="prompt-card-arrow">↗</span>
             </button>
-          </form>
-          <div class="chat-input-hints">
-            <span>💡 Nhấp vào thẻ địa điểm trong câu trả lời để phóng to & xem chi tiết trên bản đồ</span>
+
+            <button type="button" class="prompt-card"
+              data-prompt="Gợi ý các quán ăn đặc sản Huế chuẩn vị: bún bò mụ Rơi, bánh bèo nậm lọc, cơm hến và chè hẻm">
+              <div class="prompt-card-icon">🍜</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Bản đồ Ẩm thực Cố Đô</div>
+                <div class="prompt-card-desc">Bún bò mụ Rơi, bánh ép, cơm hến & chè hẻm nổi tiếng</div>
+              </div>
+              <span class="prompt-card-arrow">↗</span>
+            </button>
+
+            <button type="button" class="prompt-card"
+              data-prompt="Những quán cà phê và điểm ngắm hoàng hôn đẹp nhất bên bờ sông Hương">
+              <div class="prompt-card-icon">🌅</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Sunset & Cà phê Sông Hương</div>
+                <div class="prompt-card-desc">Điểm ngắm hoàng hôn đồi Vọng Cảnh & bến thuyền thơ mộng</div>
+              </div>
+              <span class="prompt-card-arrow">↗</span>
+            </button>
+
+            <button type="button" class="prompt-card"
+              data-prompt="Từ Đại Nội đi Chợ Đông Ba như thế nào, khoảng cách bao xa và nên ghé những điểm nào dọc đường?">
+              <div class="prompt-card-icon">🧭</div>
+              <div class="prompt-card-content">
+                <div class="prompt-card-title">Chỉ đường & Khoảng cách</div>
+                <div class="prompt-card-desc">Lộ trình từ Đại Nội qua Chợ Đông Ba và cầu Tràng Tiền</div>
+              </div>
+              <span class="prompt-card-arrow">↗</span>
+            </button>
           </div>
         </div>
-      </article>
+      </div>
 
-
-
+      <!-- Chat Input Box Container (Docked at Bottom - ChatGPT Floating Style) -->
+      <div class="chat-input-container">
+        <form id="chat-form" class="chat-input-wrapper">
+          <input type="text" id="chat-input" class="chat-input"
+            placeholder="Hỏi về điểm đến, đặc sản, hoặc gõ 'Lập lịch trình 2 ngày'..." autocomplete="off" required />
+          <button type="submit" id="chat-send-btn" class="chat-send-btn" aria-label="Gửi câu hỏi" title="Gửi tin nhắn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="19" x2="12" y2="5"></line>
+              <polyline points="5 12 12 5 19 12"></polyline>
+            </svg>
+          </button>
+        </form>
+        <div class="chat-input-hints">
+          <span>Trợ lý Cố Đô hỗ trợ tra cứu di sản, kết nối ẩm thực và tối ưu lộ trình tham quan.</span>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -402,7 +567,8 @@
           </svg>
           <span>Chỉ Đường Google Maps</span>
         </a>
-        <button type="button" class="btn-drawer btn-direct-nav" id="poi-btn-direct-nav" title="Vẽ tuyến đường từ vị trí của bạn trên bản đồ">
+        <button type="button" class="btn-drawer btn-direct-nav" id="poi-btn-direct-nav"
+          title="Vẽ tuyến đường từ vị trí của bạn trên bản đồ">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="3 11 22 2 13 21 11 13 3 11" />
           </svg>
@@ -434,6 +600,174 @@
       </div>
     </div>
   </footer>
+
+  <!-- ===========================================================================
+       AUTH MODAL: ĐĂNG NHẬP / ĐĂNG KÝ (GOOGLE GMAIL & EMAIL/PASSWORD)
+  =========================================================================== -->
+  <div class="modal-backdrop" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+    <div class="modal-card auth-modal-card">
+      <button type="button" class="modal-close-btn" id="btn-close-auth-modal" aria-label="Đóng cửa sổ">✕</button>
+
+      <!-- Brand & Title -->
+      <div class="auth-modal-header">
+        <h2 class="auth-modal-title" id="auth-modal-title">Đăng nhập</h2>
+        <p class="auth-modal-subtitle" id="auth-modal-subtitle">Chào mừng bạn đến với Cố Đô Huế Travel</p>
+      </div>
+
+      <!-- Segmented Mode Tabs -->
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tab-auth-login">Đăng nhập</button>
+        <button type="button" class="auth-tab-btn" id="tab-auth-signup">Đăng ký</button>
+      </div>
+
+      <!-- Google Sign In Button (Prominent) -->
+      <div class="auth-social-group">
+        <button type="button" class="btn-google-auth" id="btn-google-auth">
+          <!-- Google 4-color SVG Logo -->
+          <svg class="google-icon" viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+          </svg>
+          <span>Tiếp tục với Google</span>
+        </button>
+      </div>
+
+      <div class="auth-divider">
+        <span>hoặc tiếp tục với email</span>
+      </div>
+
+      <!-- Error Notification Banner -->
+      <div class="auth-error-banner hidden" id="auth-error-banner"></div>
+
+      <!-- Standard Form -->
+      <form class="auth-form" id="auth-form">
+        <div class="auth-field-group hidden" id="auth-name-group">
+          <label for="auth-input-name" class="auth-label">Họ và tên</label>
+          <input type="text" id="auth-input-name" class="auth-input" placeholder="Ví dụ: Nguyễn Văn A" />
+        </div>
+
+        <div class="auth-field-group">
+          <label for="auth-input-email" class="auth-label">Địa chỉ Email</label>
+          <input type="email" id="auth-input-email" class="auth-input" placeholder="name@example.com" required />
+        </div>
+
+        <div class="auth-field-group">
+          <label for="auth-input-password" class="auth-label">Mật khẩu</label>
+          <input type="password" id="auth-input-password" class="auth-input" placeholder="Tối thiểu 6 ký tự" required />
+        </div>
+
+        <button type="submit" class="btn-auth-submit" id="btn-auth-submit">Đăng nhập</button>
+      </form>
+
+      <!-- Switch & Quick Demo login -->
+      <div class="auth-modal-footer">
+        <div class="auth-switch-prompt">
+          <span id="auth-switch-text">Chưa có tài khoản?</span>
+          <button type="button" class="btn-switch-auth-link" id="btn-switch-auth-mode">Đăng ký ngay</button>
+        </div>
+        <div class="auth-demo-tip">
+          <button type="button" class="btn-quick-demo" id="btn-quick-demo-login">
+            Dùng thử nhanh không cần đăng nhập
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===========================================================================
+       FIREBASE CONFIGURATION MODAL (CHO PHÉP DÁN API KEY GOOGLE FIREBASE)
+  =========================================================================== -->
+  <div class="modal-backdrop" id="firebase-config-modal" role="dialog" aria-modal="true">
+    <div class="modal-card config-modal-card">
+      <button type="button" class="modal-close-btn" id="btn-close-config-modal" aria-label="Đóng cửa sổ">✕</button>
+
+      <div class="config-modal-header">
+        <div class="config-badge-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9100" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+          <h3>Cấu hình Google Firebase Database & Auth</h3>
+        </div>
+        <p class="config-modal-desc">
+          Kết nối trực tiếp với <strong>Firebase Authentication (Gmail)</strong> và <strong>Cloud Firestore</strong> của
+          bạn. Dán thông tin SDK từ <a href="https://console.firebase.google.com/" target="_blank"
+            rel="noopener noreferrer">Firebase Console</a> vào đây:
+        </p>
+      </div>
+
+      <form id="form-firebase-config" class="config-form">
+        <div class="config-grid">
+          <div class="config-field">
+            <label for="cfg-api-key">API Key (apiKey)*</label>
+            <input type="text" id="cfg-api-key" placeholder="AIzaSy..." required />
+          </div>
+          <div class="config-field">
+            <label for="cfg-project-id">Project ID (projectId)*</label>
+            <input type="text" id="cfg-project-id" placeholder="hue-smart-tourism" required />
+          </div>
+          <div class="config-field">
+            <label for="cfg-auth-domain">Auth Domain</label>
+            <input type="text" id="cfg-auth-domain" placeholder="hue-smart-tourism.firebaseapp.com" />
+          </div>
+          <div class="config-field">
+            <label for="cfg-storage-bucket">Storage Bucket</label>
+            <input type="text" id="cfg-storage-bucket" placeholder="hue-smart-tourism.appspot.com" />
+          </div>
+          <div class="config-field full-width">
+            <label for="cfg-app-id">App ID (appId)</label>
+            <input type="text" id="cfg-app-id" placeholder="1:1234567890:web:abcdef..." />
+          </div>
+        </div>
+
+        <div class="config-help-box">
+          <h5>Hướng dẫn nhanh trong 2 phút:</h5>
+          <ol>
+            <li>Truy cập <a href="https://console.firebase.google.com" target="_blank"
+                rel="noopener noreferrer">console.firebase.google.com</a> và tạo Project miễn phí.</li>
+            <li>Vào mục <strong>Authentication</strong> > <strong>Sign-in method</strong> > Bật <strong>Google</strong>
+              và <strong>Email/Password</strong>.</li>
+            <li>Thêm tên miền <code>localhost</code> vào <em>Authorized domains</em>.</li>
+            <li>Vào <strong>Project settings</strong> > <strong>General</strong> > Thêm ứng dụng Web và copy các mã trên
+              dán vào form này.</li>
+          </ol>
+        </div>
+
+        <div class="config-actions">
+          <button type="button" class="btn-clear-config" id="btn-clear-firebase-config">Xóa cấu hình</button>
+          <button type="submit" class="btn-save-config">Lưu & Kết Nối</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===========================================================================
+       SAVED ITINERARIES MODAL (LỊCH TRÌNH ĐÃ LƯU TRÊN CLOUD)
+  =========================================================================== -->
+  <div class="modal-backdrop" id="saved-itineraries-modal" role="dialog" aria-modal="true">
+    <div class="modal-card saved-tours-modal-card">
+      <button type="button" class="modal-close-btn" id="btn-close-saved-tours-modal" aria-label="Đóng cửa sổ">✕</button>
+
+      <div class="saved-tours-header">
+        <div class="saved-tours-title-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <h3>Lịch trình Du lịch Huế đã lưu</h3>
+        </div>
+        <p class="saved-tours-subtitle">Các lộ trình đã được lưu trữ an toàn trên Google Firebase Cloud Database</p>
+      </div>
+
+      <div class="saved-tours-list" id="saved-tours-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
 
   <!-- Main JavaScript Modules -->
   <script type="module" src="/src/main.js"></script>
