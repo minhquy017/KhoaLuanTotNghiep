@@ -50,7 +50,8 @@ export function getFirebaseConfig() {
       projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
       storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
       messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-      appId: import.meta.env.VITE_FIREBASE_APP_ID || ''
+      appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ''
     };
   }
 
@@ -249,7 +250,7 @@ export async function logoutUser() {
 // CHẾ ĐỘ DEMO USER (DÀNH CHO KIỂM THỬ TRƯỚC KHI CẤU HÌNH FIREBASE)
 // =============================================================================
 
-export function loginWithDemoUser(email = 'dukhach.hue@gmail.com', name = 'Du Khách Cố Đô') {
+export function loginWithDemoUser(email = 'dukhach.hue@gmail.com', name = 'Du khách Cố đô') {
   const demoUser = {
     uid: 'demo_user_hue_2026',
     email: email,
@@ -276,14 +277,16 @@ export function getDemoUser() {
 // =============================================================================
 
 /**
- * Lưu một tour/lịch trình đã tạo vào tài khoản của người dùng
+ * Lưu một tour/lịch trình đã tạo vào tài khoản của người dùng (Offline-First & Cloud-Synced)
  */
 export async function saveItinerary(userId, itineraryData) {
   if (!userId) {
     throw new Error('Bạn cần đăng nhập để lưu lịch trình.');
   }
 
-  const payload = {
+  const itineraryId = itineraryData.id || `itinerary_${Date.now()}`;
+  const rawPayload = {
+    id: itineraryId,
     title: itineraryData.title || `Lịch trình Huế ${itineraryData.days || 1} ngày`,
     days: itineraryData.days || 1,
     tripType: itineraryData.tripType || 'Gia đình',
@@ -291,55 +294,103 @@ export async function saveItinerary(userId, itineraryData) {
     items: itineraryData.items || [],
     stopsCount: itineraryData.stopsCount || 0,
     totalKm: itineraryData.totalKm || 0,
+    rawResult: itineraryData.rawResult || null,
     savedAt: new Date().toISOString()
   };
 
-  // Nếu có Firestore
+  // Làm sạch dữ liệu JSON, loại bỏ hoàn toàn các trường undefined gây lỗi Firestore
+  const cleanPayload = JSON.parse(JSON.stringify(rawPayload));
+
+  // 1. LUÔN LƯU VÀO BỘ NHỚ LOCALSTORAGE TRƯỚC (Đảm bảo tức thì 100%, không bao giờ mất)
+  const localList = getLocalItineraries(userId);
+  const existingIdx = localList.findIndex(item => item.id === itineraryId);
+  if (existingIdx >= 0) {
+    localList[existingIdx] = cleanPayload;
+  } else {
+    localList.unshift(cleanPayload);
+  }
+  localStorage.setItem(`${LOCAL_ITINERARIES_KEY}_${userId}`, JSON.stringify(localList));
+  localStorage.setItem(LOCAL_ITINERARIES_KEY, JSON.stringify(localList)); // Bản sao lưu chung
+
+  // 2. ĐỒNG BỘ LÊN CLOUD FIRESTORE NẾU CÓ KẾT NỐI
   if (firestoreDb && !userId.startsWith('demo_')) {
     try {
-      const docRef = doc(collection(firestoreDb, 'users', userId, 'itineraries'));
+      const docRef = doc(firestoreDb, 'users', userId, 'itineraries', itineraryId);
       await setDoc(docRef, {
-        ...payload,
+        ...cleanPayload,
         createdAt: serverTimestamp()
-      });
-      return { id: docRef.id, ...payload };
+      }, { merge: true });
     } catch (e) {
-      console.warn('Không thể ghi Firestore, lưu fallback vào LocalStorage:', e);
+      console.warn('Không thể ghi Firestore (lưu an toàn trong LocalStorage):', e);
     }
   }
 
-  // Fallback lưu LocalStorage
-  const list = getLocalItineraries(userId);
-  const newItem = { id: 'itinerary_' + Date.now(), ...payload };
-  list.unshift(newItem);
-  localStorage.setItem(`${LOCAL_ITINERARIES_KEY}_${userId}`, JSON.stringify(list));
-  return newItem;
+  // Phát tín hiệu toàn cục để các modal UI tự động cập nhật
+  try {
+    window.dispatchEvent(new CustomEvent('tour-saved', { detail: cleanPayload }));
+  } catch {}
+
+  return cleanPayload;
 }
 
 /**
- * Lấy danh sách lịch trình đã lưu của người dùng
+ * Lấy danh sách lịch trình đã lưu của người dùng (Hợp nhất Cloud Firestore & Local Cache)
  */
 export async function getUserItineraries(userId) {
   if (!userId) return [];
 
-  if (firestoreDb && !userId.startsWith('demo_')) {
-    try {
-      const q = query(
-        collection(firestoreDb, 'users', userId, 'itineraries'),
-        orderBy('createdAt', 'desc')
-      );
-      const snapshot = await getDocs(q);
-      const results = [];
-      snapshot.forEach(docSnap => {
-        results.push({ id: docSnap.id, ...docSnap.data() });
-      });
-      return results;
-    } catch (e) {
-      console.warn('Lỗi đọc Firestore, lấy từ LocalStorage:', e);
+  // 1. Lấy dữ liệu từ LocalStorage
+  let localItems = getLocalItineraries(userId);
+
+  // Nếu local của user này đang trống, kiểm tra bản sao lưu hoặc demo
+  if (localItems.length === 0) {
+    const fallbackList = getLocalItineraries('demo_user_hue_2026');
+    if (fallbackList.length > 0) {
+      localItems = fallbackList;
+    } else {
+      try {
+        const generic = localStorage.getItem(LOCAL_ITINERARIES_KEY);
+        if (generic) localItems = JSON.parse(generic);
+      } catch {}
     }
   }
 
-  return getLocalItineraries(userId);
+  // 2. Lấy dữ liệu từ Cloud Firestore (nếu có tài khoản thật)
+  if (firestoreDb && !userId.startsWith('demo_')) {
+    try {
+      // Truy vấn collection trực tiếp (không bắt buộc orderBy để tránh lỗi thiếu index hay thiếu createdAt)
+      const colRef = collection(firestoreDb, 'users', userId, 'itineraries');
+      const snapshot = await getDocs(colRef);
+      const cloudResults = [];
+      snapshot.forEach(docSnap => {
+        cloudResults.push({ id: docSnap.id, ...docSnap.data() });
+      });
+
+      if (cloudResults.length > 0) {
+        // Hợp nhất dữ liệu Cloud và Local để không bị sót bất kỳ tour nào
+        const mergedMap = new Map();
+        cloudResults.forEach(item => mergedMap.set(item.id || item.savedAt, item));
+        localItems.forEach(item => {
+          if (!mergedMap.has(item.id) && !mergedMap.has(item.savedAt)) {
+            mergedMap.set(item.id, item);
+          }
+        });
+
+        const mergedList = Array.from(mergedMap.values());
+        mergedList.sort((a, b) => new Date(b.savedAt || 0) - new Date(a.savedAt || 0));
+
+        // Cập nhật lại cache local
+        localStorage.setItem(`${LOCAL_ITINERARIES_KEY}_${userId}`, JSON.stringify(mergedList));
+        return mergedList;
+      }
+    } catch (e) {
+      console.warn('Lỗi đọc Firestore, sử dụng bộ nhớ cục bộ LocalStorage:', e);
+    }
+  }
+
+  // Sắp xếp tour theo thời gian mới nhất
+  localItems.sort((a, b) => new Date(b.savedAt || 0) - new Date(a.savedAt || 0));
+  return localItems;
 }
 
 /**
@@ -348,6 +399,7 @@ export async function getUserItineraries(userId) {
 export async function deleteItinerary(userId, itineraryId) {
   if (!userId || !itineraryId) return;
 
+  // 1. Xóa trên Cloud Firestore
   if (firestoreDb && !userId.startsWith('demo_')) {
     try {
       const docRef = doc(firestoreDb, 'users', userId, 'itineraries', itineraryId);
@@ -357,14 +409,140 @@ export async function deleteItinerary(userId, itineraryId) {
     }
   }
 
-  // Xóa cả trong LocalStorage
+  // 2. Xóa trong LocalStorage
   const list = getLocalItineraries(userId).filter(item => item.id !== itineraryId);
   localStorage.setItem(`${LOCAL_ITINERARIES_KEY}_${userId}`, JSON.stringify(list));
+  localStorage.setItem(LOCAL_ITINERARIES_KEY, JSON.stringify(list));
 }
 
 function getLocalItineraries(userId) {
   try {
     const raw = localStorage.getItem(`${LOCAL_ITINERARIES_KEY}_${userId}`);
+    if (raw) return JSON.parse(raw);
+    const genericRaw = localStorage.getItem(LOCAL_ITINERARIES_KEY);
+    if (genericRaw) return JSON.parse(genericRaw);
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+// =============================================================================
+// QUẢN LÝ PHIÊN TRÒ CHUYỆN & LỊCH SỬ CHAT (CHAT SESSIONS ON FIRESTORE)
+// =============================================================================
+const LOCAL_CHAT_SESSIONS_KEY = 'hue_smart_tourism_chat_sessions';
+
+/**
+ * Lưu hoặc cập nhật một phiên chat (bao gồm tin nhắn & thẻ tour)
+ */
+export async function saveChatSession(userId, sessionData) {
+  if (!sessionData || !sessionData.id) return null;
+
+  const effectiveUserId = userId || 'guest';
+  const payload = {
+    id: sessionData.id,
+    title: sessionData.title || 'Cuộc trò chuyện mới',
+    messages: sessionData.messages || [],
+    createdAt: sessionData.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  // 1. Lưu lên Cloud Firestore nếu người dùng đã đăng nhập
+  if (firestoreDb && effectiveUserId !== 'guest' && !effectiveUserId.startsWith('demo_')) {
+    try {
+      const docRef = doc(firestoreDb, 'users', effectiveUserId, 'chat_sessions', sessionData.id);
+      await setDoc(docRef, {
+        ...payload,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.warn('Lỗi ghi Chat Session lên Firestore, lưu fallback vào LocalStorage:', e);
+    }
+  }
+
+  // 2. Lưu bộ nhớ đệm LocalStorage (đảm bảo phản hồi nhanh & offline)
+  const sessions = getLocalChatSessions(effectiveUserId);
+  const existingIdx = sessions.findIndex(s => s.id === sessionData.id);
+  if (existingIdx >= 0) {
+    sessions[existingIdx] = { ...sessions[existingIdx], ...payload };
+  } else {
+    sessions.unshift(payload);
+  }
+  localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(sessions));
+
+  return payload;
+}
+
+/**
+ * Lấy toàn bộ danh sách các phiên chat của người dùng (sắp xếp theo thời gian mới nhất)
+ */
+export async function getUserChatSessions(userId) {
+  const effectiveUserId = userId || 'guest';
+
+  if (firestoreDb && effectiveUserId !== 'guest' && !effectiveUserId.startsWith('demo_')) {
+    try {
+      const q = query(
+        collection(firestoreDb, 'users', effectiveUserId, 'chat_sessions'),
+        orderBy('updatedAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      const cloudSessions = [];
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        let formattedUpdatedAt = new Date().toISOString();
+        if (data.updatedAt) {
+          if (typeof data.updatedAt.toDate === 'function') {
+            formattedUpdatedAt = data.updatedAt.toDate().toISOString();
+          } else if (data.updatedAt.seconds) {
+            formattedUpdatedAt = new Date(data.updatedAt.seconds * 1000).toISOString();
+          } else if (typeof data.updatedAt === 'string') {
+            formattedUpdatedAt = data.updatedAt;
+          }
+        }
+        cloudSessions.push({ 
+          id: docSnap.id, 
+          ...data,
+          updatedAt: formattedUpdatedAt
+        });
+      });
+
+      if (cloudSessions.length > 0) {
+        // Cập nhật lại cache local
+        localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(cloudSessions));
+        return cloudSessions;
+      }
+    } catch (e) {
+      console.warn('Lỗi đọc Chat Sessions từ Firestore, dùng cache LocalStorage:', e);
+    }
+  }
+
+  return getLocalChatSessions(effectiveUserId);
+}
+
+/**
+ * Xóa một phiên chat
+ */
+export async function deleteChatSession(userId, sessionId) {
+  if (!sessionId) return;
+  const effectiveUserId = userId || 'guest';
+
+  if (firestoreDb && effectiveUserId !== 'guest' && !effectiveUserId.startsWith('demo_')) {
+    try {
+      const docRef = doc(firestoreDb, 'users', effectiveUserId, 'chat_sessions', sessionId);
+      await deleteDoc(docRef);
+    } catch (e) {
+      console.warn('Lỗi xóa Chat Session trên Firestore:', e);
+    }
+  }
+
+  // Xóa trong LocalStorage
+  const list = getLocalChatSessions(effectiveUserId).filter(s => s.id !== sessionId);
+  localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(list));
+}
+
+export function getLocalChatSessions(userId) {
+  try {
+    const raw = localStorage.getItem(`${LOCAL_CHAT_SESSIONS_KEY}_${userId || 'guest'}`);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];

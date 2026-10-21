@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Du Lịch Cố Đô Huế</title>
+  <title>Du lịch Cố đô Huế</title>
   <meta name="description" content="Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Cố đô Huế thông minh." />
   <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
 
@@ -24,24 +24,7 @@
   <!-- Top Clean Editorial Heritage Header -->
   <header class="site-header" role="banner">
     <div class="header-inner">
-      <div class="brand-group">
-        <div class="brand-seal" aria-hidden="true">
-          <svg viewBox="0 0 36 36" width="34" height="34" fill="none">
-            <rect x="1.5" y="1.5" width="33" height="33" rx="8" stroke="#1C1917" stroke-width="1.5" fill="#FAFAF9" />
-            <!-- Architectural Pavilion Line Art -->
-            <path d="M7 23H29" stroke="#18181B" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M9 18H27" stroke="#1C1917" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M12 18V23M24 18V23" stroke="#1C1917" stroke-width="1.5" />
-            <path d="M6 18C10 14 14 12 18 12C22 12 26 14 30 18" stroke="#18181B" stroke-width="1.5"
-              stroke-linecap="round" />
-            <circle cx="18" cy="8.5" r="1.5" fill="#18181B" />
-          </svg>
-        </div>
-        <div class="brand-text">
-          <h1 class="brand-title">Cố Đô Huế</h1>
-          <span class="brand-kicker">Khám phá Di sản & Ẩm thực</span>
-        </div>
-      </div>
+
 
 
       <div class="header-status">
@@ -59,7 +42,7 @@
           <span class="status-text" id="status-label">Trực tuyến</span>
         </div>
 
-        <!-- Header Auth Container (Log in & Sign up phong cách ChatGPT / Cố Đô) -->
+        <!-- Header Auth Container (Log in & Sign up phong cách ChatGPT / Cố đô) -->
         <div class="header-auth-container" id="header-auth-container">
           <!-- Khi chưa đăng nhập: 2 nút Log in & Sign up -->
           <button type="button" class="btn-auth-header btn-header-login" id="btn-header-login"
@@ -271,6 +254,8 @@
             </svg>
             <span id="route-mode-label">Toàn cảnh</span>
           </button>
+          <button type="button" class="btn-close-stepper" id="btn-close-leg-stepper"
+            title="Đóng thanh lộ trình chặng" aria-label="Đóng thanh lộ trình">✕</button>
         </div>
 
         <!-- Card Body: Prev Navigation, Origin -> Destination, Next Navigation -->
@@ -304,7 +289,7 @@
 
       <div class="map-legend">
         <div class="legend-item"><span class="legend-dot dot-attraction"></span> Di tích / Thắng cảnh</div>
-        <div class="legend-item"><span class="legend-dot dot-restaurant"></span> Ẩm thực Cố Đô</div>
+        <div class="legend-item"><span class="legend-dot dot-restaurant"></span> Ẩm thực Cố đô</div>
         <div class="legend-item"><span class="legend-dot dot-cafe"></span> Cà phê & Sunset</div>
         <div class="legend-item"><span class="legend-dot dot-hotel"></span> Khách sạn / Nghỉ dưỡng</div>
         <div class="legend-item"><span class="legend-line line-route"></span> Tuyến Tour Tối Ưu</div>
@@ -319,6 +304,30 @@
           <h2 class="workbench-title">Hỏi đáp & Lịch trình Thông minh</h2>
         </div>
         <div class="workbench-header-actions">
+          <button type="button" class="btn-workbench-action btn-new-chat-action" id="btn-new-chat"
+            title="Bắt đầu cuộc trò chuyện mới" aria-label="Đoạn chat mới">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>Đoạn chat mới</span>
+          </button>
+          <button type="button" class="btn-workbench-action" id="btn-toggle-chat-history"
+            title="Mở lịch sử các phiên chat" aria-label="Lịch sử chat">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>Lịch sử</span>
+            <span class="history-count-badge" id="history-count-badge">0</span>
+          </button>
+          <button type="button" class="btn-workbench-action" id="btn-workbench-saved-tours"
+            title="Xem danh sách các tour và lịch trình bạn đã lưu" aria-label="Tour đã lưu">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Tour đã lưu</span>
+          </button>
           <button type="button" class="btn-workbench-action" id="btn-workbench-toggle-map"
             title="Mở / Thu gọn bản đồ bên cạnh" aria-label="Bản đồ">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -337,15 +346,38 @@
             </svg>
             <span>Tạo lịch trình</span>
           </button>
-          <button type="button" class="btn-workbench-action" id="btn-clear-chat" title="Làm mới cuộc trò chuyện"
-            aria-label="Xóa đoạn hội thoại">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-              <path d="M3 3v5h5" />
-            </svg>
-            <span>Làm mới</span>
-          </button>
         </div>
+      </div>
+
+      <!-- Slide-over Chat History Sidebar Drawer (ChatGPT Style) -->
+      <div class="chat-history-drawer" id="chat-history-drawer" hidden>
+        <div class="chat-history-backdrop" id="chat-history-backdrop"></div>
+        <aside class="chat-history-sidebar" role="dialog" aria-label="Lịch sử các phiên trò chuyện">
+          <div class="chat-history-header">
+            <div class="chat-history-title-group">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <h3>Lịch sử trò chuyện</h3>
+            </div>
+            <button type="button" class="btn-close-history" id="btn-close-history" title="Đóng lịch sử">✕</button>
+          </div>
+
+          <div class="chat-history-actions">
+            <button type="button" class="btn-history-new-chat" id="btn-history-new-chat">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span>Cuộc trò chuyện mới</span>
+            </button>
+          </div>
+
+          <div class="chat-history-list" id="chat-sessions-list" role="list">
+            <!-- Dynamic session items inserted here -->
+          </div>
+        </aside>
       </div>
 
       <!-- Collapsible Quick Planner Card -->
@@ -428,7 +460,7 @@
         <div class="chat-welcome-hero" id="chat-welcome-hero">
           <div class="welcome-badge">
             <span class="welcome-badge-dot"></span>
-            <span>Cố Đô Huế AI</span>
+            <span>Cố đô Huế AI</span>
           </div>
           <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
           <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ
@@ -449,7 +481,7 @@
               data-prompt="Gợi ý các quán ăn đặc sản Huế chuẩn vị: bún bò mụ Rơi, bánh bèo nậm lọc, cơm hến và chè hẻm">
               <div class="prompt-card-icon">🍜</div>
               <div class="prompt-card-content">
-                <div class="prompt-card-title">Bản đồ Ẩm thực Cố Đô</div>
+                <div class="prompt-card-title">Bản đồ Ẩm thực Cố đô</div>
                 <div class="prompt-card-desc">Bún bò mụ Rơi, bánh ép, cơm hến & chè hẻm nổi tiếng</div>
               </div>
               <span class="prompt-card-arrow">↗</span>
@@ -492,7 +524,7 @@
           </button>
         </form>
         <div class="chat-input-hints">
-          <span>Trợ lý Cố Đô hỗ trợ tra cứu di sản, kết nối ẩm thực và tối ưu lộ trình tham quan.</span>
+          <span>Trợ lý Cố đô hỗ trợ tra cứu di sản, kết nối ẩm thực và tối ưu lộ trình tham quan.</span>
         </div>
       </div>
     </section>
@@ -560,12 +592,11 @@
       <!-- Action Footer -->
       <div class="poi-drawer-footer">
         <a href="#" target="_blank" rel="noopener noreferrer" class="btn-drawer btn-google-nav"
-          id="poi-btn-google-maps">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" />
-            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+          id="poi-btn-google-maps" title="Mở chỉ đường trên ứng dụng Google Maps">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 19 21 12 17 5 21 12 2" />
           </svg>
-          <span>Chỉ Đường Google Maps</span>
+          <span>Google Maps</span>
         </a>
         <button type="button" class="btn-drawer btn-direct-nav" id="poi-btn-direct-nav"
           title="Vẽ tuyến đường từ vị trí của bạn trên bản đồ">
@@ -574,32 +605,24 @@
           </svg>
           <span>Chỉ đường</span>
         </button>
-        <button type="button" class="btn-drawer btn-add-tour" id="poi-btn-add-tour">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button type="button" class="btn-drawer btn-add-tour" id="poi-btn-add-tour"
+          title="Thêm địa điểm này vào lịch trình tour">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="16" />
             <line x1="8" y1="12" x2="16" y2="12" />
           </svg>
-          <span>Thêm Vào Tour</span>
+          <span>Thêm Tour</span>
         </button>
         <button type="button" class="btn-drawer btn-ask-ai" id="poi-btn-ask-ai" title="Hỏi trợ lý AI về điểm này">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
           <span>Hỏi thêm</span>
         </button>
       </div>
     </div>
   </aside>
-
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-copy">
-        Đồ án tốt nghiệp · Đại học Huế
-      </div>
-      <div class="footer-meta">
-        <span>© 2026</span>
-      </div>
-    </div>
-  </footer>
 
   <!-- ===========================================================================
        AUTH MODAL: ĐĂNG NHẬP / ĐĂNG KÝ (GOOGLE GMAIL & EMAIL/PASSWORD)
@@ -611,7 +634,7 @@
       <!-- Brand & Title -->
       <div class="auth-modal-header">
         <h2 class="auth-modal-title" id="auth-modal-title">Đăng nhập</h2>
-        <p class="auth-modal-subtitle" id="auth-modal-subtitle">Chào mừng bạn đến với Cố Đô Huế Travel</p>
+        <p class="auth-modal-subtitle" id="auth-modal-subtitle">Chào mừng bạn đến với Cố đô Huế Travel</p>
       </div>
 
       <!-- Segmented Mode Tabs -->

@@ -166,6 +166,12 @@ export class AuthController {
     this.savedToursModal?.addEventListener('click', (e) => {
       if (e.target === this.savedToursModal) this.closeSavedToursModal();
     });
+
+    window.addEventListener('tour-saved', () => {
+      if (this.savedToursModal?.classList.contains('active')) {
+        this.renderSavedTours();
+      }
+    });
   }
 
   initAuthObserver() {
@@ -248,7 +254,7 @@ export class AuthController {
       this.tabSignup?.classList.remove('active');
       this.authNameGroup?.classList.add('hidden');
       if (this.authModalTitle) this.authModalTitle.textContent = 'Đăng nhập';
-      if (this.authModalSubtitle) this.authModalSubtitle.textContent = 'Chào mừng bạn đến với Cố Đô Huế Travel';
+      if (this.authModalSubtitle) this.authModalSubtitle.textContent = 'Chào mừng bạn đến với Cố đô Huế Travel';
       if (this.btnAuthSubmit) this.btnAuthSubmit.textContent = 'Đăng nhập';
       if (this.authSwitchText) this.authSwitchText.textContent = 'Chưa có tài khoản?';
       if (this.btnSwitchAuthMode) this.btnSwitchAuthMode.textContent = 'Đăng ký ngay';

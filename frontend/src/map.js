@@ -37,7 +37,7 @@ export class SpatialMapStudio {
       default: { stroke: '#4F46E5', bg: '#4F46E5', casing: '#FFFFFF', name: 'Lộ trình' }
     };
 
-    // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố Đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
+    // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
     this.masterLandmarks = hueTopPlaces;
   }
 
@@ -123,10 +123,12 @@ export class SpatialMapStudio {
     const prevBtn = document.getElementById('btn-prev-leg');
     const nextBtn = document.getElementById('btn-next-leg');
     const modeBtn = document.getElementById('btn-toggle-route-mode');
+    const closeStepperBtn = document.getElementById('btn-close-leg-stepper');
 
     prevBtn?.addEventListener('click', () => this.prevLeg());
     nextBtn?.addEventListener('click', () => this.nextLeg());
     modeBtn?.addEventListener('click', () => this.toggleRouteDisplayMode());
+    closeStepperBtn?.addEventListener('click', () => this.hideLegStepper());
 
     // Đảm bảo kích thước bản đồ hiển thị mượt mà
     setTimeout(() => {
@@ -150,12 +152,12 @@ export class SpatialMapStudio {
   }
 
   /**
-   * Tạo Custom Architectural SVG Marker chuẩn di sản Cố Đô (sắc sảo, tối giản, thanh lịch)
+   * Tạo Custom Architectural SVG Marker chuẩn di sản Cố đô (sắc sảo, tối giản, thanh lịch)
    */
   createCustomIcon(category = 'Attraction', label = '', stepNumber = null, badgeBg = null) {
     const catLower = (category || '').toLowerCase();
     
-    // Bảng màu di sản Cố Đô có kỷ luật (chất gốm sứ, ngói lưu ly và thổ nhưỡng)
+    // Bảng màu di sản Cố đô có kỷ luật (chất gốm sứ, ngói lưu ly và thổ nhưỡng)
     let pinColor = '#B45309'; // Di tích: Vàng thổ hoàng / Hoàng cung
     let svgIcon = `
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -949,7 +951,7 @@ export class SpatialMapStudio {
       dayBadge.textContent = `${this.currentDayLegs.length} chặng`;
     }
     if (routeTitle) {
-      routeTitle.innerHTML = `<span class="leg-point-to">${isAllDays ? 'Toàn bộ tour Cố Đô Huế' : `Toàn cảnh Ngày ${this.currentItineraryDay}`}</span>`;
+      routeTitle.innerHTML = `<span class="leg-point-to">${isAllDays ? 'Toàn bộ tour Cố đô Huế' : `Toàn cảnh Ngày ${this.currentItineraryDay}`}</span>`;
     }
     if (distanceText) {
       distanceText.innerHTML = `
@@ -1363,11 +1365,28 @@ export class SpatialMapStudio {
   }
 
   clearAll() {
+    if (this.map) this.map.closePopup();
     if (this.markersLayer) this.markersLayer.clearLayers();
     if (this.routesLayer) this.routesLayer.clearLayers();
     if (this.navigationLayer) this.navigationLayer.clearLayers();
     const banner = document.getElementById('map-nav-banner');
     if (banner) banner.style.display = 'none';
     this.hideLegStepper();
+  }
+
+  /**
+   * Đặt lại trạng thái bản đồ sạch sẽ hoàn toàn về mặc định
+   * (Đóng popup chặng, xóa tuyến đường tour, ẩn stepper thanh chặng, nạp lại POIs chuẩn)
+   */
+  resetToDefaultState() {
+    this.clearAll();
+    this.currentItinerary = null;
+    this.currentDayLegs = [];
+    this.activeLegIndex = 0;
+    this.clearTimelineHighlight();
+    this.filterByCategory('all');
+    if (this.map) {
+      this.map.setView(this.centerHue, this.defaultZoom, { animate: true });
+    }
   }
 }
