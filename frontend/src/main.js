@@ -12,8 +12,12 @@ import {
   saveChatSession, 
   getUserChatSessions, 
   deleteChatSession, 
-  onAuthChange 
+  submitAiFeedback,
+  onAuthChange,
+  logoutUser,
+  loginWithDemoUser
 } from './firebase.js';
+import { HueWeatherService } from './weather.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 0. KHỞI TẠO HỆ THỐNG XÁC THỰC (AUTH CONTROLLER - GOOGLE GMAIL & EMAIL)
@@ -472,6 +476,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       ? `ưu tiên các món: ${preferredDishes.join(', ')}`
       : 'ẩm thực Cố đô đặc sắc';
     const userQueryText = `📅 Lập lịch trình khám phá Huế ${days} ngày cho ${tripType}, xuất phát từ ${userLocName}, ${dishLabel}.`;
+    lastUserPrompt = userQueryText;
     appendUserMessage(userQueryText);
 
     // Thu gọn quick planner card
@@ -510,14 +515,200 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateItineraryInChat(days, tripType, preferredDishes);
   });
 
-  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn', persist = true) {
+  // Quản lý trạng thái phiên chat toàn cục
+  let activeSessionId = 'session_' + Date.now();
+  let activeSessionTitle = 'Cuộc trò chuyện mới';
+  let activeSessionMessages = [];
+  let isRestoringSession = false;
+  let lastUserPrompt = '';
+
+  // =============================================================================
+  // THU THẬP PHẢN HỒI AI (AI FEEDBACK SYSTEM: LIKE / DISLIKE / COPY)
+  // Ghi nhận phản hồi người dùng phục vụ đánh giá thực nghiệm & RLHF
+  // =============================================================================
+  function createFeedbackBarHtml(messageId, existingRating = null) {
+    return `
+      <div class="message-feedback-row" data-message-id="${messageId}">
+        <div class="feedback-actions">
+          <span class="feedback-hint">Đánh giá câu trả lời:</span>
+          <button type="button" class="btn-msg-feedback btn-feedback-like ${existingRating === 'like' ? 'active' : ''}" title="Hữu ích / Thích câu trả lời này">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+            </svg>
+            <span>Hữu ích</span>
+          </button>
+          <button type="button" class="btn-msg-feedback btn-feedback-dislike ${existingRating === 'dislike' ? 'active' : ''}" title="Chưa hài lòng / Cần cải thiện">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
+            </svg>
+            <span>Chưa tốt</span>
+          </button>
+          <button type="button" class="btn-msg-feedback btn-copy-msg" title="Sao chép nội dung câu trả lời">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span class="copy-label">Sao chép</span>
+          </button>
+        </div>
+
+        <div class="feedback-dislike-box hidden">
+          <div class="feedback-dislike-title">Lý do bạn chưa hài lòng:</div>
+          <div class="feedback-chips">
+            <button type="button" class="feedback-chip active" data-reason="incorrect">Thông tin chưa chính xác</button>
+            <button type="button" class="feedback-chip" data-reason="irrelevant">Chưa đúng trọng tâm câu hỏi</button>
+            <button type="button" class="feedback-chip" data-reason="location">Địa điểm/Lộ trình chưa hợp lý</button>
+            <button type="button" class="feedback-chip" data-reason="other">Khác</button>
+          </div>
+          <div class="feedback-input-row">
+            <input type="text" class="feedback-comment-input" placeholder="Góp ý chi tiết để AI cải thiện tốt hơn..." />
+            <button type="button" class="btn-submit-feedback">Gửi</button>
+            <button type="button" class="btn-cancel-feedback" title="Đóng">✕</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindFeedbackEvents(container, meta) {
+    const row = container.querySelector('.message-feedback-row');
+    if (!row) return;
+
+    const likeBtn = row.querySelector('.btn-feedback-like');
+    const dislikeBtn = row.querySelector('.btn-feedback-dislike');
+    const copyBtn = row.querySelector('.btn-copy-msg');
+    const dislikeBox = row.querySelector('.feedback-dislike-box');
+    const chips = row.querySelectorAll('.feedback-chip');
+    const commentInput = row.querySelector('.feedback-comment-input');
+    const submitBtn = row.querySelector('.btn-submit-feedback');
+    const cancelBtn = row.querySelector('.btn-cancel-feedback');
+
+    let selectedReason = 'incorrect';
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        selectedReason = chip.dataset.reason;
+      });
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      try {
+        const textToCopy = meta.plainText || container.querySelector('.answer-content')?.innerText || container.innerText || '';
+        await navigator.clipboard.writeText(textToCopy);
+        const copyLabel = copyBtn.querySelector('.copy-label');
+        if (copyLabel) copyLabel.textContent = 'Đã chép!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          if (copyLabel) copyLabel.textContent = 'Sao chép';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      } catch (e) {
+        console.warn('Không thể sao chép văn bản:', e);
+      }
+    });
+
+    likeBtn?.addEventListener('click', async () => {
+      if (likeBtn.classList.contains('active')) return;
+      likeBtn.classList.add('active');
+      dislikeBtn.classList.remove('active');
+      if (dislikeBox) dislikeBox.classList.add('hidden');
+
+      updateMessageFeedbackInSession(meta.messageId, 'like');
+
+      await submitAiFeedback({
+        messageId: meta.messageId,
+        sessionId: activeSessionId,
+        rating: 'like',
+        prompt: meta.prompt || '',
+        responseExcerpt: (meta.plainText || '').substring(0, 300),
+        isItinerary: Boolean(meta.isItinerary)
+      });
+
+      authController.showToast('Cảm ơn bạn! Đánh giá hữu ích đã được ghi nhận vào Firestore.');
+    });
+
+    dislikeBtn?.addEventListener('click', async () => {
+      if (dislikeBtn.classList.contains('active')) {
+        dislikeBox?.classList.toggle('hidden');
+        return;
+      }
+      dislikeBtn.classList.add('active');
+      likeBtn.classList.remove('active');
+      if (dislikeBox) {
+        dislikeBox.classList.remove('hidden');
+        commentInput?.focus();
+      }
+
+      updateMessageFeedbackInSession(meta.messageId, 'dislike');
+
+      await submitAiFeedback({
+        messageId: meta.messageId,
+        sessionId: activeSessionId,
+        rating: 'dislike',
+        reason: selectedReason,
+        prompt: meta.prompt || '',
+        responseExcerpt: (meta.plainText || '').substring(0, 300),
+        isItinerary: Boolean(meta.isItinerary)
+      });
+
+      authController.showToast('Đã ghi nhận! Bạn có thể chọn lý do góp ý bên dưới.');
+    });
+
+    cancelBtn?.addEventListener('click', () => {
+      if (dislikeBox) dislikeBox.classList.add('hidden');
+    });
+
+    submitBtn?.addEventListener('click', async () => {
+      const comment = commentInput?.value?.trim() || '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = '...';
+
+      await submitAiFeedback({
+        messageId: meta.messageId,
+        sessionId: activeSessionId,
+        rating: 'dislike',
+        reason: selectedReason,
+        comment: comment,
+        prompt: meta.prompt || '',
+        responseExcerpt: (meta.plainText || '').substring(0, 300),
+        isItinerary: Boolean(meta.isItinerary)
+      });
+
+      updateMessageFeedbackInSession(meta.messageId, 'dislike', selectedReason, comment);
+
+      if (dislikeBox) {
+        dislikeBox.innerHTML = `
+          <div class="feedback-thankyou-note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Cảm ơn đóng góp của bạn! Phản hồi này sẽ dùng để hoàn thiện mô hình AI.</span>
+          </div>
+        `;
+      }
+      authController.showToast('Đã gửi phản hồi thành công!');
+    });
+  }
+
+  function updateMessageFeedbackInSession(messageId, rating, reason = '', comment = '') {
+    if (!messageId || !activeSessionMessages) return;
+    const targetMsg = activeSessionMessages.find(m => m.id === messageId || m.messageId === messageId);
+    if (targetMsg) {
+      targetMsg.feedbackRating = rating;
+      if (reason) targetMsg.feedbackReason = reason;
+      if (comment) targetMsg.feedbackComment = comment;
+      persistActiveSession();
+    }
+  }
+
+  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn', persist = true, customDeckId = null, existingRating = null) {
     const plan = res.itinerary_data;
     if (!plan || !plan.days || plan.days.length === 0) {
       appendAssistantError('Không tìm thấy dữ liệu lịch trình phù hợp với tiêu chí đã chọn.');
       return;
     }
 
-    const deckId = `deck-${Date.now()}`;
+    const deckId = customDeckId || `deck-${Date.now()}`;
     const allStopsForMap = [];
     let totalStopsCount = 0;
     let totalTripDistanceKm = 0;
@@ -771,11 +962,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             <button type="button" class="btn-deck-followup">Thời điểm tham quan Đại Nội đẹp nhất trong ngày?</button>
             <button type="button" class="btn-deck-followup">Phương tiện di chuyển hợp lý nhất ở Huế?</button>
           </div>
+
+          <div class="deck-feedback-wrapper">
+            ${createFeedbackBarHtml(deckId, existingRating)}
+          </div>
         </div>
       </div>
     `;
 
     chatThread.appendChild(msg);
+
+    // Gán sự kiện Feedback cho thẻ lịch trình
+    bindFeedbackEvents(msg, {
+      messageId: deckId,
+      prompt: `Lập lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
+      plainText: `Lộ trình Khám phá Huế (${days} ngày) cho ${tripType} với ${totalStopsCount} điểm đến.`,
+      isItinerary: true
+    });
+
     setTimeout(() => {
       msg.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 60);
@@ -920,6 +1124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Lưu thẻ lịch trình vào phiên chat hiện tại
     if (persist && !isRestoringSession) {
       activeSessionMessages.push({
+        id: deckId,
         role: 'assistant',
         text: `📅 Lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
         isItinerary: true,
@@ -928,6 +1133,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tripType,
         preferredDishes,
         userLocName,
+        feedbackRating: existingRating,
         timestamp: Date.now()
       });
       persistActiveSession();
@@ -1020,22 +1226,85 @@ document.addEventListener('DOMContentLoaded', async () => {
   initPromptCards();
 
   // =============================================================================
-  // QUẢN LÝ PHIÊN TRÒ CHUYỆN & LỊCH SỬ CHAT (CHAT SESSIONS ON FIRESTORE)
+  // QUẢN LÝ PHIÊN TRÒ CHUYỆN & THANH BÊN (GEMINI LEFT SIDEBAR & SESSIONS)
   // =============================================================================
-  let activeSessionId = 'session_' + Date.now();
-  let activeSessionTitle = 'Cuộc trò chuyện mới';
-  let activeSessionMessages = [];
-  let isRestoringSession = false;
+  const sidebarGemini = document.getElementById('sidebar-gemini');
+  const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+  const btnSidebarToggle = document.getElementById('btn-sidebar-toggle') || document.getElementById('btn-sidebar-collapse');
+  const btnSidebarCollapse = document.getElementById('btn-sidebar-collapse');
+  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+  const btnSidebarNewChat = document.getElementById('btn-sidebar-new-chat');
+  const btnSidebarSavedTours = document.getElementById('btn-sidebar-saved-tours');
+  const btnSidebarToggleMap = document.getElementById('btn-sidebar-toggle-map');
+  const sidebarFooterGroup = document.getElementById('sidebar-footer-group');
+  const btnSidebarSettings = document.getElementById('btn-sidebar-settings');
+  const sidebarUserChip = document.getElementById('sidebar-user-chip');
+  const sidebarAvatarImg = document.getElementById('sidebar-avatar-img');
+  const sidebarAvatarFallback = document.getElementById('sidebar-avatar-fallback');
+  const sidebarUserName = document.getElementById('sidebar-user-name');
+  const sidebarUserStatus = document.getElementById('sidebar-user-status');
+
+  // Sidebar User Popover Elements
+  const sidebarUserPopover = document.getElementById('sidebar-user-popover');
+  const popoverAvatarImg = document.getElementById('popover-avatar-img');
+  const popoverAvatarFallback = document.getElementById('popover-avatar-fallback');
+  const popoverUserName = document.getElementById('popover-user-name');
+  const popoverUserEmail = document.getElementById('popover-user-email');
+  const popoverBadgeStatus = document.getElementById('popover-badge-status');
+  const popoverLoggedInActions = document.getElementById('popover-logged-in-actions');
+  const popoverGuestActions = document.getElementById('popover-guest-actions');
+
+  const btnPopoverSavedTours = document.getElementById('btn-popover-saved-tours');
+  const btnPopoverConfig = document.getElementById('btn-popover-config');
+  const btnPopoverLogout = document.getElementById('btn-popover-logout');
+  const btnPopoverLogin = document.getElementById('btn-popover-login');
+  const btnPopoverSignup = document.getElementById('btn-popover-signup');
+  const btnPopoverGuestConfig = document.getElementById('btn-popover-guest-config');
+  const btnPopoverDemo = document.getElementById('btn-popover-demo');
 
   const btnNewChat = document.getElementById('btn-new-chat');
   const btnToggleChatHistory = document.getElementById('btn-toggle-chat-history');
   const btnWorkbenchSavedTours = document.getElementById('btn-workbench-saved-tours');
   const historyCountBadge = document.getElementById('history-count-badge');
-  const chatHistoryDrawer = document.getElementById('chat-history-drawer');
-  const chatHistoryBackdrop = document.getElementById('chat-history-backdrop');
-  const btnCloseHistory = document.getElementById('btn-close-history');
-  const btnHistoryNewChat = document.getElementById('btn-history-new-chat');
   const chatSessionsList = document.getElementById('chat-sessions-list');
+
+  // Khởi tạo thời tiết Huế
+  const sidebarWeatherContainer = document.getElementById('sidebar-weather-container');
+  const headerWeatherPill = document.getElementById('header-weather-pill');
+  const hueWeatherService = new HueWeatherService();
+  window.hueWeatherService = hueWeatherService;
+
+  async function initHueWeatherWidget() {
+    try {
+      const data = await hueWeatherService.getHueWeather();
+      if (sidebarWeatherContainer) {
+        sidebarWeatherContainer.innerHTML = hueWeatherService.renderWidgetHtml(data);
+        const btnExpand = sidebarWeatherContainer.querySelector('#btn-weather-expand');
+        const detailsCard = sidebarWeatherContainer.querySelector('#weather-details-card');
+        btnExpand?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isHidden = detailsCard?.classList.toggle('hidden');
+          btnExpand.classList.toggle('expanded', !isHidden);
+        });
+      }
+      if (headerWeatherPill) {
+        headerWeatherPill.innerHTML = `
+          ${hueWeatherService.getWeatherIconSvg(data.iconType, 15)}
+          <span>${data.temp}°C Huế</span>
+        `;
+        headerWeatherPill.addEventListener('click', () => {
+          if (sidebarGemini?.classList.contains('collapsed')) {
+            toggleSidebar(true);
+          } else if (window.innerWidth <= 1024) {
+            toggleSidebar(true);
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('Không thể nạp thời tiết Huế:', err);
+    }
+  }
+  initHueWeatherWidget();
 
   function getCurrentUserId() {
     return window.authController?.currentUser?.uid || null;
@@ -1197,16 +1466,18 @@ document.addEventListener('DOMContentLoaded', async () => {
           appendUserMessage(msg.text, false);
         } else if (msg.role === 'assistant') {
           if (msg.isItinerary && msg.itineraryRes) {
-            appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false);
+            appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false, msg.id, msg.feedbackRating);
           } else {
-            appendAssistantResponse(msg.resData || { answer: msg.text }, false);
+            appendAssistantResponse({ ...msg.resData, answer: msg.text, messageId: msg.id, feedbackRating: msg.feedbackRating, prompt: msg.prompt }, false);
           }
         }
       });
     }
 
     isRestoringSession = false;
-    toggleChatHistoryDrawer(false);
+    if (window.innerWidth <= 1024) {
+      toggleSidebar(false);
+    }
     refreshChatHistoryList(false);
   }
 
@@ -1215,7 +1486,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSessionTitle = 'Cuộc trò chuyện mới';
     activeSessionMessages = [];
     renderWelcomeHero();
-    toggleChatHistoryDrawer(false);
+    if (window.innerWidth <= 1024) {
+      toggleSidebar(false);
+    }
     refreshChatHistoryList(false);
     if (chatInput) chatInput.focus();
 
@@ -1225,30 +1498,205 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function toggleChatHistoryDrawer(forceState) {
-    if (!chatHistoryDrawer) return;
-    const isOpen = typeof forceState === 'boolean' ? forceState : !chatHistoryDrawer.classList.contains('open');
-    if (isOpen) {
-      chatHistoryDrawer.hidden = false;
-      requestAnimationFrame(() => {
-        chatHistoryDrawer.classList.add('open');
-        btnToggleChatHistory?.classList.add('active');
-      });
-      refreshChatHistoryList();
+  function closeUserPopover() {
+    sidebarUserPopover?.classList.remove('active');
+    sidebarUserChip?.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggleUserPopover() {
+    if (!sidebarUserPopover) return;
+    const isNowActive = sidebarUserPopover.classList.toggle('active');
+    sidebarUserChip?.setAttribute('aria-expanded', isNowActive ? 'true' : 'false');
+  }
+
+  function toggleSidebar(forceState) {
+    if (!sidebarGemini) return;
+    closeUserPopover();
+    const isMobile = window.innerWidth <= 1024;
+    if (isMobile) {
+      const willOpen = typeof forceState === 'boolean' ? forceState : !sidebarGemini.classList.contains('mobile-open');
+      sidebarGemini.classList.toggle('mobile-open', willOpen);
+      sidebarBackdrop?.classList.toggle('active', willOpen);
     } else {
-      chatHistoryDrawer.classList.remove('open');
-      btnToggleChatHistory?.classList.remove('active');
-      setTimeout(() => {
-        if (!chatHistoryDrawer.classList.contains('open')) {
-          chatHistoryDrawer.hidden = true;
-        }
-      }, 280);
+      const willCollapse = typeof forceState === 'boolean' ? !forceState : !sidebarGemini.classList.contains('collapsed');
+      sidebarGemini.classList.toggle('collapsed', willCollapse);
+      
+      const toggleBtn = btnSidebarToggle || btnSidebarCollapse;
+      if (toggleBtn) {
+        const tooltipText = willCollapse ? 'Mở thanh bên' : 'Thu gọn thanh bên';
+        toggleBtn.setAttribute('title', tooltipText);
+        toggleBtn.setAttribute('data-tooltip', tooltipText);
+      }
+
+      btnToggleSidebar?.classList.toggle('active', !willCollapse);
+      try {
+        localStorage.setItem('hue_sidebar_collapsed', willCollapse ? '1' : '0');
+      } catch {}
     }
   }
 
+  // Khôi phục trạng thái thu gọn thanh bên trên Desktop
+  try {
+    if (window.innerWidth > 1024 && localStorage.getItem('hue_sidebar_collapsed') === '1') {
+      sidebarGemini?.classList.add('collapsed');
+      const toggleBtn = btnSidebarToggle || btnSidebarCollapse;
+      if (toggleBtn) {
+        toggleBtn.setAttribute('title', 'Mở thanh bên');
+        toggleBtn.setAttribute('data-tooltip', 'Mở thanh bên');
+      }
+    }
+  } catch {}
+
+  function updateSidebarUserProfile(user) {
+    if (!sidebarUserName) return;
+    if (user) {
+      const displayName = user.displayName || user.email?.split('@')[0] || 'Du khách Cố đô';
+      const email = user.email || 'Cloud Firestore';
+      const initial = (displayName || 'U')[0].toUpperCase();
+
+      sidebarUserName.textContent = displayName;
+      sidebarUserStatus.textContent = user.isDemo ? 'Tài khoản Demo' : 'Đồng bộ Cloud Firestore';
+
+      if (popoverUserName) popoverUserName.textContent = displayName;
+      if (popoverUserEmail) popoverUserEmail.textContent = email;
+      if (popoverBadgeStatus) {
+        popoverBadgeStatus.textContent = user.isDemo ? 'Bản Demo' : (user.providerData?.some(p => p.providerId === 'google.com') ? 'Google' : 'Đã đăng nhập');
+        popoverBadgeStatus.className = 'popover-badge-status badge-logged-in';
+      }
+
+      if (popoverLoggedInActions) popoverLoggedInActions.style.display = 'flex';
+      if (popoverGuestActions) popoverGuestActions.style.display = 'none';
+
+      if (user.photoURL) {
+        if (sidebarAvatarImg) {
+          sidebarAvatarImg.src = user.photoURL;
+          sidebarAvatarImg.classList.remove('hidden');
+        }
+        sidebarAvatarFallback?.classList.add('hidden');
+
+        if (popoverAvatarImg) {
+          popoverAvatarImg.src = user.photoURL;
+          popoverAvatarImg.classList.remove('hidden');
+        }
+        popoverAvatarFallback?.classList.add('hidden');
+      } else {
+        sidebarAvatarImg?.classList.add('hidden');
+        if (sidebarAvatarFallback) {
+          sidebarAvatarFallback.textContent = initial;
+          sidebarAvatarFallback.classList.remove('hidden');
+        }
+
+        popoverAvatarImg?.classList.add('hidden');
+        if (popoverAvatarFallback) {
+          popoverAvatarFallback.textContent = initial;
+          popoverAvatarFallback.classList.remove('hidden');
+        }
+      }
+    } else {
+      sidebarUserName.textContent = 'Khách vãng lai';
+      sidebarUserStatus.textContent = 'Bấm để đăng nhập';
+      sidebarAvatarImg?.classList.add('hidden');
+      if (sidebarAvatarFallback) {
+        sidebarAvatarFallback.textContent = 'U';
+        sidebarAvatarFallback.classList.remove('hidden');
+      }
+
+      if (popoverUserName) popoverUserName.textContent = 'Khách vãng lai';
+      if (popoverUserEmail) popoverUserEmail.textContent = 'Chưa đăng nhập';
+      if (popoverBadgeStatus) {
+        popoverBadgeStatus.textContent = 'Khách';
+        popoverBadgeStatus.className = 'popover-badge-status';
+      }
+
+      if (popoverLoggedInActions) popoverLoggedInActions.style.display = 'none';
+      if (popoverGuestActions) popoverGuestActions.style.display = 'flex';
+
+      popoverAvatarImg?.classList.add('hidden');
+      if (popoverAvatarFallback) {
+        popoverAvatarFallback.textContent = 'U';
+        popoverAvatarFallback.classList.remove('hidden');
+      }
+    }
+  }
+
+  // Sự kiện bật / tắt User Account Popover
+  sidebarUserChip?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleUserPopover();
+  });
+
+  sidebarUserPopover?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!sidebarFooterGroup?.contains(e.target)) {
+      closeUserPopover();
+    }
+  });
+
+  // Nút Cài đặt hệ thống ở thanh bên
+  btnSidebarSettings?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openConfigModal();
+  });
+
+  // Các nút bên trong Popover
+  btnPopoverSavedTours?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openSavedToursModal();
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  btnPopoverConfig?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openConfigModal();
+  });
+
+  btnPopoverGuestConfig?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openConfigModal();
+  });
+
+  btnPopoverLogout?.addEventListener('click', async () => {
+    closeUserPopover();
+    try {
+      await logoutUser();
+      window.authController?.showToast('Đã đăng xuất tài khoản thành công.');
+    } catch (err) {
+      console.error('Lỗi khi đăng xuất:', err);
+    }
+  });
+
+  btnPopoverLogin?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openAuthModal('login');
+  });
+
+  btnPopoverSignup?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openAuthModal('signup');
+  });
+
+  btnPopoverDemo?.addEventListener('click', () => {
+    closeUserPopover();
+    loginWithDemoUser();
+    window.authController?.showToast('Đã kích hoạt chế độ Trải nghiệm Khách (Demo).');
+  });
+
+  btnToggleSidebar?.addEventListener('click', () => toggleSidebar());
+  btnSidebarToggle?.addEventListener('click', () => toggleSidebar());
+  btnSidebarCollapse?.addEventListener('click', () => toggleSidebar());
+  sidebarBackdrop?.addEventListener('click', () => toggleSidebar(false));
+
   btnNewChat?.addEventListener('click', () => startNewChatSession());
-  btnHistoryNewChat?.addEventListener('click', () => startNewChatSession());
-  btnToggleChatHistory?.addEventListener('click', () => toggleChatHistoryDrawer());
+  btnSidebarNewChat?.addEventListener('click', () => {
+    startNewChatSession();
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  btnToggleChatHistory?.addEventListener('click', () => toggleSidebar());
+
   btnWorkbenchSavedTours?.addEventListener('click', () => {
     if (window.authController) {
       if (!window.authController.currentUser) {
@@ -1259,12 +1707,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   });
-  btnCloseHistory?.addEventListener('click', () => toggleChatHistoryDrawer(false));
-  chatHistoryBackdrop?.addEventListener('click', () => toggleChatHistoryDrawer(false));
 
-  // Tự động làm mới danh sách session khi trạng thái đăng nhập thay đổi
-  onAuthChange(() => {
+  btnSidebarSavedTours?.addEventListener('click', () => {
+    if (window.authController) {
+      if (!window.authController.currentUser) {
+        window.authController.openAuthModal('login');
+        window.authController.showToast('Vui lòng đăng nhập để xem các lịch trình đã lưu.');
+      } else {
+        window.authController.openSavedToursModal();
+      }
+    }
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  btnSidebarToggleMap?.addEventListener('click', () => {
+    toggleMapPanel();
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  // Tự động làm mới danh sách session và cập nhật user profile khi auth thay đổi
+  onAuthChange((user) => {
     refreshChatHistoryList();
+    updateSidebarUserProfile(user);
   });
 
   // Tải danh sách session ban đầu
@@ -1310,6 +1774,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Hiển thị tin nhắn người dùng
+    lastUserPrompt = query;
     appendUserMessage(query);
     if (chatInput) chatInput.value = '';
     if (chatSendBtn) chatSendBtn.disabled = true;
@@ -1324,7 +1789,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const res = await TourismApiClient.askAssistant(query, 'Thành phố Huế', userLat, userLng);
       removeLoadingMessage(loadingId);
-      appendAssistantResponse(res);
+      appendAssistantResponse(res, true, query);
     } catch (err) {
       removeLoadingMessage(loadingId);
       appendAssistantError(err.message);
@@ -1388,9 +1853,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (el) el.remove();
   }
 
-  function appendAssistantResponse(res, persist = true) {
+  function appendAssistantResponse(res, persist = true, promptText = '') {
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
+
+    const messageId = res.messageId || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const savedRating = res.feedbackRating || null;
+    const finalPrompt = promptText || res.prompt || lastUserPrompt || '';
 
     const formattedAnswer = res.answer
       ? res.answer
@@ -1558,10 +2027,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="answer-content">${formattedAnswer}</div>
         ${navCardHtml}
         ${placesPillsHtml}
+        ${createFeedbackBarHtml(messageId, savedRating)}
       </div>
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
+
+    // Gán sự kiện Feedback (Thích / Chưa tốt / Sao chép)
+    bindFeedbackEvents(msg, {
+      messageId: messageId,
+      prompt: finalPrompt,
+      plainText: res.answer || '',
+      isItinerary: false
+    });
 
     // Gán sự kiện click nút vẽ lại trên bản đồ trong thẻ lộ trình
     msg.querySelectorAll('.btn-nav-replot').forEach(btn => {
@@ -1605,9 +2083,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Lưu phản hồi trợ lý vào phiên chat hiện tại
     if (persist && !isRestoringSession) {
       activeSessionMessages.push({
+        id: messageId,
         role: 'assistant',
         text: res.answer || '',
+        prompt: finalPrompt,
         resData: res,
+        feedbackRating: savedRating,
         timestamp: Date.now()
       });
       persistActiveSession();

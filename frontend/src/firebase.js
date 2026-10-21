@@ -272,6 +272,16 @@ export function getDemoUser() {
   }
 }
 
+/**
+ * Lấy đối tượng người dùng hiện tại đang đăng nhập
+ */
+export function getCurrentUser() {
+  if (firebaseAuth && firebaseAuth.currentUser) {
+    return firebaseAuth.currentUser;
+  }
+  return getDemoUser();
+}
+
 // =============================================================================
 // QUẢN LÝ LỊCH TRÌNH NGƯỜI DÙNG (FIRESTORE & LOCAL FALLBACK)
 // =============================================================================
@@ -548,3 +558,94 @@ export function getLocalChatSessions(userId) {
     return [];
   }
 }
+
+// =============================================================================
+// THU THẬP PHẢN HỒI ĐÁNH GIÁ CỦA NGƯỜI DÙNG (AI MODEL FEEDBACK LOOP - RLHF)
+// Lưu trữ trực tiếp lên Cloud Firestore collection: `ai_feedbacks`
+// =============================================================================
+const LOCAL_FEEDBACKS_KEY = 'hue_smart_tourism_ai_feedbacks';
+
+/**
+ * Gửi phản hồi Thích / Chưa hài lòng cho câu trả lời của AI
+ * @param {Object} feedbackData - { messageId, sessionId, rating, reason, comment, prompt, responseExcerpt, isItinerary }
+ */
+export async function submitAiFeedback(feedbackData) {
+  if (!feedbackData) return null;
+
+  const currentUser = getCurrentUser();
+  const feedbackId = feedbackData.id || `fb_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  
+  const payload = {
+    id: feedbackId,
+    messageId: feedbackData.messageId || `msg_${Date.now()}`,
+    sessionId: feedbackData.sessionId || 'current_session',
+    rating: feedbackData.rating || 'like', // 'like' | 'dislike'
+    reason: feedbackData.reason || '',
+    comment: feedbackData.comment || '',
+    prompt: feedbackData.prompt || '',
+    responseExcerpt: feedbackData.responseExcerpt || '',
+    isItinerary: Boolean(feedbackData.isItinerary),
+    userId: currentUser ? currentUser.uid : 'anonymous',
+    userEmail: currentUser ? (currentUser.email || currentUser.displayName) : 'Khách vãng lai',
+    userAgent: navigator.userAgent || '',
+    createdAt: new Date().toISOString()
+  };
+
+  // 1. Lưu lên Cloud Firestore
+  if (firestoreDb) {
+    // 1.1 Lưu vào Subcollection 'users/{uid}/ai_feedbacks' (Nếu user đã đăng nhập - quyền luôn được ưu tiên)
+    if (currentUser && currentUser.uid && !currentUser.uid.startsWith('demo_')) {
+      try {
+        const userDocRef = doc(firestoreDb, 'users', currentUser.uid, 'ai_feedbacks', feedbackId);
+        await setDoc(userDocRef, {
+          ...payload,
+          createdAt: serverTimestamp()
+        }, { merge: true });
+        console.log(`✅ Đã lưu phản hồi AI vào subcollection "users/${currentUser.uid}/ai_feedbacks":`, feedbackId);
+      } catch (e) {
+        console.warn(`Lỗi ghi phản hồi vào users/${currentUser.uid}/ai_feedbacks:`, e);
+      }
+    }
+
+    // 1.2 Lưu vào Root Collection 'ai_feedbacks' (Cho Admin tổng hợp)
+    try {
+      const rootDocRef = doc(firestoreDb, 'ai_feedbacks', feedbackId);
+      await setDoc(rootDocRef, {
+        ...payload,
+        createdAt: serverTimestamp()
+      }, { merge: true });
+      console.log('✅ Đã lưu phản hồi AI vào root collection "ai_feedbacks":', feedbackId);
+    } catch (e) {
+      console.warn('Lỗi ghi phản hồi AI vào root collection "ai_feedbacks" (kiểm tra Rules):', e);
+    }
+  }
+
+  // 2. Lưu bộ nhớ đệm LocalStorage
+  try {
+    const list = getLocalFeedbacks();
+    const existingIndex = list.findIndex(item => item.id === feedbackId || item.messageId === payload.messageId);
+    if (existingIndex >= 0) {
+      list[existingIndex] = { ...list[existingIndex], ...payload };
+    } else {
+      list.unshift(payload);
+    }
+    localStorage.setItem(LOCAL_FEEDBACKS_KEY, JSON.stringify(list));
+  } catch (err) {
+    console.warn('Lỗi lưu feedback vào LocalStorage:', err);
+  }
+
+  return payload;
+}
+
+/**
+ * Lấy danh sách phản hồi từ LocalStorage cache
+ */
+export function getLocalFeedbacks() {
+  try {
+    const raw = localStorage.getItem(LOCAL_FEEDBACKS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
