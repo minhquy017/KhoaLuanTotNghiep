@@ -7,7 +7,13 @@ import './style.css';
 import { TourismApiClient } from './api.js';
 import { SpatialMapStudio } from './map.js';
 import { AuthController } from './auth.js';
-import { saveItinerary } from './firebase.js';
+import { 
+  saveItinerary, 
+  saveChatSession, 
+  getUserChatSessions, 
+  deleteChatSession, 
+  onAuthChange 
+} from './firebase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 0. KHỞI TẠO HỆ THỐNG XÁC THỰC (AUTH CONTROLLER - GOOGLE GMAIL & EMAIL)
@@ -504,7 +510,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateItineraryInChat(days, tripType, preferredDishes);
   });
 
-  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn') {
+  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn', persist = true) {
     const plan = res.itinerary_data;
     if (!plan || !plan.days || plan.days.length === 0) {
       appendAssistantError('Không tìm thấy dữ liệu lịch trình phù hợp với tiêu chí đã chọn.');
@@ -910,6 +916,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (allStopsForMap.length > 0) {
       mapStudio.drawTourRoute(allStopsForMap);
     }
+
+    // Lưu thẻ lịch trình vào phiên chat hiện tại
+    if (persist && !isRestoringSession) {
+      activeSessionMessages.push({
+        role: 'assistant',
+        text: `📅 Lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
+        isItinerary: true,
+        itineraryRes: res,
+        days,
+        tripType,
+        preferredDishes,
+        userLocName,
+        timestamp: Date.now()
+      });
+      persistActiveSession();
+    }
   }
 
   // Lắng nghe sự kiện mở lại lịch trình đã lưu từ Auth Modal
@@ -997,11 +1019,256 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Khởi tạo sự kiện cho các thẻ gợi ý ban đầu
   initPromptCards();
 
-  // Làm mới đoạn hội thoại khi bấm Làm mới
-  btnClearChat?.addEventListener('click', () => {
+  // =============================================================================
+  // QUẢN LÝ PHIÊN TRÒ CHUYỆN & LỊCH SỬ CHAT (CHAT SESSIONS ON FIRESTORE)
+  // =============================================================================
+  let activeSessionId = 'session_' + Date.now();
+  let activeSessionTitle = 'Cuộc trò chuyện mới';
+  let activeSessionMessages = [];
+  let isRestoringSession = false;
+
+  const btnNewChat = document.getElementById('btn-new-chat');
+  const btnToggleChatHistory = document.getElementById('btn-toggle-chat-history');
+  const btnWorkbenchSavedTours = document.getElementById('btn-workbench-saved-tours');
+  const historyCountBadge = document.getElementById('history-count-badge');
+  const chatHistoryDrawer = document.getElementById('chat-history-drawer');
+  const chatHistoryBackdrop = document.getElementById('chat-history-backdrop');
+  const btnCloseHistory = document.getElementById('btn-close-history');
+  const btnHistoryNewChat = document.getElementById('btn-history-new-chat');
+  const chatSessionsList = document.getElementById('chat-sessions-list');
+
+  function getCurrentUserId() {
+    return window.authController?.currentUser?.uid || null;
+  }
+
+  function parseTimestamp(rawDate) {
+    if (!rawDate) return new Date();
+    if (typeof rawDate.toDate === 'function') {
+      try { return rawDate.toDate(); } catch {}
+    }
+    if (typeof rawDate === 'object' && rawDate.seconds !== undefined) {
+      return new Date(rawDate.seconds * 1000);
+    }
+    if (typeof rawDate === 'number') {
+      return new Date(rawDate);
+    }
+    const d = new Date(rawDate);
+    if (!isNaN(d.getTime())) {
+      return d;
+    }
+    return new Date();
+  }
+
+  function formatRelativeTime(dateVal) {
+    if (!dateVal) return 'Vừa xong';
+    const date = parseTimestamp(dateVal);
+    const now = new Date();
+    const diffSec = Math.floor((now - date) / 1000);
+    if (isNaN(diffSec) || diffSec < 60) return 'Vừa xong';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} phút trước`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour} giờ trước`;
+    const diffDay = Math.floor(diffHour / 24);
+    if (diffDay === 1) return 'Hôm qua';
+    if (diffDay < 7) return `${diffDay} ngày trước`;
+    const day = (date.getDate() || 1).toString().padStart(2, '0');
+    const month = ((date.getMonth() || 0) + 1).toString().padStart(2, '0');
+    return `${day}/${month}`;
+  }
+
+  async function persistActiveSession() {
+    if (isRestoringSession || !activeSessionId || activeSessionMessages.length === 0) return;
+    const uid = getCurrentUserId();
+    
+    // Tự động gán tiêu đề session theo câu hỏi đầu tiên của người dùng
+    const firstUserMsg = activeSessionMessages.find(m => m.role === 'user');
+    if (firstUserMsg && (!activeSessionTitle || activeSessionTitle === 'Cuộc trò chuyện mới')) {
+      activeSessionTitle = firstUserMsg.text.length > 36 
+        ? firstUserMsg.text.substring(0, 36).trim() + '...' 
+        : firstUserMsg.text.trim();
+    }
+
+    try {
+      await saveChatSession(uid, {
+        id: activeSessionId,
+        title: activeSessionTitle || 'Cuộc trò chuyện mới',
+        messages: activeSessionMessages
+      });
+      refreshChatHistoryList(false);
+    } catch (e) {
+      console.warn('Lỗi lưu session:', e);
+    }
+  }
+
+  async function refreshChatHistoryList(openAfterRefresh = false) {
+    const uid = getCurrentUserId();
+    const sessions = await getUserChatSessions(uid);
+
+    if (historyCountBadge) {
+      historyCountBadge.textContent = sessions.length;
+      historyCountBadge.style.display = sessions.length > 0 ? 'inline-flex' : 'none';
+    }
+
+    if (!chatSessionsList) return;
+
+    if (sessions.length === 0) {
+      chatSessionsList.innerHTML = `
+        <div class="chat-history-empty">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <p>Chưa có cuộc trò chuyện nào.<br><span style="font-size:0.75rem; color:#A1A1AA;">Bắt đầu hỏi AI để tự động lưu lịch sử!</span></p>
+        </div>
+      `;
+      return;
+    }
+
+    chatSessionsList.innerHTML = '';
+    sessions.forEach(sess => {
+      const item = document.createElement('div');
+      item.className = `chat-session-item ${sess.id === activeSessionId ? 'active' : ''}`;
+      item.dataset.sessionId = sess.id;
+      item.innerHTML = `
+        <div class="session-main">
+          <div class="session-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div class="session-meta">
+            <span class="session-title" title="${sess.title || 'Cuộc trò chuyện'}">${sess.title || 'Cuộc trò chuyện'}</span>
+            <span class="session-date">${formatRelativeTime(sess.updatedAt || sess.createdAt)} · ${(sess.messages || []).length} tin</span>
+          </div>
+        </div>
+        <button type="button" class="btn-delete-session" title="Xóa cuộc trò chuyện này" aria-label="Xóa">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          </svg>
+        </button>
+      `;
+
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-delete-session')) return;
+        restoreChatSession(sess);
+      });
+
+      const btnDel = item.querySelector('.btn-delete-session');
+      btnDel?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (confirm(`Bạn có chắc muốn xóa cuộc trò chuyện "${sess.title}" không?`)) {
+          await deleteChatSession(uid, sess.id);
+          if (activeSessionId === sess.id) {
+            startNewChatSession();
+          } else {
+            refreshChatHistoryList();
+          }
+        }
+      });
+
+      chatSessionsList.appendChild(item);
+    });
+
+    if (openAfterRefresh) {
+      toggleChatHistoryDrawer(true);
+    }
+  }
+
+  function restoreChatSession(session) {
+    if (!session) return;
+    isRestoringSession = true;
+    activeSessionId = session.id;
+    activeSessionTitle = session.title;
+    activeSessionMessages = session.messages || [];
+
+    // Dọn sạch hoàn toàn trạng thái bản đồ cũ trước khi nạp phiên chat mới
+    if (mapStudio && typeof mapStudio.resetToDefaultState === 'function') {
+      mapStudio.resetToDefaultState();
+    }
+
+    chatThread.innerHTML = '';
+
+    if (activeSessionMessages.length === 0) {
+      renderWelcomeHero();
+    } else {
+      activeSessionMessages.forEach(msg => {
+        if (msg.role === 'user') {
+          appendUserMessage(msg.text, false);
+        } else if (msg.role === 'assistant') {
+          if (msg.isItinerary && msg.itineraryRes) {
+            appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false);
+          } else {
+            appendAssistantResponse(msg.resData || { answer: msg.text }, false);
+          }
+        }
+      });
+    }
+
+    isRestoringSession = false;
+    toggleChatHistoryDrawer(false);
+    refreshChatHistoryList(false);
+  }
+
+  function startNewChatSession() {
+    activeSessionId = 'session_' + Date.now();
+    activeSessionTitle = 'Cuộc trò chuyện mới';
+    activeSessionMessages = [];
     renderWelcomeHero();
+    toggleChatHistoryDrawer(false);
+    refreshChatHistoryList(false);
     if (chatInput) chatInput.focus();
+
+    // DỌN SẠCH TOÀN BỘ BẢN ĐỒ: Đóng popup chặng, xóa route lộ trình và ẩn stepper thanh chặng
+    if (mapStudio && typeof mapStudio.resetToDefaultState === 'function') {
+      mapStudio.resetToDefaultState();
+    }
+  }
+
+  function toggleChatHistoryDrawer(forceState) {
+    if (!chatHistoryDrawer) return;
+    const isOpen = typeof forceState === 'boolean' ? forceState : !chatHistoryDrawer.classList.contains('open');
+    if (isOpen) {
+      chatHistoryDrawer.hidden = false;
+      requestAnimationFrame(() => {
+        chatHistoryDrawer.classList.add('open');
+        btnToggleChatHistory?.classList.add('active');
+      });
+      refreshChatHistoryList();
+    } else {
+      chatHistoryDrawer.classList.remove('open');
+      btnToggleChatHistory?.classList.remove('active');
+      setTimeout(() => {
+        if (!chatHistoryDrawer.classList.contains('open')) {
+          chatHistoryDrawer.hidden = true;
+        }
+      }, 280);
+    }
+  }
+
+  btnNewChat?.addEventListener('click', () => startNewChatSession());
+  btnHistoryNewChat?.addEventListener('click', () => startNewChatSession());
+  btnToggleChatHistory?.addEventListener('click', () => toggleChatHistoryDrawer());
+  btnWorkbenchSavedTours?.addEventListener('click', () => {
+    if (window.authController) {
+      if (!window.authController.currentUser) {
+        window.authController.openAuthModal('login');
+        window.authController.showToast('Vui lòng đăng nhập để xem các lịch trình đã lưu.');
+      } else {
+        window.authController.openSavedToursModal();
+      }
+    }
   });
+  btnCloseHistory?.addEventListener('click', () => toggleChatHistoryDrawer(false));
+  chatHistoryBackdrop?.addEventListener('click', () => toggleChatHistoryDrawer(false));
+
+  // Tự động làm mới danh sách session khi trạng thái đăng nhập thay đổi
+  onAuthChange(() => {
+    refreshChatHistoryList();
+  });
+
+  // Tải danh sách session ban đầu
+  refreshChatHistoryList();
 
   async function sendChatQuery(query) {
     if (!query) return;
@@ -1073,7 +1340,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     sendChatQuery(query);
   });
 
-  function appendUserMessage(text) {
+  function appendUserMessage(text, persist = true) {
     const msg = document.createElement('div');
     msg.className = 'chat-message user';
     msg.innerHTML = `
@@ -1086,6 +1353,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
+
+    if (persist && !isRestoringSession) {
+      activeSessionMessages.push({
+        role: 'user',
+        text: text,
+        timestamp: Date.now()
+      });
+      persistActiveSession();
+    }
   }
 
   function appendAssistantLoading(customText = 'Đang phân tích không gian và tổng hợp gợi ý...') {
@@ -1112,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (el) el.remove();
   }
 
-  function appendAssistantResponse(res) {
+  function appendAssistantResponse(res, persist = true) {
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
 
@@ -1324,6 +1600,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // TỰ ĐỘNG VẼ CÁC ĐỊA ĐIỂM ĐƯỢC GỢI Ý LÊN BẢN ĐỒ BÊN CẠNH NGAY LẬP TỨC
     if (matched.length > 0 && !(nav && nav.is_navigation)) {
       mapStudio.highlightChatPlaces(matched);
+    }
+
+    // Lưu phản hồi trợ lý vào phiên chat hiện tại
+    if (persist && !isRestoringSession) {
+      activeSessionMessages.push({
+        role: 'assistant',
+        text: res.answer || '',
+        resData: res,
+        timestamp: Date.now()
+      });
+      persistActiveSession();
     }
   }
 

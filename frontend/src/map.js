@@ -123,10 +123,12 @@ export class SpatialMapStudio {
     const prevBtn = document.getElementById('btn-prev-leg');
     const nextBtn = document.getElementById('btn-next-leg');
     const modeBtn = document.getElementById('btn-toggle-route-mode');
+    const closeStepperBtn = document.getElementById('btn-close-leg-stepper');
 
     prevBtn?.addEventListener('click', () => this.prevLeg());
     nextBtn?.addEventListener('click', () => this.nextLeg());
     modeBtn?.addEventListener('click', () => this.toggleRouteDisplayMode());
+    closeStepperBtn?.addEventListener('click', () => this.hideLegStepper());
 
     // Đảm bảo kích thước bản đồ hiển thị mượt mà
     setTimeout(() => {
@@ -1363,11 +1365,28 @@ export class SpatialMapStudio {
   }
 
   clearAll() {
+    if (this.map) this.map.closePopup();
     if (this.markersLayer) this.markersLayer.clearLayers();
     if (this.routesLayer) this.routesLayer.clearLayers();
     if (this.navigationLayer) this.navigationLayer.clearLayers();
     const banner = document.getElementById('map-nav-banner');
     if (banner) banner.style.display = 'none';
     this.hideLegStepper();
+  }
+
+  /**
+   * Đặt lại trạng thái bản đồ sạch sẽ hoàn toàn về mặc định
+   * (Đóng popup chặng, xóa tuyến đường tour, ẩn stepper thanh chặng, nạp lại POIs chuẩn)
+   */
+  resetToDefaultState() {
+    this.clearAll();
+    this.currentItinerary = null;
+    this.currentDayLegs = [];
+    this.activeLegIndex = 0;
+    this.clearTimelineHighlight();
+    this.filterByCategory('all');
+    if (this.map) {
+      this.map.setView(this.centerHue, this.defaultZoom, { animate: true });
+    }
   }
 }

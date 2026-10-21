@@ -166,6 +166,12 @@ export class AuthController {
     this.savedToursModal?.addEventListener('click', (e) => {
       if (e.target === this.savedToursModal) this.closeSavedToursModal();
     });
+
+    window.addEventListener('tour-saved', () => {
+      if (this.savedToursModal?.classList.contains('active')) {
+        this.renderSavedTours();
+      }
+    });
   }
 
   initAuthObserver() {
