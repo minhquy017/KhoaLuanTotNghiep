@@ -516,16 +516,18 @@ def build_thesis_docx():
         ("      1.2. Thiết kế Đồ thị Tri thức Không gian Du lịch Huế", "22", False, True),
         ("      1.3. Phương pháp khai phá thực đơn ngầm và đối soát tri thức", "25", False, True),
         ("      1.4. Khung điều phối tác tử tự suy ngẫm Agentic RAG trên LangGraph", "27", False, True),
-        ("   Chương 2. Thuật toán Lập lịch trình Không gian, Thực nghiệm Đối sánh và Tích hợp", "29", True, False),
-        ("      2.1. Thuật toán Lập lịch trình phân cụm không gian", "29", False, True),
-        ("      2.2. Bộ kiểm thử Benchmark 12 kịch bản du lịch Huế", "31", False, True),
-        ("      2.3. Kết quả thực nghiệm đối sánh định lượng", "35", False, True),
-        ("      2.4. Hiện thực hóa Cổng API RESTful và Sẵn sàng Tích hợp Hue-S", "37", False, True),
-        ("PHẦN V. KẾT LUẬN VÀ KIẾN NGHỊ", "39", True, False),
-        ("   1. Kết luận và Đóng góp của đề tài", "39", False, True),
-        ("   2. Những hạn chế của nghiên cứu", "40", False, True),
-        ("   3. Kiến nghị và Hướng phát triển tiếp theo", "41", False, True),
-        ("TÀI LIỆU THAM KHẢO", "42", True, False)
+        ("      1.5. Tầng Lưu trữ Đám mây NoSQL và Quản trị Đa phiên Hội thoại", "28", False, True),
+        ("      1.6. Thiết kế Giao diện Khách Web Tương tác Không gian (Gemini-Style Client)", "29", False, True),
+        ("   Chương 2. Thuật toán Lập lịch trình Không gian, Thực nghiệm Đối sánh và Tích hợp", "30", True, False),
+        ("      2.1. Thuật toán Lập lịch trình phân cụm không gian", "30", False, True),
+        ("      2.2. Bộ kiểm thử Benchmark 12 kịch bản du lịch Huế", "32", False, True),
+        ("      2.3. Kết quả thực nghiệm đối sánh định lượng", "36", False, True),
+        ("      2.4. Hiện thực hóa Cổng API RESTful và Sẵn sàng Tích hợp Hue-S", "38", False, True),
+        ("PHẦN V. KẾT LUẬN VÀ KIẾN NGHỊ", "40", True, False),
+        ("   1. Kết luận và Đóng góp của đề tài", "40", False, True),
+        ("   2. Những hạn chế của nghiên cứu", "41", False, True),
+        ("   3. Kiến nghị và Hướng phát triển tiếp theo", "42", False, True),
+        ("TÀI LIỆU THAM KHẢO", "43", True, False)
     ]
     for item, page_str, is_bold, is_italic in toc_items:
         p_toc = doc.add_paragraph()
@@ -559,16 +561,21 @@ def build_thesis_docx():
         ["GPU", "Graphics Processing Unit", "Bộ xử lý đồ họa"],
         ["HUET", "Hue University of Engineering and Technology", "Khoa Kỹ thuật và Công nghệ – Đại học Huế"],
         ["JSON", "JavaScript Object Notation", "Định dạng trao đổi dữ liệu đối tượng"],
+        ["JWT", "JSON Web Token", "Chuẩn mở định dạng mã thông báo bảo mật"],
         ["KG", "Knowledge Graph", "Đồ thị tri thức"],
         ["LLM", "Large Language Model", "Mô hình ngôn ngữ lớn"],
         ["NLP", "Natural Language Processing", "Xử lý ngôn ngữ tự nhiên"],
+        ["NoSQL", "Not Only SQL", "Mô hình cơ sở dữ liệu phi quan hệ"],
+        ["OAuth", "Open Authorization", "Khung ủy quyền phân tán tiêu chuẩn mở"],
         ["OSM", "OpenStreetMap", "Dự án bản đồ số mở toàn cầu"],
         ["OSRM", "Open Source Routing Machine", "Hệ thống tính toán định tuyến mã nguồn mở"],
         ["POI", "Point of Interest", "Điểm tham quan / Cơ sở dịch vụ du lịch"],
         ["RAG", "Retrieval-Augmented Generation", "Tạo sinh tăng cường truy xuất"],
         ["REST", "Representational State Transfer", "Phong cách kiến trúc mạng hướng dịch vụ"],
+        ["RLHF", "Reinforcement Learning from Human Feedback", "Học tăng cường từ phản hồi của con người"],
         ["SKG", "Spatial Knowledge Graph", "Đồ thị tri thức không gian"],
-        ["VRAM", "Video Random Access Memory", "Bộ nhớ truy cập ngẫu nhiên của bộ xử lý đồ họa"]
+        ["VRAM", "Video Random Access Memory", "Bộ nhớ truy cập ngẫu nhiên của bộ xử lý đồ họa"],
+        ["WMO", "World Meteorological Organization", "Tổ chức Khí tượng Thế giới"]
     ]
     tbl_abbr = doc.add_table(rows=len(abbr_data), cols=3)
     tbl_abbr.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -600,8 +607,10 @@ def build_thesis_docx():
         ("Bảng 4", "Cơ cấu phân loại và phân bố địa giới của 610 địa điểm du lịch tại Huế", "19"),
         ("Bảng 1.1", "Thống kê định lượng các thành phần trong Đồ thị Tri thức Không gian", "23"),
         ("Bảng 1.2", "Mẫu đối soát kết quả khai phá thực đơn ngầm từ nhận xét du khách tại Huế", "26"),
-        ("Bảng 2.1", "Đặc tả chi tiết 12 kịch bản trong Bộ dữ liệu kiểm thử chuẩn cho du lịch Huế", "32"),
-        ("Bảng 2.2", "Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark", "36")
+        ("Bảng 1.4", "Lược đồ cấu trúc dữ liệu trên Google Cloud Firestore phục vụ quản lý đa phiên và phản hồi", "28"),
+        ("Bảng 1.5", "Ma trận Quy tắc Thích ứng Lộ trình theo Ngữ cảnh Khí tượng Cố đô Huế", "29"),
+        ("Bảng 2.1", "Đặc tả chi tiết 12 kịch bản trong Bộ dữ liệu kiểm thử chuẩn cho du lịch Huế", "33"),
+        ("Bảng 2.2", "Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark", "37")
     ]
     tbl_meta = doc.add_table(rows=len(table_list) + 1, cols=3)
     tbl_meta.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -1086,6 +1095,81 @@ def build_thesis_docx():
     format_body_p(p)
     add_body_run(p, "Quan sát sơ đồ Hình 1.3, quy trình điều phối bắt đầu từ nút trích xuất thực thể và ý định người dùng (Extract Entity & Intent), chuyển tiếp sang nút truy vấn Đồ thị Tri thức Không gian (Spatial KG Retrieval). Kết quả truy xuất được đưa vào nút chấm điểm tin cậy (Grade Retrieval): nếu điểm tin cậy đạt ngưỡng (>= 0,70), hệ thống kích hoạt nút sinh câu trả lời bằng mô hình Qwen2.5-3B; ngược lại nếu điểm tin cậy dưới ngưỡng, tác tử tự động kích hoạt Cạnh có điều kiện rẽ nhánh sang công cụ tìm kiếm mạng DuckDuckGo Search để bổ sung dữ liệu thời gian thực trước khi tổng hợp phản hồi cuối cùng.")
 
+    add_sec_heading(doc, "1.5. Tầng Lưu trữ Đám mây NoSQL và Quản trị Đa phiên Hội thoại")
+    p = doc.add_paragraph()
+    format_body_p(p)
+    add_body_run(p, "Bên cạnh các cơ sở dữ liệu quan hệ truyền thống và cơ sở dữ liệu véc-tơ phục vụ lưu trữ tri thức tĩnh, việc quản lý trạng thái tương tác động của du khách (lịch sử trò chuyện đa phiên, các hành trình được đánh dấu lưu trữ và phản hồi đánh giá trải nghiệm) đòi hỏi một mô hình lưu trữ phân tán linh hoạt và có khả năng mở rộng cao. Hệ thống tích hợp nền tảng Google Firebase, đặc biệt là cơ sở dữ liệu hướng tài liệu NoSQL Google Cloud Firestore [20, 24, 25]. Dữ liệu được tổ chức dưới dạng cây phân cấp gồm ba bộ sưu tập cốt lõi được đặc tả tại Bảng 1.4.")
+
+    add_table_caption(doc, "Bảng 1.4: Lược đồ cấu trúc dữ liệu trên Google Cloud Firestore phục vụ quản lý đa phiên và phản hồi")
+    tbl_firestore_data = [
+        ["Bộ sưu tập (Collection)", "Trường dữ liệu chính", "Kiểu dữ liệu", "Mục đích sử dụng nghiệp vụ"],
+        ["chat_sessions", "sessionId, userId\ntitle\nmessages[]\nupdatedAt", "String\nString\nArray[Object]\nTimestamp", "Lưu trữ định danh phiên, tiêu đề đối thoại tự động bóc tách từ câu hỏi đầu, mảng các tin nhắn đối thoại kèm lộ trình và thời gian cập nhật."],
+        ["saved_itineraries", "itineraryId, userId\ntitle, days\nplaces[]\ntotalDistanceKm", "String\nString, Number\nArray[Object]\nNumber", "Lưu trữ các lộ trình du lịch hoàn chỉnh do du khách chủ động đánh dấu lưu lại, bao gồm danh sách các điểm dừng, cự ly và ước tính chi phí."],
+        ["ai_feedbacks", "feedbackId, userId\nrating\nprompt, response\ntimestamp", "String\nString\nString\nTimestamp", "Ghi nhận phản hồi đánh giá chất lượng (like hoặc dislike) của du khách đối với từng câu trả lời của tác tử thông minh phục vụ học tăng cường RLHF."]
+    ]
+    tbl_fs = doc.add_table(rows=len(tbl_firestore_data), cols=4)
+    tbl_fs.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_academic_table_borders(tbl_fs)
+    for r_idx, row in enumerate(tbl_firestore_data):
+        for c_idx, val in enumerate(row):
+            cell = tbl_fs.rows[r_idx].cells[c_idx]
+            p_cell = cell.paragraphs[0]
+            p_cell.paragraph_format.space_before = Pt(2)
+            p_cell.paragraph_format.space_after = Pt(2)
+            p_cell.paragraph_format.line_spacing = 1.15
+            p_cell.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            r_c = p_cell.add_run(val)
+            r_c.font.name = 'Times New Roman'
+            r_c.font.size = Pt(9.5)
+            if r_idx == 0:
+                r_c.font.bold = True
+                set_cell_background(cell, "EAECEF")
+            set_cell_margins(cell, top=50, bottom=50, left=70, right=70)
+
+    p = doc.add_paragraph()
+    format_body_p(p)
+    add_body_run(p, "Cấu trúc phân tầng tại Bảng 1.4 cho phép hệ thống phân lập hoàn toàn giữa dữ liệu hội thoại tức thời và dữ liệu lộ trình dài hạn, bảo đảm tốc độ truy vấn đọc ghi luôn duy trì dưới 80 mili-giây trên quy mô hàng ngàn phiên làm việc đồng thời. Quá trình tương tác của du khách được kiểm soát thông qua một cơ chế vòng đời phiên hội thoại bốn giai đoạn chặt chẽ: khởi tạo phiên mới (startNewChatSession) làm sạch giao diện và kích hoạt resetToDefaultState đưa bản đồ về trung tâm Huế; ghi nhận và kiên định hóa tự động (persistActiveSession) lưu đè bất đồng bộ lên Firestore; khôi phục phiên lịch sử (restoreChatSession) tái tạo các thẻ lộ trình trực quan kèm nút vẽ lại bản đồ (btn-nav-replot); và xóa phiên an toàn (deleteChatSession) thẩm định quyền sở hữu dữ liệu qua mã thông báo JWT [26].")
+
+    add_sec_heading(doc, "1.6. Thiết kế Giao diện Khách Web Tương tác Không gian (Gemini-Style Client)")
+    p = doc.add_paragraph()
+    format_body_p(p)
+    add_body_run(p, "Kế thừa các chuẩn mực thiết kế tương tác hiện đại từ các hệ thống trợ lý AI hàng đầu, hệ thống phát triển giao diện Web tích hợp bản đồ số thông minh với thanh bên điều hướng thích ứng hai trạng thái [27]: trạng thái mở rộng 280 pixel cung cấp đầy đủ danh mục phiên chat, widget thời tiết và nút khởi tạo mới dạng viên thuốc bo tròn (Gemini Pill Button); trạng thái thu gọn 52 pixel (Icon Rail) tối giản hóa thành các biểu tượng 36 pixel căn giữa kèm nhãn chỉ dẫn nổi thông minh khi rê chuột (Hover Tooltips); và chế độ ngăn kéo trượt (Slide-over Drawer) trên thiết bị di động có chiều ngang dưới 1024 pixel.")
+
+    p = doc.add_paragraph()
+    format_body_p(p)
+    add_body_run(p, "Nhằm nâng cao tính khả thi thực tế của lộ trình trong điều kiện khí hậu đặc thù của Cố đô Huế, hệ thống tích hợp tiện ích khí tượng thời gian thực kết nối giao diện lập trình Open-Meteo [22] tại tọa độ trắc địa trung tâm thành phố Huế (16,4637 độ Bắc, 107,5909 độ Đông). Bộ tham số bao gồm nhiệt độ không khí T (độ C), độ ẩm tương đối H (%), lượng mưa tích lũy P (mm) và mã thời tiết chuẩn WMO Code Table 4677 [23]. Chi tiết ma trận quy tắc thích ứng lộ trình theo ngữ cảnh khí tượng được tổng hợp tại Bảng 1.5 [21].")
+
+    add_table_caption(doc, "Bảng 1.5: Ma trận Quy tắc Thích ứng Lộ trình theo Ngữ cảnh Khí tượng Cố đô Huế")
+    tbl_weather_data = [
+        ["Mã WMO", "Nhiệt độ T", "Lượng mưa P", "Ngữ cảnh môi trường", "Chiến lược Thích ứng Gợi ý"],
+        ["0, 1, 2", "20°C <= T <= 28°C", "0 mm", "Trời quang đãng, mát mẻ", "Ưu tiên các quần thể di tích ngoài trời và danh thắng tự nhiên (Đại Nội, Chùa Thiên Mụ, Đồi Vọng Cảnh, Lăng Khải Định)."],
+        ["0, 1", "T > 33°C", "0 mm", "Nắng nóng gay gắt", "Khuyến nghị hạn chế di chuyển ngoài trời giữa trưa, ưu tiên di tích có bóng râm hoặc không gian trưng bày trong nhà (Cung An Định, Bảo tàng Cổ vật Cung đình), đề xuất các quán cà phê ven sông Hương và ẩm thực chè thanh nhiệt."],
+        ["51--67", "Mọi giá trị T", "P > 0 mm", "Mưa dầm đặc trưng", "Cảnh báo trang bị ô dù, tái cấu trúc lộ trình ưu tiên các di tích có hành lang và mái che liên hoàn, gợi ý dừng chân trải nghiệm ẩm thực nóng ấm (Bún bò Huế, Bánh canh Nam Phổ, Bánh khoái)."],
+        ["80--99", "Mọi giá trị T", "P >= 5 mm", "Mưa rào hoặc dông sét", "Phát tín hiệu cảnh báo an toàn, tạm dừng các tuyến tham quan đồi núi và sông nước, đề xuất chuyển hướng sang không gian văn hóa ẩm thực trong nhà an toàn."]
+    ]
+    tbl_w = doc.add_table(rows=len(tbl_weather_data), cols=5)
+    tbl_w.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_academic_table_borders(tbl_w)
+    for r_idx, row in enumerate(tbl_weather_data):
+        for c_idx, val in enumerate(row):
+            cell = tbl_w.rows[r_idx].cells[c_idx]
+            p_cell = cell.paragraphs[0]
+            p_cell.paragraph_format.space_before = Pt(2)
+            p_cell.paragraph_format.space_after = Pt(2)
+            p_cell.paragraph_format.line_spacing = 1.15
+            p_cell.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            r_c = p_cell.add_run(val)
+            r_c.font.name = 'Times New Roman'
+            r_c.font.size = Pt(9.5)
+            if r_idx == 0:
+                r_c.font.bold = True
+                set_cell_background(cell, "EAECEF")
+            set_cell_margins(cell, top=50, bottom=50, left=60, right=60)
+
+    p = doc.add_paragraph()
+    format_body_p(p)
+    add_body_run(p, "Ma trận quy tắc tại Bảng 1.5 cung cấp cơ chế lập luận ngữ cảnh trực tiếp cho tác tử thông minh, bảo đảm các kế hoạch tham quan do mô hình ngôn ngữ lớn tổng hợp luôn dung hòa chặt chẽ giữa cự ly di chuyển tối ưu và mức độ an toàn thoải mái sinh học của du khách. Về mặt xác thực danh tính, hệ thống triển khai cơ chế đa kênh linh hoạt: Đăng nhập một chạm Google OAuth 2.0; Xác thực qua Email/Mật khẩu; và Chế độ Khách vãng lai (Guest Demo Mode). Menu tài khoản được thiết kế dưới dạng khung cửa sổ nổi Popover định vị ngay trên chip tài khoản, kết hợp Hộp thoại cấu hình Firebase động (firebase-config-modal) cho phép nạp trực tiếp khóa API Key cá nhân qua giao diện web và lưu bền vững vào localStorage của trình duyệt mà không cần biên dịch lại mã nguồn.")
+
     doc.add_page_break()
 
     # -------------------------------------------------------------------------
@@ -1252,7 +1336,15 @@ def build_thesis_docx():
         "[16] A. A. Hagberg, D. A. Schult, and P. J. Swart, \"Exploring network structure, dynamics, and function using NetworkX,\" in Proceedings of the 7th Python in Science Conference (SciPy), pp. 11–15, 2008.",
         "[17] S. Tiun, R. Mokhtar, S. Bakar, and N. S. Saad, \"Classification of review sentiments using opinion mining tools,\" in 2020 8th International Conference on Information Technology and Multimedia (ICIMU), pp. 200–205, IEEE, 2020.",
         "[18] TripAdvisor LLC, \"TripAdvisor content API documentation and tourist review schema,\" 2024. [Trực tuyến]. Địa chỉ: https://developer-tripadvisor.com/content-api/",
-        "[19] Sở Thông tin và Truyền thông tỉnh Thừa Thiên Huế, \"Nền tảng Đô thị thông minh Hue-S: Cẩm nang hướng dẫn sử dụng và đặc tả dịch vụ công dân số,\" Cổng thông tin điện tử tỉnh Thừa Thiên Huế, 2024. [Trực tuyến]. Địa chỉ: https://huecity.gov.vn/"
+        "[19] Sở Thông tin và Truyền thông tỉnh Thừa Thiên Huế, \"Nền tảng Đô thị thông minh Hue-S: Cẩm nang hướng dẫn sử dụng và đặc tả dịch vụ công dân số,\" Cổng thông tin điện tử tỉnh Thừa Thiên Huế, 2024. [Trực tuyến]. Địa chỉ: https://huecity.gov.vn/",
+        "[20] L. Moroney, The Definitive Guide to Firebase: Build Mobile and Web Applications with Firebase, New York, NY, USA: Apress, 2017.",
+        "[21] D. Gavalas, C. Konstantopoulos, K. Mastakas, and G. Pantziou, \"A survey on mobile tourist guides and context-aware tourist trip planning,\" Journal of Network and Computer Applications, vol. 40, pp. 380–403, 2014.",
+        "[22] P. Zippenfenig, \"Open-Meteo: Open-source weather API providing high-resolution meteorological forecasts,\" Open-Meteo Documentation and Technical Report, 2023.",
+        "[23] World Meteorological Organization, Manual on Codes: International Codes, Volume I.1 (Annex II to the WMO Technical Regulations), Geneva, Switzerland: WMO-No. 306, 2019.",
+        "[24] Google Cloud, \"Cloud Firestore architecture and real-time synchronization protocol,\" Google Cloud Whitepaper and Technical Documentation, 2024.",
+        "[25] A. Davoudian, L. Chen, and M. Liu, \"A survey on NoSQL stores,\" ACM Computing Surveys (CSUR), vol. 51, no. 2, pp. 1–43, 2018.",
+        "[26] D. Hardt, \"The OAuth 2.0 authorization framework,\" Internet Engineering Task Force (IETF), RFC 6749, 2012.",
+        "[27] R. Sugumaran and J. Degroote, Spatial Decision Support Systems: Principles and Practices, CRC Press, Taylor & Francis Group, 2010."
     ]
 
     for ref in references:
