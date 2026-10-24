@@ -7,11 +7,11 @@ import './style.css';
 import { TourismApiClient } from './api.js';
 import { SpatialMapStudio } from './map.js';
 import { AuthController } from './auth.js';
-import { 
-  saveItinerary, 
-  saveChatSession, 
-  getUserChatSessions, 
-  deleteChatSession, 
+import {
+  saveItinerary,
+  saveChatSession,
+  getUserChatSessions,
+  deleteChatSession,
   submitAiFeedback,
   onAuthChange,
   logoutUser,
@@ -297,8 +297,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (workbenchToggleText) {
       workbenchToggleText.textContent = isCollapsed ? 'Hiện trợ lý' : 'Toàn cảnh';
     }
-    btnToggleWorkbench.title = isCollapsed 
-      ? 'Mở lại bảng trợ lý & lịch trình bên phải' 
+    btnToggleWorkbench.title = isCollapsed
+      ? 'Mở lại bảng trợ lý & lịch trình bên phải'
       : 'Thu gọn bảng trợ lý để xem bản đồ toàn cảnh';
 
     // Đợi transition CSS kết thúc rồi cập nhật lại Leaflet Map Viewport
@@ -721,10 +721,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       slots.forEach(slot => {
         const isFood = (slot.category || '').toLowerCase().includes('restaurant') ||
-                       (slot.category || '').toLowerCase().includes('quán') ||
-                       (slot.activity_type || '').toLowerCase().includes('ẩm thực');
+          (slot.category || '').toLowerCase().includes('quán') ||
+          (slot.activity_type || '').toLowerCase().includes('ẩm thực');
         const isUserLoc = (slot.category || '').toLowerCase().includes('userlocation') ||
-                          (slot.activity_type || '').toLowerCase().includes('khởi hành');
+          (slot.activity_type || '').toLowerCase().includes('khởi hành');
 
         // Chỉ cho phép điểm xuất phát người dùng xuất hiện 1 lần duy nhất ở đầu hành trình
         if (isUserLoc) {
@@ -751,7 +751,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let dayContentsHtml = '';
 
     const dayColors = {
-      1: '#18181B',
+      1: '#F15822',
       2: '#D97706',
       3: '#0D9488'
     };
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isFirstDay = index === 0;
       const slots = day.slots || day.stops || [];
       const totalKm = day.total_distance_km ? ` · ${day.total_distance_km.toFixed(1)} km` : '';
-      const dotColor = dayColors[day.day_number] || '#18181B';
+      const dotColor = dayColors[day.day_number] || '#F15822';
 
       dayTabsHtml += `
         <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}" title="Xem lịch trình và lộ trình Ngày ${day.day_number}">
@@ -793,18 +793,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       let timelineStepsHtml = '';
       slots.forEach((slot, slotIdx) => {
         const isFood = (slot.category || '').toLowerCase().includes('restaurant') ||
-                       (slot.category || '').toLowerCase().includes('quán') ||
-                       (slot.activity_type || '').toLowerCase().includes('ẩm thực');
+          (slot.category || '').toLowerCase().includes('quán') ||
+          (slot.activity_type || '').toLowerCase().includes('ẩm thực');
         const isUserOrigin = (slot.category || '').toLowerCase().includes('userlocation') ||
-                             (slot.activity_type || '').toLowerCase().includes('khởi hành');
+          (slot.activity_type || '').toLowerCase().includes('khởi hành');
         const lat = slot.latitude || slot.lat;
         const lng = slot.longitude || slot.lng;
 
         const hasOriginInDay = slots.some(s => {
           return (s.category || '').toLowerCase().includes('userlocation') ||
-                 (s.activity_type || '').toLowerCase().includes('khởi hành') ||
-                 (s.slot_name || '').toLowerCase().includes('xuất phát') ||
-                 (s.place_name || s.name || '').toLowerCase().includes('vị trí của bạn');
+            (s.activity_type || '').toLowerCase().includes('khởi hành') ||
+            (s.slot_name || '').toLowerCase().includes('xuất phát') ||
+            (s.place_name || s.name || '').toLowerCase().includes('vị trí của bạn');
         });
         const legNum = hasOriginInDay ? slotIdx : (slotIdx + 1);
         const legBadge = isUserOrigin
@@ -906,7 +906,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (plan.days.length > 1) {
       dayTabsHtml += `
         <button type="button" class="deck-day-tab" data-deck="${deckId}" data-day="all" title="Xem tuyến đường toàn bộ các ngày cùng lúc">
-          <span class="day-tab-dot" style="background: #18181B;"></span>
+          <span class="day-tab-dot" style="background: #F15822;"></span>
           <span>Tất cả ngày</span>
         </button>
       `;
@@ -1266,6 +1266,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnToggleChatHistory = document.getElementById('btn-toggle-chat-history');
   const btnWorkbenchSavedTours = document.getElementById('btn-workbench-saved-tours');
   const historyCountBadge = document.getElementById('history-count-badge');
+  const sidebarHistoryCountBadge = document.getElementById('sidebar-history-count-badge');
+  const workbenchHistoryCountBadge = document.getElementById('workbench-history-count-badge');
   const chatSessionsList = document.getElementById('chat-sessions-list');
 
   // Khởi tạo thời tiết Huế
@@ -1313,7 +1315,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function parseTimestamp(rawDate) {
     if (!rawDate) return new Date();
     if (typeof rawDate.toDate === 'function') {
-      try { return rawDate.toDate(); } catch {}
+      try { return rawDate.toDate(); } catch { }
     }
     if (typeof rawDate === 'object' && rawDate.seconds !== undefined) {
       return new Date(rawDate.seconds * 1000);
@@ -1349,12 +1351,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function persistActiveSession() {
     if (isRestoringSession || !activeSessionId || activeSessionMessages.length === 0) return;
     const uid = getCurrentUserId();
-    
+
     // Tự động gán tiêu đề session theo câu hỏi đầu tiên của người dùng
     const firstUserMsg = activeSessionMessages.find(m => m.role === 'user');
     if (firstUserMsg && (!activeSessionTitle || activeSessionTitle === 'Cuộc trò chuyện mới')) {
-      activeSessionTitle = firstUserMsg.text.length > 36 
-        ? firstUserMsg.text.substring(0, 36).trim() + '...' 
+      activeSessionTitle = firstUserMsg.text.length > 36
+        ? firstUserMsg.text.substring(0, 36).trim() + '...'
         : firstUserMsg.text.trim();
     }
 
@@ -1374,10 +1376,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const uid = getCurrentUserId();
     const sessions = await getUserChatSessions(uid);
 
-    if (historyCountBadge) {
-      historyCountBadge.textContent = sessions.length;
-      historyCountBadge.style.display = sessions.length > 0 ? 'inline-flex' : 'none';
+    const sessionCount = sessions.length;
+    // Đồng bộ số lượng phiên trên cả thanh bên (sidebar) và nút Lịch sử ở thanh tác vụ bên phải (workbench header)
+    if (sidebarHistoryCountBadge) {
+      sidebarHistoryCountBadge.textContent = sessionCount;
     }
+    if (workbenchHistoryCountBadge) {
+      workbenchHistoryCountBadge.textContent = sessionCount;
+    }
+    if (historyCountBadge) {
+      historyCountBadge.textContent = sessionCount;
+    }
+    document.querySelectorAll('.sidebar-count-badge, .history-count-badge').forEach(badge => {
+      badge.textContent = sessionCount;
+    });
 
     if (!chatSessionsList) return;
 
@@ -1462,13 +1474,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderWelcomeHero();
     } else {
       activeSessionMessages.forEach(msg => {
+        const textVal = msg.text || msg.content || '';
         if (msg.role === 'user') {
-          appendUserMessage(msg.text, false);
+          if (textVal) appendUserMessage(textVal, false);
         } else if (msg.role === 'assistant') {
           if (msg.isItinerary && msg.itineraryRes) {
             appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false, msg.id, msg.feedbackRating);
           } else {
-            appendAssistantResponse({ ...msg.resData, answer: msg.text, messageId: msg.id, feedbackRating: msg.feedbackRating, prompt: msg.prompt }, false);
+            const answerVal = textVal || msg.resData?.answer || '';
+            appendAssistantResponse({ ...msg.resData, answer: answerVal, messageId: msg.id, feedbackRating: msg.feedbackRating, prompt: msg.prompt }, false);
           }
         }
       });
@@ -1520,7 +1534,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       const willCollapse = typeof forceState === 'boolean' ? !forceState : !sidebarGemini.classList.contains('collapsed');
       sidebarGemini.classList.toggle('collapsed', willCollapse);
-      
+
       const toggleBtn = btnSidebarToggle || btnSidebarCollapse;
       if (toggleBtn) {
         const tooltipText = willCollapse ? 'Mở thanh bên' : 'Thu gọn thanh bên';
@@ -1531,7 +1545,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnToggleSidebar?.classList.toggle('active', !willCollapse);
       try {
         localStorage.setItem('hue_sidebar_collapsed', willCollapse ? '1' : '0');
-      } catch {}
+      } catch { }
+
+      // Cập nhật kích thước bản đồ mượt mà sau khi hiệu ứng thanh bên hoàn tất
+      setTimeout(() => {
+        if (window.mapStudio?.map) {
+          window.mapStudio.map.invalidateSize({ animate: false });
+        }
+      }, 340);
     }
   }
 
@@ -1545,7 +1566,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         toggleBtn.setAttribute('data-tooltip', 'Mở thanh bên');
       }
     }
-  } catch {}
+  } catch { }
 
   function updateSidebarUserProfile(user) {
     if (!sidebarUserName) return;
@@ -1684,6 +1705,92 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.authController?.showToast('Đã kích hoạt chế độ Trải nghiệm Khách (Demo).');
   });
 
+  // Khởi tạo và quản lý Modal Cài đặt Ứng dụng (Application Settings)
+  const initSettingsModal = () => {
+    const tabBtns = document.querySelectorAll('.settings-tab-btn');
+    const panels = document.querySelectorAll('.settings-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+
+        tabBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        panels.forEach(p => {
+          if (p.id === targetId) {
+            p.classList.add('active');
+            p.removeAttribute('hidden');
+          } else {
+            p.classList.remove('active');
+            p.setAttribute('hidden', '');
+          }
+        });
+      });
+    });
+
+    // Preferences: Tải và lắng nghe trạng thái đã lưu
+    const autoMapToggle = document.getElementById('pref-toggle-auto-map');
+    const animToggle = document.getElementById('pref-toggle-animations');
+    const weatherToggle = document.getElementById('pref-toggle-weather-tips');
+    const aiDetailSelect = document.getElementById('pref-ai-detail-select');
+    const aiStyleInputs = document.querySelectorAll('input[name="ai-style-option"]');
+    const btnClearCache = document.getElementById('btn-settings-clear-cache');
+
+    if (autoMapToggle) {
+      autoMapToggle.checked = localStorage.getItem('hue_pref_auto_map') !== 'false';
+      autoMapToggle.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_auto_map', e.target.checked);
+      });
+    }
+
+    if (animToggle) {
+      animToggle.checked = localStorage.getItem('hue_pref_animations') !== 'false';
+      animToggle.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_animations', e.target.checked);
+      });
+    }
+
+    if (weatherToggle) {
+      weatherToggle.checked = localStorage.getItem('hue_pref_weather_tips') !== 'false';
+      weatherToggle.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_weather_tips', e.target.checked);
+      });
+    }
+
+    const savedStyle = localStorage.getItem('hue_pref_ai_style') || 'balanced';
+    aiStyleInputs.forEach(input => {
+      if (input.value === savedStyle) input.checked = true;
+      input.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          localStorage.setItem('hue_pref_ai_style', e.target.value);
+        }
+      });
+    });
+
+    if (aiDetailSelect) {
+      aiDetailSelect.value = localStorage.getItem('hue_pref_ai_detail') || 'detailed';
+      aiDetailSelect.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_ai_detail', e.target.value);
+      });
+    }
+
+    if (btnClearCache) {
+      btnClearCache.addEventListener('click', () => {
+        sessionStorage.clear();
+        localStorage.removeItem('hue_cached_places_v1');
+        localStorage.removeItem('hue_last_query');
+        window.authController?.showToast('Đã làm mới bộ nhớ đệm và dữ liệu tạm thành công.');
+      });
+    }
+  };
+
+  initSettingsModal();
+
   btnToggleSidebar?.addEventListener('click', () => toggleSidebar());
   btnSidebarToggle?.addEventListener('click', () => toggleSidebar());
   btnSidebarCollapse?.addEventListener('click', () => toggleSidebar());
@@ -1765,7 +1872,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (lowerQuery.includes('1 ngày') || lowerQuery.includes('một ngày')) days = 1;
       else if (lowerQuery.includes('3 ngày') || lowerQuery.includes('ba ngày')) days = 3;
       else if (lowerQuery.includes('2 ngày') || lowerQuery.includes('hai ngày')) days = 2;
-      
+
       const tripType = selectTripType ? selectTripType.value : 'Couples';
       const preferredDishes = getSelectedDishes();
       if (chatInput) chatInput.value = '';
@@ -1806,6 +1913,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function appendUserMessage(text, persist = true) {
+    const safeText = (text !== undefined && text !== null) ? String(text).trim() : '';
+    if (!safeText || safeText === 'undefined') return;
+
     const msg = document.createElement('div');
     msg.className = 'chat-message user';
     msg.innerHTML = `
@@ -1813,7 +1923,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
       <div class="message-bubble">
-        <p>${text}</p>
+        <p>${safeText}</p>
       </div>
     `;
     chatThread.appendChild(msg);
@@ -1822,7 +1932,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (persist && !isRestoringSession) {
       activeSessionMessages.push({
         role: 'user',
-        text: text,
+        text: safeText,
+        content: safeText,
         timestamp: Date.now()
       });
       persistActiveSession();
@@ -1861,11 +1972,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const savedRating = res.feedbackRating || null;
     const finalPrompt = promptText || res.prompt || lastUserPrompt || '';
 
-    const formattedAnswer = res.answer
-      ? res.answer
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\*(.*?)\*/g, '<em>$1</em>')
-          .replace(/\n/g, '<br/>')
+    const rawAnswer = res.answer || res.text || res.content || '';
+    const formattedAnswer = rawAnswer
+      ? rawAnswer
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br/>')
       : '';
 
     // Khối thẻ chỉ đường nếu phản hồi có điều hướng (Navigation Intent)
@@ -1905,8 +2017,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const dLat = (destination.lat - origin.lat) * Math.PI / 180;
       const dLon = (destination.lng - origin.lng) * Math.PI / 180;
       const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(origin.lat * Math.PI / 180) * Math.cos(destination.lat * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        Math.cos(origin.lat * Math.PI / 180) * Math.cos(destination.lat * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
       const estDistKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1);
       const estDurationMin = Math.max(2, Math.round(parseFloat(estDistKm) * 2.5));
 
@@ -1986,33 +2098,33 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
           <div class="suggested-places-list">
             ${matched.map(p => {
-              const catLower = (p.category || '').toLowerCase();
-              const isFood = catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán');
-              const isCafe = catLower.includes('cafe') || catLower.includes('cà phê');
-              const isHotel = catLower.includes('hotel') || catLower.includes('khách sạn');
-              
-              let catClass = 'attraction';
-              let iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>`;
-              
-              if (isFood) {
-                catClass = 'restaurant';
-                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/></svg>`;
-              } else if (isCafe) {
-                catClass = 'cafe';
-                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg>`;
-              } else if (isHotel) {
-                catClass = 'hotel';
-                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`;
-              }
+        const catLower = (p.category || '').toLowerCase();
+        const isFood = catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán');
+        const isCafe = catLower.includes('cafe') || catLower.includes('cà phê');
+        const isHotel = catLower.includes('hotel') || catLower.includes('khách sạn');
 
-              return `
+        let catClass = 'attraction';
+        let iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>`;
+
+        if (isFood) {
+          catClass = 'restaurant';
+          iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/></svg>`;
+        } else if (isCafe) {
+          catClass = 'cafe';
+          iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg>`;
+        } else if (isHotel) {
+          catClass = 'hotel';
+          iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`;
+        }
+
+        return `
                 <button type="button" class="chat-poi-btn ${catClass}" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}" title="Ghim điểm này lên bản đồ">
                   <span class="poi-btn-icon">${iconSvg}</span>
                   <span class="poi-btn-name">${p.name}</span>
                   <span class="poi-btn-action">&rarr;</span>
                 </button>
               `;
-            }).join('')}
+      }).join('')}
           </div>
         </div>
       `;
@@ -2141,7 +2253,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     poiDrawer?.setAttribute('aria-hidden', 'false');
 
     // Tìm dữ liệu địa phương từ masterLandmarks để hiển thị tức thì (Zero-latency fallback)
-    const localPlace = window.mapStudio?.masterLandmarks?.find(p => 
+    const localPlace = window.mapStudio?.masterLandmarks?.find(p =>
       (placeId && p.place_id === placeId) || (name && p.name === name)
     );
 

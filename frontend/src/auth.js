@@ -66,16 +66,9 @@ export class AuthController {
     this.btnSwitchAuthMode = document.getElementById('btn-switch-auth-mode');
     this.btnQuickDemoLogin = document.getElementById('btn-quick-demo-login');
 
-    // Firebase Settings Modal Elements
+    // Application Settings Modal Elements
     this.configModal = document.getElementById('firebase-config-modal');
     this.btnCloseConfigModal = document.getElementById('btn-close-config-modal');
-    this.formFirebaseConfig = document.getElementById('form-firebase-config');
-    this.cfgInputApiKey = document.getElementById('cfg-api-key');
-    this.cfgInputAuthDomain = document.getElementById('cfg-auth-domain');
-    this.cfgInputProjectId = document.getElementById('cfg-project-id');
-    this.cfgInputStorageBucket = document.getElementById('cfg-storage-bucket');
-    this.cfgInputAppId = document.getElementById('cfg-app-id');
-    this.btnClearFirebaseConfig = document.getElementById('btn-clear-firebase-config');
 
     // Saved Itineraries Modal Elements
     this.savedToursModal = document.getElementById('saved-itineraries-modal');
@@ -150,12 +143,6 @@ export class AuthController {
       if (e.target === this.configModal) this.closeConfigModal();
     });
 
-    this.formFirebaseConfig?.addEventListener('submit', (e) => this.handleSaveConfig(e));
-    this.btnClearFirebaseConfig?.addEventListener('click', () => {
-      if (confirm('Bạn có chắc muốn xóa cấu hình Firebase đã lưu trên trình duyệt?')) {
-        clearFirebaseConfig();
-      }
-    });
 
     // Modal Lịch trình đã lưu
     this.btnOpenSavedTours?.addEventListener('click', () => {
@@ -351,15 +338,12 @@ export class AuthController {
     }
   }
 
-  // Modal Cấu hình Firebase
+  // Modal Cài đặt ứng dụng & Cấu hình Firebase
   openConfigModal() {
-    const cfg = getFirebaseConfig();
-    if (cfg) {
-      if (this.cfgInputApiKey) this.cfgInputApiKey.value = cfg.apiKey || '';
-      if (this.cfgInputAuthDomain) this.cfgInputAuthDomain.value = cfg.authDomain || '';
-      if (this.cfgInputProjectId) this.cfgInputProjectId.value = cfg.projectId || '';
-      if (this.cfgInputStorageBucket) this.cfgInputStorageBucket.value = cfg.storageBucket || '';
-      if (this.cfgInputAppId) this.cfgInputAppId.value = cfg.appId || '';
+    // Luôn đưa về Tab 1 (Trải nghiệm chung) thân thiện người dùng khi mở modal
+    const defaultTab = document.getElementById('tab-settings-general');
+    if (defaultTab) {
+      defaultTab.click();
     }
     this.configModal?.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -368,24 +352,6 @@ export class AuthController {
   closeConfigModal() {
     this.configModal?.classList.remove('active');
     document.body.style.overflow = '';
-  }
-
-  handleSaveConfig(e) {
-    e.preventDefault();
-    const config = {
-      apiKey: this.cfgInputApiKey?.value?.trim(),
-      authDomain: this.cfgInputAuthDomain?.value?.trim(),
-      projectId: this.cfgInputProjectId?.value?.trim(),
-      storageBucket: this.cfgInputStorageBucket?.value?.trim(),
-      appId: this.cfgInputAppId?.value?.trim()
-    };
-
-    if (!config.apiKey || !config.projectId) {
-      alert('Vui lòng nhập tối thiểu API Key và Project ID của Firebase.');
-      return;
-    }
-
-    saveFirebaseConfig(config);
   }
 
   // Modal Lịch trình đã lưu

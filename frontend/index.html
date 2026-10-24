@@ -7,6 +7,7 @@
   <title>Du lịch Cố đô Huế</title>
   <meta name="description" content="Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Cố đô Huế thông minh." />
   <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
   <!-- Preconnect Google Fonts for Typography Excellence -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +27,9 @@
     <aside class="sidebar-gemini" id="sidebar-gemini" aria-label="Thanh điều hướng và Lịch sử trò chuyện">
       <!-- Sidebar Header với nút Sidebar Panel chuẩn Google Gemini -->
       <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <span class="sidebar-brand-title">Cố đô Huế</span>
+        </div>
         <button type="button" class="btn-sidebar-toggle" id="btn-sidebar-toggle" title="Thu gọn thanh bên" aria-label="Thu gọn hoặc mở thanh bên" data-tooltip="Thu gọn thanh bên">
           <svg class="sidebar-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
@@ -74,7 +78,7 @@
       <div class="sidebar-history-section">
         <div class="sidebar-section-header">
           <span class="section-heading">Gần đây</span>
-          <span class="sidebar-count-badge" id="history-count-badge">0</span>
+          <span class="sidebar-count-badge" id="sidebar-history-count-badge">0</span>
         </div>
         <div class="sidebar-chat-list" id="chat-sessions-list" role="list">
           <!-- Dynamic session items inserted here -->
@@ -83,12 +87,12 @@
 
       <!-- Bottom Section: Settings & User Profile (Gemini Style) -->
       <div class="sidebar-footer-group" id="sidebar-footer-group">
-        <button type="button" class="sidebar-nav-item btn-sidebar-settings" id="btn-sidebar-settings" title="Cài đặt Firebase / Cloud DB" data-tooltip="Cài đặt">
+        <button type="button" class="sidebar-nav-item btn-sidebar-settings" id="btn-sidebar-settings" title="Cài đặt ứng dụng" data-tooltip="Cài đặt">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
-          <span>Cài đặt hệ thống</span>
+          <span>Cài đặt</span>
         </button>
 
         <div class="sidebar-user-footer" id="sidebar-user-footer">
@@ -133,7 +137,7 @@
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
               </svg>
-              <span>Cài đặt Firebase / Cloud DB</span>
+              <span>Cài đặt ứng dụng</span>
             </button>
             <div class="popover-divider"></div>
             <button type="button" class="popover-item popover-item-danger" id="btn-popover-logout">
@@ -170,7 +174,7 @@
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
               </svg>
-              <span>Cài đặt Firebase / Cloud DB</span>
+              <span>Cài đặt ứng dụng</span>
             </button>
             <div class="popover-divider"></div>
             <button type="button" class="popover-item popover-item-demo" id="btn-popover-demo">
@@ -276,7 +280,7 @@
                   d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
                 </path>
               </svg>
-              <span>Cài đặt Firebase / Cloud DB</span>
+              <span>Cài đặt ứng dụng</span>
             </button>
             <div class="dropdown-divider"></div>
             <button type="button" class="dropdown-item dropdown-item-danger" id="btn-header-logout">
@@ -504,7 +508,7 @@
               <polyline points="12 6 12 12 16 14" />
             </svg>
             <span>Lịch sử</span>
-            <span class="history-count-badge" id="history-count-badge">0</span>
+            <span class="history-count-badge" id="workbench-history-count-badge">0</span>
           </button>
           <button type="button" class="btn-workbench-action" id="btn-workbench-saved-tours"
             title="Xem danh sách các tour và lịch trình bạn đã lưu" aria-label="Tour đã lưu">
@@ -861,68 +865,145 @@
   </div>
 
   <!-- ===========================================================================
-       FIREBASE CONFIGURATION MODAL (CHO PHÉP DÁN API KEY GOOGLE FIREBASE)
+       APPLICATION SETTINGS & PREFERENCES MODAL
   =========================================================================== -->
-  <div class="modal-backdrop" id="firebase-config-modal" role="dialog" aria-modal="true">
-    <div class="modal-card config-modal-card">
+  <div class="modal-backdrop" id="firebase-config-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+    <div class="modal-card settings-modal-card">
       <button type="button" class="modal-close-btn" id="btn-close-config-modal" aria-label="Đóng cửa sổ">✕</button>
 
-      <div class="config-modal-header">
-        <div class="config-badge-wrap">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9100" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-          </svg>
-          <h3>Cấu hình Google Firebase Database & Auth</h3>
+      <div class="settings-modal-header">
+        <div class="settings-title-wrap">
+          <div class="settings-icon-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 id="settings-modal-title">Cài đặt ứng dụng</h3>
+            <p class="settings-modal-subtitle">Tùy biến trải nghiệm du lịch, trợ lý AI và kết nối hệ thống</p>
+          </div>
         </div>
-        <p class="config-modal-desc">
-          Kết nối trực tiếp với <strong>Firebase Authentication (Gmail)</strong> và <strong>Cloud Firestore</strong> của
-          bạn. Dán thông tin SDK từ <a href="https://console.firebase.google.com/" target="_blank"
-            rel="noopener noreferrer">Firebase Console</a> vào đây:
-        </p>
+
+        <!-- Segmented Tab Bar -->
+        <div class="settings-tab-bar" role="tablist">
+          <button type="button" class="settings-tab-btn active" id="tab-settings-general" role="tab" aria-selected="true" data-target="panel-settings-general">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>Trải nghiệm</span>
+          </button>
+          <button type="button" class="settings-tab-btn" id="tab-settings-ai" role="tab" aria-selected="false" data-target="panel-settings-ai">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a10 10 0 1 0 10 10H12V2z"></path>
+              <path d="M12 2a10 10 0 0 1 10 10h-10V2z" opacity="0.3"></path>
+              <polygon points="12 8 13.5 11 16.5 11 14 13 15 16 12 14 9 16 10 13 7.5 11 10.5 11 12 8" fill="currentColor"></polygon>
+            </svg>
+            <span>Trợ lý AI Cố Đô</span>
+          </button>
+        </div>
       </div>
 
-      <form id="form-firebase-config" class="config-form">
-        <div class="config-grid">
-          <div class="config-field">
-            <label for="cfg-api-key">API Key (apiKey)*</label>
-            <input type="text" id="cfg-api-key" placeholder="AIzaSy..." required />
+      <!-- Tab Panels Container -->
+      <div class="settings-tab-content">
+        <!-- PANEL 1: TRẢI NGHIỆM CHUNG -->
+        <div class="settings-panel active" id="panel-settings-general" role="tabpanel">
+          <div class="settings-group">
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <span class="settings-item-title">Tự động kích hoạt Bản đồ & Lộ trình</span>
+                <span class="settings-item-desc">Tự động mở không gian bản đồ khi Trợ lý AI gợi ý địa danh hoặc tuyến tham quan.</span>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" id="pref-toggle-auto-map" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <span class="settings-item-title">Hiệu ứng hoạt họa chuyển cảnh</span>
+                <span class="settings-item-desc">Chuyển đổi giao diện mượt mà giữa Chế độ Khám phá, Bản đồ và Trò chuyện.</span>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" id="pref-toggle-animations" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <span class="settings-item-title">Mẹo du lịch thích ứng theo thời tiết Huế</span>
+                <span class="settings-item-desc">Đưa ra khuyến nghị linh hoạt theo thời tiết Cố đô (nắng râm, mưa Huế, nhiệt độ).</span>
+              </div>
+              <label class="settings-toggle">
+                <input type="checkbox" id="pref-toggle-weather-tips" checked />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
           </div>
-          <div class="config-field">
-            <label for="cfg-project-id">Project ID (projectId)*</label>
-            <input type="text" id="cfg-project-id" placeholder="hue-smart-tourism" required />
-          </div>
-          <div class="config-field">
-            <label for="cfg-auth-domain">Auth Domain</label>
-            <input type="text" id="cfg-auth-domain" placeholder="hue-smart-tourism.firebaseapp.com" />
-          </div>
-          <div class="config-field">
-            <label for="cfg-storage-bucket">Storage Bucket</label>
-            <input type="text" id="cfg-storage-bucket" placeholder="hue-smart-tourism.appspot.com" />
-          </div>
-          <div class="config-field full-width">
-            <label for="cfg-app-id">App ID (appId)</label>
-            <input type="text" id="cfg-app-id" placeholder="1:1234567890:web:abcdef..." />
+
+          <div class="settings-group-separator"></div>
+
+          <div class="settings-danger-group">
+            <div class="settings-item-info">
+              <span class="settings-item-title">Xóa bộ nhớ đệm ứng dụng</span>
+              <span class="settings-item-desc">Làm mới bộ nhớ đệm cục bộ của trình duyệt nếu bạn gặp tình trạng hiển thị chậm hoặc sai lệch.</span>
+            </div>
+            <button type="button" class="btn-settings-action" id="btn-settings-clear-cache">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              <span>Làm mới bộ nhớ</span>
+            </button>
           </div>
         </div>
 
-        <div class="config-help-box">
-          <h5>Hướng dẫn nhanh trong 2 phút:</h5>
-          <ol>
-            <li>Truy cập <a href="https://console.firebase.google.com" target="_blank"
-                rel="noopener noreferrer">console.firebase.google.com</a> và tạo Project miễn phí.</li>
-            <li>Vào mục <strong>Authentication</strong> > <strong>Sign-in method</strong> > Bật <strong>Google</strong>
-              và <strong>Email/Password</strong>.</li>
-            <li>Thêm tên miền <code>localhost</code> vào <em>Authorized domains</em>.</li>
-            <li>Vào <strong>Project settings</strong> > <strong>General</strong> > Thêm ứng dụng Web và copy các mã trên
-              dán vào form này.</li>
-          </ol>
-        </div>
+        <!-- PANEL 2: TRỢ LÝ AI CỐ ĐÔ -->
+        <div class="settings-panel" id="panel-settings-ai" role="tabpanel" hidden>
+          <div class="settings-subheading">Phong cách tư vấn của Trợ lý AI</div>
+          <div class="ai-style-grid">
+            <label class="ai-style-card">
+              <input type="radio" name="ai-style-option" value="balanced" checked />
+              <div class="ai-style-box">
+                <div class="ai-style-icon">🌸</div>
+                <div class="ai-style-name">Du lịch Cân bằng</div>
+                <div class="ai-style-desc">Hòa quyện di tích lịch sử, danh lam thắng cảnh và ẩm thực tinh hoa Cố đô.</div>
+              </div>
+            </label>
+            <label class="ai-style-card">
+              <input type="radio" name="ai-style-option" value="heritage" />
+              <div class="ai-style-box">
+                <div class="ai-style-icon">🏛️</div>
+                <div class="ai-style-name">Chuyên sâu Di sản</div>
+                <div class="ai-style-desc">Tập trung niên đại các vua triều Nguyễn, điển tích và kiến trúc cung đình.</div>
+              </div>
+            </label>
+            <label class="ai-style-card">
+              <input type="radio" name="ai-style-option" value="foodie" />
+              <div class="ai-style-box">
+                <div class="ai-style-icon">🍲</div>
+                <div class="ai-style-name">Ẩm thực & Đời sống</div>
+                <div class="ai-style-desc">Ưu tiên các quán ngon truyền thống, ẩm thực vỉa hè, cà phê ngắm sông Hương.</div>
+              </div>
+            </label>
+          </div>
 
-        <div class="config-actions">
-          <button type="button" class="btn-clear-config" id="btn-clear-firebase-config">Xóa cấu hình</button>
-          <button type="submit" class="btn-save-config">Lưu & Kết Nối</button>
+          <div class="settings-group-separator"></div>
+
+          <div class="settings-subheading">Mức độ chi tiết của phản hồi</div>
+          <div class="ai-detail-select-wrap">
+            <select class="settings-select" id="pref-ai-detail-select">
+              <option value="detailed" selected>Chi tiết đầy đủ (Lộ trình chi tiết từng mốc thời gian, lời khuyên di chuyển)</option>
+              <option value="concise">Súc tích & Trực diện (Tóm tắt nhanh gọn các điểm chính yếu)</option>
+            </select>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 

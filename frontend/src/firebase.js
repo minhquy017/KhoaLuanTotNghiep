@@ -31,45 +31,41 @@ const STORAGE_KEY = 'hue_smart_tourism_firebase_config';
 const DEMO_USER_KEY = 'hue_smart_tourism_demo_user';
 const LOCAL_ITINERARIES_KEY = 'hue_smart_tourism_local_itineraries';
 
-// Đọc cấu hình từ localStorage hoặc biến môi trường Vite (.env)
+// Đọc cấu hình Firebase từ biến môi trường Vite (.env) và fallback mặc định của hệ thống
 export function getFirebaseConfig() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      return JSON.parse(saved);
-    }
-  } catch (err) {
-    console.warn('Không thể đọc cấu hình Firebase từ localStorage:', err);
-  }
+  const envApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+  const envProjectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
 
-  // Fallback sang biến môi trường nếu có
-  if (import.meta.env.VITE_FIREBASE_API_KEY && import.meta.env.VITE_FIREBASE_PROJECT_ID) {
+  if (envApiKey && envProjectId) {
     return {
-      apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-      appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
-      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ''
+      apiKey: envApiKey,
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || `${envProjectId}.firebaseapp.com`,
+      projectId: envProjectId,
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || `${envProjectId}.firebasestorage.app`,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '490514336867',
+      appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:490514336867:web:964908e4bdfe68d33b7c56',
+      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-FHYR4G1X9X'
     };
   }
 
-  return null;
+  // Cấu hình cố định an toàn cho hệ thống du lịch Cố đô Huế (Không phụ thuộc localStorage)
+  return {
+    apiKey: 'AIzaSyAthYN8VjfYJ0dfNPPItyDAB4wGlNle6zM',
+    authDomain: 'hue-smart-tourism.firebaseapp.com',
+    projectId: 'hue-smart-tourism',
+    storageBucket: 'hue-smart-tourism.firebasestorage.app',
+    messagingSenderId: '490514336867',
+    appId: '1:490514336867:web:964908e4bdfe68d33b7c56',
+    measurementId: 'G-FHYR4G1X9X'
+  };
 }
 
-export function saveFirebaseConfig(config) {
-  if (!config || !config.apiKey || !config.projectId) {
-    throw new Error('Cấu hình Firebase phải bao gồm tối thiểu apiKey và projectId.');
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-  // Tải lại trang để khởi tạo lại Firebase với cấu hình mới
-  window.location.reload();
+export function saveFirebaseConfig() {
+  console.info('Firebase config is securely managed via environment variables.');
 }
 
 export function clearFirebaseConfig() {
-  localStorage.removeItem(STORAGE_KEY);
-  window.location.reload();
+  console.info('Firebase config is fixed and cannot be deleted from frontend client.');
 }
 
 export function isFirebaseConfigured() {
@@ -443,16 +439,106 @@ function getLocalItineraries(userId) {
 const LOCAL_CHAT_SESSIONS_KEY = 'hue_smart_tourism_chat_sessions';
 
 /**
- * Lưu hoặc cập nhật một phiên chat (bao gồm tin nhắn & thẻ tour)
+ * Tinh gọn tin nhắn trước khi lưu nhằm tối ưu dung lượng dưới 100KB,
+ * giữ trọn vẹn văn bản (text), cấu trúc thẻ lịch trình và các điểm gợi ý,
+ * đồng thời loại bỏ dữ liệu GeoJSON/rawResult cồng kềnh đã dùng xong.
+ */
+function sanitizeMessageForStorage(msg) {
+  if (!msg || typeof msg !== 'object') return msg;
+
+  const textContent = msg.text || msg.content || '';
+
+  const clean = {
+    id: msg.id || `msg_${Date.now()}`,
+    role: msg.role || 'assistant',
+    text: textContent,
+    content: textContent,
+    prompt: msg.prompt || '',
+    feedbackRating: msg.feedbackRating || null,
+    createdAt: msg.createdAt || new Date().toISOString(),
+    timestamp: msg.timestamp || Date.now()
+  };
+
+  // Nếu là thẻ lịch trình (Itinerary Deck Message)
+  if (msg.isItinerary) {
+    clean.isItinerary = true;
+    clean.days = msg.days || 2;
+    clean.tripType = msg.tripType || 'Couples';
+    clean.preferredDishes = Array.isArray(msg.preferredDishes) ? msg.preferredDishes : [];
+    clean.userLocName = msg.userLocName || '';
+
+    if (msg.itineraryRes && msg.itineraryRes.itinerary_data) {
+      const plan = msg.itineraryRes.itinerary_data;
+      clean.itineraryRes = {
+        success: true,
+        itinerary_data: {
+          days: (plan.days || []).map(d => ({
+            day_number: d.day_number,
+            theme: d.theme || '',
+            total_distance_km: d.total_distance_km || 0,
+            slots: (d.slots || d.stops || []).map(s => ({
+              place_name: s.place_name || s.name || '',
+              activity_type: s.activity_type || '',
+              category: s.category || '',
+              latitude: s.latitude || s.lat || null,
+              longitude: s.longitude || s.lng || null,
+              address: s.address || '',
+              place_id: s.place_id || s.placeId || ''
+            }))
+          }))
+        }
+      };
+    } else if (msg.itineraryRes) {
+      clean.itineraryRes = msg.itineraryRes;
+    }
+  }
+
+  // Nếu là phản hồi trợ lý thông thường
+  if (msg.role === 'assistant' && !msg.isItinerary) {
+    const rawRes = msg.resData || {};
+    clean.resData = {
+      answer: textContent,
+      matched_places: Array.isArray(rawRes.matched_places)
+        ? rawRes.matched_places.slice(0, 8).map(p => ({
+            name: p.name || '',
+            category: p.category || '',
+            latitude: p.latitude || p.lat || null,
+            longitude: p.longitude || p.lng || null
+          }))
+        : [],
+      navigation: rawRes.navigation
+        ? {
+            is_navigation: Boolean(rawRes.navigation.is_navigation),
+            origin: rawRes.navigation.origin,
+            destination: rawRes.navigation.destination,
+            profile: rawRes.navigation.profile
+          }
+        : null
+    };
+  }
+
+  return clean;
+}
+
+/**
+ * Lưu hoặc cập nhật một phiên chat (Phương án Lai - Hybrid Architecture:
+ * Cắt tỉa tối đa 40 tin nhắn gần nhất & loại bỏ payload thô để luôn nằm dưới 100KB,
+ * tránh bẫy quota 1MB của Firestore và tối ưu 1-Read Operation)
  */
 export async function saveChatSession(userId, sessionData) {
   if (!sessionData || !sessionData.id) return null;
 
   const effectiveUserId = userId || 'guest';
+  
+  // Tinh gọn và giới hạn 40 tin nhắn mới nhất
+  const rawMessages = Array.isArray(sessionData.messages) ? sessionData.messages : [];
+  const trimmedMessages = rawMessages.slice(-40).map(sanitizeMessageForStorage);
+
   const payload = {
     id: sessionData.id,
     title: sessionData.title || 'Cuộc trò chuyện mới',
-    messages: sessionData.messages || [],
+    messages: trimmedMessages,
+    messageCount: rawMessages.length,
     createdAt: sessionData.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
