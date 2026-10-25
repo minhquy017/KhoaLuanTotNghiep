@@ -33,7 +33,8 @@ def chat_assistant(req: ChatRequest):
             "confidence_score": 0.0,
             "route_taken": "local_knowledge",
             "formatted_context": "",
-            "final_answer": ""
+            "final_answer": "",
+            "graph_trace": []
         }
         res = agent.invoke(initial_state)
 
@@ -124,7 +125,8 @@ def chat_assistant(req: ChatRequest):
             route_taken=res.get("route_taken", "local_knowledge"),
             confidence_score=res.get("confidence_score", 0.88),
             matched_places=clean_places,
-            navigation=nav_payload
+            navigation=nav_payload,
+            graph_trace=res.get("graph_trace", [])
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi xử lý câu hỏi: {str(e)}")

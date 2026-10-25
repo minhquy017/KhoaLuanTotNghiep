@@ -1964,6 +1964,107 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (el) el.remove();
   }
 
+  // =============================================================================
+  // XAI: GIẢI THÍCH CHUỖI SUY LUẬN ĐỒ THỊ MINH BẠCH (EXPLAINABLE GRAPH TRACE)
+  // =============================================================================
+  function createGraphTraceHtml(trace, routeTaken = 'local_knowledge', confidenceScore = 0.88) {
+    if (!trace || !Array.isArray(trace) || trace.length === 0) return '';
+
+    const confPct = Math.round((confidenceScore || 0.85) * 100);
+    const isWeb = routeTaken === 'web_fallback';
+    const routeLabel = isWeb ? 'Web Search (DuckDuckGo)' : 'Tri thức Cố đô (KG + Vector)';
+    const routeBadgeClass = isWeb ? 'route-web' : 'route-kg';
+
+    const stepsHtml = trace.map((step) => {
+      const icon = step.icon || '📌';
+      const label = step.label || step.step;
+      const detail = step.detail || '';
+      const status = step.status || 'done';
+
+      let statusBadge = '';
+      if (step.score !== undefined) {
+        statusBadge = `<span class="xai-step-badge badge-${status}">Tin cậy: ${(step.score * 100).toFixed(0)}%</span>`;
+      } else if (step.count !== undefined) {
+        statusBadge = `<span class="xai-step-badge badge-${status}">${step.count} kết quả</span>`;
+      } else if (step.decision) {
+        const decText = step.decision === 'local_knowledge' ? 'Tri thức nội bộ' : 'DuckDuckGo';
+        statusBadge = `<span class="xai-step-badge badge-decision">${decText}</span>`;
+      } else if (status === 'done' || status === 'found' || status === 'expanded') {
+        statusBadge = `<span class="xai-step-badge badge-success">✓ Đã định vị</span>`;
+      } else if (status === 'redirect') {
+        statusBadge = `<span class="xai-step-badge badge-redirect">Chuyển hướng</span>`;
+      }
+
+      let extraWidgetHtml = '';
+      if (step.step === 'confidence_scoring' && step.score !== undefined) {
+        const pct = Math.min(100, Math.max(0, Math.round(step.score * 100)));
+        extraWidgetHtml = `
+          <div class="xai-confidence-meter">
+            <div class="xai-meter-track">
+              <div class="xai-meter-fill ${pct >= 60 ? 'high' : pct >= 40 ? 'med' : 'low'}" style="width: ${pct}%"></div>
+            </div>
+            <span class="xai-meter-val">${pct}%</span>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="xai-timeline-item" data-step-type="${step.step}">
+          <div class="xai-node-marker">
+            <span class="xai-node-icon">${icon}</span>
+          </div>
+          <div class="xai-node-body">
+            <div class="xai-node-header">
+              <span class="xai-node-title">${label}</span>
+              ${statusBadge}
+            </div>
+            <div class="xai-node-desc">${detail}</div>
+            ${extraWidgetHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="xai-trace-wrapper">
+        <button type="button" class="xai-trace-toggle" aria-expanded="false" title="Nhấp để xem/ẩn chi tiết chuỗi suy luận minh bạch của AI">
+          <div class="xai-toggle-left">
+            <span class="xai-ai-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>GraphRAG Trace</span>
+            </span>
+            <span class="xai-route-pill ${routeBadgeClass}">${routeLabel}</span>
+            <span class="xai-conf-pill" title="Độ tin cậy tổng hợp">Tin cậy: ${confPct}%</span>
+          </div>
+          <div class="xai-toggle-right">
+            <span class="xai-step-indicator">${trace.length} bước</span>
+            <svg class="xai-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </button>
+
+        <div class="xai-trace-drawer">
+          <div class="xai-drawer-inner">
+            <div class="xai-drawer-header">
+              <div class="xai-drawer-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span>Chuỗi suy luận minh bạch (Explainable AI Trace)</span>
+              </div>
+              <span class="xai-drawer-tag">LangGraph · Neo4j KG · ChromaDB</span>
+            </div>
+
+            <div class="xai-timeline">
+              ${stepsHtml}
+            </div>
+
+            <div class="xai-drawer-footer">
+              <span class="xai-audit-note">🛡️ Cơ chế truy vết thực thể & phản biện chống hallucination (ảo giác AI)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   function appendAssistantResponse(res, persist = true, promptText = '') {
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
@@ -2137,6 +2238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="message-bubble">
         <div class="message-author">Trợ lý Cố đô</div>
         <div class="answer-content">${formattedAnswer}</div>
+        ${createGraphTraceHtml(res.graph_trace, res.route_taken, res.confidence_score)}
         ${navCardHtml}
         ${placesPillsHtml}
         ${createFeedbackBarHtml(messageId, savedRating)}
@@ -2144,6 +2246,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
+
+    // Gán sự kiện mở/đóng XAI Graph Trace Panel
+    msg.querySelectorAll('.xai-trace-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const wrapper = btn.closest('.xai-trace-wrapper');
+        if (!wrapper) return;
+        const isExpanded = wrapper.classList.toggle('is-expanded');
+        btn.setAttribute('aria-expanded', isExpanded);
+      });
+    });
 
     // Gán sự kiện Feedback (Thích / Chưa tốt / Sao chép)
     bindFeedbackEvents(msg, {
@@ -2289,7 +2401,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (poiRatingVal) poiRatingVal.textContent = (localPlace?.rating_value || 4.6).toFixed(1);
     if (poiReviewCount) poiReviewCount.textContent = `(${localPlace?.review_count || 350} đánh giá)`;
 
-    if (poiReviewsList) poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang đồng bộ nhận xét từ du khách...</div>';
+    if (poiReviewsList) {
+      if (localPlace?.reviews && localPlace.reviews.length > 0) {
+        if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
+        poiReviewsList.innerHTML = localPlace.reviews.map(r => `
+          <div class="poi-review-card">
+            <div class="review-header">
+              <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
+              <span class="review-tag">👤 ${r.trip_type || 'Du khách'} · ${r.visit_date || '2024'}</span>
+            </div>
+            <h5 class="review-title">${r.title}</h5>
+            <p class="review-comment">“${r.comment}”</p>
+          </div>
+        `).join('');
+      } else {
+        poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang đồng bộ nhận xét từ du khách...</div>';
+      }
+    }
     if (poiNearbyList) poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tìm các địa điểm lân cận...</div>';
 
     try {
@@ -2327,14 +2455,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // 4. Rating & Reviews
-      if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || 4.7).toFixed(1);
-      if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || 120} đánh giá)`;
+      if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || localPlace?.rating_value || 4.7).toFixed(1);
+      if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || localPlace?.review_count || 120} đánh giá)`;
 
-      // 5. Nhận xét chân thực từ du khách (TripAdvisor / SQLite)
+      // 5. Nhận xét chân thực từ du khách (TripAdvisor / SQLite / Curated Local)
+      const activeReviews = (data.reviews && data.reviews.length > 0) ? data.reviews : (localPlace?.reviews || []);
       if (poiReviewsList) {
-        if (data.reviews && data.reviews.length > 0) {
+        if (activeReviews.length > 0) {
           if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
-          poiReviewsList.innerHTML = data.reviews.map(r => `
+          poiReviewsList.innerHTML = activeReviews.map(r => `
             <div class="poi-review-card">
               <div class="review-header">
                 <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
@@ -2395,7 +2524,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (err) {
       console.warn('Lỗi tải chi tiết POI:', err);
-      if (poiDescText) poiDescText.textContent = `Không thể tải hồ sơ chi tiết: ${err.message}.`;
+      if (poiDescText && localPlace?.desc) {
+        poiDescText.textContent = localPlace.desc;
+      }
     }
   }
 

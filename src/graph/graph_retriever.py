@@ -57,6 +57,72 @@ class SpatialGraphRetriever:
         with open(self.kg_path, "rb") as f:
             self.G = pickle.load(f)
 
+        # Tự động nạp và mở rộng Knowledge Graph với các địa điểm tinh tuyển từ hue_top_places.json
+        top_places_path = os.path.join(PROJECT_ROOT, "frontend", "src", "hue_top_places.json")
+        if os.path.exists(top_places_path):
+            try:
+                import json
+                with open(top_places_path, "r", encoding="utf-8") as f:
+                    curated_places = json.load(f)
+                
+                new_nodes = []
+                for cp in curated_places:
+                    pid = cp.get("place_id")
+                    if not pid:
+                        continue
+                    if pid in self.G:
+                        if cp.get("reviews") and not self.G.nodes[pid].get("reviews"):
+                            self.G.nodes[pid]["reviews"] = cp["reviews"]
+                        continue
+
+                    cat = cp.get("cat") or cp.get("category", "Attraction")
+                    name = cp.get("name", "")
+                    lat = cp.get("lat")
+                    lng = cp.get("lng")
+                    addr = cp.get("address", "")
+                    desc = cp.get("desc", "")
+                    rating = cp.get("rating_value", 4.6)
+                    rev_cnt = cp.get("review_count", 500)
+                    reviews = cp.get("reviews", [])
+                    
+                    self.G.add_node(pid,
+                        node_type=cat,
+                        name=name,
+                        latitude=lat,
+                        longitude=lng,
+                        address=addr,
+                        street_address=addr,
+                        description=desc,
+                        rating_value=rating,
+                        review_count=rev_cnt,
+                        locality="Thành phố Huế",
+                        category=cat,
+                        reviews=reviews
+                    )
+                    new_nodes.append((pid, lat, lng))
+
+                    # Liên kết LOCATED_IN vào Thừa Thiên Huế
+                    if "province_004" in self.G:
+                        self.G.add_edge(pid, "province_004", relation="LOCATED_IN")
+
+                # Tự động kết nối quan hệ không gian NEAR_BY giữa các node mới và các node trong đồ thị (bán kính 2km)
+                from src.graph.spatial_indexer import haversine_distance
+                for pid, lat1, lng1 in new_nodes:
+                    if not lat1 or not lng1:
+                        continue
+                    for other_id, other_data in self.G.nodes(data=True):
+                        if other_id == pid or other_data.get("node_type") not in ["Restaurant", "Hotel", "Attraction", "Place"]:
+                            continue
+                        lat2 = other_data.get("latitude")
+                        lng2 = other_data.get("longitude")
+                        if lat2 and lng2:
+                            d = haversine_distance(lat1, lng1, lat2, lng2)
+                            if d <= 2.0:
+                                self.G.add_edge(pid, other_id, relation="NEAR_BY", distance_km=round(d, 2))
+                                self.G.add_edge(other_id, pid, relation="NEAR_BY", distance_km=round(d, 2))
+            except Exception as e:
+                print(f"[GraphRetriever] Cảnh báo nạp mở rộng hue_top_places.json: {e}")
+
         # Xây dựng index tra cứu nhanh theo tên
         for node_id, data in self.G.nodes(data=True):
             ntype = data.get("node_type", "")
@@ -188,47 +254,82 @@ class SpatialGraphRetriever:
         return neighbors[:limit]
 
     def find_places_by_dish(self, dish_name: str, locality: Optional[str] = None, limit: int = 5) -> List[Dict[str, Any]]:
-        """Truy xuất các quán ăn/nhà hàng phục vụ món ăn đặc sản qua cạnh SERVES."""
+        """Truy xuất các quán ăn/nhà hàng phục vụ món ăn đặc sản qua cạnh SERVES và đối sánh thực thể."""
         norm_dish = strip_accents(dish_name)
         norm_loc = strip_accents(locality) if locality else None
 
-        # Tìm Dish Node
+        def is_locality_match(data: Dict[str, Any]) -> bool:
+            if not norm_loc:
+                return True
+            loc_val = strip_accents(data.get("locality", ""))
+            dist_val = strip_accents(data.get("district", ""))
+            addr_val = strip_accents(data.get("address", ""))
+            return (
+                not loc_val or
+                norm_loc in loc_val or
+                loc_val in norm_loc or
+                norm_loc in dist_val or
+                norm_loc in addr_val or
+                ("hue" in norm_loc and ("hue" in loc_val or "hue" in dist_val or "hue" in addr_val))
+            )
+
+        # 1. Tìm Dish Node trong Đồ thị
         target_dish_id = None
-        target_dish_name = ""
+        target_dish_name = dish_name
         for d_norm, d_node_id in self._dish_name_index.items():
             if norm_dish == d_norm or norm_dish in d_norm or d_norm in norm_dish:
                 target_dish_id = d_node_id
-                target_dish_name = self.G.nodes[d_node_id].get("name", "")
+                target_dish_name = self.G.nodes[d_node_id].get("name", dish_name)
                 break
 
-        if not target_dish_id:
-            return []
-
-        # Trong MultiDiGraph, cạnh SERVES đi từ (Restaurant) -> (Dish)
-        # Nên ta tìm predecessors (các nút trỏ tới Dish Node)
         results = []
-        for rest_node_id in self.G.predecessors(target_dish_id):
-            edge_dict = self.G.get_edge_data(rest_node_id, target_dish_id)
-            if not edge_dict:
-                continue
+        seen_ids = set()
 
-            for key, edge_data in edge_dict.items():
-                if edge_data.get("relation") == "SERVES":
-                    r_data = dict(self.G.nodes[rest_node_id])
+        # 2. Duyệt qua cạnh SERVES nếu có Dish Node
+        if target_dish_id:
+            for rest_node_id in self.G.predecessors(target_dish_id):
+                edge_dict = self.G.get_edge_data(rest_node_id, target_dish_id)
+                if not edge_dict:
+                    continue
 
-                    # Lọc theo địa phương nếu có
-                    if norm_loc:
-                        loc_val = strip_accents(r_data.get("locality", ""))
-                        dist_val = strip_accents(r_data.get("district", ""))
-                        if norm_loc not in loc_val and norm_loc not in dist_val:
+                for key, edge_data in edge_dict.items():
+                    if edge_data.get("relation") == "SERVES":
+                        r_data = dict(self.G.nodes[rest_node_id])
+                        if not is_locality_match(r_data):
                             continue
 
-                    r_data["node_id"] = rest_node_id
-                    r_data["dish_name"] = target_dish_name
-                    r_data["mention_count"] = edge_data.get("mention_count", 0)
-                    r_data["dish_avg_rating"] = edge_data.get("avg_rating", 4.0)
-                    r_data["sentiment_score"] = edge_data.get("sentiment_score", 0.0)
-                    results.append(r_data)
+                        r_data["node_id"] = rest_node_id
+                        r_data["dish_name"] = target_dish_name
+                        r_data["mention_count"] = edge_data.get("mention_count", 15)
+                        r_data["dish_avg_rating"] = edge_data.get("avg_rating", 4.5)
+                        r_data["sentiment_score"] = edge_data.get("sentiment_score", 0.8)
+                        results.append(r_data)
+                        seen_ids.add(rest_node_id)
+
+        # 3. Mở rộng / Bổ trợ: Quét các quán ăn có tên, mô tả hoặc tags khớp với món đặc sản
+        for node_id, data in self._all_place_nodes:
+            if node_id in seen_ids:
+                continue
+            cat = (data.get("category") or data.get("node_type") or "").lower()
+            if "attraction" in cat or "hotel" in cat:
+                continue
+
+            p_name = strip_accents(data.get("name", ""))
+            p_desc = strip_accents(data.get("description", ""))
+            p_tags = strip_accents(data.get("tags", ""))
+
+            if norm_dish in p_name or norm_dish in p_tags or norm_dish in p_desc:
+                if not is_locality_match(data):
+                    continue
+
+                r_data = dict(data)
+                r_data["node_id"] = node_id
+                r_data["dish_name"] = target_dish_name
+                r_data["mention_count"] = 25 if norm_dish in p_name else 10
+                r_data["dish_avg_rating"] = float(data.get("rating_value") or 4.6)
+                r_data["sentiment_score"] = 0.85
+                results.append(r_data)
+                seen_ids.add(node_id)
 
         # Sắp xếp ưu tiên: số lượt nhắc món (mention_count) + rating món ăn
         results.sort(key=lambda x: (x.get("mention_count", 0) * 2 + x.get("dish_avg_rating", 0.0) * 5), reverse=True)

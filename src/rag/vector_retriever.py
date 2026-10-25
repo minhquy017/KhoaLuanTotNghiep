@@ -83,22 +83,51 @@ class VectorRetriever:
             elif len(valid_urls) > 1:
                 where_filter = {"place_url": {"$in": valid_urls[:10]}}
 
+        # Nếu có bộ lọc địa điểm cụ thể từ Knowledge Graph (Graph-Guided Retrieval):
+        if where_filter:
+            try:
+                get_res = self.collection.get(
+                    where=where_filter,
+                    limit=max(n_results * 3, 10),
+                    include=["documents", "metadatas"]
+                )
+                docs = get_res.get("documents", [])
+                metas = get_res.get("metadatas", [])
+                if docs:
+                    import numpy as np
+                    doc_embs = self.model.encode(docs, normalize_embeddings=True, device=self.device)
+                    q_arr = np.array(query_emb[0])
+                    sims = np.dot(doc_embs, q_arr)
+                    # Sắp xếp review theo độ tương đồng giảm dần
+                    sorted_indices = np.argsort(sims)[::-1][:n_results]
+                    formatted_reviews = []
+                    max_conf = 0.0
+                    for idx in sorted_indices:
+                        s = float(sims[idx])
+                        # Giới hạn trong khoảng [0, 1]
+                        norm_s = max(0.0, min(1.0, s / 1.5 if s > 1.0 else s))
+                        if norm_s > max_conf:
+                            max_conf = norm_s
+                        formatted_reviews.append({
+                            "text": docs[idx],
+                            "rating": metas[idx].get("rating", 5.0) if metas[idx] else 5.0,
+                            "trip_type": metas[idx].get("trip_type", "") if metas[idx] else "",
+                            "place_url": metas[idx].get("place_url", "") if metas[idx] else "",
+                            "similarity": round(norm_s, 4)
+                        })
+                    return formatted_reviews, round(max_conf, 4)
+            except Exception:
+                pass
+            return [], 0.0
+
         try:
             results = self.collection.query(
                 query_embeddings=query_emb,
                 n_results=n_results,
-                where=where_filter,
                 include=["documents", "metadatas", "distances"]
             )
         except Exception:
-            if where_filter:
-                # Không fallback sang tìm toàn bộ database vì sẽ kéo nhầm review của địa điểm khác vào
-                return [], 0.0
-            results = self.collection.query(
-                query_embeddings=query_emb,
-                n_results=n_results,
-                include=["documents", "metadatas", "distances"]
-            )
+            return [], 0.0
 
         docs = results.get("documents", [[]])[0]
         metas = results.get("metadatas", [[]])[0]

@@ -50,10 +50,42 @@ def ensure_ollama_service():
     except Exception as e:
         print(f"⚠️ [Ollama] Không thể tự khởi động Ollama: {e}")
 
+def warmup_llm_service():
+    """Tự động nạp trước (warm-up) mô hình Qwen2.5-3B vào VRAM GPU RTX 3050 và giữ thường trực."""
+    import time
+    time.sleep(1.0)
+    print("🔥 [Ollama Warm-up] Đang nạp trước mô hình qwen2.5:3b vào GPU VRAM (RTX 3050)...")
+    try:
+        from src.rag.agent_graph import llm
+        from langchain_core.messages import HumanMessage
+        llm.invoke([HumanMessage(content="hi")])
+        print("⚡ [Ollama Warm-up] ĐÃ NẠP THÀNH CÔNG qwen2.5:3b VÀO GPU VRAM! Sẵn sàng phản hồi tức thì.")
+    except Exception as e:
+        print(f"⚠️ [Ollama Warm-up] Thông báo: {e}")
+
+def unload_llm_service():
+    """Tự động giải phóng hoàn toàn VRAM khi tắt server Backend (ollama stop)."""
+    import subprocess
+    try:
+        creation_flags = 0x08000000 if sys.platform == "win32" else 0
+        subprocess.run(
+            ["ollama", "stop", "qwen2.5:3b"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            creationflags=creation_flags,
+            timeout=5.0
+        )
+        print("🧹 [Ollama] Đã giải phóng hoàn toàn 2GB VRAM GPU trả về cho hệ thống!")
+    except Exception:
+        pass
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import threading
     ensure_ollama_service()
+    threading.Thread(target=warmup_llm_service, daemon=True).start()
     yield
+    unload_llm_service()
 
 # =============================================================================
 # 1. KHỞI TẠO FASTAPI APP
@@ -101,5 +133,10 @@ if __name__ == "__main__":
     print("=" * 80)
     print("🚀 KHỞI CHẠY HUẾ SMART TOURISM RESTFUL API BACKEND (MODULAR ARCHITECTURE)")
     print("📖 Xem tài liệu Swagger UI trực quan tại: http://localhost:8000/docs")
-    print("=" * 80)
-    uvicorn.run("src.app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "src.app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        reload_dirs=[str(PROJECT_ROOT / "src")]
+    )

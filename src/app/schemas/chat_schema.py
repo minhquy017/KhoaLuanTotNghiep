@@ -31,3 +31,4 @@ class ChatResponse(BaseModel):
     confidence_score: float
     matched_places: List[Dict[str, Any]]
     navigation: Optional[Dict[str, Any]] = None
+    graph_trace: Optional[List[Dict[str, Any]]] = None  # XAI: chuỗi suy luận minh bạch
