@@ -751,7 +751,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let dayContentsHtml = '';
 
     const dayColors = {
-      1: '#F15822',
+      1: '#18181B',
       2: '#D97706',
       3: '#0D9488'
     };
@@ -760,7 +760,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isFirstDay = index === 0;
       const slots = day.slots || day.stops || [];
       const totalKm = day.total_distance_km ? ` · ${day.total_distance_km.toFixed(1)} km` : '';
-      const dotColor = dayColors[day.day_number] || '#F15822';
+      const dotColor = dayColors[day.day_number] || '#18181B';
 
       dayTabsHtml += `
         <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}" title="Xem lịch trình và lộ trình Ngày ${day.day_number}">
@@ -906,7 +906,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (plan.days.length > 1) {
       dayTabsHtml += `
         <button type="button" class="deck-day-tab" data-deck="${deckId}" data-day="all" title="Xem tuyến đường toàn bộ các ngày cùng lúc">
-          <span class="day-tab-dot" style="background: #F15822;"></span>
+          <span class="day-tab-dot" style="background: #18181B;"></span>
           <span>Tất cả ngày</span>
         </button>
       `;
