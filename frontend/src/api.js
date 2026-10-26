@@ -1,6 +1,7 @@
 import hueTopPlaces from './hue_top_places.json';
 
-const API_BASE_URL = 'http://localhost:8000';
+// Có thể cấu hình nhanh từ Console: localStorage.setItem('hue_api_url', 'https://xxxx.trycloudflare.com')
+const API_BASE_URL = (typeof window !== 'undefined' && localStorage.getItem('hue_api_url')) || 'http://localhost:8000';
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
