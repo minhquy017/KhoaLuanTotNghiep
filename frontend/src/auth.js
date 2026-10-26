@@ -428,6 +428,13 @@ export class AuthController {
             </svg>
             <span>Mở lại trên Bản đồ & Chat</span>
           </button>
+          <button type="button" class="btn-budget-saved-tour" data-id="${tour.id}" title="Dự toán ngân sách cho lịch trình này">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
+            <span>Dự toán chi phí</span>
+          </button>
         </div>
       `;
 
@@ -446,6 +453,14 @@ export class AuthController {
         this.closeSavedToursModal();
         window.dispatchEvent(new CustomEvent('load-saved-tour', { detail: tour }));
         this.showToast(`Đã tải lại lịch trình "${tour.title}" lên bản đồ!`);
+      });
+
+      // Nút dự toán chi phí tour đã lưu
+      card.querySelector('.btn-budget-saved-tour')?.addEventListener('click', () => {
+        if (window.budgetEstimator) {
+          const rawPlan = tour.rawResult?.itinerary_data || tour.rawResult || { days: tour.days, items: tour.items };
+          window.budgetEstimator.openModal(rawPlan, tour.title);
+        }
       });
 
       this.savedToursList.appendChild(card);

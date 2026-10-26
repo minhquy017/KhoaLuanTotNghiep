@@ -19,8 +19,12 @@ import {
   loginWithDemoUser
 } from './firebase.js';
 import { HueWeatherService } from './weather.js';
+import { budgetEstimator } from './budgetEstimator.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Khởi tạo công cụ Dự toán Ngân sách Du lịch Cố Đô Huế
+  budgetEstimator.init();
+  window.budgetEstimator = budgetEstimator;
   // 0. KHỞI TẠO HỆ THỐNG XÁC THỰC (AUTH CONTROLLER - GOOGLE GMAIL & EMAIL)
   const authController = new AuthController();
   authController.init();
@@ -938,8 +942,15 @@ document.addEventListener('DOMContentLoaded', async () => {
               </h3>
               <span class="deck-subtitle">Đối tượng: ${tripType} · ${totalStopsCount} điểm đến</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
               <div class="deck-badge">${days} Ngày${totalKmText}</div>
+              <button type="button" class="btn-deck-budget" id="btn-budget-${deckId}" title="Dự toán chi phí vé di tích, ẩm thực và phương tiện">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+                <span>Dự toán chi phí</span>
+              </button>
               <button type="button" class="btn-deck-save-tour" id="btn-save-${deckId}" title="Lưu lịch trình này vào tài khoản cá nhân">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -1073,8 +1084,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Gán sự kiện cho các nút hỏi tiếp theo
       deckEl.querySelectorAll('.btn-deck-followup').forEach(btn => {
         btn.addEventListener('click', () => {
-          sendChatQuery(btn.textContent.trim());
+          const query = btn.textContent.trim();
+          if (query.includes('Chi phí dự kiến')) {
+            budgetEstimator.openModal(plan, `Lịch trình Huế ${days} ngày (${tripType})`);
+          } else {
+            sendChatQuery(query);
+          }
         });
+      });
+
+      // Gán sự kiện cho nút Dự toán chi phí
+      const btnBudget = document.getElementById(`btn-budget-${deckId}`);
+      btnBudget?.addEventListener('click', () => {
+        budgetEstimator.openModal(plan, `Lịch trình Huế ${days} ngày (${tripType})`);
       });
 
       // Gán sự kiện cho nút Lưu Tour vào tài khoản Google / Cloud
@@ -1174,10 +1196,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!chatThread) return;
     chatThread.innerHTML = `
       <div class="chat-welcome-hero" id="chat-welcome-hero">
-        <div class="welcome-badge">
-          <span class="welcome-badge-dot"></span>
-          <span>Cố đô Huế AI Copilot</span>
-        </div>
         <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
         <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.</p>
 
@@ -2900,6 +2918,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Triggers mở Sổ tay Du lịch & Gu cá nhân
   document.getElementById('btn-sidebar-travel-notebook')?.addEventListener('click', () => openNotebookModal('wishlist'));
+  document.getElementById('btn-sidebar-budget')?.addEventListener('click', () => budgetEstimator.openModal(null, 'Dự toán Ngân sách Du lịch Cố Đô Huế'));
   document.getElementById('btn-open-travel-notebook')?.addEventListener('click', () => {
     document.getElementById('user-dropdown-menu')?.classList.remove('active');
     openNotebookModal('wishlist');
