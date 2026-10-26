@@ -11,6 +11,7 @@ class ChatRequest(BaseModel):
     locality: Optional[str] = Field("Thành phố Huế", examples=["Thành phố Huế"])
     user_lat: Optional[float] = Field(None, examples=[16.4674])
     user_lng: Optional[float] = Field(None, examples=[107.5905])
+    preferences: Optional[Dict[str, Any]] = Field(None, description="Hồ sơ gu du lịch cá nhân hóa của du khách")
 
 
 class PlaceItem(BaseModel):

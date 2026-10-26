@@ -23,6 +23,7 @@ def chat_assistant(req: ChatRequest):
         initial_state = {
             "query": req.query,
             "locality": req.locality or "Thành phố Huế",
+            "preferences": req.preferences or {},
             "target_dish": None,
             "target_place": None,
             "matched_places": [],

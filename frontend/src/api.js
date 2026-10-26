@@ -74,7 +74,7 @@ export class TourismApiClient {
   /**
    * Gửi câu hỏi đến Trợ lý Du lịch Thông minh (Spatial Agentic RAG)
    */
-  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null) {
+  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 45000);
@@ -83,6 +83,9 @@ export class TourismApiClient {
       if (userLat !== null && userLng !== null) {
         payload.user_lat = userLat;
         payload.user_lng = userLng;
+      }
+      if (preferences) {
+        payload.preferences = preferences;
       }
 
       const res = await fetch(`${API_BASE_URL}/api/v1/chat`, {

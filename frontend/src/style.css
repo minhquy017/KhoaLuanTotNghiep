@@ -8269,3 +8269,908 @@ button, input, select, textarea {
   gap: 0.25rem;
 }
 
+/* =============================================================================
+   FEATURE 1 & 2: SỔ TAY CỐ ĐÔ, CHECK-IN TRACKER & GU DU LỊCH CÁ NHÂN HÓA
+============================================================================= */
+
+/* Header Notebook Action Pill */
+.header-notebook-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.38rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-editorial);
+  box-shadow: var(--shadow-xs);
+}
+
+.header-notebook-btn:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-ink);
+  transform: translateY(-1px);
+}
+
+.header-notebook-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  background: #E11D48;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  transition: transform var(--duration-fast) var(--ease-spring);
+}
+
+/* Leaflet Popup Tools */
+.popup-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.btn-popup-tool {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-editorial);
+}
+
+.btn-popup-tool:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-ink);
+}
+
+.btn-popup-tool.active {
+  background: #FFF1F2;
+  border-color: #FDA4AF;
+  color: #E11D48;
+}
+
+.btn-popup-tool:has(polyline).active {
+  background: #F0FDF4;
+  border-color: #86EFAC;
+  color: #16A34A;
+}
+
+/* POI Drawer Buttons */
+.btn-drawer.btn-poi-fav.active {
+  background: #FFF1F2;
+  border-color: #FDA4AF;
+  color: #E11D48;
+}
+
+.btn-drawer.btn-poi-fav.active svg {
+  fill: #E11D48;
+}
+
+.btn-drawer.btn-poi-checkin.active {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: #FFFFFF;
+}
+
+/* =============================================================================
+   CLEAN MINIMALIST EDITORIAL MODALS (SỔ TAY CỐ ĐÔ & HỒ SƠ GU DU LỊCH)
+   Anti-AI-Slop, Zero-Emoji, Crisp Typography, Precise Spacing & Spatial Craft
+============================================================================= */
+
+/* Modal Dialog Structural Foundations */
+.notebook-modal-card {
+  width: 94%;
+  max-width: 640px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px -15px rgba(24, 24, 27, 0.12), 0 0 1px rgba(24, 24, 27, 0.2);
+  overflow: hidden;
+}
+
+.preferences-modal-card {
+  width: 94%;
+  max-width: 620px;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px -15px rgba(24, 24, 27, 0.12), 0 0 1px rgba(24, 24, 27, 0.2);
+  overflow: hidden;
+}
+
+/* 1. TRAVEL NOTEBOOK MODAL */
+.notebook-modal-header {
+  padding: 1.5rem 1.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background: #FFFFFF;
+}
+
+.notebook-header-top {
+  margin-bottom: 1.25rem;
+}
+
+.notebook-kicker,
+.pref-kicker {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+  margin-bottom: 0.35rem;
+}
+
+.notebook-modal-title,
+.preferences-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.notebook-modal-subtitle,
+.preferences-modal-subtitle {
+  font-size: 0.8rem;
+  color: var(--color-ink-secondary);
+  line-height: 1.4;
+  margin-top: 0.25rem;
+}
+
+.notebook-tab-bar {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 0;
+  margin-top: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.notebook-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.notebook-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-editorial);
+  position: relative;
+  margin-bottom: -1px;
+}
+
+.notebook-tab-btn:hover {
+  color: var(--color-ink);
+}
+
+.notebook-tab-btn.active {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-ink);
+}
+
+.notebook-tab-btn .tab-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  background: var(--color-surface-subtle);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  transition: all var(--duration-fast);
+}
+
+.notebook-tab-btn.active .tab-badge {
+  background: var(--color-ink);
+  color: #FFFFFF;
+}
+
+/* Notebook Content Scroll Area */
+.notebook-tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 1.75rem;
+  background: #FFFFFF;
+}
+
+.notebook-panel {
+  display: none;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.notebook-panel.active {
+  display: flex;
+}
+
+/* Toolbar & Clean Search Box */
+.notebook-panel-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.notebook-search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.75rem;
+  transition: border-color var(--duration-fast);
+}
+
+.notebook-search-box:focus-within {
+  border-color: var(--color-ink);
+}
+
+.notebook-search-box input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-ink);
+}
+
+.notebook-search-box input::placeholder {
+  color: var(--color-ink-muted);
+}
+
+.notebook-stats-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-ink-secondary);
+  background: var(--color-surface-subtle);
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+/* Wishlist Cards (Clean Minimalist List) */
+.wishlist-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.wishlist-card {
+  padding: 1rem 1.15rem;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--duration-fast);
+}
+
+.wishlist-card:hover {
+  border-color: var(--color-ink-secondary);
+}
+
+.wishlist-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+}
+
+.wishlist-cat-tag,
+.checkin-cat-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-secondary);
+  background: var(--color-surface-subtle);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.wishlist-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+}
+
+.wishlist-action-sep {
+  color: var(--color-border);
+  font-size: 0.75rem;
+}
+
+.btn-wishlist-action {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.btn-wishlist-action.btn-fly-map:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+}
+
+.btn-wishlist-action.btn-remove-fav:hover {
+  color: #DC2626;
+  text-decoration: underline;
+}
+
+.wishlist-card-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+}
+
+.wishlist-card-address {
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+}
+
+.wishlist-note-wrap {
+  border-top: 1px dashed var(--color-border-subtle);
+  padding-top: 0.5rem;
+}
+
+.wishlist-note-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: var(--color-ink);
+  outline: none;
+  padding: 2px 0;
+}
+
+.wishlist-note-input::placeholder {
+  color: var(--color-ink-muted);
+  font-style: italic;
+}
+
+/* Empty State */
+.notebook-empty-state {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-state-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 0.35rem;
+}
+
+.empty-state-desc {
+  font-size: 0.8rem;
+  color: var(--color-ink-muted);
+  max-width: 320px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Minimalist Passport Explorer Banner */
+.explorer-rank-banner {
+  padding: 1.15rem 1.25rem;
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.explorer-banner-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.explorer-level-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.explorer-level-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  background: var(--color-ink);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.explorer-rank-title {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.explorer-rank-count {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+}
+
+.explorer-progress-track {
+  width: 100%;
+  height: 3px;
+  background: var(--color-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.explorer-progress-fill {
+  height: 100%;
+  background: var(--color-ink);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.explorer-banner-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.explorer-rank-desc {
+  font-size: 0.74rem;
+  color: var(--color-ink-secondary);
+  line-height: 1.4;
+}
+
+/* Checkin Filter Pills */
+.checkin-filter-row {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+}
+
+.checkin-filter-pill {
+  padding: 0.32rem 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--duration-fast);
+}
+
+.checkin-filter-pill:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.checkin-filter-pill.active {
+  background: var(--color-ink);
+  color: #FFFFFF;
+  border-color: var(--color-ink);
+}
+
+/* Checkin Grid & Clean Cards */
+.checkin-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.65rem;
+}
+
+.checkin-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--duration-fast);
+}
+
+.checkin-card:hover {
+  border-color: var(--color-ink-secondary);
+}
+
+.checkin-card.checked {
+  border-color: var(--color-ink);
+  background: #FAFAFA;
+}
+
+.checkin-card-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.checkin-checkbox-box {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  transition: all var(--duration-fast);
+}
+
+.checkin-checkbox-box svg {
+  display: none;
+  color: #FFFFFF;
+}
+
+.checkin-card.checked .checkin-checkbox-box {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.checkin-card.checked .checkin-checkbox-box svg {
+  display: block;
+}
+
+.checkin-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.checkin-name {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.checkin-meta {
+  font-size: 0.68rem;
+  color: var(--color-ink-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.checkin-done-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.btn-checkin-fly {
+  padding: 0.25rem 0.55rem;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--duration-fast);
+}
+
+.btn-checkin-fly:hover {
+  background: var(--color-ink);
+  color: #FFFFFF;
+  border-color: var(--color-ink);
+}
+
+/* =============================================================================
+   2. USER PREFERENCES MODAL (HỒ SƠ GU DU LỊCH - CLEAN MINIMALIST)
+============================================================================= */
+
+.preferences-form {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: transparent;
+}
+
+.pref-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pref-section-title-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.pref-num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.pref-section-heading {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.25;
+}
+
+.pref-section-caption {
+  font-size: 0.74rem;
+  color: var(--color-ink-muted);
+  line-height: 1.35;
+  margin-top: 0.15rem;
+}
+
+/* Selection Cards Grid */
+.pref-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.5rem;
+}
+
+.pref-grid-2 {
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.pref-option {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.pref-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pref-box {
+  padding: 0.75rem 0.85rem;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: all var(--duration-fast);
+}
+
+.pref-box:hover {
+  border-color: var(--color-ink-muted);
+}
+
+.pref-label {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.pref-desc {
+  font-size: 0.7rem;
+  color: var(--color-ink-muted);
+  line-height: 1.35;
+}
+
+/* Checked state for options */
+.pref-option input:checked + .pref-box {
+  border-color: var(--color-ink);
+  background: #FAFAFA;
+}
+
+.pref-option input:focus-visible + .pref-box {
+  outline: 2px solid var(--color-ink);
+}
+
+/* Form Fields & Selects */
+.pref-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .pref-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pref-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.pref-field-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.pref-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-ink);
+  background: #FFFFFF;
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--duration-fast);
+}
+
+.pref-select:focus {
+  border-color: var(--color-ink);
+}
+
+.pref-textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-ink);
+  background: #FFFFFF;
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--duration-fast);
+}
+
+.pref-textarea:focus {
+  border-color: var(--color-ink);
+}
+
+.pref-textarea::placeholder {
+  color: var(--color-ink-muted);
+}
+
+.pref-footer {
+  padding-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-pref-save {
+  padding: 0.6rem 1.5rem;
+  background: var(--color-ink);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+
+.btn-pref-save:hover {
+  opacity: 0.88;
+}
+
+/* =============================================================================
+   HUE GLOBAL TOAST NOTIFICATION
+   ============================================================================= */
+.hue-toast-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.hue-toast {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  background: #18181B;
+  color: #FAFAF9;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hue-toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.hue-toast.hide {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+}
+

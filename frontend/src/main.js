@@ -7,6 +7,7 @@ import './style.css';
 import { TourismApiClient } from './api.js';
 import { SpatialMapStudio } from './map.js';
 import { AuthController } from './auth.js';
+import { userStore } from './userStore.js';
 import {
   saveItinerary,
   saveChatSession,
@@ -1890,11 +1891,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loadingId = appendAssistantLoading();
 
     try {
-      // Truyền tọa độ GPS người dùng nếu đã có định vị
+      // Truyền tọa độ GPS người dùng nếu đã có định vị & hồ sơ gu du lịch cá nhân hóa
       const userLat = mapStudio.userLocation ? mapStudio.userLocation.lat : null;
       const userLng = mapStudio.userLocation ? mapStudio.userLocation.lng : null;
+      const userPrefs = userStore.getPreferences();
 
-      const res = await TourismApiClient.askAssistant(query, 'Thành phố Huế', userLat, userLng);
+      const res = await TourismApiClient.askAssistant(query, 'Thành phố Huế', userLat, userLng, userPrefs);
       removeLoadingMessage(loadingId);
       appendAssistantResponse(res, true, query);
     } catch (err) {
@@ -2353,8 +2355,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   const poiBtnDirectNav = document.getElementById('poi-btn-direct-nav');
   const poiBtnAddTour = document.getElementById('poi-btn-add-tour');
   const poiBtnAskAi = document.getElementById('poi-btn-ask-ai');
+  const poiBtnFavorite = document.getElementById('poi-btn-favorite');
+  const poiBtnCheckin = document.getElementById('poi-btn-checkin');
+  const poiFavLabel = document.getElementById('poi-fav-label');
+  const poiCheckinLabel = document.getElementById('poi-checkin-label');
 
   let currentPoiData = null;
+
+  function updateDrawerUserStatus(targetName, targetId) {
+    const isFav = userStore.isFavorite(targetId || targetName);
+    const isCheck = userStore.isCheckedIn(targetId || targetName);
+
+    if (poiBtnFavorite) {
+      poiBtnFavorite.classList.toggle('active', isFav);
+      if (poiFavLabel) poiFavLabel.textContent = isFav ? 'Đã thích' : 'Yêu thích';
+      poiBtnFavorite.title = isFav ? 'Bỏ lưu yêu thích' : 'Lưu vào sổ tay yêu thích';
+      const favSvg = poiBtnFavorite.querySelector('svg');
+      if (favSvg) favSvg.setAttribute('fill', isFav ? 'currentColor' : 'none');
+    }
+
+    if (poiBtnCheckin) {
+      poiBtnCheckin.classList.toggle('active', isCheck);
+      if (poiCheckinLabel) poiCheckinLabel.textContent = isCheck ? 'Đã check-in' : 'Check-in';
+      poiBtnCheckin.title = isCheck ? 'Hủy check-in' : 'Đánh dấu đã ghé thăm';
+    }
+  }
 
   async function openPoiDetail(name, placeId = null) {
     if (!name && !placeId) return;
@@ -2373,6 +2398,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (poiTitle) poiTitle.textContent = initialName;
     if (poiAddressText) poiAddressText.textContent = localPlace?.address || localPlace?.desc || 'Thành phố Huế';
     if (poiDescText) poiDescText.textContent = localPlace?.desc || 'Đang đồng bộ hồ sơ văn hóa và điểm đánh giá...';
+
+    // Cập nhật trạng thái Yêu thích & Check-in ngay lập tức
+    updateDrawerUserStatus(initialName, placeId);
 
     // Cập nhật nhãn category & rating sơ bộ từ dữ liệu bản đồ
     const initialCat = (localPlace?.cat || 'Attraction').toLowerCase();
@@ -2423,6 +2451,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const data = await TourismApiClient.getPlaceDetail(name, placeId);
       currentPoiData = data;
+      updateDrawerUserStatus(data.name || initialName, data.place_id || placeId);
 
       // 2. Cập nhật Tiêu đề và Địa chỉ (bảo vệ tránh lệch tên)
       if (poiTitle) poiTitle.textContent = data.name || initialName;
@@ -2600,6 +2629,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     chatForm?.dispatchEvent(new Event('submit'));
   });
 
+  // Action: Lưu vào sổ tay yêu thích từ POI drawer
+  poiBtnFavorite?.addEventListener('click', () => {
+    const activeName = currentPoiData?.name || poiTitle?.textContent;
+    if (!activeName) return;
+
+    const target = {
+      place_id: currentPoiData?.place_id || currentPoiData?.id,
+      name: activeName,
+      category: currentPoiData?.category || poiCatBadge?.textContent || 'Attraction',
+      address: currentPoiData?.address || poiAddressText?.textContent || 'Thành phố Huế',
+      latitude: currentPoiData?.latitude || currentPoiData?.lat,
+      longitude: currentPoiData?.longitude || currentPoiData?.lng,
+      rating_value: currentPoiData?.rating_value || parseFloat(poiRatingVal?.textContent) || 4.6
+    };
+
+    const { isFav } = userStore.toggleFavorite(target);
+    updateDrawerUserStatus(target.name, target.place_id);
+    showHueToast(isFav ? `Đã lưu "${target.name}" vào Sổ tay` : `Đã bỏ lưu "${target.name}"`);
+  });
+
+  // Action: Check-in từ POI drawer
+  poiBtnCheckin?.addEventListener('click', () => {
+    const activeName = currentPoiData?.name || poiTitle?.textContent;
+    if (!activeName) return;
+
+    const target = {
+      place_id: currentPoiData?.place_id || currentPoiData?.id,
+      name: activeName,
+      category: currentPoiData?.category || poiCatBadge?.textContent || 'Attraction',
+      address: currentPoiData?.address || poiAddressText?.textContent || 'Thành phố Huế',
+      latitude: currentPoiData?.latitude || currentPoiData?.lat,
+      longitude: currentPoiData?.longitude || currentPoiData?.lng
+    };
+
+    const { isChecked } = userStore.toggleCheckin(target);
+    updateDrawerUserStatus(target.name, target.place_id);
+    const stats = userStore.getExplorerStats();
+    showHueToast(isChecked ? `Đã check-in: "${target.name}" (${stats.rankTitle})` : `Đã hủy check-in "${target.name}"`);
+  });
+
   // Action: Click vào các thẻ địa điểm nổi bật ở màn hình chào mừng
   document.querySelectorAll('.featured-place-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -2660,5 +2729,503 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 5. Vẽ tuyến đường thực tế qua OSRM và hiển thị Banner điều hướng
     mapStudio.drawNavigationRoute(origin, destination, 'driving');
   };
+
+  // =============================================================================
+  // 9. TOAST NOTIFICATION HELPER (HỆ THỐNG THÔNG BÁO TINH GỌN CHUẨN CỐ ĐÔ)
+  // =============================================================================
+  function showHueToast(message, duration = 3000) {
+    let container = document.querySelector('.hue-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'hue-toast-container';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'hue-toast';
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+      setTimeout(() => toast.remove(), 320);
+    }, duration);
+  }
+  window.showHueToast = showHueToast;
+
+  // =============================================================================
+  // 10. GLOBAL POPUP FAVORITE & CHECK-IN HANDLERS (LEAFLET POPUP TOOLS)
+  // =============================================================================
+  window.togglePlaceFavorite = (name, placeId, category, address, lat, lng, btnEl) => {
+    const target = {
+      name,
+      place_id: placeId,
+      category,
+      address,
+      latitude: lat,
+      longitude: lng
+    };
+    const { isFav } = userStore.toggleFavorite(target);
+    if (btnEl) {
+      btnEl.classList.toggle('active', isFav);
+      const span = btnEl.querySelector('span');
+      if (span) span.textContent = isFav ? 'Đã thích' : 'Yêu thích';
+      btnEl.title = isFav ? 'Bỏ lưu yêu thích' : 'Lưu vào sổ tay yêu thích';
+      const svg = btnEl.querySelector('svg');
+      if (svg) svg.setAttribute('fill', isFav ? 'currentColor' : 'none');
+    }
+    showHueToast(isFav ? `Đã lưu "${name}" vào Sổ tay` : `Đã bỏ lưu "${name}"`);
+  };
+
+  window.togglePlaceCheckin = (name, placeId, category, address, lat, lng, btnEl) => {
+    const target = {
+      name,
+      place_id: placeId,
+      category,
+      address,
+      latitude: lat,
+      longitude: lng
+    };
+    const { isChecked } = userStore.toggleCheckin(target);
+    if (btnEl) {
+      btnEl.classList.toggle('active', isChecked);
+      const span = btnEl.querySelector('span');
+      if (span) span.textContent = isChecked ? 'Đã check-in' : 'Check-in';
+      btnEl.title = isChecked ? 'Hủy check-in' : 'Đánh dấu đã ghé thăm';
+    }
+    const stats = userStore.getExplorerStats();
+    showHueToast(isChecked ? `Đã check-in: "${name}" (${stats.rankTitle})` : `Đã hủy check-in "${name}"`);
+  };
+
+  // =============================================================================
+  // 11. SỔ TAY DU LỊCH & HÀNH TRÌNH CHECK-IN (TRAVEL NOTEBOOK & PASSPORT CONTROLLER)
+  // =============================================================================
+  const notebookModal = document.getElementById('travel-notebook-modal');
+  const btnCloseNotebook = document.getElementById('btn-close-notebook-modal');
+  const tabWishlist = document.getElementById('tab-notebook-wishlist');
+  const tabCheckin = document.getElementById('tab-notebook-checkin');
+  const tabPreferences = document.getElementById('tab-notebook-preferences');
+  const panelWishlist = document.getElementById('panel-notebook-wishlist');
+  const panelCheckin = document.getElementById('panel-notebook-checkin');
+  const panelPreferences = document.getElementById('panel-notebook-preferences');
+  const badgeWishlistCount = document.getElementById('badge-wishlist-count');
+  const badgeCheckinCount = document.getElementById('badge-checkin-count');
+  const headerNotebookBadge = document.getElementById('header-notebook-badge');
+  const sidebarNotebookBadge = document.getElementById('sidebar-notebook-badge');
+  const wishlistItemsList = document.getElementById('wishlist-items-list');
+  const checkinItemsList = document.getElementById('checkin-items-list');
+  const searchWishlistInput = document.getElementById('input-search-wishlist');
+  const wishlistTotalPill = document.getElementById('wishlist-total-pill');
+  const explorerBadgeCircle = document.getElementById('explorer-badge-circle');
+  const explorerRankTitle = document.getElementById('explorer-rank-title');
+  const explorerRankCount = document.getElementById('explorer-rank-count');
+  const explorerProgressFill = document.getElementById('explorer-progress-fill');
+  const explorerRankDesc = document.getElementById('explorer-rank-desc');
+  const checkinFilterPills = document.querySelectorAll('.checkin-filter-pill');
+
+  let currentCheckinCategory = 'all';
+
+  function updateNotebookBadges() {
+    const favCount = userStore.getFavorites().length;
+    const checkinCount = userStore.getCheckins().length;
+
+    if (headerNotebookBadge) {
+      headerNotebookBadge.textContent = favCount;
+      headerNotebookBadge.style.display = favCount > 0 ? 'inline-flex' : 'none';
+    }
+    if (sidebarNotebookBadge) {
+      sidebarNotebookBadge.textContent = favCount;
+      sidebarNotebookBadge.style.display = favCount > 0 ? 'inline-flex' : 'none';
+    }
+    if (badgeWishlistCount) badgeWishlistCount.textContent = favCount;
+    if (badgeCheckinCount) badgeCheckinCount.textContent = checkinCount;
+  }
+
+  function openNotebookModal(defaultTab = 'wishlist') {
+    if (!notebookModal) return;
+    notebookModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    switchNotebookTab(defaultTab);
+  }
+
+  function closeNotebookModal() {
+    if (!notebookModal) return;
+    notebookModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function switchNotebookTab(tabName) {
+    [tabWishlist, tabCheckin, tabPreferences].forEach(t => {
+      t?.classList.remove('active');
+      t?.setAttribute('aria-selected', 'false');
+    });
+    [panelWishlist, panelCheckin, panelPreferences].forEach(p => {
+      p?.classList.remove('active');
+      p?.setAttribute('hidden', '');
+    });
+
+    if (tabName === 'wishlist') {
+      tabWishlist?.classList.add('active');
+      tabWishlist?.setAttribute('aria-selected', 'true');
+      panelWishlist?.classList.add('active');
+      panelWishlist?.removeAttribute('hidden');
+      renderWishlist(searchWishlistInput?.value || '');
+    } else if (tabName === 'checkin') {
+      tabCheckin?.classList.add('active');
+      tabCheckin?.setAttribute('aria-selected', 'true');
+      panelCheckin?.classList.add('active');
+      panelCheckin?.removeAttribute('hidden');
+      renderCheckinList(currentCheckinCategory);
+    } else if (tabName === 'preferences') {
+      tabPreferences?.classList.add('active');
+      tabPreferences?.setAttribute('aria-selected', 'true');
+      panelPreferences?.classList.add('active');
+      panelPreferences?.removeAttribute('hidden');
+      populatePreferencesForm();
+    }
+  }
+
+  tabWishlist?.addEventListener('click', () => switchNotebookTab('wishlist'));
+  tabCheckin?.addEventListener('click', () => switchNotebookTab('checkin'));
+  tabPreferences?.addEventListener('click', () => switchNotebookTab('preferences'));
+  btnCloseNotebook?.addEventListener('click', closeNotebookModal);
+  notebookModal?.addEventListener('click', (e) => {
+    if (e.target === notebookModal) closeNotebookModal();
+  });
+
+  // Triggers mở Sổ tay Du lịch & Gu cá nhân
+  document.getElementById('btn-sidebar-travel-notebook')?.addEventListener('click', () => openNotebookModal('wishlist'));
+  document.getElementById('btn-open-travel-notebook')?.addEventListener('click', () => {
+    document.getElementById('user-dropdown-menu')?.classList.remove('active');
+    openNotebookModal('wishlist');
+  });
+  document.getElementById('btn-popover-notebook')?.addEventListener('click', () => {
+    document.getElementById('sidebar-user-popover')?.classList.remove('active');
+    openNotebookModal('wishlist');
+  });
+  document.getElementById('btn-popover-guest-notebook')?.addEventListener('click', () => {
+    document.getElementById('sidebar-user-popover')?.classList.remove('active');
+    openNotebookModal('wishlist');
+  });
+
+  function renderWishlist(query = '') {
+    if (!wishlistItemsList) return;
+    let favorites = userStore.getFavorites();
+
+    if (query.trim()) {
+      const q = mapStudio.removeVietnameseTones(query.trim().toLowerCase());
+      favorites = favorites.filter(item => {
+        const nameNorm = mapStudio.removeVietnameseTones((item.name || '').toLowerCase());
+        const addrNorm = mapStudio.removeVietnameseTones((item.address || '').toLowerCase());
+        const noteNorm = mapStudio.removeVietnameseTones((item.note || '').toLowerCase());
+        return nameNorm.includes(q) || addrNorm.includes(q) || noteNorm.includes(q);
+      });
+    }
+
+    if (wishlistTotalPill) {
+      wishlistTotalPill.textContent = `${favorites.length} địa điểm`;
+    }
+
+    if (favorites.length === 0) {
+      wishlistItemsList.innerHTML = `
+        <div class="notebook-empty-state">
+          <p class="empty-state-title">Chưa có địa điểm lưu trữ</p>
+          <p class="empty-state-desc">${query.trim() ? 'Không tìm thấy địa điểm phù hợp với từ khóa.' : 'Khám phá các địa danh trên bản đồ và nhấn Lưu để quản lý danh sách của bạn.'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    wishlistItemsList.innerHTML = favorites.map(item => {
+      const cat = (item.category || '').toLowerCase();
+      let catLabel = 'DI TÍCH';
+      if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) {
+        catLabel = 'ẨM THỰC';
+      } else if (cat.includes('cafe') || cat.includes('cà phê')) {
+        catLabel = 'CÀ PHÊ';
+      } else if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) {
+        catLabel = 'NGHỈ DƯỠNG';
+      }
+
+      const safeName = (item.name || '').replace(/"/g, '&quot;');
+      const safeAddr = (item.address || 'Thành phố Huế').replace(/"/g, '&quot;');
+      const safeNote = (item.note || '').replace(/"/g, '&quot;');
+
+      return `
+        <div class="wishlist-card" data-name="${safeName}" data-lat="${item.latitude || ''}" data-lng="${item.longitude || ''}">
+          <div class="wishlist-card-header">
+            <span class="wishlist-cat-tag">${catLabel}</span>
+            <div class="wishlist-actions">
+              <button type="button" class="btn-wishlist-action btn-fly-map">Bản đồ</button>
+              <span class="wishlist-action-sep">/</span>
+              <button type="button" class="btn-wishlist-action btn-remove-fav">Bỏ lưu</button>
+            </div>
+          </div>
+          <h4 class="wishlist-card-title">${item.name}</h4>
+          <p class="wishlist-card-address">${safeAddr}</p>
+          <div class="wishlist-note-wrap">
+            <input type="text" class="wishlist-note-input" placeholder="Ghi chú cá nhân..." value="${safeNote}" />
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Event Delegation cho Wishlist (Gắn 1 lần duy nhất, zero-lag)
+  wishlistItemsList?.addEventListener('click', (e) => {
+    const flyBtn = e.target.closest('.btn-fly-map');
+    if (flyBtn) {
+      const card = flyBtn.closest('.wishlist-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      const lat = parseFloat(card.dataset.lat);
+      const lng = parseFloat(card.dataset.lng);
+      closeNotebookModal();
+      showMapPanel(true);
+      if (lat && lng) {
+        mapStudio.panTo(lat, lng, 16);
+      }
+      mapStudio.flyToPoi(name);
+      return;
+    }
+
+    const removeBtn = e.target.closest('.btn-remove-fav');
+    if (removeBtn) {
+      const card = removeBtn.closest('.wishlist-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      userStore.removeFavorite(name);
+      showHueToast(`Đã bỏ lưu "${name}"`);
+      renderWishlist(searchWishlistInput?.value || '');
+      return;
+    }
+  });
+
+  wishlistItemsList?.addEventListener('change', (e) => {
+    const noteInput = e.target.closest('.wishlist-note-input');
+    if (noteInput) {
+      const card = noteInput.closest('.wishlist-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      userStore.updateFavoriteNote(name, noteInput.value.trim());
+      showHueToast(`Đã lưu ghi chú cho "${name}"`);
+    }
+  });
+
+  searchWishlistInput?.addEventListener('input', () => {
+    renderWishlist(searchWishlistInput.value);
+  });
+
+  function updateExplorerRankUi(stats) {
+    const levelTag = document.getElementById('explorer-level-tag');
+    if (levelTag) levelTag.textContent = `CẤP ${stats.level || '01'}`;
+    if (explorerRankTitle) explorerRankTitle.textContent = stats.rankTitle;
+    if (explorerRankCount) explorerRankCount.textContent = `${stats.count} / ${stats.total}`;
+    if (explorerProgressFill) explorerProgressFill.style.width = `${stats.percentage}%`;
+    if (explorerRankDesc) {
+      explorerRankDesc.textContent = stats.remainingForNext > 0
+        ? `Cần thêm ${stats.remainingForNext} điểm check-in để đạt "${stats.nextRankTitle}".`
+        : 'Đã hoàn thành toàn bộ hành trình di sản Cố Đô.';
+    }
+  }
+
+  function getCategoryLabel(catRaw) {
+    const cat = (catRaw || '').toLowerCase();
+    if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) return 'ẨM THỰC';
+    if (cat.includes('cafe') || cat.includes('cà phê')) return 'CÀ PHÊ';
+    if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) return 'NGHỈ DƯỠNG';
+    return 'DI TÍCH';
+  }
+
+  function renderCheckinList(category = 'all') {
+    currentCheckinCategory = category;
+    if (!checkinItemsList) return;
+
+    const stats = userStore.getExplorerStats();
+    updateExplorerRankUi(stats);
+
+    const allLandmarks = mapStudio.masterLandmarks || [];
+    const catNormalized = (category || 'all').toLowerCase();
+    const filtered = catNormalized === 'all'
+      ? allLandmarks
+      : allLandmarks.filter(item => (item.cat || '').toLowerCase() === catNormalized);
+
+    checkinItemsList.innerHTML = filtered.map(item => {
+      const isChecked = userStore.isCheckedIn(item.place_id || item.name);
+      const catLabel = getCategoryLabel(item.cat);
+      const safeName = (item.name || '').replace(/"/g, '&quot;');
+
+      return `
+        <div class="checkin-card ${isChecked ? 'checked' : ''}" data-name="${safeName}" data-lat="${item.lat}" data-lng="${item.lng}">
+          <div class="checkin-card-left">
+            <span class="checkin-checkbox-box" aria-hidden="true">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <div class="checkin-info">
+              <div class="checkin-name">${item.name}</div>
+              <div class="checkin-meta">
+                <span class="checkin-cat-tag">${catLabel}</span>
+                ${isChecked ? '<span class="checkin-done-tag">Đã ghé thăm</span>' : ''}
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-checkin-fly" title="Xem trên bản đồ">Bản đồ</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Event Delegation cho Check-in (Gắn 1 lần duy nhất cho toàn bộ danh sách địa danh)
+  checkinItemsList?.addEventListener('click', (e) => {
+    const flyBtn = e.target.closest('.btn-checkin-fly');
+    if (flyBtn) {
+      const card = flyBtn.closest('.checkin-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      const lat = parseFloat(card.dataset.lat);
+      const lng = parseFloat(card.dataset.lng);
+      closeNotebookModal();
+      showMapPanel(true);
+      if (lat && lng) {
+        mapStudio.panTo(lat, lng, 16);
+      }
+      mapStudio.flyToPoi(name);
+      return;
+    }
+
+    const checkinLeft = e.target.closest('.checkin-card-left');
+    if (checkinLeft) {
+      const card = checkinLeft.closest('.checkin-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      const allLandmarks = mapStudio.masterLandmarks || [];
+      const landmark = allLandmarks.find(p => p.name === name);
+      if (!landmark) return;
+
+      const target = {
+        place_id: landmark.place_id,
+        name: landmark.name,
+        category: landmark.cat,
+        address: landmark.desc || landmark.address,
+        latitude: landmark.lat,
+        longitude: landmark.lng
+      };
+
+      const { isChecked } = userStore.toggleCheckin(target);
+      const newStats = userStore.getExplorerStats();
+      const catLabel = getCategoryLabel(landmark.cat);
+
+      // Cập nhật DOM của card tức thì không tốn CPU dựng lại danh sách
+      card.classList.toggle('checked', isChecked);
+      const metaEl = card.querySelector('.checkin-meta');
+      if (metaEl) {
+        metaEl.innerHTML = `<span class="checkin-cat-tag">${catLabel}</span>${isChecked ? '<span class="checkin-done-tag">Đã ghé thăm</span>' : ''}`;
+      }
+
+      updateExplorerRankUi(newStats);
+      showHueToast(isChecked ? `Đã check-in: "${name}"` : `Đã hủy check-in: "${name}"`);
+    }
+  });
+
+  checkinFilterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      checkinFilterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      renderCheckinList(pill.dataset.filter);
+    });
+  });
+
+  // =============================================================================
+  // 12. HỒ SƠ GU DU LỊCH & KHẨU VỊ CÁ NHÂN HÓA (TRAVEL PREFERENCES CONTROLLER)
+  // =============================================================================
+  const preferencesForm = document.getElementById('preferences-form');
+  const prefSelectParty = document.getElementById('pref-select-party');
+  const prefSelectTransport = document.getElementById('pref-select-transport');
+  const prefInputNotes = document.getElementById('pref-input-notes');
+
+  function openPreferencesModal() {
+    openNotebookModal('preferences');
+  }
+
+  function populatePreferencesForm() {
+    const prefs = userStore.getPreferences();
+
+    document.querySelectorAll('input[name="pref_style"]').forEach(cb => {
+      cb.checked = (prefs.styles || []).includes(cb.value);
+    });
+
+    document.querySelectorAll('input[name="pref_dietary"]').forEach(cb => {
+      cb.checked = (prefs.dietary || []).includes(cb.value);
+    });
+
+    if (prefSelectParty && prefs.party) {
+      prefSelectParty.value = prefs.party;
+    }
+    if (prefSelectTransport && prefs.transport) {
+      prefSelectTransport.value = prefs.transport;
+    }
+    if (prefInputNotes) {
+      prefInputNotes.value = prefs.customNotes || '';
+    }
+  }
+
+  preferencesForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const selectedStyles = Array.from(document.querySelectorAll('input[name="pref_style"]:checked')).map(el => el.value);
+    const selectedDietary = Array.from(document.querySelectorAll('input[name="pref_dietary"]:checked')).map(el => el.value);
+    const party = prefSelectParty?.value || 'Cặp đôi';
+    const transport = prefSelectTransport?.value || 'Xe máy';
+    const customNotes = prefInputNotes?.value?.trim() || '';
+
+    userStore.savePreferences({
+      styles: selectedStyles.length > 0 ? selectedStyles : ['heritage', 'foodie'],
+      dietary: selectedDietary,
+      party,
+      transport,
+      customNotes
+    });
+
+    showHueToast('Đã lưu Hồ sơ Gu Du Lịch thành công.');
+  });
+
+  // Triggers mở Hồ sơ Gu du lịch
+  document.getElementById('btn-sidebar-user-preferences')?.addEventListener('click', openPreferencesModal);
+  document.getElementById('btn-open-user-preferences')?.addEventListener('click', openPreferencesModal);
+  document.getElementById('btn-popover-preferences')?.addEventListener('click', openPreferencesModal);
+  document.getElementById('btn-popover-guest-preferences')?.addEventListener('click', openPreferencesModal);
+
+  // Phím tắt ESC đóng modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (notebookModal?.classList.contains('active')) closeNotebookModal();
+    }
+  });
+
+  // Lắng nghe thay đổi UserStore để cập nhật reactive
+  window.addEventListener('hue-user-store-changed', () => {
+    updateNotebookBadges();
+    if (notebookModal?.classList.contains('active')) {
+      if (tabWishlist?.classList.contains('active')) {
+        renderWishlist(searchWishlistInput?.value || '');
+      } else if (tabCheckin?.classList.contains('active')) {
+        renderCheckinList(currentCheckinCategory);
+      } else if (tabPreferences?.classList.contains('active')) {
+        populatePreferencesForm();
+      }
+    }
+    if (currentPoiData && poiDrawer?.classList.contains('open')) {
+      updateDrawerUserStatus(currentPoiData.name, currentPoiData.place_id);
+    }
+  });
+
+  // Khởi tạo số liệu ban đầu
+  updateNotebookBadges();
+  populatePreferencesForm();
 
 });

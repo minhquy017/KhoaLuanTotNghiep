@@ -60,6 +60,7 @@ from src.rag.web_search_tool import get_web_search_tool
 class TourismAgentState(TypedDict):
     query: str
     locality: str
+    preferences: Optional[Dict[str, Any]]
     target_dish: Optional[str]
     target_place: Optional[str]
     matched_places: List[Dict[str, Any]]
@@ -632,6 +633,34 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
    - Bạn CHỈ ĐƯỢC PHÉP giới thiệu các quán ăn phục vụ món {target_dish} từ danh sách ngữ cảnh.
    - Tuyệt đối KHÔNG ĐƯỢC nhắc đến các món ăn hay quán ăn khác (như cơm hến, bánh bèo, chè...) không liên quan đến {target_dish}."""
 
+    # 4. Cá nhân hóa theo Hồ sơ Gu Du Lịch của Người dùng
+    preferences = state.get("preferences") or {}
+    pref_rules = []
+    if preferences:
+        styles = preferences.get("styles") or []
+        if styles:
+            style_str = ", ".join(styles)
+            pref_rules.append(f"- Phong cách ưa thích: {style_str}. Ưu tiên các điểm đến và trải nghiệm đúng gu này.")
+        dietary = preferences.get("dietary") or []
+        if "Ăn chay" in dietary:
+            pref_rules.append("- Khẩu vị: Du khách ĂN CHAY. Tuyệt đối ưu tiên các quán chay, món chay, danh lam chùa chiền thanh tịnh ở Cố đô.")
+        if "Không ăn cay / Ít ớt" in dietary:
+            pref_rules.append("- Khẩu vị: Du khách KHÔNG ĂN CAY / ÍT ỚT. Nhắc nhở dặn quán làm ít cay, không bỏ ớt chưng sa tế đậm.")
+        if "Ăn cay chuẩn Huế" in dietary:
+            pref_rules.append("- Khẩu vị: Du khách thích ĂN CAY ĐẬM ĐÀ, chuẩn phong vị cay xé lưỡi đặc trưng của xứ Huế.")
+        if "Dị ứng hải sản" in dietary:
+            pref_rules.append("- Dị ứng: Du khách DỊ ỨNG HẢI SẢN. Cảnh báo tránh các món tôm cá, mắm ruốc truyền thống nếu có thể.")
+        party = preferences.get("party")
+        if party:
+            pref_rules.append(f"- Nhóm đồng hành: {party}. Điều chỉnh nhịp độ di chuyển và không gian phù hợp với nhóm này.")
+        transport = preferences.get("transport")
+        if transport:
+            pref_rules.append(f"- Phương tiện di chuyển: {transport}.")
+
+    pref_section = ""
+    if pref_rules:
+        pref_section = "\n\n5. CÁ NHÂN HÓA THEO GU DU LỊCH CỦA DU KHÁCH:\n" + "\n".join(pref_rules)
+
     system_prompt = f"""Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
 
 Nguyên tắc trả lời bắt buộc:
@@ -646,7 +675,7 @@ Nguyên tắc trả lời bắt buộc:
 
 3. VỚI CÂU HỎI VỀ ẨM THỰC / DANH THẮNG:
    - Đi thẳng vào các thắc mắc (địa chỉ, giá cả, thời điểm đẹp nhất trong ngày, món ngon đặc sản).
-   - Dùng icon sinh động (🏯, 🍲, 📍, ⏰) và gạch đầu dòng rõ ràng.{dish_rule}"""
+   - Dùng icon sinh động (🏯, 🍲, 📍, ⏰) và gạch đầu dòng rõ ràng.{dish_rule}{pref_section}"""
 
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
@@ -718,6 +747,14 @@ Nguyên tắc trả lời bắt buộc:
 
     # XAI trace: ghi lại bước sinh phản hồi cuối cùng
     trace_steps = state.get("graph_trace", [])
+    if pref_rules:
+        trace_steps.append({
+            "step": "user_personalization",
+            "icon": "✨",
+            "label": "Cá nhân hóa Gu du lịch",
+            "detail": f"Đã áp dụng {len(pref_rules)} tiêu chí khẩu vị & phong cách du khách",
+            "status": "applied"
+        })
     trace_steps.append({
         "step": "llm_generation",
         "icon": "🤖",

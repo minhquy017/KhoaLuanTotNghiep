@@ -58,6 +58,14 @@
 
       <!-- Quick Nav Links -->
       <div class="sidebar-nav-group">
+        <button type="button" class="sidebar-nav-item" id="btn-sidebar-travel-notebook" title="Mở Sổ tay Du lịch & Gu cá nhân" data-tooltip="Sổ tay Cố Đô">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>Sổ tay Cố Đô</span>
+          <span class="sidebar-count-badge hidden" id="sidebar-notebook-badge">0</span>
+        </button>
         <button type="button" class="sidebar-nav-item" id="btn-sidebar-saved-tours" title="Xem các lịch trình đã lưu" data-tooltip="Lịch trình đã lưu">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -126,6 +134,13 @@
 
           <!-- Nhóm thao tác khi ĐÃ đăng nhập -->
           <div class="popover-actions-logged-in" id="popover-logged-in-actions">
+            <button type="button" class="popover-item" id="btn-popover-notebook">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>Sổ tay & Gu du lịch</span>
+            </button>
             <button type="button" class="popover-item" id="btn-popover-saved-tours">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -168,6 +183,13 @@
                 <line x1="23" y1="11" x2="17" y2="11"></line>
               </svg>
               <span>Đăng ký thành viên mới</span>
+            </button>
+            <button type="button" class="popover-item" id="btn-popover-guest-notebook">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>Sổ tay & Gu du lịch</span>
             </button>
             <button type="button" class="popover-item" id="btn-popover-guest-config">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -267,6 +289,13 @@
               <span class="dropdown-badge-google hidden" id="dropdown-badge-google">Google</span>
             </div>
             <div class="dropdown-divider"></div>
+            <button type="button" class="dropdown-item" id="btn-open-travel-notebook">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>Sổ tay & Gu du lịch</span>
+            </button>
             <button type="button" class="dropdown-item" id="btn-open-saved-tours">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -752,6 +781,18 @@
 
       <!-- Action Footer -->
       <div class="poi-drawer-footer">
+        <button type="button" class="btn-drawer btn-poi-fav" id="poi-btn-favorite" title="Lưu vào sổ tay yêu thích">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <span id="poi-fav-label">Yêu thích</span>
+        </button>
+        <button type="button" class="btn-drawer btn-poi-checkin" id="poi-btn-checkin" title="Đánh dấu đã ghé thăm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span id="poi-checkin-label">Check-in</span>
+        </button>
         <a href="#" target="_blank" rel="noopener noreferrer" class="btn-drawer btn-google-nav"
           id="poi-btn-google-maps" title="Mở chỉ đường trên ứng dụng Google Maps">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1026,6 +1067,243 @@
 
       <div class="saved-tours-list" id="saved-tours-list">
         <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===========================================================================
+       TRAVEL NOTEBOOK & CHECK-IN PASSPORT MODAL (SỔ TAY CỐ ĐÔ)
+  =========================================================================== -->
+  <!-- ===========================================================================
+       TRAVEL NOTEBOOK & CHECK-IN PASSPORT (SỔ TAY CỐ ĐÔ - CLEAN MINIMALISM)
+  =========================================================================== -->
+  <div class="modal-backdrop" id="travel-notebook-modal" role="dialog" aria-modal="true" aria-labelledby="notebook-modal-title">
+    <div class="modal-card notebook-modal-card">
+      <button type="button" class="modal-close-btn" id="btn-close-notebook-modal" aria-label="Đóng cửa sổ">✕</button>
+
+      <div class="notebook-modal-header">
+        <div class="notebook-header-top">
+          <span class="notebook-kicker">CỐ ĐÔ HUẾ · SỔ TAY DU KHÁCH</span>
+          <h3 id="notebook-modal-title" class="notebook-modal-title">Sổ tay Du lịch Cố Đô</h3>
+          <p class="notebook-modal-subtitle">Lưu trữ điểm đến yêu thích, hộ chiếu khám phá và thiết lập gu trải nghiệm riêng</p>
+        </div>
+
+        <!-- Minimalist Segmented Tabs -->
+        <div class="notebook-tab-bar" role="tablist">
+          <button type="button" class="notebook-tab-btn active" id="tab-notebook-wishlist" role="tab" aria-selected="true" data-target="panel-notebook-wishlist">
+            <span>Địa điểm Yêu thích</span>
+            <span class="tab-badge" id="badge-wishlist-count">0</span>
+          </button>
+          <button type="button" class="notebook-tab-btn" id="tab-notebook-checkin" role="tab" aria-selected="false" data-target="panel-notebook-checkin">
+            <span>Hộ chiếu Khám phá</span>
+            <span class="tab-badge" id="badge-checkin-count">0</span>
+          </button>
+          <button type="button" class="notebook-tab-btn" id="tab-notebook-preferences" role="tab" aria-selected="false" data-target="panel-notebook-preferences">
+            <span>Gu du lịch & Khẩu vị</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="notebook-tab-content">
+        <!-- PANEL 1: WISHLIST (ĐỊA ĐIỂM YÊU THÍCH) -->
+        <div class="notebook-panel active" id="panel-notebook-wishlist" role="tabpanel">
+          <div class="notebook-panel-toolbar">
+            <div class="notebook-search-box">
+              <input type="text" id="input-search-wishlist" placeholder="Tìm kiếm theo tên địa danh hoặc ghi chú..." />
+            </div>
+            <span class="notebook-stats-pill" id="wishlist-total-pill">0 địa điểm</span>
+          </div>
+          <div class="wishlist-items-container" id="wishlist-items-list">
+            <!-- Dynamic favorite items -->
+          </div>
+        </div>
+
+        <!-- PANEL 2: CHECK-IN PASSPORT -->
+        <div class="notebook-panel" id="panel-notebook-checkin" role="tabpanel" hidden>
+          <!-- Minimalist Passport Banner -->
+          <div class="explorer-rank-banner" id="explorer-rank-banner">
+            <div class="explorer-banner-top">
+              <div class="explorer-level-group">
+                <span class="explorer-level-tag" id="explorer-level-tag">CẤP 01</span>
+                <span class="explorer-rank-title" id="explorer-rank-title">Khách bộ hành Cố Đô</span>
+              </div>
+              <span class="explorer-rank-count" id="explorer-rank-count">0 / 158</span>
+            </div>
+            <div class="explorer-progress-track">
+              <div class="explorer-progress-fill" id="explorer-progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="explorer-banner-bottom">
+              <p class="explorer-rank-desc" id="explorer-rank-desc">Đánh dấu các địa danh bạn đã ghé thăm để nâng cấp hành trình.</p>
+            </div>
+          </div>
+
+          <!-- Minimal Category Filter Pills -->
+          <div class="checkin-filter-row">
+            <button type="button" class="checkin-filter-pill active" data-filter="all">Tất cả</button>
+            <button type="button" class="checkin-filter-pill" data-filter="attraction">Di tích</button>
+            <button type="button" class="checkin-filter-pill" data-filter="restaurant">Ẩm thực</button>
+            <button type="button" class="checkin-filter-pill" data-filter="cafe">Cà phê</button>
+            <button type="button" class="checkin-filter-pill" data-filter="hotel">Khách sạn</button>
+          </div>
+
+          <div class="checkin-grid-container" id="checkin-items-list">
+            <!-- Dynamic checklist -->
+          </div>
+        </div>
+
+        <!-- PANEL 3: GU DU LỊCH & KHẨU VỊ (PERSONALIZATION PREFERENCES) -->
+        <div class="notebook-panel" id="panel-notebook-preferences" role="tabpanel" hidden>
+          <form class="preferences-form" id="preferences-form">
+            <!-- MỤC 01: PHONG CÁCH DU LỊCH -->
+            <div class="pref-section">
+              <div class="pref-section-title-wrap">
+                <span class="pref-num">01</span>
+                <div>
+                  <h4 class="pref-section-heading">Phong cách Trải nghiệm</h4>
+                  <p class="pref-section-caption">Chọn một hoặc nhiều trải nghiệm bạn ưu tiên khi khám phá Huế</p>
+                </div>
+              </div>
+
+              <div class="pref-grid">
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_style" value="heritage" checked />
+                  <div class="pref-box">
+                    <span class="pref-label">Di tích & Lịch sử</span>
+                    <span class="pref-desc">Đại Nội, lăng tẩm hoàng gia, bảo tàng cổ vật</span>
+                  </div>
+                </label>
+
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_style" value="foodie" checked />
+                  <div class="pref-box">
+                    <span class="pref-label">Ẩm thực & Quán ngon</span>
+                    <span class="pref-desc">Bún bò, bánh bèo nậm lọc, cơm hến, chè hẻm</span>
+                  </div>
+                </label>
+
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_style" value="photo" />
+                  <div class="pref-box">
+                    <span class="pref-label">Nhiếp ảnh & Cà phê</span>
+                    <span class="pref-desc">Hoàng hôn đồi Vọng Cảnh, cà phê bờ sông Hương</span>
+                  </div>
+                </label>
+
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_style" value="nature" />
+                  <div class="pref-box">
+                    <span class="pref-label">Thiên nhiên & Sinh thái</span>
+                    <span class="pref-desc">Rừng ngập mặn Rú Chá, phá Tam Giang, đồi thông</span>
+                  </div>
+                </label>
+
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_style" value="spiritual" />
+                  <div class="pref-box">
+                    <span class="pref-label">Tâm linh & Thiền tịnh</span>
+                    <span class="pref-desc">Chùa Thiên Mụ, Từ Hiếu, Huyền Không Sơn Thượng</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- MỤC 02: KHẨU VỊ & THỰC ĐƠN -->
+            <div class="pref-section">
+              <div class="pref-section-title-wrap">
+                <span class="pref-num">02</span>
+                <div>
+                  <h4 class="pref-section-heading">Khẩu vị & Dị ứng Ẩm thực</h4>
+                  <p class="pref-section-caption">AI sẽ chọn lọc quán ăn và nhắc lưu ý gia vị trước mỗi bữa ăn</p>
+                </div>
+              </div>
+
+              <div class="pref-grid pref-grid-2">
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_dietary" value="Ăn chay" />
+                  <div class="pref-box">
+                    <span class="pref-label">Ăn chay</span>
+                    <span class="pref-desc">Ưu tiên quán chay thanh tịnh, món chay Cố Đô</span>
+                  </div>
+                </label>
+
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_dietary" value="Không ăn cay / Ít ớt" />
+                  <div class="pref-box">
+                    <span class="pref-label">Không ăn cay / Giảm ớt</span>
+                    <span class="pref-desc">Dặn quán không sa tế, không ớt tươi cay nồng</span>
+                  </div>
+                </label>
+
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_dietary" value="Ăn cay chuẩn Huế" checked />
+                  <div class="pref-box">
+                    <span class="pref-label">Ăn cay chuẩn Huế</span>
+                    <span class="pref-desc">Giữ nguyên vị cay nồng đặc sắc của xứ Huế</span>
+                  </div>
+                </label>
+
+                <label class="pref-option">
+                  <input type="checkbox" name="pref_dietary" value="Dị ứng hải sản" />
+                  <div class="pref-box">
+                    <span class="pref-label">Dị ứng hải sản</span>
+                    <span class="pref-desc">Tránh tôm cá, ruốc mắm và các phụ gia biển</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- MỤC 03: ĐỒNG HÀNH & PHƯƠNG TIỆN -->
+            <div class="pref-section">
+              <div class="pref-section-title-wrap">
+                <span class="pref-num">03</span>
+                <div>
+                  <h4 class="pref-section-heading">Đồng hành & Phương tiện Di chuyển</h4>
+                  <p class="pref-section-caption">Phục vụ tính toán thời gian và nhịp độ chuyến đi phù hợp</p>
+                </div>
+              </div>
+
+              <div class="pref-row">
+                <div class="pref-field">
+                  <label class="pref-field-label" for="pref-select-party">Nhóm du khách</label>
+                  <select class="pref-select" id="pref-select-party" name="pref_party">
+                    <option value="Cặp đôi" selected>Cặp đôi (Riêng tư & Lãng mạn)</option>
+                    <option value="Gia đình">Gia đình (Có người lớn / trẻ nhỏ)</option>
+                    <option value="Nhóm bạn bè">Nhóm bạn bè (Năng động & Khám phá)</option>
+                    <option value="Một mình">Du lịch một mình (Tự do & Linh hoạt)</option>
+                  </select>
+                </div>
+
+                <div class="pref-field">
+                  <label class="pref-field-label" for="pref-select-transport">Phương tiện chính</label>
+                  <select class="pref-select" id="pref-select-transport" name="pref_transport">
+                    <option value="Xe máy" selected>Xe máy (Linh hoạt trong ngõ hẻm)</option>
+                    <option value="Ô tô / Taxi">Ô tô / Taxi / Grab</option>
+                    <option value="Đi bộ / Xe đạp">Đi bộ & Xe đạp dạo mát</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- MỤC 04: GHI CHÚ BỔ SUNG -->
+            <div class="pref-section">
+              <div class="pref-section-title-wrap">
+                <span class="pref-num">04</span>
+                <div>
+                  <h4 class="pref-section-heading">Ghi chú Thêm cho Trợ lý AI</h4>
+                  <p class="pref-section-caption">Bất kỳ yêu cầu hoặc thói quen du lịch cá nhân nào khác</p>
+                </div>
+              </div>
+              <textarea class="pref-textarea" id="pref-input-notes" name="pref_notes" rows="2" placeholder="Ví dụ: Thích chụp ảnh sáng sớm, muốn không gian yên tĩnh..."></textarea>
+            </div>
+
+            <div class="pref-footer">
+              <button type="submit" class="btn-pref-save" id="btn-save-preferences">
+                Lưu Hồ Sơ Thiết Lập
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
