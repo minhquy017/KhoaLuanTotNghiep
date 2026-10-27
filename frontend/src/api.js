@@ -1,11 +1,12 @@
 import hueTopPlaces from './hue_top_places.json';
 
-if (typeof window !== 'undefined' && localStorage.getItem('hue_api_url')?.includes('trycloudflare.com')) {
+// Tự động dọn sạch mọi URL cũ trong localStorage để luôn trỏ thẳng vào Ngrok Backend
+if (typeof window !== 'undefined') {
   localStorage.removeItem('hue_api_url');
 }
 
-// Đang kết nối tới Backend cố định vĩnh viễn trên GPU Google Colab qua Ngrok
-const API_BASE_URL = (typeof window !== 'undefined' && localStorage.getItem('hue_api_url')) || 'https://finale-armful-cameo.ngrok-free.dev';
+// Kết nối tới Backend cố định vĩnh viễn trên GPU Google Colab qua Ngrok
+const API_BASE_URL = 'https://finale-armful-cameo.ngrok-free.dev';
 const NGROK_HEADERS = { 'ngrok-skip-browser-warning': 'true' };
 
 function haversineKm(lat1, lon1, lat2, lon2) {
