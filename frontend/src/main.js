@@ -1992,27 +1992,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const confPct = Math.round((confidenceScore || 0.85) * 100);
     const isWeb = routeTaken === 'web_fallback';
-    const routeLabel = isWeb ? 'Web Search (DuckDuckGo)' : 'Tri thức Cố đô (KG + Vector)';
-    const routeBadgeClass = isWeb ? 'route-web' : 'route-kg';
+    const routeLabel = isWeb ? 'Web Search (DuckDuckGo)' : 'Tri thức Cố đô';
 
-    const stepsHtml = trace.map((step) => {
-      const icon = step.icon || '📌';
+    const stepsHtml = trace.map((step, idx) => {
       const label = step.label || step.step;
       const detail = step.detail || '';
-      const status = step.status || 'done';
 
-      let statusBadge = '';
+      let metricHtml = '';
       if (step.score !== undefined) {
-        statusBadge = `<span class="xai-step-badge badge-${status}">Tin cậy: ${(step.score * 100).toFixed(0)}%</span>`;
+        metricHtml = `<span class="xai-step-metric">${(step.score * 100).toFixed(0)}%</span>`;
       } else if (step.count !== undefined) {
-        statusBadge = `<span class="xai-step-badge badge-${status}">${step.count} kết quả</span>`;
+        metricHtml = `<span class="xai-step-metric">${step.count} kết quả</span>`;
       } else if (step.decision) {
-        const decText = step.decision === 'local_knowledge' ? 'Tri thức nội bộ' : 'DuckDuckGo';
-        statusBadge = `<span class="xai-step-badge badge-decision">${decText}</span>`;
-      } else if (status === 'done' || status === 'found' || status === 'expanded') {
-        statusBadge = `<span class="xai-step-badge badge-success">✓ Đã định vị</span>`;
-      } else if (status === 'redirect') {
-        statusBadge = `<span class="xai-step-badge badge-redirect">Chuyển hướng</span>`;
+        const decText = step.decision === 'local_knowledge' ? 'Tri thức nội bộ' : 'Web Fallback';
+        metricHtml = `<span class="xai-step-metric">${decText}</span>`;
       }
 
       let extraWidgetHtml = '';
@@ -2021,7 +2014,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         extraWidgetHtml = `
           <div class="xai-confidence-meter">
             <div class="xai-meter-track">
-              <div class="xai-meter-fill ${pct >= 60 ? 'high' : pct >= 40 ? 'med' : 'low'}" style="width: ${pct}%"></div>
+              <div class="xai-meter-fill" style="width: ${pct}%"></div>
             </div>
             <span class="xai-meter-val">${pct}%</span>
           </div>
@@ -2030,15 +2023,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       return `
         <div class="xai-timeline-item" data-step-type="${step.step}">
-          <div class="xai-node-marker">
-            <span class="xai-node-icon">${icon}</span>
-          </div>
-          <div class="xai-node-body">
-            <div class="xai-node-header">
-              <span class="xai-node-title">${label}</span>
-              ${statusBadge}
+          <span class="xai-step-num">${String(idx + 1).padStart(2, '0')}</span>
+          <div class="xai-step-body">
+            <div class="xai-step-header">
+              <span class="xai-step-title">${label}</span>
+              ${metricHtml}
             </div>
-            <div class="xai-node-desc">${detail}</div>
+            ${detail ? `<div class="xai-step-desc">${detail}</div>` : ''}
             ${extraWidgetHtml}
           </div>
         </div>
@@ -2047,37 +2038,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     return `
       <div class="xai-trace-wrapper">
-        <button type="button" class="xai-trace-toggle" aria-expanded="false" title="Nhấp để xem/ẩn chi tiết chuỗi suy luận minh bạch của AI">
+        <button type="button" class="xai-trace-toggle" aria-expanded="false" title="Xem tiến trình suy luận GraphRAG">
           <div class="xai-toggle-left">
-            <span class="xai-ai-chip">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <span>GraphRAG Trace</span>
-            </span>
-            <span class="xai-route-pill ${routeBadgeClass}">${routeLabel}</span>
-            <span class="xai-conf-pill" title="Độ tin cậy tổng hợp">Tin cậy: ${confPct}%</span>
+            <span class="xai-trace-dot"></span>
+            <span class="xai-trace-label">GraphRAG Trace</span>
+            <span class="xai-trace-sep">/</span>
+            <span class="xai-trace-route">${routeLabel}</span>
+            <span class="xai-trace-sep">·</span>
+            <span class="xai-trace-conf">Độ tin cậy ${confPct}%</span>
           </div>
           <div class="xai-toggle-right">
             <span class="xai-step-indicator">${trace.length} bước</span>
-            <svg class="xai-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg class="xai-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
         </button>
 
         <div class="xai-trace-drawer">
           <div class="xai-drawer-inner">
             <div class="xai-drawer-header">
-              <div class="xai-drawer-title">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                <span>Chuỗi suy luận minh bạch (Explainable AI Trace)</span>
-              </div>
-              <span class="xai-drawer-tag">LangGraph · Neo4j KG · ChromaDB</span>
+              <span class="xai-drawer-title">Tiến trình truy xuất &amp; lập luận</span>
+              <span class="xai-drawer-tag">LangGraph · NetworkX KG · ChromaDB</span>
             </div>
 
             <div class="xai-timeline">
               ${stepsHtml}
-            </div>
-
-            <div class="xai-drawer-footer">
-              <span class="xai-audit-note">🛡️ Cơ chế truy vết thực thể & phản biện chống hallucination (ảo giác AI)</span>
             </div>
           </div>
         </div>
@@ -2140,13 +2124,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(origin.lat * Math.PI / 180) * Math.cos(destination.lat * Math.PI / 180) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const estDistKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1);
-      const estDurationMin = Math.max(2, Math.round(parseFloat(estDistKm) * 2.5));
+      // Ưu tiên cự ly đường bộ chuẩn xác từ Backend Spatial Ground Truth Engine
+      const rawHaversine = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const estDistKm = (nav.distance_km != null)
+        ? parseFloat(nav.distance_km).toFixed(1)
+        : Math.max(0.8, rawHaversine * 1.6).toFixed(1);
+      const estDurationMin = (nav.duration_min != null)
+        ? nav.duration_min
+        : Math.max(2, Math.round(parseFloat(estDistKm) * 2.5));
 
       const gmapsDirUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}`;
+      const navCardId = `nav-card-${Date.now()}`;
 
       navCardHtml = `
-        <div class="chat-nav-card">
+        <div class="chat-nav-card" id="${navCardId}">
           <div class="nav-card-header">
             <div class="nav-card-header-main">
               <div class="nav-card-icon-badge">
@@ -2158,8 +2149,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
             </div>
             <div class="nav-card-badge-metrics">
-              <span class="nav-metric-pill">~${estDistKm} km</span>
-              <span class="nav-metric-pill highlight">~${estDurationMin} phút</span>
+              <span class="nav-metric-pill nav-metric-dist">~${estDistKm} km</span>
+              <span class="nav-metric-pill highlight nav-metric-dur">~${estDurationMin} phút</span>
             </div>
           </div>
 
@@ -2201,9 +2192,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       `;
 
-      // Tự động vẽ lộ trình thực tế lên bản đồ Leaflet ngay lập tức!
-      setTimeout(() => {
-        mapStudio.drawNavigationRoute(origin, destination, profile);
+      // Tự động vẽ lộ trình thực tế lên bản đồ Leaflet và đồng bộ cự ly OSRM vào Thẻ Lộ trình
+      setTimeout(async () => {
+        try {
+          const routeRes = await mapStudio.drawNavigationRoute(origin, destination, profile);
+          if (routeRes && routeRes.distanceKm) {
+            const cardEl = document.getElementById(navCardId);
+            if (cardEl) {
+              const distEl = cardEl.querySelector('.nav-metric-dist');
+              const durEl = cardEl.querySelector('.nav-metric-dur');
+              if (distEl) distEl.textContent = `~${routeRes.distanceKm} km`;
+              if (durEl) durEl.textContent = `~${routeRes.durationMin} phút`;
+            }
+          }
+        } catch (e) {
+          console.warn('Lỗi đồng bộ OSRM vào Thẻ Lộ trình:', e);
+        }
       }, 200);
     }
 

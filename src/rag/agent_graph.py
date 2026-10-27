@@ -73,6 +73,7 @@ class TourismAgentState(TypedDict):
     formatted_context: str
     final_answer: str
     graph_trace: List[Dict[str, Any]]     # XAI: chuỗi suy luận minh bạch của đồ thị
+    nav_route_info: Optional[Dict[str, Any]]
 
 
 # =============================================================================
@@ -273,8 +274,35 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         })
     target_place_id = extracted_place_ids[0] if extracted_place_ids else None
 
-    # A. Nếu là câu hỏi tìm kiếm địa điểm LÂN CẬN (quanh X trong bán kính Y km):
-    if is_nearby_query and target_place_id:
+    # A. ƯU TIÊN 1: Có CẢ địa danh mốc VÀ món ăn đặc sản (ví dụ: 'ăn bún bò gần Cầu Tràng Tiền', 'quán bánh bèo quanh Đại Nội'):
+    if target_place_id and target_dish:
+        origin_place = graph_retriever.get_place(target_place_id)
+        if origin_place:
+            lat0, lng0 = origin_place.get("latitude"), origin_place.get("longitude")
+            serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality or "Thành phố Huế", limit=20)
+            if lat0 and lng0:
+                for sp in serving_places:
+                    if sp.get("latitude") and sp.get("longitude"):
+                        sp["dist_to_origin"] = haversine_distance(lat0, lng0, sp["latitude"], sp["longitude"])
+                serving_places.sort(key=lambda x: x.get("dist_to_origin", 999))
+
+            # Đưa các quán phục vụ món gần nhất vào matched_places (loại bỏ chính điểm mốc)
+            for sp in serving_places[:5]:
+                if sp.get("node_id") != target_place_id and sp not in matched_places:
+                    matched_places.append(sp)
+
+            # XAI trace: ghi lại quan hệ SERVES
+            trace_steps.append({
+                "step": "edge_traversal",
+                "icon": "🍽️",
+                "label": "Duyệt cạnh SERVES",
+                "detail": f"Tìm thấy {len(matched_places)} quán phục vụ '{target_dish}' gần '{origin_place.get('name', '')}'",
+                "edge": "SERVES",
+                "count": len(matched_places),
+                "status": "found" if matched_places else "empty"
+            })
+    # B. ƯU TIÊN 2: Nếu là câu hỏi tìm kiếm địa điểm LÂN CẬN chung quanh X (không chỉ định món ăn cụ thể):
+    elif is_nearby_query and target_place_id:
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
             # Bóc tách bán kính km nếu người dùng ghi rõ (ví dụ: 'trong bán kính 2km')
@@ -305,55 +333,12 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 "count": len(matched_places),
                 "status": "found"
             })
-    # B. Nếu người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN (ví dụ: 'Từ Đại Nội đi Chợ Đông Ba' hoặc hỏi về các bãi biển):
+    # C. Nếu người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN (ví dụ: 'Từ Đại Nội đi Chợ Đông Ba' hoặc hỏi về các bãi biển):
     elif len(extracted_place_ids) >= 2:
         for pid in extracted_place_ids:
             p_data = graph_retriever.get_place(pid)
             if p_data and p_data not in matched_places:
                 matched_places.append(p_data)
-    # C. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
-    elif target_place_id and target_dish:
-        origin_place = graph_retriever.get_place(target_place_id)
-        if origin_place:
-            matched_places.append(origin_place)
-            lat0, lng0 = origin_place.get("latitude"), origin_place.get("longitude")
-            serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality or "Thành phố Huế", limit=15)
-            if lat0 and lng0:
-                for sp in serving_places:
-                    if sp.get("latitude") and sp.get("longitude"):
-                        sp["dist_to_origin"] = haversine_distance(lat0, lng0, sp["latitude"], sp["longitude"])
-                serving_places.sort(key=lambda x: x.get("dist_to_origin", 999))
-            
-            # Đưa các quán gần nhất vào matched_places
-            for sp in serving_places[:4]:
-                if sp not in matched_places:
-                    matched_places.append(sp)
-
-            # Lấy thêm các điểm lân cận qua cạnh NEAR_BY
-            nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=1.5, limit=3)
-            nearby_map[target_place_id] = nearby
-
-
-            # XAI trace: ghi lại quan hệ SERVES + NEAR_BY
-            trace_steps.append({
-                "step": "edge_traversal",
-                "icon": "🔗",
-                "label": "Duyệt cạnh SERVES",
-                "detail": f"Tìm {len(serving_places)} quán phục vụ '{target_dish}' gần {origin_place.get('name', '')}",
-                "edge": "SERVES",
-                "count": len(serving_places),
-                "status": "found" if serving_places else "empty"
-            })
-            if nearby:
-                trace_steps.append({
-                    "step": "edge_traversal",
-                    "icon": "📐",
-                    "label": "Duyệt cạnh NEAR_BY",
-                    "detail": f"{len(nearby)} điểm lân cận trong bán kính 1.5km",
-                    "edge": "NEAR_BY",
-                    "count": len(nearby),
-                    "status": "found"
-                })
     elif target_dish:
         # Chỉ có món đặc sản: Tìm các quán uy tín phục vụ món
         serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality, limit=5)
@@ -640,7 +625,6 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     dishes_map = state.get("dishes_map", {})
     reviews = state.get("reviews", [])
     web_results = state.get("web_results", [])
-
     target_dish = state.get("target_dish")
 
     # Gom ngữ cảnh
@@ -688,7 +672,65 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
    - Bạn CHỈ ĐƯỢC PHÉP giới thiệu các quán ăn phục vụ món {target_dish} từ danh sách ngữ cảnh.
    - Tuyệt đối KHÔNG ĐƯỢC nhắc đến các món ăn hay quán ăn khác (như cơm hến, bánh bèo, chè...) không liên quan đến {target_dish}."""
 
-    # 4. Cá nhân hóa theo Hồ sơ Gu Du Lịch của Người dùng
+    # Tính toán chính xác cự ly đường bộ khi có yêu cầu Chỉ đường (Ground Truth Navigation)
+    nav_rule = ""
+    nav_route_info = None
+    if is_nav and matched_places:
+        origin_p = None
+        dest_p = None
+        if len(matched_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
+            origin_p = matched_places[0]
+            dest_p = matched_places[1]
+        elif matched_places:
+            dest_p = matched_places[0]
+            origin_p = {"name": "Trung tâm TP Huế (Cầu Tràng Tiền)", "latitude": 16.4674, "longitude": 107.5905}
+
+        if origin_p and dest_p and origin_p.get("latitude") and dest_p.get("latitude"):
+            lat1, lng1 = float(origin_p["latitude"]), float(origin_p["longitude"])
+            lat2, lng2 = float(dest_p["latitude"]), float(dest_p["longitude"])
+            h_dist = haversine_distance(lat1, lng1, lat2, lng2)
+
+            # 1. Truy vấn nhanh OSRM để lấy cự ly mặt đường thực tế theo mạng lưới giao thông Cố đô
+            road_dist = None
+            dur_drive = None
+            try:
+                import urllib.request
+                import json
+                osrm_url = f"https://router.project-osrm.org/route/v1/driving/{lng1},{lat1};{lng2},{lat2}?overview=false"
+                req_osrm = urllib.request.Request(osrm_url, headers={"User-Agent": "HueSpatialRAG/1.0"})
+                with urllib.request.urlopen(req_osrm, timeout=1.2) as resp:
+                    if resp.status == 200:
+                        data_osrm = json.loads(resp.read().decode("utf-8"))
+                        if data_osrm.get("code") == "Ok" and data_osrm.get("routes"):
+                            r0 = data_osrm["routes"][0]
+                            road_dist = round(r0["distance"] / 1000.0, 1)
+                            dur_drive = max(2, round(r0["duration"] / 60.0))
+            except Exception:
+                pass
+
+            # 2. Fallback: Hệ số mạng lưới giao thông đường bộ nội đô Huế uốn lượn qua sông & tường thành (~1.6x)
+            if road_dist is None:
+                road_dist = max(0.8, round(h_dist * 1.6, 1))
+                dur_drive = max(2, round(road_dist * 2.5))
+
+            dur_walk = max(8, round(road_dist * 12))
+
+            nav_route_info = {
+                "distance_km": road_dist,
+                "duration_min": dur_drive,
+                "duration_walk": dur_walk,
+                "origin_name": origin_p.get("name"),
+                "dest_name": dest_p.get("name")
+            }
+
+            nav_rule = f"""
+5. DỮ LIỆU ĐỊNH VỊ KHÔNG GIAN BẮT BUỘC (GROUND TRUTH ROUTING):
+   - Tuyến đường: Từ **{origin_p.get('name')}** đến **{dest_p.get('name')}**.
+   - Khoảng cách đường bộ thực tế: ~{road_dist} km.
+   - Thời gian di chuyển: khoảng {dur_drive} phút (xe máy / ô tô) hoặc {dur_walk} phút (đi bộ).
+   - NGUYÊN TẮC BẮT BUỘC: Khi trả lời về khoảng cách hay thời gian di chuyển, BẮT BUỘC dùng đúng con số ~{road_dist} km và thời gian trên. TUYỆT ĐỐI KHÔNG tự bịa đặt hay ước lượng con số khác! Hãy nhắc du khách xem lộ trình chi tiết đã được vẽ trên bản đồ bên cạnh và bấm 'Mở Google Maps' để nghe dẫn đường trực tiếp."""
+
+    # Cá nhân hóa theo Hồ sơ Gu Du Lịch của Người dùng
     preferences = state.get("preferences") or {}
     pref_rules = []
     if preferences:
@@ -714,7 +756,7 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
 
     pref_section = ""
     if pref_rules:
-        pref_section = "\n\n5. CÁ NHÂN HÓA THEO GU DU LỊCH CỦA DU KHÁCH:\n" + "\n".join(pref_rules)
+        pref_section = "\n\n6. CÁ NHÂN HÓA THEO GU DU LỊCH CỦA DU KHÁCH:\n" + "\n".join(pref_rules)
 
     system_prompt = f"""Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
 
@@ -736,11 +778,11 @@ Nguyên tắc trả lời bắt buộc:
    - Khi du khách hỏi về tắm biển hoặc ăn hải sản ở Huế, hãy giới thiệu các bãi biển Thuận An, Lăng Cô, Cảnh Dương, Hải Dương và các món hải sản tươi sống đặc trưng.
 
 4. NẾU DU KHÁCH HỎI ĐƯỜNG ĐI / LỘ TRÌNH:
-   - Trả lời ngắn gọn (1-2 câu), thông báo tuyến đường đã được định vị và vẽ trực tiếp trên bản đồ bên cạnh.
-   - Nhắc tên điểm đến và địa chỉ cụ thể nếu có, gợi ý du khách xem cự ly và bấm nút Google Maps bên dưới để nghe dẫn đường khi di chuyển.
+   - Trả lời ngắn gọn (1-2 câu), nêu rõ khoảng cách đường bộ và thời gian di chuyển chính xác từ mục DỮ LIỆU ĐỊNH VỊ KHÔNG GIAN BẮT BUỘC.
+   - Thông báo tuyến đường đã được định vị và vẽ trực tiếp trên bản đồ bên cạnh, gợi ý du khách xem cự ly và bấm nút Google Maps bên dưới để nghe dẫn đường khi di chuyển.
 
 5. ĐỊNH DẠNG TÊN ĐỊA DANH BẰNG CHỮ IN ĐẬM:
-   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{pref_section}"""
+   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{nav_rule}{pref_section}"""
 
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
@@ -833,7 +875,8 @@ Nguyên tắc trả lời bắt buộc:
         "formatted_context": full_context,
         "final_answer": answer_text,
         "route_taken": route_taken,
-        "graph_trace": trace_steps
+        "graph_trace": trace_steps,
+        "nav_route_info": nav_route_info
     }
 
 
