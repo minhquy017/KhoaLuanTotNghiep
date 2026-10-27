@@ -2858,5 +2858,89 @@
         "visit_date": "Tháng 9/2024"
       }
     ]
+  },
+  {
+    "place_id": "beach_thuan_an",
+    "name": "Bãi biển Thuận An",
+    "lat": 16.5562,
+    "lng": 107.6369,
+    "cat": "Attraction",
+    "desc": "Thị trấn Thuận An · Bãi biển danh tiếng cách trung tâm Huế 13km, bờ cát thoai thoải, nổi tiếng với hải sản tươi sống (mực trứng, ghẹ, tôm nướng, cá dìa)",
+    "address": "Thị trấn Thuận An, TP. Huế, Thừa Thiên Huế",
+    "rating_value": 4.4,
+    "review_count": 3400,
+    "tags": "bai bien thuan an, bien thuan an, thuan an beach, tam bien hue, hai san thuan an, bien dep hue",
+    "reviews": [
+      {
+        "title": "Bãi biển gần trung tâm Huế nhất, hải sản tươi ngon giá rẻ",
+        "comment": "Chỉ mất tầm 20-25 phút đi xe máy từ trung tâm thành phố là tới bãi biển Thuận An. Bãi biển thoai thoải, sóng vừa phải rất thích hợp tắm biển buổi chiều. Dọc bãi biển có nhiều dãy quán hải sản tươi sống phục vụ mực hấp gừng, tôm nướng muối ớt, sò điệp và cá dìa nướng rất ngọt thịt.",
+        "rating": 4.5,
+        "trip_type": "Gia đình / Bạn bè",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "beach_lang_co",
+    "name": "Vịnh & Bãi biển Lăng Cô",
+    "lat": 16.2308,
+    "lng": 108.0167,
+    "cat": "Attraction",
+    "desc": "Thị trấn Lăng Cô, Phú Lộc · Một trong những vịnh biển đẹp nhất thế giới dưới chân đèo Hải Vân, nổi tiếng với hàu nướng mỡ hành, ghẹ biển, sò huyết và mực nhảy",
+    "address": "Thị trấn Lăng Cô, huyện Phú Lộc, Thừa Thiên Huế",
+    "rating_value": 4.6,
+    "review_count": 4200,
+    "tags": "vinh lang co, bien lang co, lang co beach, dam lap an, hai san lang co, hau lang co",
+    "reviews": [
+      {
+        "title": "Vịnh biển tuyệt mỹ, thiên đường hàu nướng và hải sản đầm Lập An",
+        "comment": "Lăng Cô sở hữu bãi cát trắng mịn trải dài tuyệt đẹp. Sau khi tắm biển có thể ghé các nhà bè nổi đầm Lập An thưởng thức hàu tươi béo ngậy nướng phô mai, mực cơm xào chua ngọt và sò huyết đầm tươi rói.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi / Du khách",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "beach_canh_duong",
+    "name": "Bãi biển Cảnh Dương",
+    "lat": 16.3218,
+    "lng": 107.9942,
+    "cat": "Attraction",
+    "desc": "Xã Lộc Vĩnh, Phú Lộc · Bãi biển thoai thoải cát trắng mịn tuyệt đẹp, nước biển trong vắt, bãi cắm trại dã ngoại và hải sản tươi sống ven bờ",
+    "address": "Thôn Cảnh Dương, xã Lộc Vĩnh, huyện Phú Lộc, Thừa Thiên Huế",
+    "rating_value": 4.5,
+    "review_count": 2100,
+    "tags": "bien canh duong, canh duong beach, loc vinh, cam trai bien, hai san canh duong",
+    "reviews": [
+      {
+        "title": "Bãi biển cực kỳ sạch đẹp, cát mịn thích hợp cắm trại dã ngoại",
+        "comment": "Cảnh Dương có bãi cát rất rộng và dài, độ dốc thoai thoải an toàn cho trẻ nhỏ tắm. Hải sản mua trực tiếp của ngư dân cập bờ vào sáng sớm cực kỳ tươi ngon, giá rất rẻ.",
+        "rating": 4.5,
+        "trip_type": "Bạn bè / Nhóm",
+        "visit_date": "Tháng 6/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "beach_hai_duong",
+    "name": "Bãi biển Hải Dương (Bờ kè bãi đá)",
+    "lat": 16.5756,
+    "lng": 107.6042,
+    "cat": "Attraction",
+    "desc": "Hải Dương, Hương Trà · Bãi biển hoang sơ cách Huế 15km với hai bờ kè chắn sóng bãi đá cao và bãi đá thấp phủ rêu xanh ngắt, nhiều quán hải sản bình dân",
+    "address": "Xã Hải Dương, thị xã Hương Trà, Thừa Thiên Huế",
+    "rating_value": 4.4,
+    "review_count": 1800,
+    "tags": "bien hai duong, bai da hai duong, ke chan song, hai san hai duong, check-in hue",
+    "reviews": [
+      {
+        "title": "Điểm check-in bãi đá rêu xanh cực đẹp và ăn hải sản ngon bổ rẻ",
+        "comment": "Bãi biển Hải Dương nổi tiếng với hai bờ kè bãi đá tổ ong vươn ra biển phủ rêu xanh mướt chụp ảnh siêu ảo. Các quán chòi lá ven biển phục vụ cá nướng than, sò điệp, cua ghẹ tươi ngon với giá bình dân.",
+        "rating": 4.5,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
   }
 ]

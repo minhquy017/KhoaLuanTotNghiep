@@ -1,7 +1,12 @@
 import hueTopPlaces from './hue_top_places.json';
 
-// Có thể cấu hình nhanh từ Console: localStorage.setItem('hue_api_url', 'https://xxxx.trycloudflare.com')
-const API_BASE_URL = (typeof window !== 'undefined' && localStorage.getItem('hue_api_url')) || 'http://localhost:8000';
+if (typeof window !== 'undefined' && localStorage.getItem('hue_api_url')?.includes('trycloudflare.com')) {
+  localStorage.removeItem('hue_api_url');
+}
+
+// Đang kết nối tới Backend cố định vĩnh viễn trên GPU Google Colab qua Ngrok
+const API_BASE_URL = (typeof window !== 'undefined' && localStorage.getItem('hue_api_url')) || 'https://finale-armful-cameo.ngrok-free.dev';
+const NGROK_HEADERS = { 'ngrok-skip-browser-warning': 'true' };
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -22,7 +27,7 @@ export class TourismApiClient {
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/health`, {
         method: 'GET',
-        headers: { 'Accept': 'application/json' }
+        headers: { 'Accept': 'application/json', ...NGROK_HEADERS }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
@@ -54,7 +59,8 @@ export class TourismApiClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...NGROK_HEADERS
         },
         body: JSON.stringify(payload),
         signal: controller.signal
@@ -93,7 +99,8 @@ export class TourismApiClient {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...NGROK_HEADERS
         },
         body: JSON.stringify(payload),
         signal: controller.signal
@@ -523,7 +530,7 @@ export class TourismApiClient {
       dish_name: dishName,
       limit: limit.toString()
     });
-    const res = await fetch(`${API_BASE_URL}/api/v1/kg/dishes/search?${params.toString()}`);
+    const res = await fetch(`${API_BASE_URL}/api/v1/kg/dishes/search?${params.toString()}`, { headers: NGROK_HEADERS });
     if (!res.ok) throw new Error(`Lỗi tra cứu món ăn (HTTP ${res.status})`);
     return await res.json();
   }
@@ -537,7 +544,7 @@ export class TourismApiClient {
       max_distance_km: maxDistanceKm.toString(),
       limit: limit.toString()
     });
-    const res = await fetch(`${API_BASE_URL}/api/v1/kg/places/nearby?${params.toString()}`);
+    const res = await fetch(`${API_BASE_URL}/api/v1/kg/places/nearby?${params.toString()}`, { headers: NGROK_HEADERS });
     if (!res.ok) throw new Error(`Lỗi tra cứu lân cận (HTTP ${res.status})`);
     return await res.json();
   }
@@ -552,7 +559,7 @@ export class TourismApiClient {
     if (name) params.append('name', name);
     if (placeId) params.append('place_id', placeId);
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/kg/places/detail?${params.toString()}`);
+    const res = await fetch(`${API_BASE_URL}/api/v1/kg/places/detail?${params.toString()}`, { headers: NGROK_HEADERS });
     if (!res.ok) throw new Error(`Lỗi tra cứu chi tiết địa điểm (HTTP ${res.status})`);
     return await res.json();
   }

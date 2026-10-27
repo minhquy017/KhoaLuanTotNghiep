@@ -177,8 +177,20 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "bach ma": "place_8877",
         "cau ngoi thanh toan": "place_8885",
         "thanh toan": "place_8885",
-        "bien lang co": "place_8917",
-        "lang co": "place_8917",
+        # Các bãi biển danh tiếng của Thừa Thiên Huế
+        "thuan an": "beach_thuan_an",
+        "bien thuan an": "beach_thuan_an",
+        "bai bien thuan an": "beach_thuan_an",
+        "canh duong": "beach_canh_duong",
+        "bien canh duong": "beach_canh_duong",
+        "bai bien canh duong": "beach_canh_duong",
+        "hai duong": "beach_hai_duong",
+        "bien hai duong": "beach_hai_duong",
+        "bai bien hai duong": "beach_hai_duong",
+        "lang co": "beach_lang_co",
+        "bien lang co": "beach_lang_co",
+        "vinh lang co": "beach_lang_co",
+        "dam lap an": "beach_lang_co",
         "deo hai van": "place_8895",
         "hai van": "place_8895",
         # Các địa điểm bản địa tinh tuyển mới bổ sung
@@ -200,8 +212,6 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "ba ty": "custom_local_27",
         "che mo ton dich": "custom_local_29",
         "mo ton dich": "custom_local_29",
-        "dam lap an": "custom_local_32",
-        "lap an": "custom_local_32",
         "lang thieu tri": "custom_local_33",
         "thieu tri": "custom_local_33",
         "ca phe mat biec": "custom_local_15",
@@ -237,6 +247,18 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     ordered_place_ids.sort(key=lambda x: x[0])
     extracted_place_ids = [pid for _, pid in ordered_place_ids]
 
+    # Nhận diện câu hỏi tổng quát về bãi biển / tắm biển / hải sản biển
+    is_beach_query = any(b in norm_q for b in ["bai bien", "bien", "tam bien", "ngam bien"]) and not any(k in norm_q for k in ["bien hoa", "bien gioi"])
+    if is_beach_query and not any(pid in extracted_place_ids for pid in ["beach_thuan_an", "beach_lang_co", "beach_canh_duong", "beach_hai_duong"]):
+        for b_id in ["beach_thuan_an", "beach_lang_co", "beach_canh_duong", "beach_hai_duong"]:
+            extracted_place_ids.append(b_id)
+
+    # Nhận diện câu hỏi tìm địa điểm lân cận ('quanh X', 'gần X', 'trong bán kính Y km')
+    is_nearby_query = any(k in norm_q for k in ["quanh", "xung quanh", "lan can", "ban kinh", "gan day", "gan do", "gan "])
+    # Nếu hỏi quanh một địa danh mà có 'song huong' xuất hiện như cảnh quan, loại bỏ 'song huong' khỏi danh sách đích
+    if is_nearby_query and "place_8882" in extracted_place_ids and len(extracted_place_ids) >= 2:
+        extracted_place_ids = [pid for pid in extracted_place_ids if pid != "place_8882"]
+
     # XAI trace: ghi lại các thực thể địa danh đã bóc tách
     for pid in extracted_place_ids:
         p_info = graph_retriever.G.nodes.get(pid, {})
@@ -251,13 +273,45 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         })
     target_place_id = extracted_place_ids[0] if extracted_place_ids else None
 
-    # A. Nếu người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN (ví dụ: 'Từ Đại Nội đi Chợ Đông Ba'):
-    if len(extracted_place_ids) >= 2:
+    # A. Nếu là câu hỏi tìm kiếm địa điểm LÂN CẬN (quanh X trong bán kính Y km):
+    if is_nearby_query and target_place_id:
+        origin_place = graph_retriever.get_place(target_place_id)
+        if origin_place:
+            # Bóc tách bán kính km nếu người dùng ghi rõ (ví dụ: 'trong bán kính 2km')
+            radius_km = 2.0
+            import re
+            km_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:km|cay|kilomet)', norm_q)
+            if km_match:
+                try:
+                    radius_km = min(10.0, max(0.5, float(km_match.group(1))))
+                except Exception:
+                    pass
+
+            nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
+            nearby_map[target_place_id] = nearby
+            
+            # QUAN TRỌNG: Loại bỏ chính bản thân điểm mốc (origin_place) và node Sông Hương (place_8882) ra khỏi danh sách gợi ý
+            for nb in nearby:
+                nb_id = nb.get("node_id")
+                if nb_id != target_place_id and nb_id != "place_8882" and nb not in matched_places:
+                    matched_places.append(nb)
+
+            trace_steps.append({
+                "step": "edge_traversal",
+                "icon": "📐",
+                "label": "Duyệt cạnh NEAR_BY",
+                "detail": f"{len(matched_places)} điểm lân cận '{origin_place.get('name', '')}' trong bán kính {radius_km}km",
+                "edge": "NEAR_BY",
+                "count": len(matched_places),
+                "status": "found"
+            })
+    # B. Nếu người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN (ví dụ: 'Từ Đại Nội đi Chợ Đông Ba' hoặc hỏi về các bãi biển):
+    elif len(extracted_place_ids) >= 2:
         for pid in extracted_place_ids:
             p_data = graph_retriever.get_place(pid)
             if p_data and p_data not in matched_places:
                 matched_places.append(p_data)
-    # B. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
+    # C. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
     elif target_place_id and target_dish:
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
@@ -278,6 +332,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             # Lấy thêm các điểm lân cận qua cạnh NEAR_BY
             nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=1.5, limit=3)
             nearby_map[target_place_id] = nearby
+
 
             # XAI trace: ghi lại quan hệ SERVES + NEAR_BY
             trace_steps.append({
@@ -664,18 +719,28 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     system_prompt = f"""Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
 
 Nguyên tắc trả lời bắt buộc:
-1. VĂN PHONG TỰ NHIÊN, LỊCH SỰ, ẤM ÁP:
-   - Mở đầu nhẹ nhàng, lịch thiệp ("Dạ thưa bạn...", "Dạ, em xin chia sẻ...", "Chào bạn...").
+1. VĂN PHONG TỰ NHIÊN, LỊCH SỰ, ĐÚNG MỰC:
+   - Xưng hô chuẩn mực: Xưng "em" hoặc "Trợ lý Cố đô", gọi người dùng là "bạn" hoặc "quý khách".
+   - Tuyệt đối KHÔNG tự tiện dùng các đại từ xưng hô gia đình kỳ quặc như "chị/mẹ", "cô/bác", "ông/bà".
+   - Mở đầu nhẹ nhàng, lịch thiệp ("Dạ chào bạn...", "Dạ, em xin gợi ý với bạn...", "Chào bạn...").
    - Tuyệt đối KHÔNG dùng các câu cứng nhắc, máy móc như: "Dựa trên dữ liệu Đồ thị Tri thức...", "Hệ thống đã xác định thành công...".
    - Diễn đạt 100% bằng tiếng Việt trong sáng, gần gũi như một người bạn đồng hành bản địa tại Huế.
 
-2. NẾU DU KHÁCH HỎI ĐƯỜNG ĐI / LỘ TRÌNH:
+2. NẾU DU KHÁCH HỎI CÁC ĐIỂM QUANH / GẦN MỘT ĐỊA DANH (VÍ DỤ "QUANH CHÙA THIÊN MỤ", "GẦN ĐẠI NỘI"):
+   - Tuyệt đối KHÔNG giới thiệu lại chính địa danh mốc đó làm điểm tham quan lân cận (không gợi ý Chùa Thiên Mụ khi người ta đang hỏi quanh Chùa Thiên Mụ).
+   - Sông Hương là dòng sông cảnh quan chung, KHÔNG giới thiệu "Perfume River / Sông Hương" như một điểm đến có "Giá: Bình dân" độc lập. Thay vào đó, hãy gợi ý các điểm ngắm sông cụ thể xung quanh như: Nhà vườn Bến Xuân, Bến thuyền chùa Thiên Mụ, Đồi Hà Khê, Văn Miếu Huế, các quán cafe/nhà hàng ngắm cảnh bờ sông trong ngữ cảnh.
+
+3. VỀ BÃI BIỂN VÀ HẢI SẢN TẠI THỪA THIÊN HUẾ:
+   - Thừa Thiên Huế có các bãi biển đẹp nổi tiếng gồm: Bãi biển Thuận An (cách TP Huế ~15km, nổi tiếng tắm biển và hải sản tươi rói), Vịnh & Bãi biển Lăng Cô / Đầm Lập An (dưới chân đèo Hải Vân, vịnh biển đẹp bậc nhất thế giới, nức tiếng hải sản tôm hùm, hàu đầm), Bãi biển Cảnh Dương (cắm trại, bãi cát thoai thoải), Bãi biển Hải Dương (bờ kè bãi đá sống ảo cực đẹp).
+   - Sông Hương là SÔNG NƯỚC NGỌT CHẢY TRONG LÒNG THÀNH PHỐ HUẾ, TUYỆT ĐỐI KHÔNG CÓ BÃI BIỂN NÀO BÊN BỜ SÔNG HƯƠNG. Cấm tuyệt đối không được bịa đặt hay nói "bãi biển bên bờ sông Hương".
+   - Khi du khách hỏi về tắm biển hoặc ăn hải sản ở Huế, hãy giới thiệu các bãi biển Thuận An, Lăng Cô, Cảnh Dương, Hải Dương và các món hải sản tươi sống đặc trưng.
+
+4. NẾU DU KHÁCH HỎI ĐƯỜNG ĐI / LỘ TRÌNH:
    - Trả lời ngắn gọn (1-2 câu), thông báo tuyến đường đã được định vị và vẽ trực tiếp trên bản đồ bên cạnh.
    - Nhắc tên điểm đến và địa chỉ cụ thể nếu có, gợi ý du khách xem cự ly và bấm nút Google Maps bên dưới để nghe dẫn đường khi di chuyển.
 
-3. VỚI CÂU HỎI VỀ ẨM THỰC / DANH THẮNG:
-   - Đi thẳng vào các thắc mắc (địa chỉ, giá cả, thời điểm đẹp nhất trong ngày, món ngon đặc sản).
-   - Dùng icon sinh động (🏯, 🍲, 📍, ⏰) và gạch đầu dòng rõ ràng.{dish_rule}{pref_section}"""
+5. ĐỊNH DẠNG TÊN ĐỊA DANH BẰNG CHỮ IN ĐẬM:
+   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{pref_section}"""
 
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
