@@ -133,6 +133,7 @@ def chat_assistant(req: ChatRequest):
                         "longitude": 107.5905
                     }
 
+            nav_info = res.get("nav_route_info") or {}
             nav_payload = {
                 "is_navigation": True,
                 "origin": origin_place,
@@ -142,7 +143,9 @@ def chat_assistant(req: ChatRequest):
                     "address": dest_place.get("address", "Thành phố Huế"),
                     "latitude": dest_place["latitude"],
                     "longitude": dest_place["longitude"]
-                }
+                },
+                "distance_km": nav_info.get("distance_km"),
+                "duration_min": nav_info.get("duration_min")
             }
 
         # 3. Đảm bảo Graph Trace và Confidence Score luôn được truyền đầy đủ về Frontend
