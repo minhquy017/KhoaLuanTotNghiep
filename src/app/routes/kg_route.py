@@ -349,6 +349,8 @@ def get_place_detail(
             place_data["street_address"] = place_data.get("address") or place_data.get("street_address", "")
             place_data["latitude"] = place_data.get("lat")
             place_data["longitude"] = place_data.get("lng")
+            if curated.get("reviews"):
+                place_data["reviews"] = curated["reviews"]
 
     # 4. Tìm kiếm mờ có chọn lọc khắt khe (chỉ chấp nhận nếu tên thực sự trùng khớp)
     if not place_data and name:
@@ -471,49 +473,52 @@ def get_place_detail(
         cand_nearby.sort(key=lambda x: x["distance_km"])
         nearby_list = cand_nearby[:4]
 
-    # 3. Trích xuất 2-3 đánh giá chân thực từ SQLite
+    # 3. Trích xuất đánh giá chân thực (Ưu tiên từ Curated Local POIs, sau đó từ SQLite)
     reviews = []
-    base_dir = Path(__file__).resolve().parent
-    db_path = base_dir.parent.parent.parent / "data" / "processed" / "tourism_vietnam.db"
+    if place_data.get("reviews") and isinstance(place_data["reviews"], list) and len(place_data["reviews"]) > 0:
+        reviews = list(place_data["reviews"])
+    else:
+        base_dir = Path(__file__).resolve().parent
+        db_path = base_dir.parent.parent.parent / "data" / "processed" / "tourism_vietnam.db"
 
-    if db_path.exists():
-        try:
-            conn = sqlite3.connect(str(db_path))
-            conn.row_factory = sqlite3.Row
-            cur = conn.cursor()
+        if db_path.exists():
+            try:
+                conn = sqlite3.connect(str(db_path))
+                conn.row_factory = sqlite3.Row
+                cur = conn.cursor()
 
-            if p_url:
-                cur.execute(
-                    "SELECT title, comment, reviews_rating, trip_type, visit_date FROM reviews WHERE place_url = ? ORDER BY reviews_rating DESC LIMIT 3",
-                    (p_url,)
-                )
-                for r in cur.fetchall():
-                    reviews.append({
-                        "title": r["title"] or "Đánh giá tuyệt vời",
-                        "comment": r["comment"] or "",
-                        "rating": r["reviews_rating"] or 5.0,
-                        "trip_type": r["trip_type"] or "Du khách",
-                        "visit_date": r["visit_date"] or "2024"
-                    })
+                if p_url:
+                    cur.execute(
+                        "SELECT title, comment, reviews_rating, trip_type, visit_date FROM reviews WHERE place_url = ? ORDER BY reviews_rating DESC LIMIT 3",
+                        (p_url,)
+                    )
+                    for r in cur.fetchall():
+                        reviews.append({
+                            "title": r["title"] or "Đánh giá tuyệt vời",
+                            "comment": r["comment"] or "",
+                            "rating": r["reviews_rating"] or 5.0,
+                            "trip_type": r["trip_type"] or "Du khách",
+                            "visit_date": r["visit_date"] or "2024"
+                        })
 
-            if len(reviews) < 2 and p_name:
-                cur.execute(
-                    "SELECT r.title, r.comment, r.reviews_rating, r.trip_type, r.visit_date FROM reviews r JOIN places p ON r.place_url = p.url WHERE p.name LIKE ? ORDER BY r.reviews_rating DESC LIMIT 3",
-                    (f"%{p_name}%",)
-                )
-                for r in cur.fetchall():
-                    if len(reviews) >= 3:
-                        break
-                    reviews.append({
-                        "title": r["title"] or "Trải nghiệm đặc sắc",
-                        "comment": r["comment"] or "",
-                        "rating": r["reviews_rating"] or 5.0,
-                        "trip_type": r["trip_type"] or "Du khách",
-                        "visit_date": r["visit_date"] or "2024"
-                    })
-            conn.close()
-        except Exception as err:
-            print(f"Lỗi truy vấn reviews: {err}")
+                if len(reviews) < 2 and p_name:
+                    cur.execute(
+                        "SELECT r.title, r.comment, r.reviews_rating, r.trip_type, r.visit_date FROM reviews r JOIN places p ON r.place_url = p.url WHERE p.name LIKE ? ORDER BY r.reviews_rating DESC LIMIT 3",
+                        (f"%{p_name}%",)
+                    )
+                    for r in cur.fetchall():
+                        if len(reviews) >= 3:
+                            break
+                        reviews.append({
+                            "title": r["title"] or "Trải nghiệm đặc sắc",
+                            "comment": r["comment"] or "",
+                            "rating": r["reviews_rating"] or 5.0,
+                            "trip_type": r["trip_type"] or "Du khách",
+                            "visit_date": r["visit_date"] or "2024"
+                        })
+                conn.close()
+            except Exception as err:
+                print(f"Lỗi truy vấn reviews: {err}")
 
     # Fallback review chân thực nếu địa điểm chưa có bài review chi tiết trong database
     if not reviews:

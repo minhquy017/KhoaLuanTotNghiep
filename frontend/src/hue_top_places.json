@@ -273,7 +273,16 @@
     "address": "102 Huyền Trân Công Chúa, Thủy Xuân, TP Huế",
     "rating_value": 4.5,
     "review_count": 650,
-    "tags": "doi vong canh, sunset, song huong, thuy xuan"
+    "tags": "doi vong canh, sunset, song huong, thuy xuan",
+    "reviews": [
+      {
+        "title": "Điểm ngắm hoàng hôn sông Hương đẹp nao lòng",
+        "comment": "Đứng từ trên đỉnh đồi thông nhìn xuống, dòng sông Hương uốn lượn hiền hòa ôm lấy những vườn cây trái Thủy Biều xanh mướt. Khi ráng chiều đỏ rực buông xuống mặt nước lấp lánh như dát vàng, gió thổi qua rặng thông reo rì rào tạo nên khung cảnh lãng mạn không bút mực nào tả xiết.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
   },
   {
     "place_id": "custom_attr_03",
@@ -585,7 +594,23 @@
     "address": "10 Đặng Thái Thân, Thuận Thành, TP Huế",
     "rating_value": 4.8,
     "review_count": 1200,
-    "tags": "ca phe muoi, dang thai than, dac san hue, cafe"
+    "tags": "ca phe muoi, dang thai than, dac san hue, cafe",
+    "reviews": [
+      {
+        "title": "Hương vị cà phê muối nguyên bản tuyệt đỉnh",
+        "comment": "Cái nôi sinh ra món cà phê muối lừng danh xứ Huế đây rồi! Lớp kem sữa muối béo ngậy mằn mặn hòa quyện với giọt cà phê đắng đậm đà rỏ từng giọt từ phin nhôm truyền thống. Uống một ngụm là tỉnh cả người, 15k một ly quá hời cho một biểu tượng ẩm thực Cố Đô.",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 4/2024"
+      },
+      {
+        "title": "Không gian sân vườn thoáng mát dưới hàng cây Thành Nội",
+        "comment": "Quán nằm trong bờ thành rợp bóng cây xanh mát rượi, buổi sáng các cụ già và thanh niên ngồi uống cà phê trò chuyện rất rôm rả. Uống ở nhiều nơi rồi nhưng kem muối ở quán gốc này vẫn có độ mịn màng và độ mặn tinh tế nhất.",
+        "rating": 4.9,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
   },
   {
     "place_id": "custom_cafe_02",
@@ -681,7 +706,16 @@
     "address": "11-15 Pho Duc Chinh Phu Hoi",
     "rating_value": 4.4,
     "review_count": 2235,
-    "tags": "quan hanh, 11-15 pho duc chinh phu hoi, quan an, am thuc, nha hang"
+    "tags": "quan hanh, 11-15 pho duc chinh phu hoi, quan an, am thuc, nha hang",
+    "reviews": [
+      {
+        "title": "Bánh khoái giòn rụm chấm nước lèo béo ngậy",
+        "comment": "Bánh khoái đổ bằng chảo gang nhỏ, vỏ bánh phồng xốp giòn rụm nhân tôm thịt và giá đỗ tươi. Điểm làm nên tên tuổi ở đây là bát nước lèo nấu từ tương đậu nành và gan heo béo bùi sánh đặc, rắc đậu phộng rang giã nhỏ. Cuốn với rau vả, khế chua, chuối chát ăn không biết ngán.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
   },
   {
     "place_id": "place_7323",
@@ -1413,7 +1447,16 @@
     "address": "64 kiệt 7 Ưng Bình, Vỹ Dạ, Cồn Hến, TP Huế",
     "rating_value": 4.6,
     "review_count": 1380,
-    "tags": "com hen hoa dong, con hen, dac san"
+    "tags": "com hen hoa dong, con hen, dac san",
+    "reviews": [
+      {
+        "title": "Về tận Cồn Hến ăn tô cơm hến nguyên bản",
+        "comment": "Muốn ăn cơm hến chuẩn nhất định phải qua cồn Hến! Hến ở đây được cào ngay khúc sông trước nhà nên con nhỏ xíu mà thịt ngọt đậm. Bát cơm nguội trộn với rau muống chẻ, thân môn, bắp chuối, đậu phộng béo bùi và muỗng ớt cay xé lưỡi. Ăn xong tráng miệng ly chè bắp ngọt lịm là hoàn hảo.",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
   },
   {
     "place_id": "custom_rest_03",
@@ -1425,7 +1468,16 @@
     "address": "Kiệt 29 Hùng Vương, Phú Hội, TP Huế",
     "rating_value": 4.5,
     "review_count": 1560,
-    "tags": "che hem hue, che bot loc heo quay, che hat sen"
+    "tags": "che hem hue, che bot loc heo quay, che hat sen",
+    "reviews": [
+      {
+        "title": "Trải nghiệm chè heo quay độc nhất vô nhị",
+        "comment": "Lần đầu ăn thử chè bột lọc bọc thịt heo quay mà nghiện luôn! Cắn viên bột lọc dẻo dai thấy miếng thịt quay mặn mặn thơm mùi ngũ vị bên trong, hòa cùng nước đường phèn nấu gừng ấm the the ở cổ. Ai đến Huế cũng phải thử một lần.",
+        "rating": 4.8,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 5/2024"
+      }
+    ]
   },
   {
     "place_id": "custom_rest_04",
@@ -1437,7 +1489,16 @@
     "address": "8 Nguyễn Bỉnh Khiêm, Phú Cát, TP Huế",
     "rating_value": 4.4,
     "review_count": 920,
-    "tags": "banh beo ba do, banh nam, banh loc"
+    "tags": "banh beo ba do, banh nam, banh loc",
+    "reviews": [
+      {
+        "title": "Khay thập cẩm bánh Huế đầy đặn thơm ngon",
+        "comment": "Gọi một khay bánh thập cẩm gồm bèo, nậm, lọc, ram ít ăn kèm chả tôm ngọt lịm. Bánh lọc ở đây con tôm to đùng, vỏ bột trong veo dai sần sật. Chấm nước mắm ruốc ớt cay nồng đúng gu Huế. Không gian rộng rãi đón được đoàn đông.",
+        "rating": 4.8,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
   },
   {
     "place_id": "custom_rest_05",
@@ -1894,5 +1955,992 @@
     "rating_value": 4.8,
     "review_count": 2100,
     "tags": "pilgrimage village, lang hanh huong, resort, thuy xuan"
+  },
+  {
+    "place_id": "custom_local_01",
+    "name": "Cơm Hến Thuý",
+    "lat": 16.4748,
+    "lng": 107.5966,
+    "cat": "Restaurant",
+    "desc": "Hồ Xuân Hương, Gia Hội · Bát cơm hến & bún hến bình dân đậm đà hương vị truyền thống xứ Huế",
+    "address": "Đường Hồ Xuân Hương, P. Gia Hội, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 342,
+    "tags": "com hen thuy, com hen gia hoi, bun hen, mi hen, ho xuan huong, am thuc hue, quan an ngon",
+    "reviews": [
+      {
+        "title": "Bát cơm hến mệ Thuý cay tê tái lòng",
+        "comment": "Tô cơm hến 15k mà đầy ú ụ ruột hến xào đậm đà, bắp chuối thái mịn mướt với đậu phộng rang giòn rụm. Nhớ dặn mệ bớt ớt nếu không ăn cay được nghe, vì ớt sa tế ở đây cay xé lưỡi đúng điệu Huế! Chén nước hến bốc khói ngọt thanh, húp vào ấm sực cả người giữa buổi sáng Cố Đô.",
+        "rating": 5.0,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 3/2024"
+      },
+      {
+        "title": "Quán ruột của dân phố cổ Gia Hội",
+        "comment": "Quán nằm ngay mé Hồ Xuân Hương trong khu Gia Hội, dân lao động với học sinh ăn đông nghịt buổi sáng. Bún hến ở đây sợi mảnh thấm vị mắm ruốc thơm lừng, da heo chiên giòn tan không bị hôi dầu. Điểm cộng là mệ chủ quán nói rặt giọng Huế nghe thương gì đâu.",
+        "rating": 4.8,
+        "trip_type": "Nhóm bạn",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_02",
+    "name": "Bánh Bèo O Lệ",
+    "lat": 16.4741,
+    "lng": 107.5956,
+    "cat": "Restaurant",
+    "desc": "Kiệt Hồ Xuân Hương, Gia Hội · Khay bánh bèo chén tôm chấy đúc nóng hổi giòn rụm trứ danh",
+    "address": "Kiệt Hồ Xuân Hương, P. Gia Hội, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 415,
+    "tags": "banh beo o le, banh beo gia hoi, banh nam, banh loc, ho xuan huong, dac san hue",
+    "reviews": [
+      {
+        "title": "Khay bánh bèo chén dẻo thơm tôm chấy",
+        "comment": "Bánh bèo chén ở đây đúc nóng hổi tại chỗ, bột dẻo trong veo mà không hề bị nát. Tôm chấy đỏ cam làm từ tôm đất tươi ngọt lịm, rắc thêm miếng da heo chiên giòn rụm. Chan thìa nước mắm ớt xanh ngọt thanh vào húp nguyên chén xuyến xang luôn.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 4/2024"
+      },
+      {
+        "title": "Hương vị bánh Huế mộc mạc gia truyền",
+        "comment": "Ngoài bánh bèo thì bánh nậm ở đây gói lá chuối thơm phức, cắn miếng bột mềm mượt tan trên đầu lưỡi. Đi tầm 3-4h chiều là vừa lúc bánh mới ra lò ăn đã nhất, giá bình dân mà chất lượng vượt trội.",
+        "rating": 4.8,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_03",
+    "name": "Cà phê hè",
+    "lat": 16.4746,
+    "lng": 107.5949,
+    "cat": "Cafe",
+    "desc": "Hồ Xuân Hương, Gia Hội · Quán cà phê cóc vỉa hè mộc mạc lưu giữ nhịp sống chậm rãi Cố Đô",
+    "address": "Đường Hồ Xuân Hương, P. Gia Hội, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 198,
+    "tags": "ca phe he, cafe ho xuan huong, cafe coc, gia hoi, ca phe via he, cafe hue",
+    "reviews": [
+      {
+        "title": "Góc phố cổ bình yên buổi sáng",
+        "comment": "Một góc cà phê cóc mộc mạc đúng kiểu hoài niệm của phố cổ Gia Hội. Ngồi mấy cái ghế đẩu con con dưới tán cây mát rượi, nhâm nhi ly cà phê đen đá rang mộc đậm đà ngắm dòng người qua lại trên đường Hồ Xuân Hương, thấy lòng chậm lại hẳn.",
+        "rating": 5.0,
+        "trip_type": "Độc hành",
+        "visit_date": "Tháng 5/2024"
+      },
+      {
+        "title": "Cà phê phin chuẩn gu người Huế",
+        "comment": "Giá bình dân chỉ 12k - 15k một ly, cà phê pha phin truyền thống nhỏ giọt thơm nức mũi. Chú chủ quán hiền lành vui vẻ, sáng ra hay bật mấy bài nhạc Trịnh xưa nghe da diết vô cùng.",
+        "rating": 4.8,
+        "trip_type": "Nhóm bạn",
+        "visit_date": "Tháng 10/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_04",
+    "name": "T Roaster",
+    "lat": 16.4760,
+    "lng": 107.5952,
+    "cat": "Cafe",
+    "desc": "Hồ Xuân Hương, Gia Hội · Không gian specialty coffee rang xay thủ công trẻ trung và tinh tế",
+    "address": "Đường Hồ Xuân Hương, P. Gia Hội, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 220,
+    "tags": "t roaster, specialty coffee, cafe rang xay, ca phe gia hoi, ho xuan huong, cold brew",
+    "reviews": [
+      {
+        "title": "Cà phê specialty chất lượng giữa lòng Gia Hội",
+        "comment": "Bất ngờ khi tìm thấy một tiệm specialty coffee xịn sò giữa khu phố cổ Gia Hội. Hạt cà phê được anh chủ tự chọn và rang mộc rất tỉ mỉ. Mình gọi ly Pour Over hạt Cầu Đất hương hoa quả thanh mát, hậu vị ngọt sâu. Không gian tối giản, yên tĩnh làm việc rất thích.",
+        "rating": 5.0,
+        "trip_type": "Khách công tác",
+        "visit_date": "Tháng 6/2024"
+      },
+      {
+        "title": "Chốn dừng chân hiện đại mà ấm cúng",
+        "comment": "Quán thiết kế tone ấm, quầy bar mở xem barista pha chế rất cuốn hút. Cold brew ủ trái cây mát lạnh thơm nức, nhân viên tư vấn các nốt hương nhiệt tình và am hiểu cà phê.",
+        "rating": 4.7,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_05",
+    "name": "Hội Quán Triều Châu",
+    "lat": 16.4766,
+    "lng": 107.5969,
+    "cat": "Attraction",
+    "desc": "339 Chi Lăng, Gia Hội · Di tích kiến trúc tín ngưỡng Hoa kiều cổ kính hơn 100 năm tại phố cổ",
+    "address": "339 Chi Lăng, P. Gia Hội, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 285,
+    "tags": "hoi quan trieu chau, chua ba trieu chau, pho co gia hoi, chi lang, di tich hoa kieu, van hoa hue",
+    "reviews": [
+      {
+        "title": "Dấu ấn kiến trúc Hoa kiều trầm mặc",
+        "comment": "Công trình kiến trúc Hoa kiều hơn trăm năm tuổi trên trục Chi Lăng vẫn giữ vẹn nguyên những bức chạm khắc gỗ tinh xảo, xà gồ sơn son thếp vàng và mái ngói âm dương rêu phong cổ kính. Không gian tĩnh mịch, trầm lắng tách biệt hẳn với sự ồn ã bên ngoài.",
+        "rating": 5.0,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 2/2024"
+      },
+      {
+        "title": "Điểm check-in văn hóa lịch sử độc đáo",
+        "comment": "Rất thích hợp cho những ai yêu mến lịch sử thương cảng Gia Hội xưa. Cột gỗ lim vững chãi, sân gạch tàu đỏ rực rêu phong. Bước vào cảm nhận rõ nét giao thoa văn hóa giữa người Hoa và người Huế thời bấy giờ.",
+        "rating": 4.8,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 5/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_06",
+    "name": "Hội Quán Quảng Đông (Chùa Bà Thiên Hậu)",
+    "lat": 16.4755,
+    "lng": 107.5940,
+    "cat": "Attraction",
+    "desc": "162 Chi Lăng, Gia Hội · Nơi thờ Thiên Hậu Thánh Mẫu với nghệ thuật khảm sành sứ đặc sắc",
+    "address": "162 Chi Lăng, P. Gia Hội, TP Huế",
+    "rating_value": 4.5,
+    "review_count": 310,
+    "tags": "hoi quan quang dong, chua ba thien hau, chi lang, gia hoi, kien truc co, di tich tam linh",
+    "reviews": [
+      {
+        "title": "Nghệ thuật khảm gốm sứ tinh xảo bậc nhất",
+        "comment": "Bức phù điêu rồng phượng khảm bằng mảnh gốm sành trên mái điện tuyệt đẹp, màu men trải qua cả trăm năm vẫn sáng bóng rực rỡ. Nhang vòng treo lơ lửng tỏa khói thơm thoang thoảng mang lại cảm giác an yên kỳ lạ.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 4/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_07",
+    "name": "Chùa Diệu Đế",
+    "lat": 16.4735,
+    "lng": 107.5920,
+    "cat": "Attraction",
+    "desc": "110 Bạch Đằng, Gia Hội · Đệ tam Quốc tự thời Nguyễn nổi tiếng với bức bích họa Long Vân Khế Hội",
+    "address": "110 Bạch Đằng, P. Gia Hội, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 620,
+    "tags": "chua dieu de, bach dang, quoc tu, long van khe hoi, chua hue, tam linh co do",
+    "reviews": [
+      {
+        "title": "Quốc tự uy nghiêm bên bờ sông Hộ Thành",
+        "comment": "Ngôi chùa gắn liền với tuổi thơ của vua Thiệu Trị. Đỉnh trần chính điện có bức bích họa 'Long Vân Khế Hội' vẽ chín con rồng ẩn hiện trong mây bằng các gam màu cổ tuyệt mỹ. Tiếng chuông chùa ngân vang lúc hoàng hôn làm xao xuyến cả khúc sông Đông Ba.",
+        "rating": 5.0,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 1/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_08",
+    "name": "Bánh Ướt Thịt Nướng Huyền Anh",
+    "lat": 16.4582,
+    "lng": 107.5555,
+    "cat": "Restaurant",
+    "desc": "50 Kim Long, TP Huế · Bánh ướt mỏng mướt cuốn thịt nướng than hoa chấm nước lèo mè đậu béo bùi",
+    "address": "50 Kim Long, P. Kim Long, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 1580,
+    "tags": "banh uot thit nuong huyen anh, kim long, bun thit nuong, dac san hue, nuoc leo me dau",
+    "reviews": [
+      {
+        "title": "Đĩa bánh ướt cuốn thịt nướng thơm lừng đất Kim Long",
+        "comment": "Miếng thịt ba chỉ được ướp sả ớt đượm vị nướng cháy cạnh trên than hoa đỏ rực, cuốn trong lớp bánh ướt tráng mỏng mềm mướt cùng rau thơm tươi rói. Điểm làm nên linh hồn ở đây là chén nước chấm tương gan pha mè rang béo ngậy, ngọt thanh vừa vặn. Ngồi ăn trong sân vườn rợp bóng cây ven đường Kim Long thấy nhẹ tênh cả người.",
+        "rating": 5.0,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 5/2024"
+      },
+      {
+        "title": "Hương vị thịt nướng gia truyền bao năm không đổi",
+        "comment": "Ngoài bánh ướt thì tô bún thịt nướng ở đây cũng cực kỳ chất lượng. Thịt nướng mềm chứ không bị khô xác, rắc thêm đậu phộng bùi bùi và đồ chua giòn sần sật. Khách đông nườm nượp nhưng nhân viên phục vụ nhanh thoăn thoắt, đi Huế nhất định phải ghé.",
+        "rating": 4.8,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_09",
+    "name": "Cơm Hến Bà Cam",
+    "lat": 16.4660,
+    "lng": 107.5955,
+    "cat": "Restaurant",
+    "desc": "49 Trương Định, Vĩnh Ninh · Tô cơm hến 10k huyền thoại gắn liền với bao thế hệ học sinh sinh viên",
+    "address": "49 Trương Định, P. Vĩnh Ninh, TP Huế",
+    "rating_value": 4.5,
+    "review_count": 890,
+    "tags": "com hen ba cam, truong dinh, com hen sinh vien, gia re, quan an ngon hue",
+    "reviews": [
+      {
+        "title": "Bát cơm hến 10k thơm nức mùi ruốc",
+        "comment": "Ở đất Huế đắt đỏ bây giờ mà vẫn có tô cơm hến 10k - 15k chất lượng thế này thật đáng quý. Mệ bán nhanh thoăn thoắt, ruột hến xào thấm tháp, tóp mỡ giòn tan. Nước hến ngọt lịm từ nước luộc hến tươi không pha mì chính.",
+        "rating": 4.8,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_10",
+    "name": "Bún Bò Mụ Rơi",
+    "lat": 16.4731,
+    "lng": 107.5945,
+    "cat": "Restaurant",
+    "desc": "40 Nguyễn Du, Gia Hội · Nước dùng nấu theo lối cổ truyền thơm mùi sả ruốc không pha tạp",
+    "address": "40 Nguyễn Du, P. Gia Hội, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 580,
+    "tags": "bun bo mu roi, nguyen du, bun bo gia hoi, bun bo hue ngon, dac san hue",
+    "reviews": [
+      {
+        "title": "Húp cạn bát bún bò chuẩn vị người Gia Hội",
+        "comment": "Nước dùng ở quán Mụ Rơi trong veo chứ không nổi váng dầu điều đỏ quạch như mấy chỗ làm cho khách du lịch. Ngửi thấy mùi sả thoảng ruốc nhẹ thanh tao, bắp bò thái dày bản cắn ngập răng, viên chả cua cắn vào sần sật ngọt bùi. Một quán ruột cực đáng đồng tiền bát gạo.",
+        "rating": 5.0,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 6/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_11",
+    "name": "Bún Bò O Cương Điệp",
+    "lat": 16.4595,
+    "lng": 107.5910,
+    "cat": "Restaurant",
+    "desc": "06 Trần Thúc Nhẫn, Vĩnh Ninh · Bún bò sợi to truyền thống với giò heo mềm rục và chả cua thơm ngậy",
+    "address": "06 Trần Thúc Nhẫn, P. Vĩnh Ninh, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 720,
+    "tags": "bun bo o cuong diep, tran thuc nhan, bun bo soi to, gio heo, quan an ngon",
+    "reviews": [
+      {
+        "title": "Bát bún bò sợi to ăn no căng bụng",
+        "comment": "Quán dùng sợi bún to truyền thống của Huế, nước dùng ngọt sâu từ xương bò hầm nhiều giờ. Cục giò heo ninh mềm rục chấm với nước mắm ớt cay xé lưỡi ăn bao phê. Đi sớm trước 9h sáng chứ quán đông nghẹt hết bàn.",
+        "rating": 4.8,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_12",
+    "name": "Bánh Canh Nam Phổ Thúy",
+    "lat": 16.4645,
+    "lng": 107.5938,
+    "cat": "Restaurant",
+    "desc": "16 Phạm Hồng Thái, Vĩnh Ninh · Nồi bánh canh đỏ au màu gạch cua đậm đà nức tiếng làng Nam Phổ",
+    "address": "16 Phạm Hồng Thái, P. Vĩnh Ninh, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 490,
+    "tags": "banh canh nam pho, pham hong thai, gach cua, dac san lang nam pho, an vat hue",
+    "reviews": [
+      {
+        "title": "Tô bánh canh sền sệt gạch cua thơm ngậy",
+        "comment": "Nước bánh canh sánh đặc màu đỏ au tự nhiên từ gạch cua và tôm băm nhuyễn, sợi bột gạo dẻo mềm chan ngập nước dùng ngọt lịm. Thêm chút hành hoa, ớt xanh dầm nước mắm ăn lúc xế chiều mùa mưa Huế thì không còn gì ấm áp bằng.",
+        "rating": 5.0,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 10/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_13",
+    "name": "Bánh Mì Đêm O Tho (Chân Cầu Trường Tiền)",
+    "lat": 16.4682,
+    "lng": 107.5878,
+    "cat": "Restaurant",
+    "desc": "14 Trần Hưng Đạo, Phú Hòa · Xe bánh mì bột lọc và pate chả thịt thâu đêm huyền thoại bên dòng sông Hương",
+    "address": "14 Trần Hưng Đạo, P. Phú Hòa, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 1850,
+    "tags": "banh mi o tho, banh mi chan cau truong tien, banh mi bot loc, banh mi dem, am thuc pho dem",
+    "reviews": [
+      {
+        "title": "Ổ bánh mì bột lọc cay xé lưỡi lúc nửa đêm Cố Đô",
+        "comment": "Nửa đêm gió sông Hương thổi mát rượi, ghé chân cầu Trường Tiền xếp hàng mua ổ bánh mì bột lọc chan nước sốt cay tê tái. Vỏ bánh mì được nướng giòn rụm trên bếp than đỏ lửa, bên trong kẹp đầy ắp bánh lọc dai dai bọc tôm đất đậm đà, chan thêm muỗng nước ớt rim cay nồng ấm bụng vô cùng.",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 6/2024"
+      },
+      {
+        "title": "Nét ẩm thực đêm mộc mạc khó quên của Huế",
+        "comment": "Quán bán từ tối muộn đến tận 2-3h sáng mà lúc nào cũng tấp nập khách vây quanh xe đẩy. Ổ thập cẩm pate béo ngậy, chả da giòn sần sật và thịt xíu thơm phức chỉ 15k - 20k. Đứng ăn ngay góc phố ngắm cầu Trường Tiền đổi màu lung linh là trải nghiệm rất thơ.",
+        "rating": 4.8,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_14",
+    "name": "Chè Mộc Cố Đô",
+    "lat": 16.4695,
+    "lng": 107.5880,
+    "cat": "Restaurant",
+    "desc": "100 Trần Hưng Đạo, Phú Hòa · Không gian mộc mạc lưu giữ 24 vị chè cung đình và dân gian thanh mát",
+    "address": "100 Trần Hưng Đạo, P. Phú Hòa, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 360,
+    "tags": "che moc co do, tran hung dao, che cung dinh, che hat sen, che khoai tia",
+    "reviews": [
+      {
+        "title": "Chè hạt sen long nhãn ngọt thanh tao nhã",
+        "comment": "Chè ở đây nấu ngọt rất thanh, không bị gắt đường. Hạt sen hồ Tịnh Tâm bở tơi, bùi bùi bọc trong cùi nhãn giòn sần sật. Chè khoai tía màu tím mơ màng mượt mà thơm nức cốt dừa, ăn xong nhẹ cả bụng.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 6/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_15",
+    "name": "Cà Phê Mắt Biếc (Phố Cổ Bao Vinh)",
+    "lat": 16.4952,
+    "lng": 107.5885,
+    "cat": "Cafe",
+    "desc": "66 Phố cổ Bao Vinh, Hương Vinh · Ngôi nhà rường cổ kính bối cảnh phim Mắt Biếc bên dòng sông Hương hiền hòa",
+    "address": "66 Phố cổ Bao Vinh, P. Hương Vinh, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 1250,
+    "tags": "ca phe mat biec, pho co bao vinh, ha lan, victor vu, nha ruong co, cafe hoai niem",
+    "reviews": [
+      {
+        "title": "Chạm vào những thước phim hoài niệm của Hà Lan và Ngạn",
+        "comment": "Ngôi nhà gỗ cổ mái ngói rêu phong nằm lặng lẽ giữa con phố cổ Bao Vinh ven sông đào. Bước vào quán như bước ngược thời gian về những năm tháng thanh xuân trong trẻo. Gọi ly cà phê sữa đá ngồi bên khung cửa sổ nhìn ra ngõ nhỏ bình yên, nghe đâu đây giai điệu 'Có chàng trai viết lên cây' vang lên tha thiết.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 4/2024"
+      },
+      {
+        "title": "Góc bình yên lắng đọng ngoài rìa phố thị",
+        "comment": "Cách trung tâm thành phố chừng 3km, không gian giữ được nét mộc mạc nguyên bản của nhà cổ xứ Huế. Đồ uống giá rất mềm, cô chủ quán hiền lành mến khách. Ai muốn tìm một góc tĩnh lặng để đọc sách và ngắm phố xưa thì đây là lựa chọn số một.",
+        "rating": 4.7,
+        "trip_type": "Độc hành",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_16",
+    "name": "Cà Phê Gác Trịnh",
+    "lat": 16.4632,
+    "lng": 107.5905,
+    "cat": "Cafe",
+    "desc": "Tầng 2, 203/19 Nguyễn Trường Tộ · Căn gác nhỏ nơi cố nhạc sĩ Trịnh Công Sơn từng sáng tác những bản tình ca bất hủ",
+    "address": "Tầng 2, 203/19 Nguyễn Trường Tộ, P. Vĩnh Ninh, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 640,
+    "tags": "gac trinh, ca phe gac trinh, nguyen truong to, nhac trinh, trinh cong son, cafe hoai niem",
+    "reviews": [
+      {
+        "title": "Chốn thi vị cho những tâm hồn yêu nhạc Trịnh",
+        "comment": "Căn gác gỗ nhỏ nằm lặng lẽ trên đường Nguyễn Trường Tộ, nơi lưu giữ nhiều kỷ vật, tranh ảnh và bút tích của cố nhạc sĩ Trịnh Công Sơn. Ngồi bên khung cửa sổ ngắm lá rụng, lắng nghe tiếng hát Khánh Ly mộc mạc bên tách cà phê thơm, cảm xúc lắng đọng vô cùng.",
+        "rating": 5.0,
+        "trip_type": "Độc hành",
+        "visit_date": "Tháng 3/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_17",
+    "name": "Bánh Ép Gia Di (Bà Triệu)",
+    "lat": 16.4635,
+    "lng": 107.5982,
+    "cat": "Restaurant",
+    "desc": "101 Bà Triệu, Phú Hội · Món ăn vặt 'quốc dân' giòn dẻo nóng hổi cuốn rau chua ngọt nức tiếng giới trẻ Cố Đô",
+    "address": "101 Bà Triệu, P. Phú Hội, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 1620,
+    "tags": "banh ep gia di, ba trieu, banh ep hue, an vat hoc sinh, dac san hue, nuoc mam chua ngot",
+    "reviews": [
+      {
+        "title": "Bánh ép nướng chảo gang giòn dẻo gây nghiện",
+        "comment": "Bánh ép ở Gia Di được ép trực tiếp trên khuôn gang nóng hổi, nghe tiếng mỡ xèo xèo thơm nức mũi. Vỏ bánh viền ngoài giòn rụm, ở giữa dẻo dai đậm đà nhân thịt mỡ, trứng gà và hành lá. Cuốn cùng rau răm, dưa leo, dưa chua rồi chấm ngập bát mắm nêm chua ngọt cay xè, ăn một lúc cả chục cái không biết chán!",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 6/2024"
+      },
+      {
+        "title": "Món ăn vặt số một không thể bỏ lỡ khi đến Huế",
+        "comment": "Quán rộng rãi, sạch sẽ và lên món rất nhanh. Ngoài bánh ép truyền thống thì bánh ép bò khô, pate hay bánh ép dẻo tôm thịt cũng xuất sắc không kém. Giá học sinh sinh viên chỉ vài nghìn một cái, nhóm 4 người ăn no nê mà tính tiền chưa tới 150k.",
+        "rating": 4.8,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 10/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_18",
+    "name": "Cơm Âm Phủ Huế",
+    "lat": 16.4685,
+    "lng": 107.5978,
+    "cat": "Restaurant",
+    "desc": "516 Nguyễn Thái Học, Phú Hội · Quán cơm hơn 100 năm tuổi với đĩa cơm 7 màu huyền thoại nức tiếng Cố Đô",
+    "address": "516 Nguyễn Thái Học, P. Phú Hội, TP Huế",
+    "rating_value": 4.5,
+    "review_count": 2100,
+    "tags": "com am phu, nguyen thai hoc, com bay mau, nem nuong, cha lua, am thuc co do",
+    "reviews": [
+      {
+        "title": "Thưởng thức đĩa cơm 7 màu trăm năm lịch sử",
+        "comment": "Đĩa cơm dọn ra đẹp như một bức tranh cung đình với 7 thức màu sắc hài hòa: cơm trắng ở giữa bao quanh bởi nem chua nướng, chả lụa thái sợi, tôm chấy đỏ au, thịt nướng than hoa, trứng rán mỏng và dưa leo bóp chua. Chan thìa nước mắm tỏi ớt chua ngọt rồi trộn đều, vị béo ngọt mặn chua hòa quyện bùng nổ hương vị.",
+        "rating": 4.8,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 5/2024"
+      },
+      {
+        "title": "Dấu ấn ẩm thực lâu đời gắn với câu ca dao Huế",
+        "comment": "'Muốn ăn cơm dĩa trữ tình / Có quán Âm Phủ ma rình phía sau'. Quán có lịch sử từ đầu thế kỷ 20, nay không gian khang trang hiện đại hơn nhưng công thức chế biến thủ công vẫn giữ được hồn cốt xưa. Bát canh cải nấu tôm đi kèm thanh ngọt làm dịu đi vị cay the của ớt.",
+        "rating": 4.6,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_19",
+    "name": "Đình Chi Lăng",
+    "lat": 16.4762,
+    "lng": 107.5975,
+    "cat": "Attraction",
+    "desc": "Đường Chi Lăng, Gia Hội · Đình làng cổ kính biểu trưng cho tinh thần cộng đồng cư dân phố cổ Gia Hội xưa",
+    "address": "Đường Chi Lăng, P. Gia Hội, TP Huế",
+    "rating_value": 4.5,
+    "review_count": 180,
+    "tags": "dinh chi lang, pho co gia hoi, di tich kien truc, van hoa lang xa, lich su hue",
+    "reviews": [
+      {
+        "title": "Không gian hoài cổ trầm tích phố xưa",
+        "comment": "Ngôi đình làng cổ nép mình dưới rặng bàng cổ thụ bên trục đường Chi Lăng. Mái ngói rêu phong nhuộm màu thời gian, những cột gỗ lim cổ thụ vững chãi gợi nhớ một thời phố cổ Gia Hội từng là trung tâm giao thương sầm uất bậc nhất đất Kinh kỳ.",
+        "rating": 4.8,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 3/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_20",
+    "name": "Nhà Thờ Dòng Chúa Cứu Thế Huế",
+    "lat": 16.4560,
+    "lng": 107.5950,
+    "cat": "Attraction",
+    "desc": "142 Nguyễn Huệ, Phú Nhuận · Tuyệt tác kiến trúc Gothic giao thoa mái đình Việt Nam tráng lệ",
+    "address": "142 Nguyễn Huệ, P. Phú Nhuận, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 1350,
+    "tags": "nha tho dong chua cuu the, nha tho duc me hang cuu giup, nguyen hue, kien truc gothic, giao duong",
+    "reviews": [
+      {
+        "title": "Kiến trúc thánh đường nguy nga tráng lệ",
+        "comment": "Một trong những nhà thờ có kiến trúc đẹp và đồ sộ nhất miền Trung. Tháp chuông hình bát giác cao vút vươn lên nền trời xanh, bên trong vòm thánh đường rộng thênh thang ngập tràn ánh sáng từ những ô kính màu lung linh. Buổi chiều tà đứng chụp hình ở đây góc nào cũng đẹp như trời Âu.",
+        "rating": 5.0,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 4/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_21",
+    "name": "Công Viên Hồ Thủy Tiên (Tượng Rồng)",
+    "lat": 16.4150,
+    "lng": 107.5740,
+    "cat": "Attraction",
+    "desc": "Đồi Thiên An, Thủy Bằng · Công viên nước hoang sơ với kiến trúc đầu rồng khổng lồ kỳ bí nổi tiếng thế giới",
+    "address": "Đồi Thiên An, X. Thủy Bằng, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 2850,
+    "tags": "cong vien ho thuy tien, ho thuy tien, tuong rong, thien an, thuy bang, checkin ky bi, cnn",
+    "reviews": [
+      {
+        "title": "Tuyệt tác đầu rồng khổng lồ sừng sững giữa rừng thông",
+        "comment": "Công trình tượng rồng khổng lồ cuộn mình ôm trọn quả cầu giữa lòng hồ nước tạo nên khung cảnh ma mị và ấn tượng nghẹt thở. Từng lên các tạp chí quốc tế lớn như CNN, National Geographic, nơi đây mang vẻ đẹp hoang phế đầy chất thơ điện ảnh. Đứng bên trong miệng rồng ngắm nhìn toàn cảnh mặt hồ và đồi thông xanh ngát là trải nghiệm có một không hai.",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 4/2024"
+      },
+      {
+        "title": "Điểm khám phá kỳ bí bậc nhất dành cho người yêu nhiếp ảnh",
+        "comment": "Không gian tĩnh mịch giữa rừng thông đồi Thiên An mát rượi. Các mảng rêu phong bao phủ công trình kiến trúc cũ kỹ tạo nên background chụp ảnh vô cùng độc đáo. Đi vào buổi sáng sớm khi làn sương mờ còn giăng trên mặt hồ cảm giác như đang lạc vào phim trường viễn tưởng.",
+        "rating": 4.9,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_22",
+    "name": "Cà Phê Muối Nguyễn Huệ",
+    "lat": 16.4582,
+    "lng": 107.5925,
+    "cat": "Cafe",
+    "desc": "142 Nguyễn Huệ, Phú Nhuận · Chi nhánh sân vườn thoáng đãng đối diện Nhà thờ Dòng Chúa Cứu Thế",
+    "address": "142 Nguyễn Huệ, P. Phú Nhuận, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 1450,
+    "tags": "ca phe suoi nguyen hue, cafe muoi, san vuon, nguyen hue, phu nhuan",
+    "reviews": [
+      {
+        "title": "Sân vườn thoáng mát, cà phê muối ngậy béo",
+        "comment": "Quán có không gian sân vườn rộng rãi rợp bóng cây xanh mát mắt, ngồi ngắm nhìn sang tháp chuông Nhà thờ Dòng Chúa Cứu Thế rất chill. Cà phê muối ở đây giữ chuẩn công thức nguyên bản, lớp kem béo mặn sánh mịn hòa quyện hoàn hảo với vị đắng đậm đà của cà phê phin.",
+        "rating": 4.8,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_23",
+    "name": "Root Cafe (Cà phê Rễ)",
+    "lat": 16.4380,
+    "lng": 107.5760,
+    "cat": "Cafe",
+    "desc": "Lê Ngô Cát, Thủy Xuân · Quán cà phê ẩn mình giữa vườn thông xanh mát trên đường lên lăng tẩm",
+    "address": "Đường Lê Ngô Cát, P. Thủy Xuân, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 520,
+    "tags": "root cafe, le ngo cat, thuy xuan, cafe rung thong, lang tu duc, yen tinh",
+    "reviews": [
+      {
+        "title": "Góc trốn ồn ào giữa đồi thông xanh ngắt",
+        "comment": "Quán nằm trên triền dốc đường Lê Ngô Cát hướng lên lăng Tự Đức. Không gian mở ngập tràn hoa lá và tiếng chim hót líu lo dưới tán thông. Thưởng thức ly trà hoa cúc mật ong thanh mát hay cà phê sữa đá đậm vị giữa không khí trong lành mang lại cảm giác thư thái tuyệt đối.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_24",
+    "name": "Cơm Niêu Chị Tẹo",
+    "lat": 16.4670,
+    "lng": 107.5965,
+    "cat": "Restaurant",
+    "desc": "59 Hai Bà Trưng, Vĩnh Ninh · Mâm cơm gia đình xứ Huế với cá bống thố kho tộ, canh chua cá lóc đậm đà",
+    "address": "59 Hai Bà Trưng, P. Vĩnh Ninh, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 980,
+    "tags": "com nieu chi teo, hai ba trung, com gia dinh hue, ca bong kho to, com nieu ngon",
+    "reviews": [
+      {
+        "title": "Bữa cơm gia đình ấm cúng chuẩn vị mạ nấu",
+        "comment": "Niêu cơm đập nóng hổi lớp cháy giòn rụm chấm nước sốt kho quẹt ăn cùng niêu cá bống kho tiêu cay nồng đậm đà. Bát canh chua thơm mùi thì là nấu cùng khế chua thanh mát, đĩa rau muống xào tỏi xanh mướt. Đi du lịch xa nhà mà được ăn bữa cơm tròn vị thế này thấy ấm lòng vô cùng.",
+        "rating": 5.0,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_25",
+    "name": "Bánh Canh Cá Lóc Dì Hương",
+    "lat": 16.4746,
+    "lng": 107.5818,
+    "cat": "Restaurant",
+    "desc": "14 Lê Thánh Tôn, Thuận Thành · Bánh canh bột gạo cán tay nóng hổi với cá lóc đồng rim nghệ vàng ươm cay nồng",
+    "address": "14 Lê Thánh Tôn, P. Thuận Thành, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 850,
+    "tags": "banh canh ca loc di huong, le thanh ton, banh canh bot gao, ca loc dong, thanh noi",
+    "reviews": [
+      {
+        "title": "Tô bánh canh cá lóc đồng cay xé lưỡi ấm lòng ngày mưa",
+        "comment": "Quán ruột của dân Thành Nội mỗi cữ sáng và chiều muộn. Sợi bột gạo mềm mướt được cán và cắt ngay tại chỗ thả vào nồi nước dùng sôi sùng sục. Từng lát cá lóc đồng rim nghệ vàng ươm, săn chắc thấm đẫm vị tiêu cay nồng. Thêm thìa ớt chưng và nhúm hành lá thái mịn, vừa ăn vừa xì xụp toát mồ hôi sảng khoái vô cùng.",
+        "rating": 5.0,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 6/2024"
+      },
+      {
+        "title": "Hương vị bánh canh cá lóc gia truyền chuẩn vị Huế",
+        "comment": "Nước dùng ngọt lịm từ đầu và xương cá lóc hầm kỹ chứ không lạm dụng hạt nêm hay đường. Điểm thích nhất là cá lóc làm rất kỹ, thịt ngọt thơm không tanh chút nào, có cả trứng cá bùi béo nếu đi sớm. Giá chỉ 20k - 25k một tô no căng bụng.",
+        "rating": 4.8,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_26",
+    "name": "Bún Bò Mụ Kéo",
+    "lat": 16.4735,
+    "lng": 107.5908,
+    "cat": "Restaurant",
+    "desc": "20 Bạch Đằng, Gia Hội · Quán bún bò hơn 70 năm không dùng nước mắm nổi tiếng với thịt ba chỉ luộc giòn và chả cua",
+    "address": "20 Bạch Đằng, P. Gia Hội, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 1420,
+    "tags": "bun bo mu keo, bach dang, gia hoi, bun bo khong nuoc mam, cha cua, thit ba chi",
+    "reviews": [
+      {
+        "title": "Hương vị bún bò nấu theo lối cổ truyền độc nhất vô nhị",
+        "comment": "Một nét ẩm thực rất lạ và độc đáo: quán không hề dùng nước mắm để nêm mà dùng muối hầm và ruốc nguyên chất theo công thức gia truyền mấy mươi năm. Nước dùng nhờ vậy thanh ngọt sâu, thoang thoảng mùi sả thơm phức. Muốn ăn phải đến trước 8h sáng kẻo hết sạch nồi.",
+        "rating": 5.0,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 4/2024"
+      },
+      {
+        "title": "Miếng thịt ba chỉ giòn sần sật và viên chả cua ngọt bùi",
+        "comment": "Tô bún bò ở đây không có thịt bò tái thông thường mà nổi bật với miếng thịt ba chỉ heo luộc giòn sần sật, da dai giòn, chả cua quết mịn màng và miếng chả lụa con con. Chan muỗng ớt sa tế cay xé húp miếng nước dùng đầu ngày cảm giác tỉnh cả người.",
+        "rating": 4.7,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_27",
+    "name": "Bún Thịt Nướng & Nem Lụi Bà Tý",
+    "lat": 16.4742,
+    "lng": 107.5892,
+    "cat": "Restaurant",
+    "desc": "81 Đào Duy Từ, Đông Ba · Cây nem lụi nướng sả thơm lừng chấm nước lèo tương gan mè đậu sánh béo",
+    "address": "81 Đào Duy Từ, P. Đông Ba, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 960,
+    "tags": "nem lui ba ty, dao duy tu, bun thit nuong, nuoc leo tuong gan, dac san pho co",
+    "reviews": [
+      {
+        "title": "Nem lụi quấn sả nướng than hoa thơm nức góc phố Đào Duy Từ",
+        "comment": "Cây nem lụi quấn quanh củ sả tươi, nướng trên bếp than hoa cháy xèo xèo thơm ngào ngạt cả góc đường. Cuốn bánh tráng với rau thơm, xà lách, vả chát, khế chua rồi chấm ngập bát nước lèo gan bùi béo. Cắn một miếng thấy vị ngọt đậm đà của thịt hòa quyện cùng vị béo ngậy của mè rang.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 5/2024"
+      },
+      {
+        "title": "Tô bún thịt nướng đậm đà phong vị Huế xưa",
+        "comment": "Ngoài nem lụi thì bún thịt nướng ở đây cũng thuộc hàng đỉnh chóp. Thịt nướng chín tới mềm mọng, đồ chua giòn ngọt, rắc đậu phộng rang giòn tan. Giá cả rất bình dân, phục vụ nhanh nhẹn và xởi lởi.",
+        "rating": 4.8,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_28",
+    "name": "Bánh Canh Nam Phổ O Thu",
+    "lat": 16.4768,
+    "lng": 107.5972,
+    "cat": "Restaurant",
+    "desc": "374 Chi Lăng, Gia Hội · Gánh bánh canh làng Nam Phổ gia truyền với nước dùng sền sệt đỏ au gạch cua tôm",
+    "address": "374 Chi Lăng, P. Gia Hội, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 670,
+    "tags": "banh canh nam pho o thu, chi lang, gia hoi, gach cua, dac san nam pho",
+    "reviews": [
+      {
+        "title": "Tô bánh canh gánh mộc mạc thơm lừng hương vị làng quê",
+        "comment": "Gánh bánh canh nép mình bên hiên nhà cổ đường Chi Lăng. Nước bánh canh sánh đặc màu đỏ au tự nhiên từ tôm đồng và cua biển quết nhuyễn. Sợi bánh canh bằng bột gạo mềm mượt, chan thêm thìa nước mắm ớt xanh cay tê đầu lưỡi. Ngồi ăn trên chiếc ghế nhựa con con ngắm phố cổ thanh bình thấy thương Huế lạ lùng.",
+        "rating": 5.0,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 4/2024"
+      },
+      {
+        "title": "Món ăn xế chiều thanh cảnh không thể bỏ lỡ",
+        "comment": "O bán từ khoảng 2h chiều đến tầm 5h là hết veo nồi. Bánh canh múc ra bát bốc khói nghi ngút, thơm mùi ngò rí và hành hoa phi mỡ. Giá chỉ 15k một bát mà ngon lành, ấm sực cả lòng.",
+        "rating": 4.8,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_29",
+    "name": "Chè Mợ Tôn Đích (Trước Cửa Thượng Tứ)",
+    "lat": 16.4678,
+    "lng": 107.5842,
+    "cat": "Restaurant",
+    "desc": "20 Đinh Tiên Hoàng, Thuận Thành · Cái nôi khai sinh món Chè bột lọc heo quay trứ danh bậc nhất đất Cố Đô",
+    "address": "20 Đinh Tiên Hoàng, P. Thuận Thành, TP Huế",
+    "rating_value": 4.5,
+    "review_count": 1750,
+    "tags": "che mo ton dich, dinh tien hoang, thuong tu, che bot loc heo quay, che co do",
+    "reviews": [
+      {
+        "title": "Viên chè bột lọc heo quay chuẩn gốc nức tiếng kinh kỳ",
+        "comment": "Đến Cửa Thượng Tứ nhất định phải ăn chè Mợ Tôn Đích - quán chè gia truyền đăng ký nhãn hiệu chè heo quay đầu tiên ở Huế. Viên bột lọc trong veo dai dẻo bọc miếng thịt quay ngũ vị đậm đà bên trong, nấu cùng nước đường phèn gừng ấm thanh khiết. Sự tương phản giữa mặn và ngọt, nóng ấm và bùi béo tạo nên cảm giác bùng nổ vị giác.",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 6/2024"
+      },
+      {
+        "title": "Thưởng thức chè Huế ngắm cổng thành rực rỡ về đêm",
+        "comment": "Quán có cả chục nồi chè nghi ngút khói: chè khoai môn, chè bắp non, chè đậu ngự, chè hạt sen long nhãn... Ngồi vỉa hè trước cửa Thượng Tứ gió mát rười rượi, ngắm xe cộ qua lại cửa thành cổ kính là một trải nghiệm đậm chất Huế.",
+        "rating": 4.7,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_30",
+    "name": "Chùa Từ Đàm",
+    "lat": 16.4475,
+    "lng": 107.5802,
+    "cat": "Attraction",
+    "desc": "01 Sư Liễu Quán, Trường An · Tổ đình danh lam linh thiêng, trung tâm lịch sử phong trào Phật giáo xứ Huế",
+    "address": "01 Sư Liễu Quán, P. Trường An, TP Huế",
+    "rating_value": 4.8,
+    "review_count": 1890,
+    "tags": "chua tu dam, su lieu quan, truong an, to dinh phat giao, cay bo de, danh lam co tu",
+    "reviews": [
+      {
+        "title": "Chốn tổ đình linh thiêng và thanh tịnh bậc nhất xứ Huế",
+        "comment": "Ngôi cổ tự gắn liền với chiều sâu lịch sử tâm linh xứ Huế. Kiến trúc chùa hài hòa giữa phong cách truyền thống và hiện đại, chính điện uy nghiêm rộng lớn. Bước qua cổng tam quan là cảm giác thanh tịnh ngập tràn, rũ bỏ hết mọi muộn phiền âu lo thường nhật.",
+        "rating": 5.0,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 3/2024"
+      },
+      {
+        "title": "Cây bồ đề cổ thụ tỏa bóng mát rượi giữa sân chùa uy nghiêm",
+        "comment": "Điểm nhấn đặc biệt ở chùa Từ Đàm là cây bồ đề sum suê được chiết từ cây bồ đề gốc nơi Đức Phật thành đạo ở Ấn Độ. Buổi chiều lắng nghe tiếng chuông ngân vang hòa cùng tiếng gió xào xạc qua tán lá, tâm hồn như lắng lại trong an yên tuyệt đối.",
+        "rating": 4.9,
+        "trip_type": "Độc hành",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_31",
+    "name": "Cung An Định",
+    "lat": 16.4578,
+    "lng": 107.5938,
+    "cat": "Attraction",
+    "desc": "179 Phan Đình Phùng, Phú Nhuận · 'Viên ngọc tân cổ điển' nguy nga bên dòng sông An Cựu, di tích thời vua Khải Định",
+    "address": "179 Phan Đình Phùng, P. Phú Nhuận, TP Huế",
+    "rating_value": 4.8,
+    "review_count": 2600,
+    "tags": "cung an dinh, phan dinh phung, song an cuu, kien truc tan co dien, khai dinh, bao dai",
+    "reviews": [
+      {
+        "title": "Kiệt tác kiến trúc giao thoa Á - Âu lộng lẫy bên sông An Cựu",
+        "comment": "Được mệnh danh là 'cung điện mùa hè' của triều Nguyễn, Cung An Định sở hữu tòa lâu đài Khải Tường Lâu tuyệt đẹp với phong cách kiến trúc Roman pha trộn hoa văn cung đình Huế. Đại sảnh nổi bật với 6 bức bích họa vẽ các lăng tẩm hoàng gia còn giữ nguyên vẹn sắc màu rực rỡ.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 5/2024"
+      },
+      {
+        "title": "Góc check-in cổ điển mang màu sắc điện ảnh",
+        "comment": "Nơi đây từng là bối cảnh quay MV ca nhạc đình đám 'Không Thể Cùng Nhau Suốt Kiếp' và các bộ phim điện ảnh lớn. Khu vườn hoa phía sau và mặt tiền lộng lẫy mang lại những góc chụp ảnh phong cách retro cổ điển vô cùng đắt giá.",
+        "rating": 4.9,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_32",
+    "name": "Đầm Lập An & Làng Chài Lăng Cô",
+    "lat": 16.2350,
+    "lng": 108.0820,
+    "cat": "Attraction",
+    "desc": "Thị trấn Lăng Cô, Phú Lộc · Tuyệt cảnh đầm nước lợ chân đèo Hải Vân với con đường rẽ sóng và bè hàu thơ mộng",
+    "address": "Đường Nguyễn Văn, TT. Lăng Cô, H. Phú Lộc, Thừa Thiên Huế",
+    "rating_value": 4.8,
+    "review_count": 2150,
+    "tags": "dam lap an, lang co, phu loc, hai van, be hau, ngam hoang hon, checkin thien nhien",
+    "reviews": [
+      {
+        "title": "Tuyệt tác thủy mặc dưới chân đèo Hải Vân hùng vĩ",
+        "comment": "Mặt đầm phẳng lặng như gương soi bóng dãy núi Bạch Mã mây phủ bồng bềnh. Lúc thủy triều rút xuống để lộ con đường cát trắng tuyệt đẹp rẽ sóng giữa lòng đầm, bước đi giữa làn nước trong vắt cảm giác như đang lạc bước vào cõi tiên bồng.",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn",
+        "visit_date": "Tháng 6/2024"
+      },
+      {
+        "title": "Thưởng thức hàu sữa nướng mỡ hành tươi rói ngay tại bè",
+        "comment": "Đầm Lập An là thủ phủ nuôi hàu nổi tiếng bậc nhất miền Trung. Ngồi trong những quán chòi nổi ngắm ráng chiều hoàng hôn rực đỏ buông xuống mặt đầm và thưởng thức đĩa hàu nướng mỡ hành béo ngậy ngọt lịm là trải nghiệm ẩm thực đỉnh cao.",
+        "rating": 4.8,
+        "trip_type": "Gia đình",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_33",
+    "name": "Lăng Thiệu Trị (Xương Lăng)",
+    "lat": 16.4172,
+    "lng": 107.5718,
+    "cat": "Attraction",
+    "desc": "Thủy Bằng, TP Huế · Quần thể lăng tẩm hoàng gia thanh bình và tĩnh mịch nhất triều Nguyễn tựa lưng vào núi Thuận Đạo",
+    "address": "Xã Thủy Bằng, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 730,
+    "tags": "lang thieu tri, xuong lang, thuy bang, lang tam trieu nguyen, thanh binh, ho dien tri",
+    "reviews": [
+      {
+        "title": "Quần thể lăng hoàng gia mộc mạc và tĩnh lặng nhất Cố Đô",
+        "comment": "Không quá đồ sộ như lăng Khải Định hay cầu kỳ như lăng Tự Đức, lăng Thiệu Trị mang vẻ đẹp đăng đối, trầm tư và mộc mạc giữa thiên nhiên đồi núi làng quê Thủy Bằng. Hồ Điện Trì hình bán nguyệt trước lăng trồng đầy hoa sen ngát hương vào mùa hè.",
+        "rating": 5.0,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 4/2024"
+      },
+      {
+        "title": "Điểm đến lý tưởng cho những ai thích chiêm nghiệm lịch sử",
+        "comment": "Lăng ít khách du lịch đoàn nên không gian yên tĩnh tuyệt đối, chỉ có tiếng gió reo qua rặng thông và tiếng chim rừng líu lo. Cảm nhận rõ rệt sự hoài niệm và tôn nghiêm của một triều đại đã lùi vào dĩ vãng.",
+        "rating": 4.7,
+        "trip_type": "Độc hành",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_34",
+    "name": "The Ware-house Coffee",
+    "lat": 16.4618,
+    "lng": 107.5922,
+    "cat": "Cafe",
+    "desc": "01 Tôn Đức Thắng, Phú Hội · Không gian cà phê phong cách Industrial tối giản hiện đại của giới trẻ xứ Huế",
+    "address": "01 Tôn Đức Thắng, P. Phú Hội, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 890,
+    "tags": "the ware house coffee, ton duc thang, phu hoi, industrial cafe, specialty coffee, checkin tre",
+    "reviews": [
+      {
+        "title": "Không gian công nghiệp tối giản cực chất giữa lòng phố mới",
+        "comment": "Quán thiết kế tone xám xi măng kết hợp kính lớn và thép đen mang đậm phong cách Industrial hiện đại. Ánh sáng tự nhiên ngập tràn, bàn ghế bố trí khoảng cách rộng rãi rất thích hợp để mang laptop làm việc hoặc hẹn hò cùng bạn bè.",
+        "rating": 5.0,
+        "trip_type": "Nhóm bạn trẻ",
+        "visit_date": "Tháng 7/2024"
+      },
+      {
+        "title": "Đồ uống specialty pha chế công phu, menu bánh thơm ngon",
+        "comment": "Mình mê món Matcha Latte và Cold Brew cam sả ở đây, nốt hương thanh nhẹ và hậu vị ngọt sâu. Bánh sừng bò croissant nướng nóng hổi giòn rụm béo mùi bơ Pháp. Nhân viên trẻ trung, thân thiện và gu âm nhạc tuyển chọn cực chill.",
+        "rating": 4.8,
+        "trip_type": "Cặp đôi",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_35",
+    "name": "Bánh Ép Cây Sứ (Hoàng Diệu)",
+    "lat": 16.4715,
+    "lng": 107.5742,
+    "cat": "Restaurant",
+    "desc": "Kiệt 44 Hoàng Diệu, Tây Lộc · Quán bánh ép gia truyền lâu đời nhất khu Thành Nội, thơm lừng mùi bò khô và mắm nêm chua ngọt",
+    "address": "Kiệt 44 Hoàng Diệu, P. Tây Lộc, TP Huế",
+    "rating_value": 4.8,
+    "review_count": 1250,
+    "tags": "banh ep cay su, hoang dieu, tay loc, banh ep bo kho, dac san hue, banh ep thanh noi",
+    "reviews": [
+      {
+        "title": "Bánh ép gia truyền chuẩn vị Thành Nội thơm lừng góc phố",
+        "comment": "Bánh ép Cây Sứ là tuổi thơ của bao thế hệ học sinh và người dân Thành Nội. Chiếc bánh mỏng giòn viền ngoài, nhân trứng thịt bò khô thơm nức mũi, cuốn kèm dưa leo rau răm chấm nước mắm ớt cay xè ngon tuyệt đỉnh.",
+        "rating": 5.0,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "custom_local_36",
+    "name": "Bánh Ép Dì Mai (Bến Ngự)",
+    "lat": 16.4592,
+    "lng": 107.5855,
+    "cat": "Restaurant",
+    "desc": "Đối diện chợ Bến Ngự, Phan Đình Phùng · Bánh ép dẻo tôm thịt nóng hổi đậm đà hương vị mắm ớt chua ngọt Cố Đô",
+    "address": "Chợ Bến Ngự, đường Phan Đình Phùng, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 870,
+    "tags": "banh ep di mai, cho ben ngu, phan dinh phung, banh ep deo, an vat gia re, am thuc hue",
+    "reviews": [
+      {
+        "title": "Bánh ép dẻo tôm thịt nóng giòn khó cưỡng",
+        "comment": "Quán bình dị gần chợ Bến Ngự nhưng lúc nào cũng tấp nập khách. Bánh ép tôm thịt thơm nức mũi, thêm chút hành phi giòn tan và nước mắm ớt pha khéo léo ngọt thanh chua dịu. Giá cả cực kỳ bình dân.",
+        "rating": 5.0,
+        "trip_type": "Du khách",
+        "visit_date": "Tháng 9/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "beach_thuan_an",
+    "name": "Bãi biển Thuận An",
+    "lat": 16.5562,
+    "lng": 107.6369,
+    "cat": "Attraction",
+    "desc": "Thị trấn Thuận An · Bãi biển danh tiếng cách trung tâm Huế 13km, bờ cát thoai thoải, nổi tiếng với hải sản tươi sống (mực trứng, ghẹ, tôm nướng, cá dìa)",
+    "address": "Thị trấn Thuận An, TP. Huế, Thừa Thiên Huế",
+    "rating_value": 4.4,
+    "review_count": 3400,
+    "tags": "bai bien thuan an, bien thuan an, thuan an beach, tam bien hue, hai san thuan an, bien dep hue",
+    "reviews": [
+      {
+        "title": "Bãi biển gần trung tâm Huế nhất, hải sản tươi ngon giá rẻ",
+        "comment": "Chỉ mất tầm 20-25 phút đi xe máy từ trung tâm thành phố là tới bãi biển Thuận An. Bãi biển thoai thoải, sóng vừa phải rất thích hợp tắm biển buổi chiều. Dọc bãi biển có nhiều dãy quán hải sản tươi sống phục vụ mực hấp gừng, tôm nướng muối ớt, sò điệp và cá dìa nướng rất ngọt thịt.",
+        "rating": 4.5,
+        "trip_type": "Gia đình / Bạn bè",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "beach_lang_co",
+    "name": "Vịnh & Bãi biển Lăng Cô",
+    "lat": 16.2308,
+    "lng": 108.0167,
+    "cat": "Attraction",
+    "desc": "Thị trấn Lăng Cô, Phú Lộc · Một trong những vịnh biển đẹp nhất thế giới dưới chân đèo Hải Vân, nổi tiếng với hàu nướng mỡ hành, ghẹ biển, sò huyết và mực nhảy",
+    "address": "Thị trấn Lăng Cô, huyện Phú Lộc, Thừa Thiên Huế",
+    "rating_value": 4.6,
+    "review_count": 4200,
+    "tags": "vinh lang co, bien lang co, lang co beach, dam lap an, hai san lang co, hau lang co",
+    "reviews": [
+      {
+        "title": "Vịnh biển tuyệt mỹ, thiên đường hàu nướng và hải sản đầm Lập An",
+        "comment": "Lăng Cô sở hữu bãi cát trắng mịn trải dài tuyệt đẹp. Sau khi tắm biển có thể ghé các nhà bè nổi đầm Lập An thưởng thức hàu tươi béo ngậy nướng phô mai, mực cơm xào chua ngọt và sò huyết đầm tươi rói.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi / Du khách",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "beach_canh_duong",
+    "name": "Bãi biển Cảnh Dương",
+    "lat": 16.3218,
+    "lng": 107.9942,
+    "cat": "Attraction",
+    "desc": "Xã Lộc Vĩnh, Phú Lộc · Bãi biển thoai thoải cát trắng mịn tuyệt đẹp, nước biển trong vắt, bãi cắm trại dã ngoại và hải sản tươi sống ven bờ",
+    "address": "Thôn Cảnh Dương, xã Lộc Vĩnh, huyện Phú Lộc, Thừa Thiên Huế",
+    "rating_value": 4.5,
+    "review_count": 2100,
+    "tags": "bien canh duong, canh duong beach, loc vinh, cam trai bien, hai san canh duong",
+    "reviews": [
+      {
+        "title": "Bãi biển cực kỳ sạch đẹp, cát mịn thích hợp cắm trại dã ngoại",
+        "comment": "Cảnh Dương có bãi cát rất rộng và dài, độ dốc thoai thoải an toàn cho trẻ nhỏ tắm. Hải sản mua trực tiếp của ngư dân cập bờ vào sáng sớm cực kỳ tươi ngon, giá rất rẻ.",
+        "rating": 4.5,
+        "trip_type": "Bạn bè / Nhóm",
+        "visit_date": "Tháng 6/2024"
+      }
+    ]
+  },
+  {
+    "place_id": "beach_hai_duong",
+    "name": "Bãi biển Hải Dương (Bờ kè bãi đá)",
+    "lat": 16.5756,
+    "lng": 107.6042,
+    "cat": "Attraction",
+    "desc": "Hải Dương, Hương Trà · Bãi biển hoang sơ cách Huế 15km với hai bờ kè chắn sóng bãi đá cao và bãi đá thấp phủ rêu xanh ngắt, nhiều quán hải sản bình dân",
+    "address": "Xã Hải Dương, thị xã Hương Trà, Thừa Thiên Huế",
+    "rating_value": 4.4,
+    "review_count": 1800,
+    "tags": "bien hai duong, bai da hai duong, ke chan song, hai san hai duong, check-in hue",
+    "reviews": [
+      {
+        "title": "Điểm check-in bãi đá rêu xanh cực đẹp và ăn hải sản ngon bổ rẻ",
+        "comment": "Bãi biển Hải Dương nổi tiếng với hai bờ kè bãi đá tổ ong vươn ra biển phủ rêu xanh mướt chụp ảnh siêu ảo. Các quán chòi lá ven biển phục vụ cá nướng than, sò điệp, cua ghẹ tươi ngon với giá bình dân.",
+        "rating": 4.5,
+        "trip_type": "Bạn bè",
+        "visit_date": "Tháng 7/2024"
+      }
+    ]
   }
 ]

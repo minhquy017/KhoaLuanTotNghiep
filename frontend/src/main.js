@@ -7,15 +7,24 @@ import './style.css';
 import { TourismApiClient } from './api.js';
 import { SpatialMapStudio } from './map.js';
 import { AuthController } from './auth.js';
-import { 
-  saveItinerary, 
-  saveChatSession, 
-  getUserChatSessions, 
-  deleteChatSession, 
-  onAuthChange 
+import { userStore } from './userStore.js';
+import {
+  saveItinerary,
+  saveChatSession,
+  getUserChatSessions,
+  deleteChatSession,
+  submitAiFeedback,
+  onAuthChange,
+  logoutUser,
+  loginWithDemoUser
 } from './firebase.js';
+import { HueWeatherService } from './weather.js';
+import { budgetEstimator } from './budgetEstimator.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Khởi tạo công cụ Dự toán Ngân sách Du lịch Cố Đô Huế
+  budgetEstimator.init();
+  window.budgetEstimator = budgetEstimator;
   // 0. KHỞI TẠO HỆ THỐNG XÁC THỰC (AUTH CONTROLLER - GOOGLE GMAIL & EMAIL)
   const authController = new AuthController();
   authController.init();
@@ -293,8 +302,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (workbenchToggleText) {
       workbenchToggleText.textContent = isCollapsed ? 'Hiện trợ lý' : 'Toàn cảnh';
     }
-    btnToggleWorkbench.title = isCollapsed 
-      ? 'Mở lại bảng trợ lý & lịch trình bên phải' 
+    btnToggleWorkbench.title = isCollapsed
+      ? 'Mở lại bảng trợ lý & lịch trình bên phải'
       : 'Thu gọn bảng trợ lý để xem bản đồ toàn cảnh';
 
     // Đợi transition CSS kết thúc rồi cập nhật lại Leaflet Map Viewport
@@ -472,6 +481,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       ? `ưu tiên các món: ${preferredDishes.join(', ')}`
       : 'ẩm thực Cố đô đặc sắc';
     const userQueryText = `📅 Lập lịch trình khám phá Huế ${days} ngày cho ${tripType}, xuất phát từ ${userLocName}, ${dishLabel}.`;
+    lastUserPrompt = userQueryText;
     appendUserMessage(userQueryText);
 
     // Thu gọn quick planner card
@@ -510,14 +520,200 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateItineraryInChat(days, tripType, preferredDishes);
   });
 
-  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn', persist = true) {
+  // Quản lý trạng thái phiên chat toàn cục
+  let activeSessionId = 'session_' + Date.now();
+  let activeSessionTitle = 'Cuộc trò chuyện mới';
+  let activeSessionMessages = [];
+  let isRestoringSession = false;
+  let lastUserPrompt = '';
+
+  // =============================================================================
+  // THU THẬP PHẢN HỒI AI (AI FEEDBACK SYSTEM: LIKE / DISLIKE / COPY)
+  // Ghi nhận phản hồi người dùng phục vụ đánh giá thực nghiệm & RLHF
+  // =============================================================================
+  function createFeedbackBarHtml(messageId, existingRating = null) {
+    return `
+      <div class="message-feedback-row" data-message-id="${messageId}">
+        <div class="feedback-actions">
+          <span class="feedback-hint">Đánh giá câu trả lời:</span>
+          <button type="button" class="btn-msg-feedback btn-feedback-like ${existingRating === 'like' ? 'active' : ''}" title="Hữu ích / Thích câu trả lời này">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+            </svg>
+            <span>Hữu ích</span>
+          </button>
+          <button type="button" class="btn-msg-feedback btn-feedback-dislike ${existingRating === 'dislike' ? 'active' : ''}" title="Chưa hài lòng / Cần cải thiện">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
+            </svg>
+            <span>Chưa tốt</span>
+          </button>
+          <button type="button" class="btn-msg-feedback btn-copy-msg" title="Sao chép nội dung câu trả lời">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span class="copy-label">Sao chép</span>
+          </button>
+        </div>
+
+        <div class="feedback-dislike-box hidden">
+          <div class="feedback-dislike-title">Lý do bạn chưa hài lòng:</div>
+          <div class="feedback-chips">
+            <button type="button" class="feedback-chip active" data-reason="incorrect">Thông tin chưa chính xác</button>
+            <button type="button" class="feedback-chip" data-reason="irrelevant">Chưa đúng trọng tâm câu hỏi</button>
+            <button type="button" class="feedback-chip" data-reason="location">Địa điểm/Lộ trình chưa hợp lý</button>
+            <button type="button" class="feedback-chip" data-reason="other">Khác</button>
+          </div>
+          <div class="feedback-input-row">
+            <input type="text" class="feedback-comment-input" placeholder="Góp ý chi tiết để AI cải thiện tốt hơn..." />
+            <button type="button" class="btn-submit-feedback">Gửi</button>
+            <button type="button" class="btn-cancel-feedback" title="Đóng">✕</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindFeedbackEvents(container, meta) {
+    const row = container.querySelector('.message-feedback-row');
+    if (!row) return;
+
+    const likeBtn = row.querySelector('.btn-feedback-like');
+    const dislikeBtn = row.querySelector('.btn-feedback-dislike');
+    const copyBtn = row.querySelector('.btn-copy-msg');
+    const dislikeBox = row.querySelector('.feedback-dislike-box');
+    const chips = row.querySelectorAll('.feedback-chip');
+    const commentInput = row.querySelector('.feedback-comment-input');
+    const submitBtn = row.querySelector('.btn-submit-feedback');
+    const cancelBtn = row.querySelector('.btn-cancel-feedback');
+
+    let selectedReason = 'incorrect';
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        selectedReason = chip.dataset.reason;
+      });
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      try {
+        const textToCopy = meta.plainText || container.querySelector('.answer-content')?.innerText || container.innerText || '';
+        await navigator.clipboard.writeText(textToCopy);
+        const copyLabel = copyBtn.querySelector('.copy-label');
+        if (copyLabel) copyLabel.textContent = 'Đã chép!';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          if (copyLabel) copyLabel.textContent = 'Sao chép';
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      } catch (e) {
+        console.warn('Không thể sao chép văn bản:', e);
+      }
+    });
+
+    likeBtn?.addEventListener('click', async () => {
+      if (likeBtn.classList.contains('active')) return;
+      likeBtn.classList.add('active');
+      dislikeBtn.classList.remove('active');
+      if (dislikeBox) dislikeBox.classList.add('hidden');
+
+      updateMessageFeedbackInSession(meta.messageId, 'like');
+
+      await submitAiFeedback({
+        messageId: meta.messageId,
+        sessionId: activeSessionId,
+        rating: 'like',
+        prompt: meta.prompt || '',
+        responseExcerpt: (meta.plainText || '').substring(0, 300),
+        isItinerary: Boolean(meta.isItinerary)
+      });
+
+      authController.showToast('Cảm ơn bạn! Đánh giá hữu ích đã được ghi nhận vào Firestore.');
+    });
+
+    dislikeBtn?.addEventListener('click', async () => {
+      if (dislikeBtn.classList.contains('active')) {
+        dislikeBox?.classList.toggle('hidden');
+        return;
+      }
+      dislikeBtn.classList.add('active');
+      likeBtn.classList.remove('active');
+      if (dislikeBox) {
+        dislikeBox.classList.remove('hidden');
+        commentInput?.focus();
+      }
+
+      updateMessageFeedbackInSession(meta.messageId, 'dislike');
+
+      await submitAiFeedback({
+        messageId: meta.messageId,
+        sessionId: activeSessionId,
+        rating: 'dislike',
+        reason: selectedReason,
+        prompt: meta.prompt || '',
+        responseExcerpt: (meta.plainText || '').substring(0, 300),
+        isItinerary: Boolean(meta.isItinerary)
+      });
+
+      authController.showToast('Đã ghi nhận! Bạn có thể chọn lý do góp ý bên dưới.');
+    });
+
+    cancelBtn?.addEventListener('click', () => {
+      if (dislikeBox) dislikeBox.classList.add('hidden');
+    });
+
+    submitBtn?.addEventListener('click', async () => {
+      const comment = commentInput?.value?.trim() || '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = '...';
+
+      await submitAiFeedback({
+        messageId: meta.messageId,
+        sessionId: activeSessionId,
+        rating: 'dislike',
+        reason: selectedReason,
+        comment: comment,
+        prompt: meta.prompt || '',
+        responseExcerpt: (meta.plainText || '').substring(0, 300),
+        isItinerary: Boolean(meta.isItinerary)
+      });
+
+      updateMessageFeedbackInSession(meta.messageId, 'dislike', selectedReason, comment);
+
+      if (dislikeBox) {
+        dislikeBox.innerHTML = `
+          <div class="feedback-thankyou-note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Cảm ơn đóng góp của bạn! Phản hồi này sẽ dùng để hoàn thiện mô hình AI.</span>
+          </div>
+        `;
+      }
+      authController.showToast('Đã gửi phản hồi thành công!');
+    });
+  }
+
+  function updateMessageFeedbackInSession(messageId, rating, reason = '', comment = '') {
+    if (!messageId || !activeSessionMessages) return;
+    const targetMsg = activeSessionMessages.find(m => m.id === messageId || m.messageId === messageId);
+    if (targetMsg) {
+      targetMsg.feedbackRating = rating;
+      if (reason) targetMsg.feedbackReason = reason;
+      if (comment) targetMsg.feedbackComment = comment;
+      persistActiveSession();
+    }
+  }
+
+  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn', persist = true, customDeckId = null, existingRating = null) {
     const plan = res.itinerary_data;
     if (!plan || !plan.days || plan.days.length === 0) {
       appendAssistantError('Không tìm thấy dữ liệu lịch trình phù hợp với tiêu chí đã chọn.');
       return;
     }
 
-    const deckId = `deck-${Date.now()}`;
+    const deckId = customDeckId || `deck-${Date.now()}`;
     const allStopsForMap = [];
     let totalStopsCount = 0;
     let totalTripDistanceKm = 0;
@@ -530,10 +726,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       slots.forEach(slot => {
         const isFood = (slot.category || '').toLowerCase().includes('restaurant') ||
-                       (slot.category || '').toLowerCase().includes('quán') ||
-                       (slot.activity_type || '').toLowerCase().includes('ẩm thực');
+          (slot.category || '').toLowerCase().includes('quán') ||
+          (slot.activity_type || '').toLowerCase().includes('ẩm thực');
         const isUserLoc = (slot.category || '').toLowerCase().includes('userlocation') ||
-                          (slot.activity_type || '').toLowerCase().includes('khởi hành');
+          (slot.activity_type || '').toLowerCase().includes('khởi hành');
 
         // Chỉ cho phép điểm xuất phát người dùng xuất hiện 1 lần duy nhất ở đầu hành trình
         if (isUserLoc) {
@@ -602,18 +798,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       let timelineStepsHtml = '';
       slots.forEach((slot, slotIdx) => {
         const isFood = (slot.category || '').toLowerCase().includes('restaurant') ||
-                       (slot.category || '').toLowerCase().includes('quán') ||
-                       (slot.activity_type || '').toLowerCase().includes('ẩm thực');
+          (slot.category || '').toLowerCase().includes('quán') ||
+          (slot.activity_type || '').toLowerCase().includes('ẩm thực');
         const isUserOrigin = (slot.category || '').toLowerCase().includes('userlocation') ||
-                             (slot.activity_type || '').toLowerCase().includes('khởi hành');
+          (slot.activity_type || '').toLowerCase().includes('khởi hành');
         const lat = slot.latitude || slot.lat;
         const lng = slot.longitude || slot.lng;
 
         const hasOriginInDay = slots.some(s => {
           return (s.category || '').toLowerCase().includes('userlocation') ||
-                 (s.activity_type || '').toLowerCase().includes('khởi hành') ||
-                 (s.slot_name || '').toLowerCase().includes('xuất phát') ||
-                 (s.place_name || s.name || '').toLowerCase().includes('vị trí của bạn');
+            (s.activity_type || '').toLowerCase().includes('khởi hành') ||
+            (s.slot_name || '').toLowerCase().includes('xuất phát') ||
+            (s.place_name || s.name || '').toLowerCase().includes('vị trí của bạn');
         });
         const legNum = hasOriginInDay ? slotIdx : (slotIdx + 1);
         const legBadge = isUserOrigin
@@ -746,8 +942,15 @@ document.addEventListener('DOMContentLoaded', async () => {
               </h3>
               <span class="deck-subtitle">Đối tượng: ${tripType} · ${totalStopsCount} điểm đến</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
               <div class="deck-badge">${days} Ngày${totalKmText}</div>
+              <button type="button" class="btn-deck-budget" id="btn-budget-${deckId}" title="Dự toán chi phí vé di tích, ẩm thực và phương tiện">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                  <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+                <span>Dự toán chi phí</span>
+              </button>
               <button type="button" class="btn-deck-save-tour" id="btn-save-${deckId}" title="Lưu lịch trình này vào tài khoản cá nhân">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -771,11 +974,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             <button type="button" class="btn-deck-followup">Thời điểm tham quan Đại Nội đẹp nhất trong ngày?</button>
             <button type="button" class="btn-deck-followup">Phương tiện di chuyển hợp lý nhất ở Huế?</button>
           </div>
+
+          <div class="deck-feedback-wrapper">
+            ${createFeedbackBarHtml(deckId, existingRating)}
+          </div>
         </div>
       </div>
     `;
 
     chatThread.appendChild(msg);
+
+    // Gán sự kiện Feedback cho thẻ lịch trình
+    bindFeedbackEvents(msg, {
+      messageId: deckId,
+      prompt: `Lập lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
+      plainText: `Lộ trình Khám phá Huế (${days} ngày) cho ${tripType} với ${totalStopsCount} điểm đến.`,
+      isItinerary: true
+    });
+
     setTimeout(() => {
       msg.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 60);
@@ -868,8 +1084,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Gán sự kiện cho các nút hỏi tiếp theo
       deckEl.querySelectorAll('.btn-deck-followup').forEach(btn => {
         btn.addEventListener('click', () => {
-          sendChatQuery(btn.textContent.trim());
+          const query = btn.textContent.trim();
+          if (query.includes('Chi phí dự kiến')) {
+            budgetEstimator.openModal(plan, `Lịch trình Huế ${days} ngày (${tripType})`);
+          } else {
+            sendChatQuery(query);
+          }
         });
+      });
+
+      // Gán sự kiện cho nút Dự toán chi phí
+      const btnBudget = document.getElementById(`btn-budget-${deckId}`);
+      btnBudget?.addEventListener('click', () => {
+        budgetEstimator.openModal(plan, `Lịch trình Huế ${days} ngày (${tripType})`);
       });
 
       // Gán sự kiện cho nút Lưu Tour vào tài khoản Google / Cloud
@@ -920,6 +1147,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Lưu thẻ lịch trình vào phiên chat hiện tại
     if (persist && !isRestoringSession) {
       activeSessionMessages.push({
+        id: deckId,
         role: 'assistant',
         text: `📅 Lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
         isItinerary: true,
@@ -928,6 +1156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         tripType,
         preferredDishes,
         userLocName,
+        feedbackRating: existingRating,
         timestamp: Date.now()
       });
       persistActiveSession();
@@ -967,10 +1196,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!chatThread) return;
     chatThread.innerHTML = `
       <div class="chat-welcome-hero" id="chat-welcome-hero">
-        <div class="welcome-badge">
-          <span class="welcome-badge-dot"></span>
-          <span>Cố đô Huế AI Copilot</span>
-        </div>
         <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
         <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.</p>
 
@@ -1020,22 +1245,87 @@ document.addEventListener('DOMContentLoaded', async () => {
   initPromptCards();
 
   // =============================================================================
-  // QUẢN LÝ PHIÊN TRÒ CHUYỆN & LỊCH SỬ CHAT (CHAT SESSIONS ON FIRESTORE)
+  // QUẢN LÝ PHIÊN TRÒ CHUYỆN & THANH BÊN (GEMINI LEFT SIDEBAR & SESSIONS)
   // =============================================================================
-  let activeSessionId = 'session_' + Date.now();
-  let activeSessionTitle = 'Cuộc trò chuyện mới';
-  let activeSessionMessages = [];
-  let isRestoringSession = false;
+  const sidebarGemini = document.getElementById('sidebar-gemini');
+  const btnToggleSidebar = document.getElementById('btn-toggle-sidebar');
+  const btnSidebarToggle = document.getElementById('btn-sidebar-toggle') || document.getElementById('btn-sidebar-collapse');
+  const btnSidebarCollapse = document.getElementById('btn-sidebar-collapse');
+  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+  const btnSidebarNewChat = document.getElementById('btn-sidebar-new-chat');
+  const btnSidebarSavedTours = document.getElementById('btn-sidebar-saved-tours');
+  const btnSidebarToggleMap = document.getElementById('btn-sidebar-toggle-map');
+  const sidebarFooterGroup = document.getElementById('sidebar-footer-group');
+  const btnSidebarSettings = document.getElementById('btn-sidebar-settings');
+  const sidebarUserChip = document.getElementById('sidebar-user-chip');
+  const sidebarAvatarImg = document.getElementById('sidebar-avatar-img');
+  const sidebarAvatarFallback = document.getElementById('sidebar-avatar-fallback');
+  const sidebarUserName = document.getElementById('sidebar-user-name');
+  const sidebarUserStatus = document.getElementById('sidebar-user-status');
+
+  // Sidebar User Popover Elements
+  const sidebarUserPopover = document.getElementById('sidebar-user-popover');
+  const popoverAvatarImg = document.getElementById('popover-avatar-img');
+  const popoverAvatarFallback = document.getElementById('popover-avatar-fallback');
+  const popoverUserName = document.getElementById('popover-user-name');
+  const popoverUserEmail = document.getElementById('popover-user-email');
+  const popoverBadgeStatus = document.getElementById('popover-badge-status');
+  const popoverLoggedInActions = document.getElementById('popover-logged-in-actions');
+  const popoverGuestActions = document.getElementById('popover-guest-actions');
+
+  const btnPopoverSavedTours = document.getElementById('btn-popover-saved-tours');
+  const btnPopoverConfig = document.getElementById('btn-popover-config');
+  const btnPopoverLogout = document.getElementById('btn-popover-logout');
+  const btnPopoverLogin = document.getElementById('btn-popover-login');
+  const btnPopoverSignup = document.getElementById('btn-popover-signup');
+  const btnPopoverGuestConfig = document.getElementById('btn-popover-guest-config');
+  const btnPopoverDemo = document.getElementById('btn-popover-demo');
 
   const btnNewChat = document.getElementById('btn-new-chat');
   const btnToggleChatHistory = document.getElementById('btn-toggle-chat-history');
   const btnWorkbenchSavedTours = document.getElementById('btn-workbench-saved-tours');
   const historyCountBadge = document.getElementById('history-count-badge');
-  const chatHistoryDrawer = document.getElementById('chat-history-drawer');
-  const chatHistoryBackdrop = document.getElementById('chat-history-backdrop');
-  const btnCloseHistory = document.getElementById('btn-close-history');
-  const btnHistoryNewChat = document.getElementById('btn-history-new-chat');
+  const sidebarHistoryCountBadge = document.getElementById('sidebar-history-count-badge');
+  const workbenchHistoryCountBadge = document.getElementById('workbench-history-count-badge');
   const chatSessionsList = document.getElementById('chat-sessions-list');
+
+  // Khởi tạo thời tiết Huế
+  const sidebarWeatherContainer = document.getElementById('sidebar-weather-container');
+  const headerWeatherPill = document.getElementById('header-weather-pill');
+  const hueWeatherService = new HueWeatherService();
+  window.hueWeatherService = hueWeatherService;
+
+  async function initHueWeatherWidget() {
+    try {
+      const data = await hueWeatherService.getHueWeather();
+      if (sidebarWeatherContainer) {
+        sidebarWeatherContainer.innerHTML = hueWeatherService.renderWidgetHtml(data);
+        const btnExpand = sidebarWeatherContainer.querySelector('#btn-weather-expand');
+        const detailsCard = sidebarWeatherContainer.querySelector('#weather-details-card');
+        btnExpand?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isHidden = detailsCard?.classList.toggle('hidden');
+          btnExpand.classList.toggle('expanded', !isHidden);
+        });
+      }
+      if (headerWeatherPill) {
+        headerWeatherPill.innerHTML = `
+          ${hueWeatherService.getWeatherIconSvg(data.iconType, 15)}
+          <span>${data.temp}°C Huế</span>
+        `;
+        headerWeatherPill.addEventListener('click', () => {
+          if (sidebarGemini?.classList.contains('collapsed')) {
+            toggleSidebar(true);
+          } else if (window.innerWidth <= 1024) {
+            toggleSidebar(true);
+          }
+        });
+      }
+    } catch (err) {
+      console.warn('Không thể nạp thời tiết Huế:', err);
+    }
+  }
+  initHueWeatherWidget();
 
   function getCurrentUserId() {
     return window.authController?.currentUser?.uid || null;
@@ -1044,7 +1334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function parseTimestamp(rawDate) {
     if (!rawDate) return new Date();
     if (typeof rawDate.toDate === 'function') {
-      try { return rawDate.toDate(); } catch {}
+      try { return rawDate.toDate(); } catch { }
     }
     if (typeof rawDate === 'object' && rawDate.seconds !== undefined) {
       return new Date(rawDate.seconds * 1000);
@@ -1080,12 +1370,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function persistActiveSession() {
     if (isRestoringSession || !activeSessionId || activeSessionMessages.length === 0) return;
     const uid = getCurrentUserId();
-    
+
     // Tự động gán tiêu đề session theo câu hỏi đầu tiên của người dùng
     const firstUserMsg = activeSessionMessages.find(m => m.role === 'user');
     if (firstUserMsg && (!activeSessionTitle || activeSessionTitle === 'Cuộc trò chuyện mới')) {
-      activeSessionTitle = firstUserMsg.text.length > 36 
-        ? firstUserMsg.text.substring(0, 36).trim() + '...' 
+      activeSessionTitle = firstUserMsg.text.length > 36
+        ? firstUserMsg.text.substring(0, 36).trim() + '...'
         : firstUserMsg.text.trim();
     }
 
@@ -1105,10 +1395,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const uid = getCurrentUserId();
     const sessions = await getUserChatSessions(uid);
 
-    if (historyCountBadge) {
-      historyCountBadge.textContent = sessions.length;
-      historyCountBadge.style.display = sessions.length > 0 ? 'inline-flex' : 'none';
+    const sessionCount = sessions.length;
+    // Đồng bộ số lượng phiên trên cả thanh bên (sidebar) và nút Lịch sử ở thanh tác vụ bên phải (workbench header)
+    if (sidebarHistoryCountBadge) {
+      sidebarHistoryCountBadge.textContent = sessionCount;
     }
+    if (workbenchHistoryCountBadge) {
+      workbenchHistoryCountBadge.textContent = sessionCount;
+    }
+    if (historyCountBadge) {
+      historyCountBadge.textContent = sessionCount;
+    }
+    document.querySelectorAll('.sidebar-count-badge, .history-count-badge').forEach(badge => {
+      badge.textContent = sessionCount;
+    });
 
     if (!chatSessionsList) return;
 
@@ -1193,20 +1493,24 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderWelcomeHero();
     } else {
       activeSessionMessages.forEach(msg => {
+        const textVal = msg.text || msg.content || '';
         if (msg.role === 'user') {
-          appendUserMessage(msg.text, false);
+          if (textVal) appendUserMessage(textVal, false);
         } else if (msg.role === 'assistant') {
           if (msg.isItinerary && msg.itineraryRes) {
-            appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false);
+            appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false, msg.id, msg.feedbackRating);
           } else {
-            appendAssistantResponse(msg.resData || { answer: msg.text }, false);
+            const answerVal = textVal || msg.resData?.answer || '';
+            appendAssistantResponse({ ...msg.resData, answer: answerVal, messageId: msg.id, feedbackRating: msg.feedbackRating, prompt: msg.prompt }, false);
           }
         }
       });
     }
 
     isRestoringSession = false;
-    toggleChatHistoryDrawer(false);
+    if (window.innerWidth <= 1024) {
+      toggleSidebar(false);
+    }
     refreshChatHistoryList(false);
   }
 
@@ -1215,7 +1519,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSessionTitle = 'Cuộc trò chuyện mới';
     activeSessionMessages = [];
     renderWelcomeHero();
-    toggleChatHistoryDrawer(false);
+    if (window.innerWidth <= 1024) {
+      toggleSidebar(false);
+    }
     refreshChatHistoryList(false);
     if (chatInput) chatInput.focus();
 
@@ -1225,30 +1531,298 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function toggleChatHistoryDrawer(forceState) {
-    if (!chatHistoryDrawer) return;
-    const isOpen = typeof forceState === 'boolean' ? forceState : !chatHistoryDrawer.classList.contains('open');
-    if (isOpen) {
-      chatHistoryDrawer.hidden = false;
-      requestAnimationFrame(() => {
-        chatHistoryDrawer.classList.add('open');
-        btnToggleChatHistory?.classList.add('active');
-      });
-      refreshChatHistoryList();
+  function closeUserPopover() {
+    sidebarUserPopover?.classList.remove('active');
+    sidebarUserChip?.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggleUserPopover() {
+    if (!sidebarUserPopover) return;
+    const isNowActive = sidebarUserPopover.classList.toggle('active');
+    sidebarUserChip?.setAttribute('aria-expanded', isNowActive ? 'true' : 'false');
+  }
+
+  function toggleSidebar(forceState) {
+    if (!sidebarGemini) return;
+    closeUserPopover();
+    const isMobile = window.innerWidth <= 1024;
+    if (isMobile) {
+      const willOpen = typeof forceState === 'boolean' ? forceState : !sidebarGemini.classList.contains('mobile-open');
+      sidebarGemini.classList.toggle('mobile-open', willOpen);
+      sidebarBackdrop?.classList.toggle('active', willOpen);
     } else {
-      chatHistoryDrawer.classList.remove('open');
-      btnToggleChatHistory?.classList.remove('active');
+      const willCollapse = typeof forceState === 'boolean' ? !forceState : !sidebarGemini.classList.contains('collapsed');
+      sidebarGemini.classList.toggle('collapsed', willCollapse);
+
+      const toggleBtn = btnSidebarToggle || btnSidebarCollapse;
+      if (toggleBtn) {
+        const tooltipText = willCollapse ? 'Mở thanh bên' : 'Thu gọn thanh bên';
+        toggleBtn.setAttribute('title', tooltipText);
+        toggleBtn.setAttribute('data-tooltip', tooltipText);
+      }
+
+      btnToggleSidebar?.classList.toggle('active', !willCollapse);
+      try {
+        localStorage.setItem('hue_sidebar_collapsed', willCollapse ? '1' : '0');
+      } catch { }
+
+      // Cập nhật kích thước bản đồ mượt mà sau khi hiệu ứng thanh bên hoàn tất
       setTimeout(() => {
-        if (!chatHistoryDrawer.classList.contains('open')) {
-          chatHistoryDrawer.hidden = true;
+        if (window.mapStudio?.map) {
+          window.mapStudio.map.invalidateSize({ animate: false });
         }
-      }, 280);
+      }, 340);
     }
   }
 
+  // Khôi phục trạng thái thu gọn thanh bên trên Desktop
+  try {
+    if (window.innerWidth > 1024 && localStorage.getItem('hue_sidebar_collapsed') === '1') {
+      sidebarGemini?.classList.add('collapsed');
+      const toggleBtn = btnSidebarToggle || btnSidebarCollapse;
+      if (toggleBtn) {
+        toggleBtn.setAttribute('title', 'Mở thanh bên');
+        toggleBtn.setAttribute('data-tooltip', 'Mở thanh bên');
+      }
+    }
+  } catch { }
+
+  function updateSidebarUserProfile(user) {
+    if (!sidebarUserName) return;
+    if (user) {
+      const displayName = user.displayName || user.email?.split('@')[0] || 'Du khách Cố đô';
+      const email = user.email || 'Cloud Firestore';
+      const initial = (displayName || 'U')[0].toUpperCase();
+
+      sidebarUserName.textContent = displayName;
+      sidebarUserStatus.textContent = user.isDemo ? 'Tài khoản Demo' : 'Đồng bộ Cloud Firestore';
+
+      if (popoverUserName) popoverUserName.textContent = displayName;
+      if (popoverUserEmail) popoverUserEmail.textContent = email;
+      if (popoverBadgeStatus) {
+        popoverBadgeStatus.textContent = user.isDemo ? 'Bản Demo' : (user.providerData?.some(p => p.providerId === 'google.com') ? 'Google' : 'Đã đăng nhập');
+        popoverBadgeStatus.className = 'popover-badge-status badge-logged-in';
+      }
+
+      if (popoverLoggedInActions) popoverLoggedInActions.style.display = 'flex';
+      if (popoverGuestActions) popoverGuestActions.style.display = 'none';
+
+      if (user.photoURL) {
+        if (sidebarAvatarImg) {
+          sidebarAvatarImg.src = user.photoURL;
+          sidebarAvatarImg.classList.remove('hidden');
+        }
+        sidebarAvatarFallback?.classList.add('hidden');
+
+        if (popoverAvatarImg) {
+          popoverAvatarImg.src = user.photoURL;
+          popoverAvatarImg.classList.remove('hidden');
+        }
+        popoverAvatarFallback?.classList.add('hidden');
+      } else {
+        sidebarAvatarImg?.classList.add('hidden');
+        if (sidebarAvatarFallback) {
+          sidebarAvatarFallback.textContent = initial;
+          sidebarAvatarFallback.classList.remove('hidden');
+        }
+
+        popoverAvatarImg?.classList.add('hidden');
+        if (popoverAvatarFallback) {
+          popoverAvatarFallback.textContent = initial;
+          popoverAvatarFallback.classList.remove('hidden');
+        }
+      }
+    } else {
+      sidebarUserName.textContent = 'Khách vãng lai';
+      sidebarUserStatus.textContent = 'Bấm để đăng nhập';
+      sidebarAvatarImg?.classList.add('hidden');
+      if (sidebarAvatarFallback) {
+        sidebarAvatarFallback.textContent = 'U';
+        sidebarAvatarFallback.classList.remove('hidden');
+      }
+
+      if (popoverUserName) popoverUserName.textContent = 'Khách vãng lai';
+      if (popoverUserEmail) popoverUserEmail.textContent = 'Chưa đăng nhập';
+      if (popoverBadgeStatus) {
+        popoverBadgeStatus.textContent = 'Khách';
+        popoverBadgeStatus.className = 'popover-badge-status';
+      }
+
+      if (popoverLoggedInActions) popoverLoggedInActions.style.display = 'none';
+      if (popoverGuestActions) popoverGuestActions.style.display = 'flex';
+
+      popoverAvatarImg?.classList.add('hidden');
+      if (popoverAvatarFallback) {
+        popoverAvatarFallback.textContent = 'U';
+        popoverAvatarFallback.classList.remove('hidden');
+      }
+    }
+  }
+
+  // Sự kiện bật / tắt User Account Popover
+  sidebarUserChip?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleUserPopover();
+  });
+
+  sidebarUserPopover?.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!sidebarFooterGroup?.contains(e.target)) {
+      closeUserPopover();
+    }
+  });
+
+  // Nút Cài đặt hệ thống ở thanh bên
+  btnSidebarSettings?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openConfigModal();
+  });
+
+  // Các nút bên trong Popover
+  btnPopoverSavedTours?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openSavedToursModal();
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  btnPopoverConfig?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openConfigModal();
+  });
+
+  btnPopoverGuestConfig?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openConfigModal();
+  });
+
+  btnPopoverLogout?.addEventListener('click', async () => {
+    closeUserPopover();
+    try {
+      await logoutUser();
+      window.authController?.showToast('Đã đăng xuất tài khoản thành công.');
+    } catch (err) {
+      console.error('Lỗi khi đăng xuất:', err);
+    }
+  });
+
+  btnPopoverLogin?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openAuthModal('login');
+  });
+
+  btnPopoverSignup?.addEventListener('click', () => {
+    closeUserPopover();
+    window.authController?.openAuthModal('signup');
+  });
+
+  btnPopoverDemo?.addEventListener('click', () => {
+    closeUserPopover();
+    loginWithDemoUser();
+    window.authController?.showToast('Đã kích hoạt chế độ Trải nghiệm Khách (Demo).');
+  });
+
+  // Khởi tạo và quản lý Modal Cài đặt Ứng dụng (Application Settings)
+  const initSettingsModal = () => {
+    const tabBtns = document.querySelectorAll('.settings-tab-btn');
+    const panels = document.querySelectorAll('.settings-panel');
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+
+        tabBtns.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
+        panels.forEach(p => {
+          if (p.id === targetId) {
+            p.classList.add('active');
+            p.removeAttribute('hidden');
+          } else {
+            p.classList.remove('active');
+            p.setAttribute('hidden', '');
+          }
+        });
+      });
+    });
+
+    // Preferences: Tải và lắng nghe trạng thái đã lưu
+    const autoMapToggle = document.getElementById('pref-toggle-auto-map');
+    const animToggle = document.getElementById('pref-toggle-animations');
+    const weatherToggle = document.getElementById('pref-toggle-weather-tips');
+    const aiDetailSelect = document.getElementById('pref-ai-detail-select');
+    const aiStyleInputs = document.querySelectorAll('input[name="ai-style-option"]');
+    const btnClearCache = document.getElementById('btn-settings-clear-cache');
+
+    if (autoMapToggle) {
+      autoMapToggle.checked = localStorage.getItem('hue_pref_auto_map') !== 'false';
+      autoMapToggle.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_auto_map', e.target.checked);
+      });
+    }
+
+    if (animToggle) {
+      animToggle.checked = localStorage.getItem('hue_pref_animations') !== 'false';
+      animToggle.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_animations', e.target.checked);
+      });
+    }
+
+    if (weatherToggle) {
+      weatherToggle.checked = localStorage.getItem('hue_pref_weather_tips') !== 'false';
+      weatherToggle.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_weather_tips', e.target.checked);
+      });
+    }
+
+    const savedStyle = localStorage.getItem('hue_pref_ai_style') || 'balanced';
+    aiStyleInputs.forEach(input => {
+      if (input.value === savedStyle) input.checked = true;
+      input.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          localStorage.setItem('hue_pref_ai_style', e.target.value);
+        }
+      });
+    });
+
+    if (aiDetailSelect) {
+      aiDetailSelect.value = localStorage.getItem('hue_pref_ai_detail') || 'detailed';
+      aiDetailSelect.addEventListener('change', (e) => {
+        localStorage.setItem('hue_pref_ai_detail', e.target.value);
+      });
+    }
+
+    if (btnClearCache) {
+      btnClearCache.addEventListener('click', () => {
+        sessionStorage.clear();
+        localStorage.removeItem('hue_cached_places_v1');
+        localStorage.removeItem('hue_last_query');
+        window.authController?.showToast('Đã làm mới bộ nhớ đệm và dữ liệu tạm thành công.');
+      });
+    }
+  };
+
+  initSettingsModal();
+
+  btnToggleSidebar?.addEventListener('click', () => toggleSidebar());
+  btnSidebarToggle?.addEventListener('click', () => toggleSidebar());
+  btnSidebarCollapse?.addEventListener('click', () => toggleSidebar());
+  sidebarBackdrop?.addEventListener('click', () => toggleSidebar(false));
+
   btnNewChat?.addEventListener('click', () => startNewChatSession());
-  btnHistoryNewChat?.addEventListener('click', () => startNewChatSession());
-  btnToggleChatHistory?.addEventListener('click', () => toggleChatHistoryDrawer());
+  btnSidebarNewChat?.addEventListener('click', () => {
+    startNewChatSession();
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  btnToggleChatHistory?.addEventListener('click', () => toggleSidebar());
+
   btnWorkbenchSavedTours?.addEventListener('click', () => {
     if (window.authController) {
       if (!window.authController.currentUser) {
@@ -1259,12 +1833,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   });
-  btnCloseHistory?.addEventListener('click', () => toggleChatHistoryDrawer(false));
-  chatHistoryBackdrop?.addEventListener('click', () => toggleChatHistoryDrawer(false));
 
-  // Tự động làm mới danh sách session khi trạng thái đăng nhập thay đổi
-  onAuthChange(() => {
+  btnSidebarSavedTours?.addEventListener('click', () => {
+    if (window.authController) {
+      if (!window.authController.currentUser) {
+        window.authController.openAuthModal('login');
+        window.authController.showToast('Vui lòng đăng nhập để xem các lịch trình đã lưu.');
+      } else {
+        window.authController.openSavedToursModal();
+      }
+    }
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  btnSidebarToggleMap?.addEventListener('click', () => {
+    toggleMapPanel();
+    if (window.innerWidth <= 1024) toggleSidebar(false);
+  });
+
+  // Tự động làm mới danh sách session và cập nhật user profile khi auth thay đổi
+  onAuthChange((user) => {
     refreshChatHistoryList();
+    updateSidebarUserProfile(user);
   });
 
   // Tải danh sách session ban đầu
@@ -1301,7 +1891,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (lowerQuery.includes('1 ngày') || lowerQuery.includes('một ngày')) days = 1;
       else if (lowerQuery.includes('3 ngày') || lowerQuery.includes('ba ngày')) days = 3;
       else if (lowerQuery.includes('2 ngày') || lowerQuery.includes('hai ngày')) days = 2;
-      
+
       const tripType = selectTripType ? selectTripType.value : 'Couples';
       const preferredDishes = getSelectedDishes();
       if (chatInput) chatInput.value = '';
@@ -1310,6 +1900,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Hiển thị tin nhắn người dùng
+    lastUserPrompt = query;
     appendUserMessage(query);
     if (chatInput) chatInput.value = '';
     if (chatSendBtn) chatSendBtn.disabled = true;
@@ -1318,13 +1909,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loadingId = appendAssistantLoading();
 
     try {
-      // Truyền tọa độ GPS người dùng nếu đã có định vị
+      // Truyền tọa độ GPS người dùng nếu đã có định vị & hồ sơ gu du lịch cá nhân hóa
       const userLat = mapStudio.userLocation ? mapStudio.userLocation.lat : null;
       const userLng = mapStudio.userLocation ? mapStudio.userLocation.lng : null;
+      const userPrefs = userStore.getPreferences();
 
-      const res = await TourismApiClient.askAssistant(query, 'Thành phố Huế', userLat, userLng);
+      const res = await TourismApiClient.askAssistant(query, 'Thành phố Huế', userLat, userLng, userPrefs);
       removeLoadingMessage(loadingId);
-      appendAssistantResponse(res);
+      appendAssistantResponse(res, true, query);
     } catch (err) {
       removeLoadingMessage(loadingId);
       appendAssistantError(err.message);
@@ -1341,6 +1933,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function appendUserMessage(text, persist = true) {
+    const safeText = (text !== undefined && text !== null) ? String(text).trim() : '';
+    if (!safeText || safeText === 'undefined') return;
+
     const msg = document.createElement('div');
     msg.className = 'chat-message user';
     msg.innerHTML = `
@@ -1348,7 +1943,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
       <div class="message-bubble">
-        <p>${text}</p>
+        <p>${safeText}</p>
       </div>
     `;
     chatThread.appendChild(msg);
@@ -1357,7 +1952,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (persist && !isRestoringSession) {
       activeSessionMessages.push({
         role: 'user',
-        text: text,
+        text: safeText,
+        content: safeText,
         timestamp: Date.now()
       });
       persistActiveSession();
@@ -1388,15 +1984,121 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (el) el.remove();
   }
 
-  function appendAssistantResponse(res, persist = true) {
+  // =============================================================================
+  // XAI: GIẢI THÍCH CHUỖI SUY LUẬN ĐỒ THỊ MINH BẠCH (EXPLAINABLE GRAPH TRACE)
+  // =============================================================================
+  function createGraphTraceHtml(trace, routeTaken = 'local_knowledge', confidenceScore = 0.88) {
+    if (!trace || !Array.isArray(trace) || trace.length === 0) return '';
+
+    const confPct = Math.round((confidenceScore || 0.85) * 100);
+    const isWeb = routeTaken === 'web_fallback';
+    const routeLabel = isWeb ? 'Web Search (DuckDuckGo)' : 'Tri thức Cố đô (KG + Vector)';
+    const routeBadgeClass = isWeb ? 'route-web' : 'route-kg';
+
+    const stepsHtml = trace.map((step) => {
+      const icon = step.icon || '📌';
+      const label = step.label || step.step;
+      const detail = step.detail || '';
+      const status = step.status || 'done';
+
+      let statusBadge = '';
+      if (step.score !== undefined) {
+        statusBadge = `<span class="xai-step-badge badge-${status}">Tin cậy: ${(step.score * 100).toFixed(0)}%</span>`;
+      } else if (step.count !== undefined) {
+        statusBadge = `<span class="xai-step-badge badge-${status}">${step.count} kết quả</span>`;
+      } else if (step.decision) {
+        const decText = step.decision === 'local_knowledge' ? 'Tri thức nội bộ' : 'DuckDuckGo';
+        statusBadge = `<span class="xai-step-badge badge-decision">${decText}</span>`;
+      } else if (status === 'done' || status === 'found' || status === 'expanded') {
+        statusBadge = `<span class="xai-step-badge badge-success">✓ Đã định vị</span>`;
+      } else if (status === 'redirect') {
+        statusBadge = `<span class="xai-step-badge badge-redirect">Chuyển hướng</span>`;
+      }
+
+      let extraWidgetHtml = '';
+      if (step.step === 'confidence_scoring' && step.score !== undefined) {
+        const pct = Math.min(100, Math.max(0, Math.round(step.score * 100)));
+        extraWidgetHtml = `
+          <div class="xai-confidence-meter">
+            <div class="xai-meter-track">
+              <div class="xai-meter-fill ${pct >= 60 ? 'high' : pct >= 40 ? 'med' : 'low'}" style="width: ${pct}%"></div>
+            </div>
+            <span class="xai-meter-val">${pct}%</span>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="xai-timeline-item" data-step-type="${step.step}">
+          <div class="xai-node-marker">
+            <span class="xai-node-icon">${icon}</span>
+          </div>
+          <div class="xai-node-body">
+            <div class="xai-node-header">
+              <span class="xai-node-title">${label}</span>
+              ${statusBadge}
+            </div>
+            <div class="xai-node-desc">${detail}</div>
+            ${extraWidgetHtml}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="xai-trace-wrapper">
+        <button type="button" class="xai-trace-toggle" aria-expanded="false" title="Nhấp để xem/ẩn chi tiết chuỗi suy luận minh bạch của AI">
+          <div class="xai-toggle-left">
+            <span class="xai-ai-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>GraphRAG Trace</span>
+            </span>
+            <span class="xai-route-pill ${routeBadgeClass}">${routeLabel}</span>
+            <span class="xai-conf-pill" title="Độ tin cậy tổng hợp">Tin cậy: ${confPct}%</span>
+          </div>
+          <div class="xai-toggle-right">
+            <span class="xai-step-indicator">${trace.length} bước</span>
+            <svg class="xai-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </button>
+
+        <div class="xai-trace-drawer">
+          <div class="xai-drawer-inner">
+            <div class="xai-drawer-header">
+              <div class="xai-drawer-title">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span>Chuỗi suy luận minh bạch (Explainable AI Trace)</span>
+              </div>
+              <span class="xai-drawer-tag">LangGraph · Neo4j KG · ChromaDB</span>
+            </div>
+
+            <div class="xai-timeline">
+              ${stepsHtml}
+            </div>
+
+            <div class="xai-drawer-footer">
+              <span class="xai-audit-note">🛡️ Cơ chế truy vết thực thể & phản biện chống hallucination (ảo giác AI)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function appendAssistantResponse(res, persist = true, promptText = '') {
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
 
-    const formattedAnswer = res.answer
-      ? res.answer
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\*(.*?)\*/g, '<em>$1</em>')
-          .replace(/\n/g, '<br/>')
+    const messageId = res.messageId || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const savedRating = res.feedbackRating || null;
+    const finalPrompt = promptText || res.prompt || lastUserPrompt || '';
+
+    const rawAnswer = res.answer || res.text || res.content || '';
+    const formattedAnswer = rawAnswer
+      ? rawAnswer
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br/>')
       : '';
 
     // Khối thẻ chỉ đường nếu phản hồi có điều hướng (Navigation Intent)
@@ -1436,8 +2138,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const dLat = (destination.lat - origin.lat) * Math.PI / 180;
       const dLon = (destination.lng - origin.lng) * Math.PI / 180;
       const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(origin.lat * Math.PI / 180) * Math.cos(destination.lat * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        Math.cos(origin.lat * Math.PI / 180) * Math.cos(destination.lat * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
       const estDistKm = (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1);
       const estDurationMin = Math.max(2, Math.round(parseFloat(estDistKm) * 2.5));
 
@@ -1517,33 +2219,33 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
           <div class="suggested-places-list">
             ${matched.map(p => {
-              const catLower = (p.category || '').toLowerCase();
-              const isFood = catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán');
-              const isCafe = catLower.includes('cafe') || catLower.includes('cà phê');
-              const isHotel = catLower.includes('hotel') || catLower.includes('khách sạn');
-              
-              let catClass = 'attraction';
-              let iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>`;
-              
-              if (isFood) {
-                catClass = 'restaurant';
-                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/></svg>`;
-              } else if (isCafe) {
-                catClass = 'cafe';
-                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg>`;
-              } else if (isHotel) {
-                catClass = 'hotel';
-                iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`;
-              }
+        const catLower = (p.category || '').toLowerCase();
+        const isFood = catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán');
+        const isCafe = catLower.includes('cafe') || catLower.includes('cà phê');
+        const isHotel = catLower.includes('hotel') || catLower.includes('khách sạn');
 
-              return `
+        let catClass = 'attraction';
+        let iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>`;
+
+        if (isFood) {
+          catClass = 'restaurant';
+          iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2v8a3 3 0 0 1-6 0V2M15 10v12M6 2v20M3 2h6"/></svg>`;
+        } else if (isCafe) {
+          catClass = 'cafe';
+          iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/></svg>`;
+        } else if (isHotel) {
+          catClass = 'hotel';
+          iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`;
+        }
+
+        return `
                 <button type="button" class="chat-poi-btn ${catClass}" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}" title="Ghim điểm này lên bản đồ">
                   <span class="poi-btn-icon">${iconSvg}</span>
                   <span class="poi-btn-name">${p.name}</span>
                   <span class="poi-btn-action">&rarr;</span>
                 </button>
               `;
-            }).join('')}
+      }).join('')}
           </div>
         </div>
       `;
@@ -1556,12 +2258,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="message-bubble">
         <div class="message-author">Trợ lý Cố đô</div>
         <div class="answer-content">${formattedAnswer}</div>
+        ${createGraphTraceHtml(res.graph_trace, res.route_taken, res.confidence_score)}
         ${navCardHtml}
         ${placesPillsHtml}
+        ${createFeedbackBarHtml(messageId, savedRating)}
       </div>
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
+
+    // Gán sự kiện mở/đóng XAI Graph Trace Panel
+    msg.querySelectorAll('.xai-trace-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const wrapper = btn.closest('.xai-trace-wrapper');
+        if (!wrapper) return;
+        const isExpanded = wrapper.classList.toggle('is-expanded');
+        btn.setAttribute('aria-expanded', isExpanded);
+      });
+    });
+
+    // Gán sự kiện Feedback (Thích / Chưa tốt / Sao chép)
+    bindFeedbackEvents(msg, {
+      messageId: messageId,
+      prompt: finalPrompt,
+      plainText: res.answer || '',
+      isItinerary: false
+    });
 
     // Gán sự kiện click nút vẽ lại trên bản đồ trong thẻ lộ trình
     msg.querySelectorAll('.btn-nav-replot').forEach(btn => {
@@ -1605,9 +2327,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Lưu phản hồi trợ lý vào phiên chat hiện tại
     if (persist && !isRestoringSession) {
       activeSessionMessages.push({
+        id: messageId,
         role: 'assistant',
         text: res.answer || '',
+        prompt: finalPrompt,
         resData: res,
+        feedbackRating: savedRating,
         timestamp: Date.now()
       });
       persistActiveSession();
@@ -1648,8 +2373,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   const poiBtnDirectNav = document.getElementById('poi-btn-direct-nav');
   const poiBtnAddTour = document.getElementById('poi-btn-add-tour');
   const poiBtnAskAi = document.getElementById('poi-btn-ask-ai');
+  const poiBtnFavorite = document.getElementById('poi-btn-favorite');
+  const poiBtnCheckin = document.getElementById('poi-btn-checkin');
+  const poiFavLabel = document.getElementById('poi-fav-label');
+  const poiCheckinLabel = document.getElementById('poi-checkin-label');
 
   let currentPoiData = null;
+
+  function updateDrawerUserStatus(targetName, targetId) {
+    const isFav = userStore.isFavorite(targetId || targetName);
+    const isCheck = userStore.isCheckedIn(targetId || targetName);
+
+    if (poiBtnFavorite) {
+      poiBtnFavorite.classList.toggle('active', isFav);
+      if (poiFavLabel) poiFavLabel.textContent = isFav ? 'Đã thích' : 'Yêu thích';
+      poiBtnFavorite.title = isFav ? 'Bỏ lưu yêu thích' : 'Lưu vào sổ tay yêu thích';
+      const favSvg = poiBtnFavorite.querySelector('svg');
+      if (favSvg) favSvg.setAttribute('fill', isFav ? 'currentColor' : 'none');
+    }
+
+    if (poiBtnCheckin) {
+      poiBtnCheckin.classList.toggle('active', isCheck);
+      if (poiCheckinLabel) poiCheckinLabel.textContent = isCheck ? 'Đã check-in' : 'Check-in';
+      poiBtnCheckin.title = isCheck ? 'Hủy check-in' : 'Đánh dấu đã ghé thăm';
+    }
+  }
 
   async function openPoiDetail(name, placeId = null) {
     if (!name && !placeId) return;
@@ -1660,7 +2408,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     poiDrawer?.setAttribute('aria-hidden', 'false');
 
     // Tìm dữ liệu địa phương từ masterLandmarks để hiển thị tức thì (Zero-latency fallback)
-    const localPlace = window.mapStudio?.masterLandmarks?.find(p => 
+    const localPlace = window.mapStudio?.masterLandmarks?.find(p =>
       (placeId && p.place_id === placeId) || (name && p.name === name)
     );
 
@@ -1668,6 +2416,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (poiTitle) poiTitle.textContent = initialName;
     if (poiAddressText) poiAddressText.textContent = localPlace?.address || localPlace?.desc || 'Thành phố Huế';
     if (poiDescText) poiDescText.textContent = localPlace?.desc || 'Đang đồng bộ hồ sơ văn hóa và điểm đánh giá...';
+
+    // Cập nhật trạng thái Yêu thích & Check-in ngay lập tức
+    updateDrawerUserStatus(initialName, placeId);
 
     // Cập nhật nhãn category & rating sơ bộ từ dữ liệu bản đồ
     const initialCat = (localPlace?.cat || 'Attraction').toLowerCase();
@@ -1696,12 +2447,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (poiRatingVal) poiRatingVal.textContent = (localPlace?.rating_value || 4.6).toFixed(1);
     if (poiReviewCount) poiReviewCount.textContent = `(${localPlace?.review_count || 350} đánh giá)`;
 
-    if (poiReviewsList) poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang đồng bộ nhận xét từ du khách...</div>';
+    if (poiReviewsList) {
+      if (localPlace?.reviews && localPlace.reviews.length > 0) {
+        if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
+        poiReviewsList.innerHTML = localPlace.reviews.map(r => `
+          <div class="poi-review-card">
+            <div class="review-header">
+              <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
+              <span class="review-tag">👤 ${r.trip_type || 'Du khách'} · ${r.visit_date || '2024'}</span>
+            </div>
+            <h5 class="review-title">${r.title}</h5>
+            <p class="review-comment">“${r.comment}”</p>
+          </div>
+        `).join('');
+      } else {
+        poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang đồng bộ nhận xét từ du khách...</div>';
+      }
+    }
     if (poiNearbyList) poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tìm các địa điểm lân cận...</div>';
 
     try {
       const data = await TourismApiClient.getPlaceDetail(name, placeId);
       currentPoiData = data;
+      updateDrawerUserStatus(data.name || initialName, data.place_id || placeId);
 
       // 2. Cập nhật Tiêu đề và Địa chỉ (bảo vệ tránh lệch tên)
       if (poiTitle) poiTitle.textContent = data.name || initialName;
@@ -1734,14 +2502,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // 4. Rating & Reviews
-      if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || 4.7).toFixed(1);
-      if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || 120} đánh giá)`;
+      if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || localPlace?.rating_value || 4.7).toFixed(1);
+      if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || localPlace?.review_count || 120} đánh giá)`;
 
-      // 5. Nhận xét chân thực từ du khách (TripAdvisor / SQLite)
+      // 5. Nhận xét chân thực từ du khách (TripAdvisor / SQLite / Curated Local)
+      const activeReviews = (data.reviews && data.reviews.length > 0) ? data.reviews : (localPlace?.reviews || []);
       if (poiReviewsList) {
-        if (data.reviews && data.reviews.length > 0) {
+        if (activeReviews.length > 0) {
           if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
-          poiReviewsList.innerHTML = data.reviews.map(r => `
+          poiReviewsList.innerHTML = activeReviews.map(r => `
             <div class="poi-review-card">
               <div class="review-header">
                 <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
@@ -1802,7 +2571,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch (err) {
       console.warn('Lỗi tải chi tiết POI:', err);
-      if (poiDescText) poiDescText.textContent = `Không thể tải hồ sơ chi tiết: ${err.message}.`;
+      if (poiDescText && localPlace?.desc) {
+        poiDescText.textContent = localPlace.desc;
+      }
     }
   }
 
@@ -1876,6 +2647,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     chatForm?.dispatchEvent(new Event('submit'));
   });
 
+  // Action: Lưu vào sổ tay yêu thích từ POI drawer
+  poiBtnFavorite?.addEventListener('click', () => {
+    const activeName = currentPoiData?.name || poiTitle?.textContent;
+    if (!activeName) return;
+
+    const target = {
+      place_id: currentPoiData?.place_id || currentPoiData?.id,
+      name: activeName,
+      category: currentPoiData?.category || poiCatBadge?.textContent || 'Attraction',
+      address: currentPoiData?.address || poiAddressText?.textContent || 'Thành phố Huế',
+      latitude: currentPoiData?.latitude || currentPoiData?.lat,
+      longitude: currentPoiData?.longitude || currentPoiData?.lng,
+      rating_value: currentPoiData?.rating_value || parseFloat(poiRatingVal?.textContent) || 4.6
+    };
+
+    const { isFav } = userStore.toggleFavorite(target);
+    updateDrawerUserStatus(target.name, target.place_id);
+    showHueToast(isFav ? `Đã lưu "${target.name}" vào Sổ tay` : `Đã bỏ lưu "${target.name}"`);
+  });
+
+  // Action: Check-in từ POI drawer
+  poiBtnCheckin?.addEventListener('click', () => {
+    const activeName = currentPoiData?.name || poiTitle?.textContent;
+    if (!activeName) return;
+
+    const target = {
+      place_id: currentPoiData?.place_id || currentPoiData?.id,
+      name: activeName,
+      category: currentPoiData?.category || poiCatBadge?.textContent || 'Attraction',
+      address: currentPoiData?.address || poiAddressText?.textContent || 'Thành phố Huế',
+      latitude: currentPoiData?.latitude || currentPoiData?.lat,
+      longitude: currentPoiData?.longitude || currentPoiData?.lng
+    };
+
+    const { isChecked } = userStore.toggleCheckin(target);
+    updateDrawerUserStatus(target.name, target.place_id);
+    const stats = userStore.getExplorerStats();
+    showHueToast(isChecked ? `Đã check-in: "${target.name}" (${stats.rankTitle})` : `Đã hủy check-in "${target.name}"`);
+  });
+
   // Action: Click vào các thẻ địa điểm nổi bật ở màn hình chào mừng
   document.querySelectorAll('.featured-place-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -1936,5 +2747,504 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 5. Vẽ tuyến đường thực tế qua OSRM và hiển thị Banner điều hướng
     mapStudio.drawNavigationRoute(origin, destination, 'driving');
   };
+
+  // =============================================================================
+  // 9. TOAST NOTIFICATION HELPER (HỆ THỐNG THÔNG BÁO TINH GỌN CHUẨN CỐ ĐÔ)
+  // =============================================================================
+  function showHueToast(message, duration = 3000) {
+    let container = document.querySelector('.hue-toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'hue-toast-container';
+      document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'hue-toast';
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+      toast.classList.add('hide');
+      setTimeout(() => toast.remove(), 320);
+    }, duration);
+  }
+  window.showHueToast = showHueToast;
+
+  // =============================================================================
+  // 10. GLOBAL POPUP FAVORITE & CHECK-IN HANDLERS (LEAFLET POPUP TOOLS)
+  // =============================================================================
+  window.togglePlaceFavorite = (name, placeId, category, address, lat, lng, btnEl) => {
+    const target = {
+      name,
+      place_id: placeId,
+      category,
+      address,
+      latitude: lat,
+      longitude: lng
+    };
+    const { isFav } = userStore.toggleFavorite(target);
+    if (btnEl) {
+      btnEl.classList.toggle('active', isFav);
+      const span = btnEl.querySelector('span');
+      if (span) span.textContent = isFav ? 'Đã thích' : 'Yêu thích';
+      btnEl.title = isFav ? 'Bỏ lưu yêu thích' : 'Lưu vào sổ tay yêu thích';
+      const svg = btnEl.querySelector('svg');
+      if (svg) svg.setAttribute('fill', isFav ? 'currentColor' : 'none');
+    }
+    showHueToast(isFav ? `Đã lưu "${name}" vào Sổ tay` : `Đã bỏ lưu "${name}"`);
+  };
+
+  window.togglePlaceCheckin = (name, placeId, category, address, lat, lng, btnEl) => {
+    const target = {
+      name,
+      place_id: placeId,
+      category,
+      address,
+      latitude: lat,
+      longitude: lng
+    };
+    const { isChecked } = userStore.toggleCheckin(target);
+    if (btnEl) {
+      btnEl.classList.toggle('active', isChecked);
+      const span = btnEl.querySelector('span');
+      if (span) span.textContent = isChecked ? 'Đã check-in' : 'Check-in';
+      btnEl.title = isChecked ? 'Hủy check-in' : 'Đánh dấu đã ghé thăm';
+    }
+    const stats = userStore.getExplorerStats();
+    showHueToast(isChecked ? `Đã check-in: "${name}" (${stats.rankTitle})` : `Đã hủy check-in "${name}"`);
+  };
+
+  // =============================================================================
+  // 11. SỔ TAY DU LỊCH & HÀNH TRÌNH CHECK-IN (TRAVEL NOTEBOOK & PASSPORT CONTROLLER)
+  // =============================================================================
+  const notebookModal = document.getElementById('travel-notebook-modal');
+  const btnCloseNotebook = document.getElementById('btn-close-notebook-modal');
+  const tabWishlist = document.getElementById('tab-notebook-wishlist');
+  const tabCheckin = document.getElementById('tab-notebook-checkin');
+  const tabPreferences = document.getElementById('tab-notebook-preferences');
+  const panelWishlist = document.getElementById('panel-notebook-wishlist');
+  const panelCheckin = document.getElementById('panel-notebook-checkin');
+  const panelPreferences = document.getElementById('panel-notebook-preferences');
+  const badgeWishlistCount = document.getElementById('badge-wishlist-count');
+  const badgeCheckinCount = document.getElementById('badge-checkin-count');
+  const headerNotebookBadge = document.getElementById('header-notebook-badge');
+  const sidebarNotebookBadge = document.getElementById('sidebar-notebook-badge');
+  const wishlistItemsList = document.getElementById('wishlist-items-list');
+  const checkinItemsList = document.getElementById('checkin-items-list');
+  const searchWishlistInput = document.getElementById('input-search-wishlist');
+  const wishlistTotalPill = document.getElementById('wishlist-total-pill');
+  const explorerBadgeCircle = document.getElementById('explorer-badge-circle');
+  const explorerRankTitle = document.getElementById('explorer-rank-title');
+  const explorerRankCount = document.getElementById('explorer-rank-count');
+  const explorerProgressFill = document.getElementById('explorer-progress-fill');
+  const explorerRankDesc = document.getElementById('explorer-rank-desc');
+  const checkinFilterPills = document.querySelectorAll('.checkin-filter-pill');
+
+  let currentCheckinCategory = 'all';
+
+  function updateNotebookBadges() {
+    const favCount = userStore.getFavorites().length;
+    const checkinCount = userStore.getCheckins().length;
+
+    if (headerNotebookBadge) {
+      headerNotebookBadge.textContent = favCount;
+      headerNotebookBadge.style.display = favCount > 0 ? 'inline-flex' : 'none';
+    }
+    if (sidebarNotebookBadge) {
+      sidebarNotebookBadge.textContent = favCount;
+      sidebarNotebookBadge.style.display = favCount > 0 ? 'inline-flex' : 'none';
+    }
+    if (badgeWishlistCount) badgeWishlistCount.textContent = favCount;
+    if (badgeCheckinCount) badgeCheckinCount.textContent = checkinCount;
+  }
+
+  function openNotebookModal(defaultTab = 'wishlist') {
+    if (!notebookModal) return;
+    notebookModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    switchNotebookTab(defaultTab);
+  }
+
+  function closeNotebookModal() {
+    if (!notebookModal) return;
+    notebookModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function switchNotebookTab(tabName) {
+    [tabWishlist, tabCheckin, tabPreferences].forEach(t => {
+      t?.classList.remove('active');
+      t?.setAttribute('aria-selected', 'false');
+    });
+    [panelWishlist, panelCheckin, panelPreferences].forEach(p => {
+      p?.classList.remove('active');
+      p?.setAttribute('hidden', '');
+    });
+
+    if (tabName === 'wishlist') {
+      tabWishlist?.classList.add('active');
+      tabWishlist?.setAttribute('aria-selected', 'true');
+      panelWishlist?.classList.add('active');
+      panelWishlist?.removeAttribute('hidden');
+      renderWishlist(searchWishlistInput?.value || '');
+    } else if (tabName === 'checkin') {
+      tabCheckin?.classList.add('active');
+      tabCheckin?.setAttribute('aria-selected', 'true');
+      panelCheckin?.classList.add('active');
+      panelCheckin?.removeAttribute('hidden');
+      renderCheckinList(currentCheckinCategory);
+    } else if (tabName === 'preferences') {
+      tabPreferences?.classList.add('active');
+      tabPreferences?.setAttribute('aria-selected', 'true');
+      panelPreferences?.classList.add('active');
+      panelPreferences?.removeAttribute('hidden');
+      populatePreferencesForm();
+    }
+  }
+
+  tabWishlist?.addEventListener('click', () => switchNotebookTab('wishlist'));
+  tabCheckin?.addEventListener('click', () => switchNotebookTab('checkin'));
+  tabPreferences?.addEventListener('click', () => switchNotebookTab('preferences'));
+  btnCloseNotebook?.addEventListener('click', closeNotebookModal);
+  notebookModal?.addEventListener('click', (e) => {
+    if (e.target === notebookModal) closeNotebookModal();
+  });
+
+  // Triggers mở Sổ tay Du lịch & Gu cá nhân
+  document.getElementById('btn-sidebar-travel-notebook')?.addEventListener('click', () => openNotebookModal('wishlist'));
+  document.getElementById('btn-sidebar-budget')?.addEventListener('click', () => budgetEstimator.openModal(null, 'Dự toán Ngân sách Du lịch Cố Đô Huế'));
+  document.getElementById('btn-open-travel-notebook')?.addEventListener('click', () => {
+    document.getElementById('user-dropdown-menu')?.classList.remove('active');
+    openNotebookModal('wishlist');
+  });
+  document.getElementById('btn-popover-notebook')?.addEventListener('click', () => {
+    document.getElementById('sidebar-user-popover')?.classList.remove('active');
+    openNotebookModal('wishlist');
+  });
+  document.getElementById('btn-popover-guest-notebook')?.addEventListener('click', () => {
+    document.getElementById('sidebar-user-popover')?.classList.remove('active');
+    openNotebookModal('wishlist');
+  });
+
+  function renderWishlist(query = '') {
+    if (!wishlistItemsList) return;
+    let favorites = userStore.getFavorites();
+
+    if (query.trim()) {
+      const q = mapStudio.removeVietnameseTones(query.trim().toLowerCase());
+      favorites = favorites.filter(item => {
+        const nameNorm = mapStudio.removeVietnameseTones((item.name || '').toLowerCase());
+        const addrNorm = mapStudio.removeVietnameseTones((item.address || '').toLowerCase());
+        const noteNorm = mapStudio.removeVietnameseTones((item.note || '').toLowerCase());
+        return nameNorm.includes(q) || addrNorm.includes(q) || noteNorm.includes(q);
+      });
+    }
+
+    if (wishlistTotalPill) {
+      wishlistTotalPill.textContent = `${favorites.length} địa điểm`;
+    }
+
+    if (favorites.length === 0) {
+      wishlistItemsList.innerHTML = `
+        <div class="notebook-empty-state">
+          <p class="empty-state-title">Chưa có địa điểm lưu trữ</p>
+          <p class="empty-state-desc">${query.trim() ? 'Không tìm thấy địa điểm phù hợp với từ khóa.' : 'Khám phá các địa danh trên bản đồ và nhấn Lưu để quản lý danh sách của bạn.'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    wishlistItemsList.innerHTML = favorites.map(item => {
+      const cat = (item.category || '').toLowerCase();
+      let catLabel = 'DI TÍCH';
+      if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) {
+        catLabel = 'ẨM THỰC';
+      } else if (cat.includes('cafe') || cat.includes('cà phê')) {
+        catLabel = 'CÀ PHÊ';
+      } else if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) {
+        catLabel = 'NGHỈ DƯỠNG';
+      }
+
+      const safeName = (item.name || '').replace(/"/g, '&quot;');
+      const safeAddr = (item.address || 'Thành phố Huế').replace(/"/g, '&quot;');
+      const safeNote = (item.note || '').replace(/"/g, '&quot;');
+
+      return `
+        <div class="wishlist-card" data-name="${safeName}" data-lat="${item.latitude || ''}" data-lng="${item.longitude || ''}">
+          <div class="wishlist-card-header">
+            <span class="wishlist-cat-tag">${catLabel}</span>
+            <div class="wishlist-actions">
+              <button type="button" class="btn-wishlist-action btn-fly-map">Bản đồ</button>
+              <span class="wishlist-action-sep">/</span>
+              <button type="button" class="btn-wishlist-action btn-remove-fav">Bỏ lưu</button>
+            </div>
+          </div>
+          <h4 class="wishlist-card-title">${item.name}</h4>
+          <p class="wishlist-card-address">${safeAddr}</p>
+          <div class="wishlist-note-wrap">
+            <input type="text" class="wishlist-note-input" placeholder="Ghi chú cá nhân..." value="${safeNote}" />
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Event Delegation cho Wishlist (Gắn 1 lần duy nhất, zero-lag)
+  wishlistItemsList?.addEventListener('click', (e) => {
+    const flyBtn = e.target.closest('.btn-fly-map');
+    if (flyBtn) {
+      const card = flyBtn.closest('.wishlist-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      const lat = parseFloat(card.dataset.lat);
+      const lng = parseFloat(card.dataset.lng);
+      closeNotebookModal();
+      showMapPanel(true);
+      if (lat && lng) {
+        mapStudio.panTo(lat, lng, 16);
+      }
+      mapStudio.flyToPoi(name);
+      return;
+    }
+
+    const removeBtn = e.target.closest('.btn-remove-fav');
+    if (removeBtn) {
+      const card = removeBtn.closest('.wishlist-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      userStore.removeFavorite(name);
+      showHueToast(`Đã bỏ lưu "${name}"`);
+      renderWishlist(searchWishlistInput?.value || '');
+      return;
+    }
+  });
+
+  wishlistItemsList?.addEventListener('change', (e) => {
+    const noteInput = e.target.closest('.wishlist-note-input');
+    if (noteInput) {
+      const card = noteInput.closest('.wishlist-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      userStore.updateFavoriteNote(name, noteInput.value.trim());
+      showHueToast(`Đã lưu ghi chú cho "${name}"`);
+    }
+  });
+
+  searchWishlistInput?.addEventListener('input', () => {
+    renderWishlist(searchWishlistInput.value);
+  });
+
+  function updateExplorerRankUi(stats) {
+    const levelTag = document.getElementById('explorer-level-tag');
+    if (levelTag) levelTag.textContent = `CẤP ${stats.level || '01'}`;
+    if (explorerRankTitle) explorerRankTitle.textContent = stats.rankTitle;
+    if (explorerRankCount) explorerRankCount.textContent = `${stats.count} / ${stats.total}`;
+    if (explorerProgressFill) explorerProgressFill.style.width = `${stats.percentage}%`;
+    if (explorerRankDesc) {
+      explorerRankDesc.textContent = stats.remainingForNext > 0
+        ? `Cần thêm ${stats.remainingForNext} điểm check-in để đạt "${stats.nextRankTitle}".`
+        : 'Đã hoàn thành toàn bộ hành trình di sản Cố Đô.';
+    }
+  }
+
+  function getCategoryLabel(catRaw) {
+    const cat = (catRaw || '').toLowerCase();
+    if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) return 'ẨM THỰC';
+    if (cat.includes('cafe') || cat.includes('cà phê')) return 'CÀ PHÊ';
+    if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) return 'NGHỈ DƯỠNG';
+    return 'DI TÍCH';
+  }
+
+  function renderCheckinList(category = 'all') {
+    currentCheckinCategory = category;
+    if (!checkinItemsList) return;
+
+    const stats = userStore.getExplorerStats();
+    updateExplorerRankUi(stats);
+
+    const allLandmarks = mapStudio.masterLandmarks || [];
+    const catNormalized = (category || 'all').toLowerCase();
+    const filtered = catNormalized === 'all'
+      ? allLandmarks
+      : allLandmarks.filter(item => (item.cat || '').toLowerCase() === catNormalized);
+
+    checkinItemsList.innerHTML = filtered.map(item => {
+      const isChecked = userStore.isCheckedIn(item.place_id || item.name);
+      const catLabel = getCategoryLabel(item.cat);
+      const safeName = (item.name || '').replace(/"/g, '&quot;');
+
+      return `
+        <div class="checkin-card ${isChecked ? 'checked' : ''}" data-name="${safeName}" data-lat="${item.lat}" data-lng="${item.lng}">
+          <div class="checkin-card-left">
+            <span class="checkin-checkbox-box" aria-hidden="true">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <div class="checkin-info">
+              <div class="checkin-name">${item.name}</div>
+              <div class="checkin-meta">
+                <span class="checkin-cat-tag">${catLabel}</span>
+                ${isChecked ? '<span class="checkin-done-tag">Đã ghé thăm</span>' : ''}
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-checkin-fly" title="Xem trên bản đồ">Bản đồ</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Event Delegation cho Check-in (Gắn 1 lần duy nhất cho toàn bộ danh sách địa danh)
+  checkinItemsList?.addEventListener('click', (e) => {
+    const flyBtn = e.target.closest('.btn-checkin-fly');
+    if (flyBtn) {
+      const card = flyBtn.closest('.checkin-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      const lat = parseFloat(card.dataset.lat);
+      const lng = parseFloat(card.dataset.lng);
+      closeNotebookModal();
+      showMapPanel(true);
+      if (lat && lng) {
+        mapStudio.panTo(lat, lng, 16);
+      }
+      mapStudio.flyToPoi(name);
+      return;
+    }
+
+    const checkinLeft = e.target.closest('.checkin-card-left');
+    if (checkinLeft) {
+      const card = checkinLeft.closest('.checkin-card');
+      if (!card) return;
+      const name = card.dataset.name;
+      const allLandmarks = mapStudio.masterLandmarks || [];
+      const landmark = allLandmarks.find(p => p.name === name);
+      if (!landmark) return;
+
+      const target = {
+        place_id: landmark.place_id,
+        name: landmark.name,
+        category: landmark.cat,
+        address: landmark.desc || landmark.address,
+        latitude: landmark.lat,
+        longitude: landmark.lng
+      };
+
+      const { isChecked } = userStore.toggleCheckin(target);
+      const newStats = userStore.getExplorerStats();
+      const catLabel = getCategoryLabel(landmark.cat);
+
+      // Cập nhật DOM của card tức thì không tốn CPU dựng lại danh sách
+      card.classList.toggle('checked', isChecked);
+      const metaEl = card.querySelector('.checkin-meta');
+      if (metaEl) {
+        metaEl.innerHTML = `<span class="checkin-cat-tag">${catLabel}</span>${isChecked ? '<span class="checkin-done-tag">Đã ghé thăm</span>' : ''}`;
+      }
+
+      updateExplorerRankUi(newStats);
+      showHueToast(isChecked ? `Đã check-in: "${name}"` : `Đã hủy check-in: "${name}"`);
+    }
+  });
+
+  checkinFilterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      checkinFilterPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      renderCheckinList(pill.dataset.filter);
+    });
+  });
+
+  // =============================================================================
+  // 12. HỒ SƠ GU DU LỊCH & KHẨU VỊ CÁ NHÂN HÓA (TRAVEL PREFERENCES CONTROLLER)
+  // =============================================================================
+  const preferencesForm = document.getElementById('preferences-form');
+  const prefSelectParty = document.getElementById('pref-select-party');
+  const prefSelectTransport = document.getElementById('pref-select-transport');
+  const prefInputNotes = document.getElementById('pref-input-notes');
+
+  function openPreferencesModal() {
+    openNotebookModal('preferences');
+  }
+
+  function populatePreferencesForm() {
+    const prefs = userStore.getPreferences();
+
+    document.querySelectorAll('input[name="pref_style"]').forEach(cb => {
+      cb.checked = (prefs.styles || []).includes(cb.value);
+    });
+
+    document.querySelectorAll('input[name="pref_dietary"]').forEach(cb => {
+      cb.checked = (prefs.dietary || []).includes(cb.value);
+    });
+
+    if (prefSelectParty && prefs.party) {
+      prefSelectParty.value = prefs.party;
+    }
+    if (prefSelectTransport && prefs.transport) {
+      prefSelectTransport.value = prefs.transport;
+    }
+    if (prefInputNotes) {
+      prefInputNotes.value = prefs.customNotes || '';
+    }
+  }
+
+  preferencesForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const selectedStyles = Array.from(document.querySelectorAll('input[name="pref_style"]:checked')).map(el => el.value);
+    const selectedDietary = Array.from(document.querySelectorAll('input[name="pref_dietary"]:checked')).map(el => el.value);
+    const party = prefSelectParty?.value || 'Cặp đôi';
+    const transport = prefSelectTransport?.value || 'Xe máy';
+    const customNotes = prefInputNotes?.value?.trim() || '';
+
+    userStore.savePreferences({
+      styles: selectedStyles.length > 0 ? selectedStyles : ['heritage', 'foodie'],
+      dietary: selectedDietary,
+      party,
+      transport,
+      customNotes
+    });
+
+    showHueToast('Đã lưu Hồ sơ Gu Du Lịch thành công.');
+  });
+
+  // Triggers mở Hồ sơ Gu du lịch
+  document.getElementById('btn-sidebar-user-preferences')?.addEventListener('click', openPreferencesModal);
+  document.getElementById('btn-open-user-preferences')?.addEventListener('click', openPreferencesModal);
+  document.getElementById('btn-popover-preferences')?.addEventListener('click', openPreferencesModal);
+  document.getElementById('btn-popover-guest-preferences')?.addEventListener('click', openPreferencesModal);
+
+  // Phím tắt ESC đóng modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (notebookModal?.classList.contains('active')) closeNotebookModal();
+    }
+  });
+
+  // Lắng nghe thay đổi UserStore để cập nhật reactive
+  window.addEventListener('hue-user-store-changed', () => {
+    updateNotebookBadges();
+    if (notebookModal?.classList.contains('active')) {
+      if (tabWishlist?.classList.contains('active')) {
+        renderWishlist(searchWishlistInput?.value || '');
+      } else if (tabCheckin?.classList.contains('active')) {
+        renderCheckinList(currentCheckinCategory);
+      } else if (tabPreferences?.classList.contains('active')) {
+        populatePreferencesForm();
+      }
+    }
+    if (currentPoiData && poiDrawer?.classList.contains('open')) {
+      updateDrawerUserStatus(currentPoiData.name, currentPoiData.place_id);
+    }
+  });
+
+  // Khởi tạo số liệu ban đầu
+  updateNotebookBadges();
+  populatePreferencesForm();
 
 });

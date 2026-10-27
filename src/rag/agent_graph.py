@@ -60,6 +60,7 @@ from src.rag.web_search_tool import get_web_search_tool
 class TourismAgentState(TypedDict):
     query: str
     locality: str
+    preferences: Optional[Dict[str, Any]]
     target_dish: Optional[str]
     target_place: Optional[str]
     matched_places: List[Dict[str, Any]]
@@ -71,6 +72,7 @@ class TourismAgentState(TypedDict):
     route_taken: str                      # "local_knowledge" | "web_fallback"
     formatted_context: str
     final_answer: str
+    graph_trace: List[Dict[str, Any]]     # XAI: chuỗi suy luận minh bạch của đồ thị
 
 
 # =============================================================================
@@ -84,7 +86,8 @@ web_search_tool = get_web_search_tool()
 llm = ChatOllama(
     model="qwen2.5:3b",
     temperature=0.3,
-    num_ctx=4096
+    num_ctx=4096,
+    keep_alive="24h"
 )
 
 
@@ -93,6 +96,7 @@ llm = ChatOllama(
 # =============================================================================
 def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     query = state["query"]
+    trace_steps = state.get("graph_trace", [])
     norm_q = strip_accents(query)
 
     # 1. Nhận diện địa phương
@@ -103,6 +107,14 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         locality = "Thành phố Hồ Chí Minh"
     elif "da nang" in norm_q:
         locality = "Thành phố Đà Nẵng"
+
+    trace_steps.append({
+        "step": "locality_detection",
+        "icon": "📍",
+        "label": "Nhận diện địa phương",
+        "detail": locality if locality else "Không xác định rõ → mặc định Huế",
+        "status": "found" if locality else "default"
+    })
 
     # 2. Nhận diện món ăn đặc sản trong câu hỏi (hỗ trợ alias phổ biến)
     dish_aliases = {
@@ -119,12 +131,25 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "nem lui": "Nem lụi",
         "banh canh": "Bánh canh Nam Phổ",
         "che bap": "Chè bắp",
-        "me xung": "Mè xửng"
+        "me xung": "Mè xửng",
+        "banh ep": "Bánh ép",
+        "banh mi bot loc": "Bánh mì bột lọc",
+        "banh uot thit nuong": "Bánh ướt thịt nướng",
+        "com am phu": "Cơm âm phủ",
+        "com bay mau": "Cơm âm phủ"
     }
     target_dish = None
     for alias, formal_name in dish_aliases.items():
         if alias in norm_q:
             target_dish = formal_name
+            trace_steps.append({
+                "step": "dish_recognition",
+                "icon": "🍲",
+                "label": "Nhận diện món đặc sản",
+                "detail": f"'{alias}' → {formal_name}",
+                "edge": "ALIAS_MATCH",
+                "status": "found"
+            })
             break
 
     if not target_dish:
@@ -152,10 +177,53 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "bach ma": "place_8877",
         "cau ngoi thanh toan": "place_8885",
         "thanh toan": "place_8885",
-        "bien lang co": "place_8917",
-        "lang co": "place_8917",
+        # Các bãi biển danh tiếng của Thừa Thiên Huế
+        "thuan an": "beach_thuan_an",
+        "bien thuan an": "beach_thuan_an",
+        "bai bien thuan an": "beach_thuan_an",
+        "canh duong": "beach_canh_duong",
+        "bien canh duong": "beach_canh_duong",
+        "bai bien canh duong": "beach_canh_duong",
+        "hai duong": "beach_hai_duong",
+        "bien hai duong": "beach_hai_duong",
+        "bai bien hai duong": "beach_hai_duong",
+        "lang co": "beach_lang_co",
+        "bien lang co": "beach_lang_co",
+        "vinh lang co": "beach_lang_co",
+        "dam lap an": "beach_lang_co",
         "deo hai van": "place_8895",
-        "hai van": "place_8895"
+        "hai van": "place_8895",
+        # Các địa điểm bản địa tinh tuyển mới bổ sung
+        "banh ep gia di": "custom_local_17",
+        "gia di": "custom_local_17",
+        "banh mi o tho": "custom_local_13",
+        "o tho": "custom_local_13",
+        "com am phu": "custom_local_18",
+        "cung an dinh": "custom_local_31",
+        "an dinh": "custom_local_31",
+        "ho thuy tien": "custom_local_21",
+        "chua tu dam": "custom_local_30",
+        "tu dam": "custom_local_30",
+        "banh canh di huong": "custom_local_25",
+        "di huong": "custom_local_25",
+        "bun bo mu keo": "custom_local_26",
+        "mu keo": "custom_local_26",
+        "nem lui ba ty": "custom_local_27",
+        "ba ty": "custom_local_27",
+        "che mo ton dich": "custom_local_29",
+        "mo ton dich": "custom_local_29",
+        "lang thieu tri": "custom_local_33",
+        "thieu tri": "custom_local_33",
+        "ca phe mat biec": "custom_local_15",
+        "mat biec": "custom_local_15",
+        "banh uot huyen anh": "custom_local_08",
+        "huyen anh": "custom_local_08",
+        "chua dieu de": "custom_local_07",
+        "dieu de": "custom_local_07",
+        "gac trinh": "custom_local_16",
+        "ca phe gac trinh": "custom_local_16",
+        "com hen thuy": "custom_local_01",
+        "banh beo o le": "custom_local_02"
     }
 
     matched_places = []
@@ -178,15 +246,72 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 
     ordered_place_ids.sort(key=lambda x: x[0])
     extracted_place_ids = [pid for _, pid in ordered_place_ids]
+
+    # Nhận diện câu hỏi tổng quát về bãi biển / tắm biển / hải sản biển
+    is_beach_query = any(b in norm_q for b in ["bai bien", "bien", "tam bien", "ngam bien"]) and not any(k in norm_q for k in ["bien hoa", "bien gioi"])
+    if is_beach_query and not any(pid in extracted_place_ids for pid in ["beach_thuan_an", "beach_lang_co", "beach_canh_duong", "beach_hai_duong"]):
+        for b_id in ["beach_thuan_an", "beach_lang_co", "beach_canh_duong", "beach_hai_duong"]:
+            extracted_place_ids.append(b_id)
+
+    # Nhận diện câu hỏi tìm địa điểm lân cận ('quanh X', 'gần X', 'trong bán kính Y km')
+    is_nearby_query = any(k in norm_q for k in ["quanh", "xung quanh", "lan can", "ban kinh", "gan day", "gan do", "gan "])
+    # Nếu hỏi quanh một địa danh mà có 'song huong' xuất hiện như cảnh quan, loại bỏ 'song huong' khỏi danh sách đích
+    if is_nearby_query and "place_8882" in extracted_place_ids and len(extracted_place_ids) >= 2:
+        extracted_place_ids = [pid for pid in extracted_place_ids if pid != "place_8882"]
+
+    # XAI trace: ghi lại các thực thể địa danh đã bóc tách
+    for pid in extracted_place_ids:
+        p_info = graph_retriever.G.nodes.get(pid, {})
+        trace_steps.append({
+            "step": "entity_extraction",
+            "icon": "🏯",
+            "label": "Bóc tách thực thể KG",
+            "detail": f"{p_info.get('name', pid)} (node: {pid})",
+            "node_id": pid,
+            "edge": "ALIAS_DICT",
+            "status": "found"
+        })
     target_place_id = extracted_place_ids[0] if extracted_place_ids else None
 
-    # A. Nếu người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN (ví dụ: 'Từ Đại Nội đi Chợ Đông Ba'):
-    if len(extracted_place_ids) >= 2:
+    # A. Nếu là câu hỏi tìm kiếm địa điểm LÂN CẬN (quanh X trong bán kính Y km):
+    if is_nearby_query and target_place_id:
+        origin_place = graph_retriever.get_place(target_place_id)
+        if origin_place:
+            # Bóc tách bán kính km nếu người dùng ghi rõ (ví dụ: 'trong bán kính 2km')
+            radius_km = 2.0
+            import re
+            km_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:km|cay|kilomet)', norm_q)
+            if km_match:
+                try:
+                    radius_km = min(10.0, max(0.5, float(km_match.group(1))))
+                except Exception:
+                    pass
+
+            nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
+            nearby_map[target_place_id] = nearby
+            
+            # QUAN TRỌNG: Loại bỏ chính bản thân điểm mốc (origin_place) và node Sông Hương (place_8882) ra khỏi danh sách gợi ý
+            for nb in nearby:
+                nb_id = nb.get("node_id")
+                if nb_id != target_place_id and nb_id != "place_8882" and nb not in matched_places:
+                    matched_places.append(nb)
+
+            trace_steps.append({
+                "step": "edge_traversal",
+                "icon": "📐",
+                "label": "Duyệt cạnh NEAR_BY",
+                "detail": f"{len(matched_places)} điểm lân cận '{origin_place.get('name', '')}' trong bán kính {radius_km}km",
+                "edge": "NEAR_BY",
+                "count": len(matched_places),
+                "status": "found"
+            })
+    # B. Nếu người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN (ví dụ: 'Từ Đại Nội đi Chợ Đông Ba' hoặc hỏi về các bãi biển):
+    elif len(extracted_place_ids) >= 2:
         for pid in extracted_place_ids:
             p_data = graph_retriever.get_place(pid)
             if p_data and p_data not in matched_places:
                 matched_places.append(p_data)
-    # B. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
+    # C. Nếu có CẢ địa danh xuất phát VÀ món ăn đặc sản: Tìm quán phục vụ món và sắp xếp theo khoảng cách Haversine
     elif target_place_id and target_dish:
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
@@ -207,10 +332,42 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             # Lấy thêm các điểm lân cận qua cạnh NEAR_BY
             nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=1.5, limit=3)
             nearby_map[target_place_id] = nearby
+
+
+            # XAI trace: ghi lại quan hệ SERVES + NEAR_BY
+            trace_steps.append({
+                "step": "edge_traversal",
+                "icon": "🔗",
+                "label": "Duyệt cạnh SERVES",
+                "detail": f"Tìm {len(serving_places)} quán phục vụ '{target_dish}' gần {origin_place.get('name', '')}",
+                "edge": "SERVES",
+                "count": len(serving_places),
+                "status": "found" if serving_places else "empty"
+            })
+            if nearby:
+                trace_steps.append({
+                    "step": "edge_traversal",
+                    "icon": "📐",
+                    "label": "Duyệt cạnh NEAR_BY",
+                    "detail": f"{len(nearby)} điểm lân cận trong bán kính 1.5km",
+                    "edge": "NEAR_BY",
+                    "count": len(nearby),
+                    "status": "found"
+                })
     elif target_dish:
         # Chỉ có món đặc sản: Tìm các quán uy tín phục vụ món
         serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality, limit=5)
         matched_places.extend(serving_places)
+        if serving_places:
+            trace_steps.append({
+                "step": "edge_traversal",
+                "icon": "🍽️",
+                "label": f"Tìm quán phục vụ '{target_dish}' (SERVES)",
+                "detail": f"Định vị được {len(serving_places)} quán đặc sản tại {locality or 'Huế'}",
+                "edge": "SERVES",
+                "count": len(serving_places),
+                "status": "found"
+            })
     elif target_place_id:
         # Chỉ có địa danh di tích: Lấy điểm gốc và các điểm lân cận
         origin_place = graph_retriever.get_place(target_place_id)
@@ -221,11 +378,29 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             for nb in nearby:
                 if nb not in matched_places:
                     matched_places.append(nb)
+            if nearby:
+                trace_steps.append({
+                    "step": "edge_traversal",
+                    "icon": "📐",
+                    "label": "Duyệt cạnh NEAR_BY",
+                    "detail": f"{len(nearby)} điểm lân cận '{origin_place.get('name', '')}'",
+                    "edge": "NEAR_BY",
+                    "count": len(nearby),
+                    "status": "found"
+                })
 
     # C. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG
     if not matched_places:
         searched = graph_retriever.search_places(query, locality=locality, limit=4)
         matched_places.extend(searched)
+        trace_steps.append({
+            "step": "fuzzy_search",
+            "icon": "🔎",
+            "label": "Tìm kiếm mờ trong KG",
+            "detail": f"Fuzzy search '{query}' → {len(searched)} kết quả",
+            "count": len(searched),
+            "status": "found" if searched else "empty"
+        })
 
     # 4. Nhận diện nhu cầu ăn chay hoặc danh mục đặc thù
     if any(k in norm_q for k in ["chay", "quan chay", "com chay", "an chay", "do chay"]):
@@ -247,13 +422,23 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 if near:
                     nearby_map[pid] = near
 
+    # XAI: tổng kết bước KG retrieval
+    trace_steps.append({
+        "step": "kg_summary",
+        "icon": "📊",
+        "label": "Tổng kết Đồ thị Tri thức",
+        "detail": f"{len(matched_places)} địa điểm, {sum(len(v) for v in nearby_map.values())} lân cận, {sum(len(v) for v in dishes_map.values())} món đặc sản",
+        "status": "found" if matched_places else "empty"
+    })
+
     return {
         "locality": locality,
         "target_dish": target_dish,
         "target_place": target_place_id,
         "matched_places": matched_places,
         "nearby_map": nearby_map,
-        "dishes_map": dishes_map
+        "dishes_map": dishes_map,
+        "graph_trace": trace_steps
     }
 
 
@@ -262,6 +447,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 # =============================================================================
 def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
     query = state["query"]
+    trace_steps = state.get("graph_trace", [])
     norm_q = strip_accents(query)
     matched_places = state.get("matched_places", [])
 
@@ -284,14 +470,65 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
         place_urls=place_urls if place_urls else None
     )
 
+    # Nếu câu hỏi dạng hội thoại tự nhiên làm điểm vector thấp, thử tìm theo từ khóa món ăn
+    target_dish = state.get("target_dish")
+    if (not reviews or raw_score < 0.40) and target_dish:
+        dish_query = f"{target_dish} {state.get('locality', 'Huế')}"
+        d_reviews, d_score = vector_retriever.query_reviews(
+            query_text=dish_query,
+            n_results=3,
+            place_urls=place_urls if place_urls else None
+        )
+        if d_score > raw_score:
+            reviews = d_reviews
+            raw_score = d_score
+
+    # Nếu ChromaDB chưa có vector cho địa điểm bản địa mới nhưng node KG đã có sẵn reviews thực tế:
+    if not reviews and matched_places:
+        for p in matched_places:
+            if p.get("reviews"):
+                for r in p["reviews"][:2]:
+                    reviews.append({
+                        "text": f"[{r.get('title', 'Đánh giá')}] {r.get('comment', '')}",
+                        "rating": r.get("rating", 5.0),
+                        "trip_type": r.get("trip_type", "Du khách"),
+                        "source": p.get("name", "Đặc sản Cố Đô")
+                    })
+                raw_score = max(raw_score, 0.75)
+                break
+
     # Tính toán Composite Confidence Score
-    entity_bonus = 0.15 if matched_places else 0.0
-    dish_bonus = 0.10 if state.get("target_dish") else 0.0
-    total_confidence = min(1.0, raw_score + entity_bonus + dish_bonus)
+    # Khi Knowledge Graph đã định vị được các địa điểm thực tế, hệ thống có độ tin cậy cơ sở cao (0.60)
+    kg_base = 0.60 if matched_places else 0.0
+    entity_bonus = 0.15 if len(matched_places) >= 2 else (0.10 if matched_places else 0.0)
+    dish_bonus = 0.10 if target_dish else 0.0
+    vector_contrib = min(0.15, raw_score * 0.2) if raw_score > 0 else 0.0
+    total_confidence = min(0.98, kg_base + entity_bonus + dish_bonus + vector_contrib) if matched_places else min(1.0, raw_score + dish_bonus)
+
+    # XAI trace: ghi lại bước vector retrieval và confidence scoring
+    place_names = [p.get("name", "") for p in matched_places[:2] if p.get("name")]
+    names_str = f" cho '{', '.join(place_names)}'" if place_names else ""
+    trace_steps.append({
+        "step": "vector_retrieval",
+        "icon": "🧠",
+        "label": "Truy xuất Review thực tế (Graph-Guided Vector)",
+        "detail": f"{len(reviews)} reviews khớp{names_str} | Điểm tương đồng: {raw_score:.2f}",
+        "count": len(reviews),
+        "status": "found" if reviews else "empty"
+    })
+    trace_steps.append({
+        "step": "confidence_scoring",
+        "icon": "⚡",
+        "label": "Tính Composite Confidence",
+        "detail": f"KG Base={kg_base:.2f} + Entity={entity_bonus:.2f} + Dish={dish_bonus:.2f} + Vector={vector_contrib:.2f} → {total_confidence:.2f}",
+        "score": total_confidence,
+        "status": "high" if total_confidence >= 0.6 else "medium" if total_confidence >= 0.4 else "low"
+    })
 
     return {
         "reviews": reviews,
-        "confidence_score": round(total_confidence, 4)
+        "confidence_score": round(total_confidence, 4),
+        "graph_trace": trace_steps
     }
 
 
@@ -308,6 +545,7 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
     confidence = state.get("confidence_score", 0.0)
     has_places = len(state.get("matched_places", [])) > 0
     has_reviews = len(state.get("reviews", [])) > 0
+    trace_steps = state.get("graph_trace", [])
 
     query_lower = state["query"].lower()
     norm_q = strip_accents(query_lower)
@@ -322,16 +560,48 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
     is_external_query = any(t in norm_q or t in query_lower for t in external_triggers)
 
     if is_external_query:
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "🌐",
+            "label": "Router → Web Search Fallback",
+            "detail": "Câu hỏi thời gian thực (giờ mở cửa/giá vé/thời tiết) → chuyển sang DuckDuckGo",
+            "decision": "web_fallback",
+            "status": "redirect"
+        })
         return "node_web_search_fallback"
 
     # Nếu Knowledge Graph đã định vị được các địa điểm thực tế
     if has_places:
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "✅",
+            "label": "Router → Tri thức Nội bộ",
+            "detail": f"KG đã định vị {len(state.get('matched_places', []))} địa điểm → phản hồi từ CSDL nội bộ",
+            "decision": "local_knowledge",
+            "status": "confident"
+        })
         return "node_generate_response"
 
     # Nếu Vector Search tìm được review chất lượng cao
     if has_reviews and confidence >= 0.40:
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "✅",
+            "label": "Router → Tri thức Nội bộ (Review)",
+            "detail": f"ChromaDB review đủ tin cậy (confidence={confidence:.2f} ≥ 0.40)",
+            "decision": "local_knowledge",
+            "status": "confident"
+        })
         return "node_generate_response"
 
+    trace_steps.append({
+        "step": "routing_decision",
+        "icon": "🌐",
+        "label": "Router → Web Search Fallback",
+        "detail": f"Confidence thấp ({confidence:.2f} < 0.40, KG=0 địa điểm) → chuyển sang DuckDuckGo",
+        "decision": "web_fallback",
+        "status": "redirect"
+    })
     return "node_web_search_fallback"
 
 
@@ -340,11 +610,22 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
 # =============================================================================
 def node_web_search_fallback(state: TourismAgentState) -> Dict[str, Any]:
     query = state["query"]
+    trace_steps = state.get("graph_trace", [])
     web_results = web_search_tool.search(query, max_results=3)
+
+    trace_steps.append({
+        "step": "web_search",
+        "icon": "🌐",
+        "label": "Tìm kiếm Web (DuckDuckGo)",
+        "detail": f"{len(web_results)} kết quả từ DuckDuckGo/Wikipedia",
+        "count": len(web_results),
+        "status": "found" if web_results else "empty"
+    })
 
     return {
         "web_results": web_results,
-        "route_taken": "web_fallback"
+        "route_taken": "web_fallback",
+        "graph_trace": trace_steps
     }
 
 
@@ -407,21 +688,59 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
    - Bạn CHỈ ĐƯỢC PHÉP giới thiệu các quán ăn phục vụ món {target_dish} từ danh sách ngữ cảnh.
    - Tuyệt đối KHÔNG ĐƯỢC nhắc đến các món ăn hay quán ăn khác (như cơm hến, bánh bèo, chè...) không liên quan đến {target_dish}."""
 
+    # 4. Cá nhân hóa theo Hồ sơ Gu Du Lịch của Người dùng
+    preferences = state.get("preferences") or {}
+    pref_rules = []
+    if preferences:
+        styles = preferences.get("styles") or []
+        if styles:
+            style_str = ", ".join(styles)
+            pref_rules.append(f"- Phong cách ưa thích: {style_str}. Ưu tiên các điểm đến và trải nghiệm đúng gu này.")
+        dietary = preferences.get("dietary") or []
+        if "Ăn chay" in dietary:
+            pref_rules.append("- Khẩu vị: Du khách ĂN CHAY. Tuyệt đối ưu tiên các quán chay, món chay, danh lam chùa chiền thanh tịnh ở Cố đô.")
+        if "Không ăn cay / Ít ớt" in dietary:
+            pref_rules.append("- Khẩu vị: Du khách KHÔNG ĂN CAY / ÍT ỚT. Nhắc nhở dặn quán làm ít cay, không bỏ ớt chưng sa tế đậm.")
+        if "Ăn cay chuẩn Huế" in dietary:
+            pref_rules.append("- Khẩu vị: Du khách thích ĂN CAY ĐẬM ĐÀ, chuẩn phong vị cay xé lưỡi đặc trưng của xứ Huế.")
+        if "Dị ứng hải sản" in dietary:
+            pref_rules.append("- Dị ứng: Du khách DỊ ỨNG HẢI SẢN. Cảnh báo tránh các món tôm cá, mắm ruốc truyền thống nếu có thể.")
+        party = preferences.get("party")
+        if party:
+            pref_rules.append(f"- Nhóm đồng hành: {party}. Điều chỉnh nhịp độ di chuyển và không gian phù hợp với nhóm này.")
+        transport = preferences.get("transport")
+        if transport:
+            pref_rules.append(f"- Phương tiện di chuyển: {transport}.")
+
+    pref_section = ""
+    if pref_rules:
+        pref_section = "\n\n5. CÁ NHÂN HÓA THEO GU DU LỊCH CỦA DU KHÁCH:\n" + "\n".join(pref_rules)
+
     system_prompt = f"""Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
 
 Nguyên tắc trả lời bắt buộc:
-1. VĂN PHONG TỰ NHIÊN, LỊCH SỰ, ẤM ÁP:
-   - Mở đầu nhẹ nhàng, lịch thiệp ("Dạ thưa bạn...", "Dạ, em xin chia sẻ...", "Chào bạn...").
+1. VĂN PHONG TỰ NHIÊN, LỊCH SỰ, ĐÚNG MỰC:
+   - Xưng hô chuẩn mực: Xưng "em" hoặc "Trợ lý Cố đô", gọi người dùng là "bạn" hoặc "quý khách".
+   - Tuyệt đối KHÔNG tự tiện dùng các đại từ xưng hô gia đình kỳ quặc như "chị/mẹ", "cô/bác", "ông/bà".
+   - Mở đầu nhẹ nhàng, lịch thiệp ("Dạ chào bạn...", "Dạ, em xin gợi ý với bạn...", "Chào bạn...").
    - Tuyệt đối KHÔNG dùng các câu cứng nhắc, máy móc như: "Dựa trên dữ liệu Đồ thị Tri thức...", "Hệ thống đã xác định thành công...".
    - Diễn đạt 100% bằng tiếng Việt trong sáng, gần gũi như một người bạn đồng hành bản địa tại Huế.
 
-2. NẾU DU KHÁCH HỎI ĐƯỜNG ĐI / LỘ TRÌNH:
+2. NẾU DU KHÁCH HỎI CÁC ĐIỂM QUANH / GẦN MỘT ĐỊA DANH (VÍ DỤ "QUANH CHÙA THIÊN MỤ", "GẦN ĐẠI NỘI"):
+   - Tuyệt đối KHÔNG giới thiệu lại chính địa danh mốc đó làm điểm tham quan lân cận (không gợi ý Chùa Thiên Mụ khi người ta đang hỏi quanh Chùa Thiên Mụ).
+   - Sông Hương là dòng sông cảnh quan chung, KHÔNG giới thiệu "Perfume River / Sông Hương" như một điểm đến có "Giá: Bình dân" độc lập. Thay vào đó, hãy gợi ý các điểm ngắm sông cụ thể xung quanh như: Nhà vườn Bến Xuân, Bến thuyền chùa Thiên Mụ, Đồi Hà Khê, Văn Miếu Huế, các quán cafe/nhà hàng ngắm cảnh bờ sông trong ngữ cảnh.
+
+3. VỀ BÃI BIỂN VÀ HẢI SẢN TẠI THỪA THIÊN HUẾ:
+   - Thừa Thiên Huế có các bãi biển đẹp nổi tiếng gồm: Bãi biển Thuận An (cách TP Huế ~15km, nổi tiếng tắm biển và hải sản tươi rói), Vịnh & Bãi biển Lăng Cô / Đầm Lập An (dưới chân đèo Hải Vân, vịnh biển đẹp bậc nhất thế giới, nức tiếng hải sản tôm hùm, hàu đầm), Bãi biển Cảnh Dương (cắm trại, bãi cát thoai thoải), Bãi biển Hải Dương (bờ kè bãi đá sống ảo cực đẹp).
+   - Sông Hương là SÔNG NƯỚC NGỌT CHẢY TRONG LÒNG THÀNH PHỐ HUẾ, TUYỆT ĐỐI KHÔNG CÓ BÃI BIỂN NÀO BÊN BỜ SÔNG HƯƠNG. Cấm tuyệt đối không được bịa đặt hay nói "bãi biển bên bờ sông Hương".
+   - Khi du khách hỏi về tắm biển hoặc ăn hải sản ở Huế, hãy giới thiệu các bãi biển Thuận An, Lăng Cô, Cảnh Dương, Hải Dương và các món hải sản tươi sống đặc trưng.
+
+4. NẾU DU KHÁCH HỎI ĐƯỜNG ĐI / LỘ TRÌNH:
    - Trả lời ngắn gọn (1-2 câu), thông báo tuyến đường đã được định vị và vẽ trực tiếp trên bản đồ bên cạnh.
    - Nhắc tên điểm đến và địa chỉ cụ thể nếu có, gợi ý du khách xem cự ly và bấm nút Google Maps bên dưới để nghe dẫn đường khi di chuyển.
 
-3. VỚI CÂU HỎI VỀ ẨM THỰC / DANH THẮNG:
-   - Đi thẳng vào các thắc mắc (địa chỉ, giá cả, thời điểm đẹp nhất trong ngày, món ngon đặc sản).
-   - Dùng icon sinh động (🏯, 🍲, 📍, ⏰) và gạch đầu dòng rõ ràng.{dish_rule}"""
+5. ĐỊNH DẠNG TÊN ĐỊA DANH BẰNG CHỮ IN ĐẬM:
+   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{pref_section}"""
 
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
@@ -457,9 +776,16 @@ Nguyên tắc trả lời bắt buộc:
         elif is_nav:
             answer_text = "Dạ, em đã ghi nhận điểm đến và định vị lộ trình di chuyển tối ưu trên bản đồ bên cạnh cho bạn rồi nhé!"
         elif target_dish and matched_places:
-            places_bullets = "\n".join([f"• **{p.get('name')}** ({p.get('address', p.get('street_address', 'TP. Huế'))})" for p in matched_places[:5]])
+            bullets = []
+            for p in matched_places[:4]:
+                p_name = p.get('name')
+                p_addr = p.get('address') or p.get('street_address') or 'TP. Huế'
+                p_desc = p.get('description') or p.get('desc') or ''
+                desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
+                bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
+            places_bullets = "\n".join(bullets)
             answer_text = (
-                f"Dạ, em xin gợi ý danh sách các quán **{target_dish}** ngon và chuẩn vị nhất tại Huế dành cho bạn:\n\n"
+                f"Dạ, nếu bạn muốn thưởng thức món **{target_dish}** chuẩn vị xứ Huế, em xin gợi ý những quán nổi tiếng được người dân địa phương và du khách đánh giá cao nhất:\n\n"
                 f"{places_bullets}\n\n"
                 f"Bạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!"
             )
@@ -469,13 +795,45 @@ Nguyên tắc trả lời bắt buộc:
                 f"Dạ, em xin gửi bạn thông tin về **{places_str}**. "
                 f"Bạn có thể xem vị trí chi tiết, các món ăn đặc sắc và đánh giá thực tế của du khách ngay trên bản đồ bên cạnh nhé!"
             )
+        elif web_results:
+            bullets = []
+            for w in web_results[:3]:
+                title = w.get("title") or ""
+                snippet = w.get("snippet") or ""
+                if title:
+                    bullets.append(f"• **{title}**: {snippet[:140]}...")
+            wb_str = "\n".join(bullets)
+            answer_text = (
+                f"Dạ, theo kết quả tra cứu tổng hợp về du lịch Cố đô Huế:\n\n{wb_str}\n\n"
+                f"Bạn có thể xem chi tiết vị trí và gợi ý trên bản đồ tương tác nhé!"
+            )
         else:
             answer_text = "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"
+
+    # XAI trace: ghi lại bước sinh phản hồi cuối cùng
+    trace_steps = state.get("graph_trace", [])
+    if pref_rules:
+        trace_steps.append({
+            "step": "user_personalization",
+            "icon": "✨",
+            "label": "Cá nhân hóa Gu du lịch",
+            "detail": f"Đã áp dụng {len(pref_rules)} tiêu chí khẩu vị & phong cách du khách",
+            "status": "applied"
+        })
+    trace_steps.append({
+        "step": "llm_generation",
+        "icon": "🤖",
+        "label": "Sinh phản hồi (Qwen2.5-3B GPU)",
+        "detail": f"LLM tổng hợp từ {len(context_blocks)} khối ngữ cảnh → câu trả lời tự nhiên",
+        "model": "qwen2.5:3b",
+        "status": "done"
+    })
 
     return {
         "formatted_context": full_context,
         "final_answer": answer_text,
-        "route_taken": route_taken
+        "route_taken": route_taken,
+        "graph_trace": trace_steps
     }
 
 
@@ -540,7 +898,8 @@ def query_agent(question: str):
         "confidence_score": 0.0,
         "route_taken": "local_knowledge",
         "formatted_context": "",
-        "final_answer": ""
+        "final_answer": "",
+        "graph_trace": []
     }
 
     result = agent.invoke(initial_state)

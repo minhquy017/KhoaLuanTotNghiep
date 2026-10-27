@@ -127,3 +127,118 @@ trong đó $S_{\text{grounding}} \in [0, 1]$ là tỷ lệ các thực thể tro
 Nút 4: Phân luồng dự phòng tìm kiếm mạng (Web Search Fallback). Nếu điểm số tin cậy $S_{\text{conf}} < \tau_{\text{conf}} = 0,65$ (xảy ra khi du khách hỏi về các sự kiện thời sự mới phát sinh ngoài phạm vi đồ thị tĩnh), cạnh có điều kiện sẽ kích hoạt nhánh rẽ sang công cụ tìm kiếm DuckDuckGo/Google Search để thu thập các trang tin mới nhất, sau đó hợp nhất vào ngữ cảnh. Ngược lại, nếu $S_{\text{conf}} \ge 0,65$, hệ thống chuyển thẳng sang nút tạo sinh.
 
 Nút 5: Tạo sinh câu trả lời có kiểm soát (Constrained Generation Node). Mô hình Qwen2.5-3B tiếp nhận toàn bộ ngữ cảnh đã được neo giữ (grounded context) từ đồ thị tri thức để sinh câu trả lời bằng tiếng Việt tự nhiên, bảo đảm không bịa đặt bất kỳ thông tin nào ngoài các nút thực thể đã được cung cấp.
+
+\section{Tầng Lưu trữ Đám mây NoSQL và Quản trị Đa phiên Hội thoại}
+\label{sec:ch1-cloud-storage}
+
+\subsection{Cấu trúc Lược đồ Dữ liệu Phân tán trên Cloud Firestore}
+\label{subsec:ch1-firestore-schema}
+
+Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận cục bộ, toàn bộ dữ liệu trạng thái phiên và hành trình du lịch được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán thành ba bộ sưu tập độc lập:
+
+Bộ sưu tập thứ nhất là \texttt{chat\_sessions}, đóng vai trò lưu trữ toàn diện lịch sử các cuộc trò chuyện của từng du khách. Mỗi tài liệu trong bộ sưu tập đại diện cho một phiên hội thoại duy nhất với định danh khóa chính là \texttt{sessionId}. Tài liệu lưu trữ các trường dữ liệu tổng quan bao gồm mã định danh du khách (\texttt{userId}), tiêu đề tóm tắt phiên (\texttt{title}) được tự động trích xuất từ câu hỏi đầu tiên, mốc thời gian khởi tạo (\texttt{createdAt}) và thời điểm cập nhật gần nhất (\texttt{updatedAt}). Đáng chú ý, toàn bộ diễn biến cuộc đối thoại được kiên định hóa bên trong mảng cấu trúc \texttt{messages}: mỗi phần tử trong mảng lưu trữ vai trò người phát ngôn (\texttt{role}: người dùng hoặc trợ lý), nội dung phản hồi văn bản (\texttt{text}), câu hỏi truy vấn gốc (\texttt{prompt}), mã định danh thông điệp duy nhất (\texttt{id}), chỉ số phản hồi của du khách (\texttt{feedbackRating}: thích hoặc chưa tốt), và đối tượng dữ liệu phân tích chi tiết (\texttt{resData}) bao gồm danh sách các thực thể POI đề xuất, thẻ hành trình điều hướng và các thông số suy luận không gian.
+
+Bộ sưu tập thứ hai là \texttt{saved\_itineraries}, chịu trách nhiệm lưu trữ các tour du lịch đa chặng đã được thuật toán tối ưu hóa và được du khách đánh dấu lưu lại. Mỗi tài liệu hành trình lưu trữ tiêu đề chuyến đi, số ngày trải nghiệm, kiểu hình du lịch, danh mục các điểm dừng theo từng chặng (Legs), khoảng cách di chuyển dự kiến, thời gian tham quan ước tính tại mỗi di tích, danh sách món ăn đặc sản được bảo chứng tại các quán ăn lân cận, và mảng tọa độ GPS đầy đủ phục vụ việc tái hiện trực quan tuyến đường trên bản đồ số.
+
+Bộ sưu tập thứ ba là \texttt{ai\_feedbacks}, ghi nhận toàn bộ các phản hồi đánh giá của du khách đối với từng câu trả lời cụ thể của tác tử RAG. Dữ liệu này bao gồm mã thông điệp (\texttt{messageId}), câu truy vấn gốc (\texttt{prompt}), nội dung phản hồi của mô hình, nhãn đánh giá nhị phân (\texttt{rating} mang giá trị $+1$ cho phản hồi hữu ích và $-1$ cho phản hồi chưa chính xác), cùng nhãn thời gian và ngữ cảnh không gian lúc đánh giá. Đây là tập ngữ liệu quý giá phục vụ chu trình kiểm thử và tinh chỉnh mô hình ngôn ngữ theo phản hồi con người (RLHF) trong các giai đoạn phát triển tiếp theo.
+
+Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đồ các bộ sưu tập dữ liệu trên Cloud Firestore.
+
+\begin{table}[htbp]
+\centering
+\caption{Cấu trúc lược đồ và đặc tả dữ liệu các bộ sưu tập trên Cloud Firestore}
+\label{tab:firestore-schema}
+\small
+\begin{tabularx}{\textwidth}{l l l X}
+\hline
+\textbf{Bộ sưu tập} & \textbf{Tên trường} & \textbf{Kiểu dữ liệu} & \textbf{Mô tả chức năng nghiệp vụ} \\
+\hline
+\texttt{chat\_sessions} & \texttt{sessionId} & String (Khóa) & Định danh duy nhất của phiên hội thoại \\
+& \texttt{userId} & String & Mã định danh người dùng sở hữu phiên \\
+& \texttt{title} & String & Tiêu đề phiên trích xuất từ câu hỏi đầu \\
+& \texttt{createdAt, updatedAt} & Timestamp & Mốc thời gian tạo và cập nhật phiên \\
+& \texttt{messages} & Array[Object] & Mảng danh sách thông điệp và kết quả RAG \\
+\hline
+\texttt{saved\_itineraries} & \texttt{itineraryId} & String (Khóa) & Mã định danh lộ trình du lịch đã lưu \\
+& \texttt{userId} & String & Mã người dùng sở hữu lịch trình \\
+& \texttt{title, days, tripType} & String, Number & Thông tin tổng quát cấu hình chuyến đi \\
+& \texttt{legs, coordinates} & Array[Object] & Danh sách các chặng dừng và mảng tọa độ GPS \\
+& \texttt{savedAt} & Timestamp & Thời điểm lưu trữ lịch trình \\
+\hline
+\texttt{ai\_feedbacks} & \texttt{feedbackId} & String (Khóa) & Mã định danh bản ghi phản hồi du khách \\
+& \texttt{messageId} & String & Tham chiếu thông điệp được đánh giá \\
+& \texttt{rating} & String & Nhãn đánh giá (\texttt{like} hoặc \texttt{dislike}) \\
+& \texttt{prompt, response} & String & Cặp câu hỏi và câu trả lời được đánh giá \\
+& \texttt{timestamp} & Timestamp & Thời điểm ghi nhận phản hồi \\
+\hline
+\end{tabularx}
+\end{table}
+
+Cấu trúc phân tầng tại Bảng \ref{tab:firestore-schema} cho phép hệ thống phân lập hoàn toàn giữa dữ liệu hội thoại tức thời và dữ liệu lộ trình dài hạn, bảo đảm tốc độ truy vấn đọc ghi luôn duy trì dưới 80 mili-giây trên quy mô hàng ngàn phiên làm việc đồng thời.
+
+\subsection{Cơ chế Quản lý Vòng đời Phiên hội thoại và Đồng bộ hóa Đa thiết bị}
+\label{subsec:ch1-session-lifecycle}
+
+Quá trình tương tác của du khách được kiểm soát thông qua một cơ chế vòng đời phiên hội thoại (Multi-session Lifecycle Management) bốn giai đoạn chặt chẽ:
+
+Giai đoạn khởi tạo phiên mới (\texttt{startNewChatSession}): Khi du khách nhấn nút khởi tạo cuộc trò chuyện mới hoặc truy cập lần đầu, hệ thống phát sinh một mã phiên duy nhất dạng \texttt{session\_\{timestamp\}}, làm sạch danh sách thông điệp hiển thị trên giao diện, hiển thị thẻ chào đón định hướng với các câu hỏi gợi ý, đồng thời kích hoạt hàm dọn dẹp bản đồ không gian (\texttt{mapStudio.resetToDefaultState}) nhằm đóng toàn bộ các thẻ thông tin di tích cũ, xóa bỏ đường đa tuyến hành trình (route polyline) và đưa góc nhìn bản đồ về tọa độ trung tâm thành phố Huế.
+
+Giai đoạn ghi nhận và kiên định hóa tự động (\texttt{persistActiveSession}): Sau mỗi lượt tương tác, câu hỏi của người dùng và kết quả phân tích kèm lộ trình từ tác tử Spatial GraphRAG được tự động đóng gói và nạp vào mảng thông điệp nội tại. Hàm kiên định hóa sẽ thực thi việc ghi đè bất đồng bộ dữ liệu phiên lên Cloud Firestore tương ứng với định danh \texttt{userId} của du khách, bảo đảm cuộc trò chuyện không bị gián đoạn hay thất thoát khi người dùng làm mới trình duyệt hoặc chuyển đổi mạng kết nối.
+
+Giai đoạn khôi phục phiên lịch sử (\texttt{restoreChatSession}): Khi du khách chọn một cuộc trò chuyện cũ từ danh sách thanh bên, hệ thống thiết lập trạng thái phục hồi, nạp lại toàn bộ thông điệp đối thoại, tái tạo các thẻ lộ trình trực quan kèm nút vẽ lại trên bản đồ (\texttt{btn-nav-replot}), đồng thời gán lại đầy đủ trạng thái đánh giá phản hồi (\texttt{feedbackRating}) giúp du khách tiếp tục mạch đối thoại liền mạch.
+
+Giai đoạn dọn dẹp và phân quyền an toàn (\texttt{deleteChatSession}): Du khách có quyền chủ động xóa bỏ từng phiên trò chuyện lịch sử không còn nhu cầu tra cứu. Thao tác xóa được xác thực quyền sở hữu thông qua mã thông báo JWT, bảo đảm người dùng chỉ có quyền thao tác trên các phiên hội thoại do chính mình tạo ra.
+
+\section{Thiết kế Giao diện Khách Web Tương tác Không gian (Gemini-Style Client)}
+\label{sec:ch1-frontend-design}
+
+\subsection{Kiến trúc Thanh bên Điều hướng Thích ứng (Responsive Collapsible Sidebar)}
+\label{subsec:ch1-sidebar}
+
+Kế thừa các chuẩn mực thiết kế giao diện tương tác người dùng hiện đại từ các hệ thống trợ lý AI hàng đầu như Google Gemini và ChatGPT, hệ thống phát triển một giao diện web tích hợp bản đồ số thông minh (Spatial Web Client) với thanh bên điều hướng thích ứng hai trạng thái~\cite{sugumaran2010spatial}:
+
+Ở trạng thái mở rộng mặc định với độ rộng 280 pixel, thanh bên cung cấp đầy đủ các tiện ích điều hướng nghiệp vụ, bao gồm nút khởi tạo cuộc trò chuyện mới dạng viên thuốc bo tròn (Gemini Pill Button), widget theo dõi khí tượng Cố đô Huế thời gian thực, các nút chuyển đổi nhanh chế độ xem bản đồ số toàn màn hình và xem danh mục lịch trình đã lưu, danh mục cuộn danh sách các phiên trò chuyện gần đây kèm thời gian tương đối và số lượng tin nhắn, nút mở hộp thoại cấu hình hệ thống, cùng khối hiển thị thông tin tài khoản người dùng ở chân trang.
+
+Ở trạng thái thu gọn với độ rộng 52 pixel (Icon Rail), thanh bên tự động tối giản hóa nhằm giải phóng tối đa không gian hiển thị cho bản đồ không gian và khung đối thoại chính. Toàn bộ các tiêu đề chữ, mô tả văn bản và tiện ích mở rộng được ẩn đi, các nút thao tác chuyển đổi thành các biểu tượng vuông 36 pixel được căn giữa chính xác. Để bảo đảm tính công thái học và khả năng nhận diện chức năng của người dùng, hệ thống tích hợp cơ chế nhãn gợi ý nổi (Hover Tooltips): khi du khách rê chuột vào bất kỳ biểu tượng nào trên thanh dải hẹp, một nhãn chú giải màu trắng viền xám tinh tế sẽ xuất hiện tức thời ở phía bên phải biểu tượng với hiệu ứng phóng to mượt mà, cung cấp thông tin chỉ dẫn mà không chiếm dụng diện tích màn hình.
+
+Trên các thiết bị di động và máy tính bảng có độ phân giải chiều ngang dưới 1024 pixel, thanh bên tự động chuyển dịch sang cơ chế ngăn kéo trượt (Slide-over Drawer) ẩn hoàn toàn ra ngoài khung nhìn và chỉ xuất hiện khi người dùng nhấn nút mở menu, đi kèm lớp phủ nền làm mờ (Backdrop Blur) và tự động đóng lại khi du khách chọn một tác vụ cụ thể nhằm tối ưu hóa diện tích hiển thị trên màn hình cảm ứng nhỏ.
+
+\subsection{Tiện ích Khí tượng Du lịch Cố đô Thời gian thực thích ứng Ngữ cảnh}
+\label{subsec:ch1-weather}
+
+Điều kiện thời tiết tại Cố đô Huế mang tính đặc thù sâu sắc với hai thái cực rõ rệt giữa mùa mưa dầm kéo dài và mùa nắng nóng gay gắt. Một lộ trình du lịch dù được tối ưu hóa hoàn hảo về mặt cự ly hình học vẫn có thể trở thành trải nghiệm bất tiện nếu bắt du khách di chuyển ngoài trời giữa cơn mưa lớn hoặc lúc trưa nắng gắt. Do đó, việc mở rộng bài toán định tuyến du lịch truyền thống sang mô hình lập lịch trình thích ứng ngữ cảnh thời gian thực (Context-Aware Tourist Trip Design Problem) là yêu cầu cấp thiết~\cite{gavalas2014context}. Hệ thống tích hợp trực tiếp một tiện ích khí tượng thời gian thực kết nối với giao diện lập trình ứng dụng Open-Meteo~\cite{zippenfenig2023openmeteo} thông qua tọa độ trắc địa trung tâm thành phố Huế ($\phi = 16,4637^\circ\text{N}, \lambda = 107,5909^\circ\text{E}$).
+
+Bộ tham số khí tượng thu nhận tức thời bao gồm nhiệt độ không khí $T$ ($^\circ\text{C}$), độ ẩm tương đối $H$ (\%), lượng mưa tích lũy $P$ (mm) và mã hiện tượng thời tiết $c_{\text{wmo}}$ tuân theo bảng mã tiêu chuẩn của Tổ chức Khí tượng Thế giới (WMO Code Table 4677)~\cite{wmo2019codes}. Dựa trên các chỉ số này, hàm ánh xạ thích ứng ngữ cảnh $\mathcal{M}(T, H, P, c_{\text{wmo}}) \to (\mathcal{S}_{\text{context}}, \mathcal{R}_{\text{advise}})$ tự động phân loại trạng thái môi trường và kích hoạt bộ quy tắc điều chỉnh gợi ý điểm đến tương ứng. Chi tiết ma trận quy tắc thích ứng lộ trình theo ngữ cảnh khí tượng được tổng hợp tại Bảng \ref{tab:weather-rules}.
+
+\begin{table}[htbp]
+\centering
+\caption{Ma trận Quy tắc Thích ứng Lộ trình theo Ngữ cảnh Khí tượng Cố đô Huế}
+\label{tab:weather-rules}
+\begin{tabularx}{\textwidth}{l c c X X}
+\hline
+\textbf{Mã WMO} & \textbf{Nhiệt độ $T$} & \textbf{Mưa $P$} & \textbf{Ngữ cảnh môi trường} & \textbf{Chiến lược Thích ứng Gợi ý} \\
+\hline
+0, 1, 2 & $20^\circ\text{C} \le T \le 28^\circ\text{C}$ & $0\text{ mm}$ & Trời quang đãng, mát mẻ & Ưu tiên các quần thể di tích ngoài trời và danh thắng tự nhiên (Đại Nội, Chùa Thiên Mụ, Đồi Vọng Cảnh, Lăng Khải Định). \\
+0, 1 & $T > 33^\circ\text{C}$ & $0\text{ mm}$ & Nắng nóng gay gắt & Khuyến nghị hạn chế di chuyển ngoài trời giữa trưa, ưu tiên di tích có bóng râm hoặc không gian trưng bày trong nhà (Cung An Định, Bảo tàng Cổ vật Cung đình), đề xuất các quán cà phê ven sông Hương và ẩm thực chè thanh nhiệt. \\
+51--67 & Mọi giá trị $T$ & $P > 0\text{ mm}$ & Mưa dầm đặc trưng & Cảnh báo trang bị ô dù, tái cấu trúc lộ trình ưu tiên các di tích có hành lang và mái che liên hoàn, gợi ý dừng chân trải nghiệm ẩm thực nóng ấm (Bún bò Huế, Bánh canh Nam Phổ, Bánh khoái). \\
+80--99 & Mọi giá trị $T$ & $P \ge 5\text{ mm}$ & Mưa rào hoặc dông sét & Phát tín hiệu cảnh báo an toàn, tạm dừng các tuyến tham quan đồi núi và sông nước, đề xuất chuyển hướng sang không gian văn hóa ẩm thực trong nhà an toàn. \\
+\hline
+\end{tabularx}
+\end{table}
+
+Ma trận quy tắc tại Bảng \ref{tab:weather-rules} cung cấp cơ chế lập luận ngữ cảnh trực tiếp cho tác tử thông minh, bảo đảm các kế hoạch tham quan do mô hình ngôn ngữ lớn tổng hợp luôn dung hòa chặt chẽ giữa cự ly di chuyển tối ưu và mức độ thoải mái an toàn sinh học của du khách trong điều kiện khí hậu thực tế của Cố đô.
+
+\subsection{Cơ chế Xác thực Đa phương thức và Menu Tài khoản Popover Nổi}
+\label{subsec:ch1-auth-popover}
+
+Nhằm dung hòa giữa yêu cầu bảo mật thông tin, khả năng cá nhân hóa dữ liệu và tính thuận tiện khi sử dụng, hệ thống triển khai cơ chế xác thực đa kênh linh hoạt:
+
+Phương thức thứ nhất là Đăng nhập một chạm thông qua tài khoản Google (Google OAuth 2.0 Identity Provider), cho phép du khách hoàn tất xác thực trong một thao tác nhấp chuột an toàn, tự động đồng bộ hóa họ tên, địa chỉ email và ảnh đại diện lên thanh bên.
+
+Phương thức thứ hai là Xác thực truyền thống qua Email và Mật khẩu, cung cấp giao diện đăng ký và đăng nhập độc lập có kiểm tra tính hợp lệ của mật khẩu và gửi phản hồi thông báo lỗi rõ ràng.
+
+Phương thức thứ ba là Chế độ Trải nghiệm Khách vãng lai (Guest Demo Mode), cho phép du khách lập tức trải nghiệm đầy đủ các tính năng trò chuyện thông minh, tra cứu di tích và quan sát bản đồ nhiệt ẩm thực mà không bắt buộc phải tạo tài khoản, giảm thiểu tối đa rào cản tiếp cận ban đầu.
+
+Đặc biệt, để quản lý thông tin cá nhân mà không làm gián đoạn luồng làm việc trên bản đồ, hệ thống thiết kế Menu tài khoản người dùng dưới dạng một khung cửa sổ nổi (Popover Menu) định vị chính xác ngay phía trên chip tài khoản ở góc dưới thanh bên. Khi du khách nhấp chuột vào chip tài khoản, menu popover sẽ bật mở với hiệu ứng chuyển động trượt mượt mà (\texttt{popoverSlideUp}) và tự động đóng lại khi nhấp chuột ra ngoài vùng điều khiển. Menu tự động phân nhánh giao diện theo trạng thái người dùng: đối với khách vãng lai, menu hiển thị các nút thao tác nhanh để Đăng nhập, Đăng ký, Cài đặt kết nối cơ sở dữ liệu Firebase đám mây cá nhân và Nút dùng thử Demo; đối với du khách đã đăng nhập, menu hiển thị huy hiệu xác nhận đồng bộ đám mây, thông tin tài khoản, phím tắt xem các lịch trình đã lưu, quản lý cấu hình kết nối và nút đăng xuất tài khoản an toàn.
+
+Nhằm tăng cường tính linh hoạt khi kiểm thử và triển khai hệ thống trong nhiều môi trường máy chủ khác nhau mà không cần biên dịch lại mã nguồn tĩnh, hệ thống tích hợp Hộp thoại cấu hình Firebase động (\texttt{firebase-config-modal}). Giao diện này cho phép quản trị viên hoặc người nghiên cứu nạp trực tiếp bộ tham số định danh dự án cá nhân (bao gồm API Key, Auth Domain, Project ID, App ID và Measurement ID) thông qua giao diện web trực quan. Khi xác nhận lưu trữ, hệ thống tự động kiểm tra tính hợp lệ của các trường dữ liệu, lưu trữ bền vững vào bộ nhớ cục bộ (\texttt{localStorage}) của trình duyệt và tái khởi tạo kết nối Firebase SDK tức thời ngay trong phiên làm việc, loại bỏ hoàn toàn sự phụ thuộc cứng vào tệp cấu hình môi trường tĩnh khi triển khai phân tán trên môi trường người dùng cuối.
