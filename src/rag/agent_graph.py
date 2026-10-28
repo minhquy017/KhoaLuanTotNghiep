@@ -83,8 +83,8 @@ graph_retriever = get_graph_retriever()
 vector_retriever = get_vector_retriever()
 web_search_tool = get_web_search_tool()
 
-# LLM cục bộ chạy trên GPU (Mặc định: Qwen2.5-VL:7B)
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5-vl:7b")
+# LLM cục bộ chạy trên GPU (Mặc định: Qwen2.5-VL:7B - tag Ollama là qwen2.5vl:7b)
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5vl:7b")
 llm = ChatOllama(
     model=OLLAMA_MODEL,
     temperature=0.3,
