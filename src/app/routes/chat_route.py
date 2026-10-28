@@ -69,9 +69,10 @@ def chat_assistant(req: ChatRequest):
         clean_places = []
         seen_ids = set()
 
-        # Nếu hỏi về ẩm thực / quán ăn, ưu tiên các địa điểm là quán ăn thay vì danh thắng thuần túy
+        # Nếu hỏi về ẩm thực / quán ăn thuần túy (không phải có lộ trình di chuyển), ưu tiên các quán ăn
         is_food_query = any(w in req.query.lower() for w in ["quán", "quan", "ăn", "an", "món", "mon", "uống", "cafe", "cà phê"])
-        if is_food_query and len(all_poi_candidates) > 2:
+        nav_info = res.get("nav_route_info")
+        if is_food_query and not nav_info and len(all_poi_candidates) > 2:
             food_candidates = [p for p in all_poi_candidates if any(c in (p.get("category") or "").lower() for c in ["restaurant", "ẩm thực", "quán", "cafe", "cà phê"])]
             other_candidates = [p for p in all_poi_candidates if p not in food_candidates]
             all_poi_candidates = food_candidates + other_candidates
@@ -99,54 +100,102 @@ def chat_assistant(req: ChatRequest):
         nav_keywords = [
             "chỉ đường", "chi duong", "đường đi", "duong di", "đi đến", "di den", 
             "làm sao để đi", "lam sao de di", "cách đi", "cach di", "dẫn đường", "dan duong",
-            "hướng dẫn đường", "lộ trình", "lo trinh", "chỉ lối", "chi loi"
+            "hướng dẫn đường", "lộ trình", "lo trinh", "chỉ lối", "chi loi",
+            "đi đường nào", "di duong nao", "đi như thế nào", "di nhu the nao",
+            "khoảng bao xa", "khoang bao xa", "bao xa", "mất bao xa", "mat bao xa",
+            "mấy cây số", "may cay so", "mấy km", "may km", "mấy cây", "may cay",
+            "cách mấy", "cach may"
         ]
-        is_navigation_query = any(k in norm_q for k in nav_keywords) or (
+        is_navigation_query = bool(nav_info) or any(k in norm_q for k in nav_keywords) or (
             ("từ " in norm_q or "tu " in norm_q) and any(w in norm_q for w in ["đi ", "đến ", "den ", "tới ", "toi ", "sang ", "qua "])
         ) or any(k in norm_q for k in ["đi tới", "di toi", "đi sang", "di sang", "đi qua", "di qua"])
 
         nav_payload = None
-        if is_navigation_query and clean_places:
+        if is_navigation_query and (nav_info or clean_places):
             origin_place = None
-            dest_place = clean_places[0]
+            dest_place = None
 
-            # Nếu có từ 2 địa danh và có cấu trúc 'từ A đi/đến B'
-            if len(clean_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
-                origin_place = {
-                    "name": clean_places[0]["name"],
-                    "latitude": clean_places[0]["latitude"],
-                    "longitude": clean_places[0]["longitude"]
-                }
-                dest_place = clean_places[1]
+            # 1. Ưu tiên tuyệt đối: Ground Truth Navigation từ Agent Graph
+            if nav_info and nav_info.get("origin") and nav_info.get("destination"):
+                origin_place = nav_info["origin"]
+                dest_place = nav_info["destination"]
             else:
-                dest_place = clean_places[0]
-                if req.user_lat and req.user_lng:
+                # 2. Fallback heuristic
+                has_origin_context = any(w in norm_q for w in [
+                    "từ ", "tu ", "ở ", "o ", "tại ", "tai ", "sau khi ", "xem xong ", 
+                    "tham quan xong ", "ngắm ", "ngam ", "tren duong ve", "trên đường về", "gần ", "gan "
+                ])
+                if len(clean_places) >= 2 and has_origin_context:
                     origin_place = {
-                        "name": "Vị trí của bạn",
-                        "latitude": float(req.user_lat),
-                        "longitude": float(req.user_lng)
+                        "name": clean_places[0]["name"],
+                        "latitude": clean_places[0]["latitude"],
+                        "longitude": clean_places[0]["longitude"],
+                        "address": clean_places[0].get("address", "Thành phố Huế"),
+                        "category": clean_places[0].get("category", "Attraction")
                     }
-                else:
-                    origin_place = {
-                        "name": "Trung tâm TP Huế (Cầu Tràng Tiền)",
-                        "latitude": 16.4674,
-                        "longitude": 107.5905
-                    }
+                    dest_place = clean_places[1]
+                elif clean_places:
+                    dest_place = clean_places[0]
+                    if req.user_lat and req.user_lng:
+                        origin_place = {
+                            "name": "Vị trí của bạn",
+                            "latitude": float(req.user_lat),
+                            "longitude": float(req.user_lng),
+                            "address": "Vị trí GPS của bạn",
+                            "category": "CurrentLocation"
+                        }
+                    else:
+                        origin_place = {
+                            "name": "Trung tâm TP Huế (Cầu Tràng Tiền)",
+                            "latitude": 16.4674,
+                            "longitude": 107.5905,
+                            "address": "Cầu Trường Tiền, TP Huế",
+                            "category": "Attraction"
+                        }
 
-            nav_info = res.get("nav_route_info") or {}
-            nav_payload = {
-                "is_navigation": True,
-                "origin": origin_place,
-                "destination": {
-                    "name": dest_place["name"],
-                    "category": dest_place.get("category", "Attraction"),
-                    "address": dest_place.get("address", "Thành phố Huế"),
-                    "latitude": dest_place["latitude"],
-                    "longitude": dest_place["longitude"]
-                },
-                "distance_km": nav_info.get("distance_km"),
-                "duration_min": nav_info.get("duration_min")
-            }
+            if origin_place and dest_place:
+                nav_payload = {
+                    "is_navigation": True,
+                    "origin": origin_place,
+                    "destination": {
+                        "name": dest_place["name"],
+                        "category": dest_place.get("category", "Attraction"),
+                        "address": dest_place.get("address", "Thành phố Huế"),
+                        "latitude": float(dest_place["latitude"]),
+                        "longitude": float(dest_place["longitude"])
+                    },
+                    "distance_km": nav_info.get("distance_km") if nav_info else None,
+                    "duration_min": nav_info.get("duration_min") if nav_info else None
+                }
+
+                # Đảm bảo destination và origin nằm đầu clean_places để hiển thị ghim đầy đủ
+                p_names = {dest_place["name"].lower()}
+                if origin_place.get("name"):
+                    p_names.add(origin_place["name"].lower())
+                remaining_places = [p for p in clean_places if p.get("name", "").lower() not in p_names]
+                
+                head_places = []
+                if dest_place.get("latitude") and dest_place.get("longitude"):
+                    head_places.append({
+                        "node_id": str(dest_place.get("node_id", "")),
+                        "name": dest_place["name"],
+                        "category": dest_place.get("category", "Attraction"),
+                        "latitude": float(dest_place["latitude"]),
+                        "longitude": float(dest_place["longitude"]),
+                        "rating": float(dest_place.get("rating", dest_place.get("rating_value", 4.5))),
+                        "address": dest_place.get("address", dest_place.get("street_address", "Thành phố Huế"))
+                    })
+                if origin_place.get("latitude") and origin_place.get("longitude") and origin_place.get("category") != "CurrentLocation":
+                    head_places.append({
+                        "node_id": str(origin_place.get("node_id", "")),
+                        "name": origin_place["name"],
+                        "category": origin_place.get("category", "Attraction"),
+                        "latitude": float(origin_place["latitude"]),
+                        "longitude": float(origin_place["longitude"]),
+                        "rating": float(origin_place.get("rating", origin_place.get("rating_value", 4.5))),
+                        "address": origin_place.get("address", origin_place.get("street_address", "Thành phố Huế"))
+                    })
+                clean_places = head_places + remaining_places
 
         # 3. Đảm bảo Graph Trace và Confidence Score luôn được truyền đầy đủ về Frontend
         trace = res.get("graph_trace") or []

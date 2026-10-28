@@ -105,7 +105,7 @@
     "address": "Thành phố Huế",
     "rating_value": 3.9,
     "review_count": 628,
-    "tags": "cau truong tien, truong tien bridge, , di tich, thang canh"
+    "tags": "cau truong tien, cau trang tien, truong tien bridge, trang tien bridge, di tich, thang canh"
   },
   {
     "place_id": "place_8881",
@@ -319,6 +319,27 @@
     "rating_value": 4.8,
     "review_count": 520,
     "tags": "chua huyen khong son thuong, thien vien, thanh tinh"
+  },
+  {
+    "place_id": "custom_attr_con_hen",
+    "name": "Cồn Hến (Đảo Cồn Hến)",
+    "lat": 16.4815,
+    "lng": 107.6035,
+    "cat": "Attraction",
+    "desc": "P. Vĩ Dạ, TP Huế · Ốc đảo phù sa xanh mướt giữa dòng sông Hương, cái nôi ẩm thực Cơm hến - Chè bắp trứ danh",
+    "address": "Cồn Hến, P. Vĩ Dạ, TP Huế",
+    "rating_value": 4.6,
+    "review_count": 850,
+    "tags": "con hen, dao con hen, com hen con hen, bun hen, vi da, song huong, dac san hue",
+    "reviews": [
+      {
+        "title": "Ốc đảo bình yên cái nôi của món cơm hến Huế",
+        "comment": "Cồn Hến như một thế giới tách biệt giữa lòng thành phố náo nhiệt. Đi qua cây cầu sắt Phú Lưu nhỏ hẹp là chạm ngay vào những rặng bắp xanh mướt và những quán cơm hến, chè bắp gia truyền mộc mạc thơm nức nở ven đường.",
+        "rating": 5.0,
+        "trip_type": "Du khách tự túc",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
   },
   {
     "place_id": "place_7326",
@@ -1987,8 +2008,8 @@
   {
     "place_id": "custom_local_02",
     "name": "Bánh Bèo O Lệ",
-    "lat": 16.4741,
-    "lng": 107.5956,
+    "lat": 16.4775,
+    "lng": 107.5905,
     "cat": "Restaurant",
     "desc": "Kiệt Hồ Xuân Hương, Gia Hội · Khay bánh bèo chén tôm chấy đúc nóng hổi giòn rụm trứ danh",
     "address": "Kiệt Hồ Xuân Hương, P. Gia Hội, TP Huế",

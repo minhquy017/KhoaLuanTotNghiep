@@ -168,7 +168,12 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "chua thien mu": "place_8876",
         "thien mu": "place_8876",
         "song huong": "place_8882",
-        "cau trang tien": "place_8882",
+        "ben thuyen toa kham": "place_8882",
+        "toa kham": "place_8882",
+        "cau trang tien": "place_8919",
+        "cau truong tien": "place_8919",
+        "truong tien": "place_8919",
+        "trang tien": "place_8919",
         "cho dong ba": "place_8920",
         "dong ba": "place_8920",
         "lang khai dinh": "place_8879",
@@ -195,6 +200,29 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "dam lap an": "beach_lang_co",
         "deo hai van": "place_8895",
         "hai van": "place_8895",
+        # Các danh thắng nổi tiếng ở bờ Nam và ngoại ô Huế
+        "doi vong canh": "custom_attr_02",
+        "vong canh": "custom_attr_02",
+        "lang gia long": "custom_attr_01",
+        "gia long": "custom_attr_01",
+        "lang huong thuy xuan": "custom_attr_03",
+        "lang huong": "custom_attr_03",
+        "thuy xuan": "custom_attr_03",
+        "dien hon chen": "custom_attr_04",
+        "hon chen": "custom_attr_04",
+        "huyen khong son thuong": "custom_attr_05",
+        "chua huyen khong": "custom_attr_05",
+        "doi thien an": "custom_local_21",
+        "thien an": "custom_local_21",
+        "ky dai": "place_8875",
+        "cot co": "place_8875",
+        "con hen": "custom_attr_con_hen",
+        "dao con hen": "custom_attr_con_hen",
+        "vi da": "custom_attr_con_hen",
+        "banh beo ba do": "custom_rest_04",
+        "ba do": "custom_rest_04",
+        "com hen hoa dong": "custom_rest_02",
+        "hoa dong": "custom_rest_02",
         # Các địa điểm bản địa tinh tuyển mới bổ sung
         "banh ep gia di": "custom_local_17",
         "gia di": "custom_local_17",
@@ -248,6 +276,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 
     ordered_place_ids.sort(key=lambda x: x[0])
     extracted_place_ids = [pid for _, pid in ordered_place_ids]
+    pid_to_pos = {pid: pos for pos, pid in ordered_place_ids}
 
     # Nhận diện câu hỏi tổng quát về bãi biển / tắm biển / hải sản biển
     is_beach_query = any(b in norm_q for b in ["bai bien", "bien", "tam bien", "ngam bien"]) and not any(k in norm_q for k in ["bien hoa", "bien gioi"])
@@ -275,11 +304,36 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         })
     target_place_id = extracted_place_ids[0] if extracted_place_ids else None
 
-    # A. ƯU TIÊN 1: Có CẢ địa danh mốc VÀ món ăn đặc sản (ví dụ: 'ăn bún bò gần Cầu Tràng Tiền', 'quán bánh bèo quanh Đại Nội'):
-    if target_place_id and target_dish:
+    # A. ƯU TIÊN TUYỆT ĐỐI 1: Người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN và có ý định di chuyển (Từ A đi/sang/đến B):
+    has_route_intent = any(w in norm_q for w in [
+        "từ ", "tu ", "sang ", "đến ", "den ", "tới ", "toi ", "qua ", "đi ", "di ",
+        "sau khi ", "xong ", "khoang cach", "bao xa", "may cay", "may km", "duong nao"
+    ])
+    if len(extracted_place_ids) >= 2 and has_route_intent:
+        for pid in extracted_place_ids:
+            p_data = graph_retriever.get_place(pid)
+            if p_data:
+                p_copy = dict(p_data)
+                p_copy["query_pos"] = pid_to_pos.get(pid, 999)
+                if not any(p.get("node_id") == pid for p in matched_places):
+                    matched_places.append(p_copy)
+        
+        trace_steps.append({
+            "step": "edge_traversal",
+            "icon": "🛣️",
+            "label": "Tuyến hành lang di chuyển A → B",
+            "detail": f"Khớp lộ trình: {' → '.join(p.get('name', '') for p in matched_places[:3])}",
+            "edge": "MULTI_POINT_ROUTE",
+            "count": len(matched_places),
+            "status": "found"
+        })
+    # B. ƯU TIÊN 2: Có CẢ địa danh mốc VÀ món ăn đặc sản (ví dụ: 'ngắm hoàng hôn ở Đồi Vọng Cảnh, trên đường về ghé quán bánh bèo', 'ăn bún bò gần Cầu Tràng Tiền'):
+    elif target_place_id and target_dish:
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
-            lat0, lng0 = origin_place.get("latitude"), origin_place.get("longitude")
+            origin_copy = dict(origin_place)
+            origin_copy["query_pos"] = pid_to_pos.get(target_place_id, 0)
+            lat0, lng0 = origin_copy.get("latitude"), origin_copy.get("longitude")
             serving_places = graph_retriever.find_places_by_dish(target_dish, locality=locality or "Thành phố Huế", limit=20)
             if lat0 and lng0:
                 for sp in serving_places:
@@ -287,10 +341,16 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                         sp["dist_to_origin"] = haversine_distance(lat0, lng0, sp["latitude"], sp["longitude"])
                 serving_places.sort(key=lambda x: x.get("dist_to_origin", 999))
 
+            # Đưa origin_place (mốc khởi hành ví dụ Đồi Vọng Cảnh) vào đầu danh sách làm mốc xuất phát
+            if not any(p.get("node_id") == target_place_id for p in matched_places):
+                matched_places.append(origin_copy)
+
             # Đưa các quán phục vụ món gần nhất vào matched_places (loại bỏ chính điểm mốc)
             for sp in serving_places[:5]:
-                if sp.get("node_id") != target_place_id and sp not in matched_places:
-                    matched_places.append(sp)
+                if sp.get("node_id") != target_place_id and not any(p.get("node_id") == sp.get("node_id") for p in matched_places):
+                    sp_copy = dict(sp)
+                    sp_copy["query_pos"] = 999
+                    matched_places.append(sp_copy)
 
             # XAI trace: ghi lại quan hệ SERVES
             trace_steps.append({
@@ -302,7 +362,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 "count": len(matched_places),
                 "status": "found" if matched_places else "empty"
             })
-    # B. ƯU TIÊN 2: Nếu là câu hỏi tìm kiếm địa điểm LÂN CẬN chung quanh X (không chỉ định món ăn cụ thể):
+    # C. ƯU TIÊN 3: Nếu là câu hỏi tìm kiếm địa điểm LÂN CẬN chung quanh X (không chỉ định món ăn cụ thể):
     elif is_nearby_query and target_place_id:
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
@@ -656,14 +716,20 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
 
     # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
     norm_q = query.lower()
+    norm_q_no_accent = strip_accents(norm_q)
     nav_keywords = [
         "chỉ đường", "chi duong", "đường đi", "duong di", "đi đến", "di den", 
         "làm sao để đi", "lam sao de di", "cách đi", "cach di", "dẫn đường", "dan duong",
-        "hướng dẫn đường", "lộ trình", "lo trinh", "chỉ lối", "chi loi"
+        "hướng dẫn đường", "huong dan duong", "lộ trình", "lo trinh", "chỉ lối", "chi loi",
+        "đi đường nào", "di duong nao", "đi như thế nào", "di nhu the nao", "đi thế nào", "di the nao",
+        "khoảng bao xa", "khoang bao xa", "bao xa", "mất bao xa", "mat bao xa",
+        "mấy cây số", "may cay so", "mấy km", "may km", "mấy cây", "may cay",
+        "cách mấy", "cach may", "lối đi", "loi di", "hướng đi", "huong di",
+        "đi ra", "di ra", "đi qua", "di qua", "đi sang", "di sang", "đi tới", "di toi"
     ]
-    is_nav = any(k in norm_q for k in nav_keywords) or (
-        ("từ " in norm_q or "tu " in norm_q) and any(w in norm_q for w in ["đi ", "đến ", "den ", "tới ", "toi ", "sang ", "qua "])
-    ) or any(k in norm_q for k in ["đi tới", "di toi", "đi sang", "di sang", "đi qua", "di qua"])
+    has_from = any(w in norm_q for w in ["từ ", "tu ", "xuất phát từ", "khoi hanh tu"]) or any(w in norm_q_no_accent for w in ["tu ", "xuat phat tu"])
+    has_to = any(w in norm_q for w in ["đi ", "di ", "đến ", "den ", "tới ", "toi ", "sang ", "qua "]) or any(w in norm_q_no_accent for w in ["di ", "den ", "toi ", "sang ", "qua "])
+    is_nav = any(k in norm_q for k in nav_keywords) or any(k in norm_q_no_accent for k in nav_keywords) or (has_from and has_to)
 
     dish_rule = ""
     if target_dish:
@@ -679,12 +745,40 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     if is_nav and matched_places:
         origin_p = None
         dest_p = None
-        if len(matched_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
-            origin_p = matched_places[0]
-            dest_p = matched_places[1]
+        has_origin_context = any(w in norm_q for w in [
+            "từ ", "tu ", "ở ", "o ", "tại ", "tai ", "sau khi ", "xem xong ", 
+            "tham quan xong ", "ngắm ", "ngam ", "tren duong ve", "trên đường về", "gần ", "gan "
+        ]) or any(w in norm_q_no_accent for w in ["tu ", "o ", "tai ", "sau khi ", "ngam ", "tren duong ve", "gan "])
+        
+        if len(matched_places) >= 2 and has_origin_context:
+            p0 = matched_places[0]
+            p1 = matched_places[1]
+            pos0 = p0.get("query_pos", 0)
+            pos1 = p1.get("query_pos", 1)
+
+            # Tìm vị trí của từ "từ " hoặc "tu " trong câu hỏi
+            tu_idx = norm_q_no_accent.find("tu ")
+            if tu_idx != -1:
+                d0 = (pos0 - tu_idx) if pos0 >= tu_idx else 9999
+                d1 = (pos1 - tu_idx) if pos1 >= tu_idx else 9999
+                # Nếu p1 đứng ngay sau "từ " (ví dụ: 'chỉ đường từ Cầu Tràng Tiền đến Quán Bà Đỏ')
+                if d1 < d0 and d1 < 25:
+                    origin_p = p1
+                    dest_p = p0
+                else:
+                    origin_p = p0
+                    dest_p = p1
+            else:
+                origin_p = p0
+                dest_p = p1
         elif matched_places:
             dest_p = matched_places[0]
-            origin_p = {"name": "Trung tâm TP Huế (Cầu Tràng Tiền)", "latitude": 16.4674, "longitude": 107.5905}
+            user_lat = state.get("user_lat")
+            user_lng = state.get("user_lng")
+            if user_lat and user_lng:
+                origin_p = {"name": "Vị trí của bạn", "latitude": user_lat, "longitude": user_lng}
+            else:
+                origin_p = {"name": "Trung tâm TP Huế (Cầu Tràng Tiền)", "latitude": 16.4674, "longitude": 107.5905}
 
         if origin_p and dest_p and origin_p.get("latitude") and dest_p.get("latitude"):
             lat1, lng1 = float(origin_p["latitude"]), float(origin_p["longitude"])
@@ -721,7 +815,21 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
                 "duration_min": dur_drive,
                 "duration_walk": dur_walk,
                 "origin_name": origin_p.get("name"),
-                "dest_name": dest_p.get("name")
+                "dest_name": dest_p.get("name"),
+                "origin": {
+                    "name": origin_p.get("name"),
+                    "latitude": float(lat1),
+                    "longitude": float(lng1),
+                    "address": origin_p.get("street_address", origin_p.get("address", "Thành phố Huế")),
+                    "category": origin_p.get("category", "Attraction")
+                },
+                "destination": {
+                    "name": dest_p.get("name"),
+                    "latitude": float(lat2),
+                    "longitude": float(lng2),
+                    "address": dest_p.get("street_address", dest_p.get("address", "Thành phố Huế")),
+                    "category": dest_p.get("category", "Attraction")
+                }
             }
 
             nav_rule = f"""
