@@ -51,13 +51,17 @@ class VectorRetriever:
 
     def _initialize(self):
         if not os.path.exists(self.chroma_dir):
-            raise FileNotFoundError(f"Không tìm thấy thư mục ChromaDB tại: {self.chroma_dir}")
+            print(f"⚠️ [VectorRetriever] Chưa phát hiện ChromaDB tại: {self.chroma_dir}. Chạy chế độ dự phòng (fallback).")
+            return
 
-        clean_incomplete_hnsw_segments(self.chroma_dir)
-        self.chroma_client = chromadb.PersistentClient(path=self.chroma_dir)
-        self.collection = self.chroma_client.get_collection(name="vietnam_reviews")
-
-        self.model = SentenceTransformer(self.model_name, device=self.device)
+        try:
+            clean_incomplete_hnsw_segments(self.chroma_dir)
+            self.chroma_client = chromadb.PersistentClient(path=self.chroma_dir)
+            self.collection = self.chroma_client.get_collection(name="vietnam_reviews")
+            self.model = SentenceTransformer(self.model_name, device=self.device)
+            print(f"✅ [VectorRetriever] Đã kết nối ChromaDB thành công ({self.collection.count()} reviews)!")
+        except Exception as e:
+            print(f"⚠️ [VectorRetriever] Không thể tải ChromaDB: {e}")
 
     def query_reviews(self, query_text: str, n_results: int = 5, 
                       place_urls: Optional[List[str]] = None) -> Tuple[List[Dict[str, Any]], float]:
@@ -67,6 +71,8 @@ class VectorRetriever:
             - Danh sách reviews (kèm rating, trip_type, snippet)
             - max_confidence_score: float trong khoảng [0, 1]
         """
+        if not self.collection or not self.model:
+            return [], 0.0
         # Encode câu query
         query_emb = self.model.encode(
             [query_text], 
