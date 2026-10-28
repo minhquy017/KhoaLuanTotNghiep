@@ -83,9 +83,10 @@ graph_retriever = get_graph_retriever()
 vector_retriever = get_vector_retriever()
 web_search_tool = get_web_search_tool()
 
-# LLM cục bộ chạy trên GPU RTX 3050 (100% miễn phí)
+# LLM cục bộ chạy trên GPU (Mặc định: Qwen2.5-VL:7B)
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5-vl:7b")
 llm = ChatOllama(
-    model="qwen2.5:3b",
+    model=OLLAMA_MODEL,
     temperature=0.3,
     num_ctx=4096,
     keep_alive="24h"
@@ -865,9 +866,9 @@ Nguyên tắc trả lời bắt buộc:
     trace_steps.append({
         "step": "llm_generation",
         "icon": "🤖",
-        "label": "Sinh phản hồi (Qwen2.5-3B GPU)",
+        "label": f"Sinh phản hồi ({OLLAMA_MODEL.upper()} GPU)",
         "detail": f"LLM tổng hợp từ {len(context_blocks)} khối ngữ cảnh → câu trả lời tự nhiên",
-        "model": "qwen2.5:3b",
+        "model": OLLAMA_MODEL,
         "status": "done"
     })
 
@@ -951,7 +952,7 @@ def query_agent(question: str):
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("🤖 KHỞI CHẠY LANGGRAPH SPATIAL GRAPHRAG AGENT (QWEN2.5-3B)")
+    print(f"🤖 KHỞI CHẠY LANGGRAPH SPATIAL GRAPHRAG AGENT ({OLLAMA_MODEL.upper()})")
     print("=" * 80)
 
     # Test Case 1: Câu hỏi trong CSDL du lịch (KG + ChromaDB)

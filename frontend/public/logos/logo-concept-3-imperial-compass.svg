@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="title-c3 desc-c3" fill="#18181B">
+  <title id="title-c3">Cố Đô Huế — Concept 3: Imperial Octagon &amp; Compass</title>
+  <desc id="desc-c3">Huy hiệu Bát giác Kinh thành kết hợp 4 nhịp vòm Cầu Tràng Tiền tạo thành hoa sen định vị toạ độ không gian.</desc>
+  <g id="symbol">
+    <!-- Khung Bát giác Kinh thành Huế -->
+    <path fill-rule="evenodd" d="
+      M 76 24 L 180 24 L 232 76 L 232 180 L 180 232 L 76 232 L 24 180 L 24 76 Z
+      M 82 40 L 38 84 L 38 172 L 82 216 L 174 216 L 218 172 L 218 84 L 174 40 Z
+    " />
+
+    <!-- 4 Vòm Cung Di sản 4 hướng -->
+    <!-- Vòm Bắc -->
+    <path d="M 96 46 C 96 90 128 114 128 114 C 128 114 160 90 160 46 C 146 50 110 50 96 46 Z" />
+
+    <!-- Vòm Nam -->
+    <path d="M 96 210 C 96 166 128 142 128 142 C 128 142 160 166 160 210 C 146 206 110 206 96 210 Z" />
+
+    <!-- Vòm Tây -->
+    <path d="M 46 96 C 90 96 114 128 114 128 C 114 128 90 160 46 160 C 50 146 50 110 46 96 Z" />
+
+    <!-- Vòm Đông -->
+    <path d="M 210 96 C 166 96 142 128 142 128 C 142 128 166 160 210 160 C 206 146 206 110 210 96 Z" />
+
+    <!-- Tâm điểm Định vị Toạ độ Không gian -->
+    <circle cx="128" cy="128" r="10" />
+    <circle cx="128" cy="128" r="4" fill="#FFFFFF" />
+  </g>
+</svg>

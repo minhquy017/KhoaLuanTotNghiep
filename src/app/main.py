@@ -24,6 +24,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.app.routes import system_router, chat_router, itinerary_router, kg_router
+from src.rag.agent_graph import OLLAMA_MODEL
 
 def ensure_ollama_service():
     """Tự động kiểm tra và khởi chạy dịch vụ Ollama ngầm nếu chưa chạy."""
@@ -32,7 +33,7 @@ def ensure_ollama_service():
     try:
         with urllib.request.urlopen("http://127.0.0.1:11434/api/version", timeout=1.0) as resp:
             if resp.status == 200:
-                print("✅ [Ollama] Dịch vụ Local LLM (qwen2.5:3b) đang hoạt động sẵn sàng.")
+                print(f"✅ [Ollama] Dịch vụ Local LLM ({OLLAMA_MODEL}) đang hoạt động sẵn sàng.")
                 return
     except Exception:
         pass
@@ -51,15 +52,15 @@ def ensure_ollama_service():
         print(f"⚠️ [Ollama] Không thể tự khởi động Ollama: {e}")
 
 def warmup_llm_service():
-    """Tự động nạp trước (warm-up) mô hình Qwen2.5-3B vào VRAM GPU RTX 3050 và giữ thường trực."""
+    """Tự động nạp trước (warm-up) mô hình vào VRAM GPU và giữ thường trực."""
     import time
     time.sleep(1.0)
-    print("🔥 [Ollama Warm-up] Đang nạp trước mô hình qwen2.5:3b vào GPU VRAM (RTX 3050)...")
+    print(f"🔥 [Ollama Warm-up] Đang nạp trước mô hình {OLLAMA_MODEL} vào GPU VRAM...")
     try:
         from src.rag.agent_graph import llm
         from langchain_core.messages import HumanMessage
         llm.invoke([HumanMessage(content="hi")])
-        print("⚡ [Ollama Warm-up] ĐÃ NẠP THÀNH CÔNG qwen2.5:3b VÀO GPU VRAM! Sẵn sàng phản hồi tức thì.")
+        print(f"⚡ [Ollama Warm-up] ĐÃ NẠP THÀNH CÔNG {OLLAMA_MODEL} VÀO GPU VRAM! Sẵn sàng phản hồi tức thì.")
     except Exception as e:
         print(f"⚠️ [Ollama Warm-up] Thông báo: {e}")
 
@@ -69,13 +70,13 @@ def unload_llm_service():
     try:
         creation_flags = 0x08000000 if sys.platform == "win32" else 0
         subprocess.run(
-            ["ollama", "stop", "qwen2.5:3b"],
+            ["ollama", "stop", OLLAMA_MODEL],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             creationflags=creation_flags,
             timeout=5.0
         )
-        print("🧹 [Ollama] Đã giải phóng hoàn toàn 2GB VRAM GPU trả về cho hệ thống!")
+        print(f"🧹 [Ollama] Đã giải phóng hoàn toàn VRAM của {OLLAMA_MODEL} trả về cho hệ thống!")
     except Exception:
         pass
 

@@ -6769,6 +6769,14 @@ button, input, select, textarea {
   transition: opacity 0.18s cubic-bezier(0.2, 0, 0, 1) 0.08s, transform 0.18s cubic-bezier(0.2, 0, 0, 1) 0.08s, visibility 0s 0s;
 }
 
+.sidebar-brand-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #18181B;
+  display: block;
+}
+
 .sidebar-brand-title {
   font-family: 'Plus Jakarta Sans', var(--font-display);
   font-size: 1.12rem;

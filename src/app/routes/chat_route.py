@@ -4,7 +4,7 @@ ROUTER: TRỢ LÝ HỎI ĐÁP DU LỊCH (CHAT ROUTE)
 """
 from fastapi import APIRouter, HTTPException
 from src.app.schemas.chat_schema import ChatRequest, ChatResponse
-from src.rag.agent_graph import get_tourism_agent
+from src.rag.agent_graph import get_tourism_agent, OLLAMA_MODEL
 
 router = APIRouter(prefix="/api/v1", tags=["Trợ lý Hỏi đáp (Chatbot)"])
 agent = get_tourism_agent()
@@ -160,7 +160,7 @@ def chat_assistant(req: ChatRequest):
                 {"step": "kg_retrieval", "icon": "🕸️", "label": "Truy vấn Đồ thị Tri thức Cố đô", "detail": f"Khớp {len(clean_places)} địa điểm lân cận", "count": len(clean_places), "status": "found"},
                 {"step": "vector_retrieval", "icon": "🧠", "label": "Truy xuất ChromaDB Reviews", "detail": "Trích xuất kinh nghiệm & đánh giá thực tế", "status": "found"},
                 {"step": "confidence_scoring", "icon": "⚡", "label": "Tính Composite Confidence", "detail": f"Độ tin cậy tổng hợp = {conf:.2f}", "score": conf, "status": "high"},
-                {"step": "llm_generation", "icon": "🤖", "label": "Sinh phản hồi (Qwen2.5-3B GPU)", "detail": "Mô hình ngôn ngữ tổng hợp trên GPU T4", "status": "done"}
+                {"step": "llm_generation", "icon": "🤖", "label": f"Sinh phản hồi ({OLLAMA_MODEL.upper()} GPU)", "detail": "Mô hình ngôn ngữ tổng hợp trên GPU T4", "status": "done"}
             ]
 
         return ChatResponse(

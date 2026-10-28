@@ -5,6 +5,8 @@ ROUTER: THÔNG TIN HỆ THỐNG & HEALTH CHECK (SYSTEM ROUTE)
 from fastapi import APIRouter
 from src.graph.graph_retriever import get_graph_retriever
 
+from src.rag.agent_graph import OLLAMA_MODEL
+
 router = APIRouter(tags=["Hệ thống"])
 retriever = get_graph_retriever()
 
@@ -32,5 +34,5 @@ def health_check():
         "kg_nodes": len(retriever.G.nodes) if retriever.G else 0,
         "kg_edges": len(retriever.G.edges) if retriever.G else 0,
         "vector_db": "ChromaDB Connected",
-        "model": "Qwen2.5-3B-Instruct (Local)"
+        "model": f"{OLLAMA_MODEL.upper()} (GPU Local)"
     }

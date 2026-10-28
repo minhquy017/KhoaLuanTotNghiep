@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="title-mark desc-mark" fill="#18181B">
+  <title id="title-mark">Cố Đô Huế Logo Mark</title>
+  <desc id="desc-mark">Biểu tượng hoàng thành Ngọ Môn chữ H kết hợp toạ độ không gian.</desc>
+  <g id="symbol">
+    <path d="M 28 80 C 64 68 96 56 128 44 C 160 56 192 68 228 80 C 228 88 220 94 206 91 C 178 85 152 76 128 66 C 104 76 78 85 50 91 C 36 94 28 88 28 80 Z" />
+    <path fill-rule="evenodd" d="
+      M 48 88 L 86 88 L 86 138 C 86 166 104 186 128 186 C 152 186 170 166 170 138 L 170 88 L 208 88 L 208 208 L 170 208 L 170 188 C 158 204 144 212 128 212 C 112 212 98 204 86 188 L 86 208 L 48 208 Z
+      M 128 116 C 114 116 104 126 104 140 C 104 154 114 164 128 164 C 142 164 152 154 152 140 C 152 126 142 116 128 116 Z
+    " />
+    <circle cx="128" cy="140" r="10" />
+  </g>
+</svg>
