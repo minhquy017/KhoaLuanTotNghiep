@@ -51,6 +51,7 @@ from langchain_ollama import ChatOllama
 from src.graph.graph_retriever import get_graph_retriever, strip_accents
 from src.graph.spatial_indexer import haversine_distance
 from src.rag.vector_retriever import get_vector_retriever
+from src.rag.visual_retriever import get_visual_retriever
 from src.rag.web_search_tool import get_web_search_tool
 
 
@@ -61,6 +62,10 @@ class TourismAgentState(TypedDict):
     query: str
     locality: str
     preferences: Optional[Dict[str, Any]]
+    image_base64: Optional[str]           # Chuỗi base64 của ảnh du khách gửi
+    image_detected: Optional[Dict[str, Any]] # Kết quả nhận diện thị giác từ Qwen2.5-VL
+    visual_matches: Optional[List[Dict[str, Any]]] # Danh sách top địa danh từ Visual Image RAG (ChromaDB + CLIP)
+    visual_confidence: Optional[float]    # Điểm tương đồng Cosine cao nhất [0.0, 1.0]
     target_dish: Optional[str]
     target_place: Optional[str]
     matched_places: List[Dict[str, Any]]
@@ -81,6 +86,7 @@ class TourismAgentState(TypedDict):
 # =============================================================================
 graph_retriever = get_graph_retriever()
 vector_retriever = get_vector_retriever()
+visual_retriever = get_visual_retriever()
 web_search_tool = get_web_search_tool()
 
 # LLM cục bộ chạy trên GPU (Mặc định: Qwen2.5-VL:7B - tag Ollama là qwen2.5vl:7b)
@@ -94,11 +100,138 @@ llm = ChatOllama(
 
 
 # =============================================================================
+# 2.1 HÀM NHẬN DIỆN THỊ GIÁC ĐA PHƯƠNG THỨC (QWEN2.5-VL)
+# =============================================================================
+def recognize_image_entity(image_base64: str, user_query: str = "") -> Dict[str, Any]:
+    """
+    Sử dụng Vision Model (Qwen2.5-VL) nhận diện địa danh, di tích lịch sử hoặc món ăn đặc sản Huế trong ảnh.
+    Trả về dict: {"name": str, "category": str, "description": str}
+    """
+    if not image_base64:
+        return {}
+    
+    clean_b64 = image_base64.split(",")[-1] if "," in image_base64 else image_base64
+    
+    prompt = (
+        "Bạn là Chuyên gia Thị giác AI và Cố vấn Di sản Du lịch Cố đô Huế.\n"
+        "Hãy quan sát kỹ bức ảnh này và cho biết đây là địa danh, di tích lịch sử, cảnh quan hay món ăn đặc sản nào tại Huế (hoặc Việt Nam).\n"
+        "Đặc biệt chú ý nhận diện các điểm du lịch nổi tiếng: Đại Nội Huế, Ngọ Môn, Kỳ Đài, Chùa Thiên Mụ, Lăng Khải Định, Lăng Tự Đức, Lăng Minh Mạng, Cầu Trường Tiền, Chợ Đông Ba, Đồi Vọng Cảnh, Trường Quốc Học, Nhà thờ Phủ Cam, Chùa Từ Hiếu...\n"
+        "hoặc các món đặc sản: Bún bò Huế, Cơm hến, Bún hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Chè heo quay, Bánh khoái, Bánh ép, Nem lụi...\n\n"
+        "Trả lời đúng theo định dạng 3 dòng sau (không thêm lời dẫn khác):\n"
+        "TEN_DOI_TUONG: [Tên chính xác của địa danh hoặc món ăn, ví dụ: Chùa Thiên Mụ hoặc Bún bò Huế]\n"
+        "LOAI: [DI_TICH / THANG_CANH / AM_THUC / KHAC]\n"
+        "MO_TA: [1 câu ngắn mô tả nét đặc trưng nhận diện trong ảnh]"
+    )
+    if user_query and len(user_query.strip()) > 3:
+        prompt += f"\nNgữ cảnh kèm theo của du khách: {user_query}"
+        
+    try:
+        res = llm.invoke([
+            SystemMessage(content="Bạn là chuyên gia thị giác AI phân tích hình ảnh du lịch và ẩm thực Huế."),
+            HumanMessage(content=[
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": f"data:image/jpeg;base64,{clean_b64}"}
+            ])
+        ])
+        raw_text = res.content.strip()
+        result = {"name": "", "category": "KHAC", "description": ""}
+        for line in raw_text.splitlines():
+            line = line.strip()
+            if line.startswith("TEN_DOI_TUONG:"):
+                result["name"] = line.replace("TEN_DOI_TUONG:", "").strip()
+            elif line.startswith("LOAI:"):
+                result["category"] = line.replace("LOAI:", "").strip()
+            elif line.startswith("MO_TA:"):
+                result["description"] = line.replace("MO_TA:", "").strip()
+        
+        # Nếu model không trả đúng định dạng key-value, trích xuất tên chính
+        if not result["name"] and len(raw_text) > 0:
+            first_line = raw_text.splitlines()[0]
+            result["name"] = first_line.replace("**", "").replace("*", "").strip()[:50]
+        return result
+    except Exception as e:
+        print(f"[Vision Recognition Error]: {e}")
+        return {}
+
+
+# =============================================================================
 # 3. NODE 1: TRUY XUẤT ĐỒ THỊ TRI THỨC KHÔNG GIAN (KG RETRIEVAL)
 # =============================================================================
 def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
-    query = state["query"]
+    query = state.get("query", "")
     trace_steps = state.get("graph_trace", [])
+    image_base64 = state.get("image_base64")
+    image_detected_info = None
+    visual_matches = None
+    visual_confidence = 0.0
+    vis_matched_place_id = None
+
+    # A. Xử lý nhận diện ảnh đa phương thức (Multimodal Image RAG)
+    if image_base64:
+        trace_steps.append({
+            "step": "image_upload_received",
+            "icon": "🖼️",
+            "label": "Tiếp nhận Ảnh từ Du khách",
+            "detail": "Kích hoạt phân hệ Visual Image RAG (ChromaDB + CLIP) & Thị giác Qwen2.5-VL",
+            "status": "processing"
+        })
+
+        # 1. VISUAL IMAGE RAG: So khớp Cosine đặc trưng thị giác 512D với kho ảnh mẫu địa danh Huế trong ChromaDB
+        try:
+            vis_matches, vis_conf = visual_retriever.query_by_image(image_base64, n_results=3)
+            if vis_matches and vis_conf >= 0.70:
+                top_vis = vis_matches[0]
+                vis_matched_place_id = top_vis.get("place_id")
+                vis_place_name = top_vis.get("place_name")
+                vis_sim_pct = top_vis.get("confidence_pct", round(vis_conf * 100, 1))
+                visual_confidence = vis_conf
+                visual_matches = vis_matches
+                
+                trace_steps.append({
+                    "step": "visual_rag_match",
+                    "icon": "🎯",
+                    "label": "Visual Image RAG (ChromaDB + CLIP)",
+                    "detail": f"Khớp vector ảnh mẫu di sản: **{vis_place_name}** | Cosine Similarity: **{vis_sim_pct}%**",
+                    "edge": "VISUAL_SIMILARITY",
+                    "status": "found"
+                })
+        except Exception as e:
+            print(f"⚠️ [AgentGraph] Lỗi Visual Retriever: {e}")
+
+        # 2. VISION LLM: Nhận diện thực thể ảnh chi tiết (món ăn, góc chụp, chi tiết kiến trúc)
+        img_info = recognize_image_entity(image_base64, query)
+        if img_info and img_info.get("name"):
+            image_detected_info = img_info
+            det_name = img_info["name"]
+            det_cat = img_info.get("category", "KHAC")
+            det_desc = img_info.get("description", "")
+            trace_steps.append({
+                "step": "vision_recognition",
+                "icon": "📷",
+                "label": "Nhận diện Thị giác & Thực thể Ảnh",
+                "detail": f"Xác định: **{det_name}** ({det_cat}) — {det_desc}",
+                "status": "found"
+            })
+
+        # Xác định đối tượng trọng tâm để sinh câu hỏi ngữ cảnh
+        focus_name = None
+        focus_cat = "DI_TICH"
+        if vis_matched_place_id and visual_matches:
+            focus_name = visual_matches[0]["place_name"]
+        elif img_info and img_info.get("name"):
+            focus_name = img_info["name"]
+            focus_cat = img_info.get("category", "KHAC")
+
+        if focus_name:
+            norm_orig = strip_accents(query)
+            if not query or len(query.strip()) < 8 or any(q in norm_orig for q in ["day la dau", "day la gi", "mon gi", "cho toi biet", "anh nay", "day o dau", "chup o dau"]):
+                if "AM_THUC" in focus_cat:
+                    query = f"Giới thiệu món {focus_name} trong ảnh và gợi ý những quán ăn ngon nổi tiếng nhất tại Huế để thưởng thức món này"
+                else:
+                    query = f"Giới thiệu di tích {focus_name} trong ảnh, nguồn gốc lịch sử, giá vé/giờ mở cửa và gợi ý các địa điểm lân cận"
+            else:
+                query = f"Về {focus_name} trong ảnh: {query}"
+
     norm_q = strip_accents(query)
 
     # 1. Nhận diện địa phương
@@ -277,6 +410,11 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     ordered_place_ids.sort(key=lambda x: x[0])
     extracted_place_ids = [pid for _, pid in ordered_place_ids]
     pid_to_pos = {pid: pos for pos, pid in ordered_place_ids}
+
+    # Nếu có địa danh khớp từ Visual Image RAG, ưu tiên đưa lên đầu extracted_place_ids
+    if vis_matched_place_id and vis_matched_place_id not in extracted_place_ids:
+        extracted_place_ids.insert(0, vis_matched_place_id)
+        pid_to_pos[vis_matched_place_id] = 0
 
     # Nhận diện câu hỏi tổng quát về bãi biển / tắm biển / hải sản biển
     is_beach_query = any(b in norm_q for b in ["bai bien", "bien", "tam bien", "ngam bien"]) and not any(k in norm_q for k in ["bien hoa", "bien gioi"])
@@ -468,6 +606,14 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 if near:
                     nearby_map[pid] = near
 
+    # Nếu có thực thể nhận diện từ ảnh, đảm bảo đưa vào danh sách địa điểm khớp
+    if image_detected_info and image_detected_info.get("name"):
+        det_name = image_detected_info["name"]
+        vis_places = graph_retriever.search_places(det_name, locality=locality or "Thành phố Huế", limit=3)
+        for vp in vis_places:
+            if vp not in matched_places:
+                matched_places.insert(0, vp)
+
     # XAI: tổng kết bước KG retrieval
     trace_steps.append({
         "step": "kg_summary",
@@ -478,6 +624,10 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     })
 
     return {
+        "query": query,
+        "image_detected": image_detected_info,
+        "visual_matches": visual_matches,
+        "visual_confidence": visual_confidence,
         "locality": locality,
         "target_dish": target_dish,
         "target_place": target_place_id,
@@ -691,6 +841,18 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     # Gom ngữ cảnh
     context_blocks = []
 
+    # 0. Ngữ cảnh đối sánh thị giác từ Visual Image RAG (ChromaDB & CLIP ViT-B/32)
+    visual_matches = state.get("visual_matches") or []
+    visual_confidence = state.get("visual_confidence", 0.0)
+    if visual_matches and visual_confidence >= 0.70:
+        top_v = visual_matches[0]
+        vis_context = f"""=== KẾT QUẢ ĐỐI SÁNH THỊ GIÁC VISUAL IMAGE RAG (CHROMADB & CLIP ViT-B/32) ===
+- Địa danh khớp chính xác: {top_v['place_name']} ({top_v.get('sub_location', '')})
+- Định danh đồ thị (Place ID): {top_v['place_id']}
+- Điểm tương đồng Cosine: {top_v.get('confidence_pct', round(visual_confidence * 100, 1))}% (Độ tin cậy cao >= 70%)
+- Căn cứ đối sánh: Vector thị giác 512 chiều được so khớp Cosine với kho ảnh mẫu di sản văn hóa Cố đô Huế trong ChromaDB."""
+        context_blocks.append(vis_context)
+
     # 1. Ngữ cảnh từ Knowledge Graph
     if matched_places:
         kg_context = graph_retriever.format_graph_context(
@@ -893,6 +1055,16 @@ Nguyên tắc trả lời bắt buộc:
 5. ĐỊNH DẠNG TÊN ĐỊA DANH BẰNG CHỮ IN ĐẬM:
    - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{nav_rule}{pref_section}"""
 
+    image_base64 = state.get("image_base64")
+    if image_base64:
+        system_prompt += """\n
+6. PHÂN TÍCH VÀ BÌNH LUẬN HÌNH ẢNH THỰC TẾ:
+   - Du khách đã tải lên một bức ảnh thực tế. Hãy trực tiếp quan sát và xác nhận hình ảnh đối tượng du khách đã chụp (tên di tích / danh thắng / món ăn đặc sản).
+   - Đưa ra những nhận xét tinh tế, sinh động về góc chụp, kiến trúc, màu sắc hoặc hương vị/cách thưởng thức món ăn trong ảnh.
+   - Kết hợp mượt mà với DỮ LIỆU ĐỒ THỊ TRI THỨC (tọa độ GPS, lịch sử văn hóa, giá vé/giờ mở cửa hoặc quán ăn lân cận) để cung cấp câu trả lời trọn vẹn nhất.
+   - Nhắc đến các địa danh/quán ăn bằng chữ IN ĐẬM **Tên Địa Danh** để hệ thống tự động ghim vị trí lên bản đồ cho du khách.
+"""
+
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
 
@@ -902,9 +1074,18 @@ Nguyên tắc trả lời bắt buộc:
 [CÂU TRẢ LỜI CỦA BẠN]:"""
 
     try:
+        if image_base64:
+            clean_b64 = image_base64.split(",")[-1] if "," in image_base64 else image_base64
+            human_msg = HumanMessage(content=[
+                {"type": "text", "text": user_prompt},
+                {"type": "image_url", "image_url": f"data:image/jpeg;base64,{clean_b64}"}
+            ])
+        else:
+            human_msg = HumanMessage(content=user_prompt)
+
         response = llm.invoke([
             SystemMessage(content=system_prompt),
-            HumanMessage(content=user_prompt)
+            human_msg
         ])
         answer_text = response.content.strip()
     except Exception as e:
@@ -940,6 +1121,26 @@ Nguyên tắc trả lời bắt buộc:
                 f"{places_bullets}\n\n"
                 f"Bạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!"
             )
+        elif image_base64 and visual_matches and visual_confidence >= 0.70:
+            top_v = visual_matches[0]
+            matched_p = matched_places[0] if matched_places else {}
+            desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
+            addr = matched_p.get("address") or matched_p.get("street_address") or "Thành phố Huế"
+            sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
+
+            nearby_names = []
+            for p_sub in matched_places[1:4]:
+                if p_sub.get("name"):
+                    nearby_names.append(f"**{p_sub.get('name')}**")
+            nearby_text = f"\n\n📍 **Gợi ý điểm đến lân cận thuận đường:** {', '.join(nearby_names)}." if nearby_names else ""
+
+            answer_text = (
+                f"Dạ chào bạn! Qua phân tích đặc trưng thị giác (Visual Image RAG với độ tương đồng Cosine **{sim_pct}%**), "
+                f"em xác nhận bức ảnh của bạn được chụp tại **{top_v['place_name']}** Cố đô Huế!\n\n"
+                f"🏛️ **Thông tin di sản:** {desc}\n"
+                f"📍 **Địa chỉ:** {addr}{nearby_text}\n\n"
+                f"Em đã ghim vị trí chính xác lên bản đồ di sản bên cạnh để bạn dễ dàng định vị và lên kế hoạch tham quan nhé!"
+            )
         elif matched_places:
             places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
             answer_text = (
@@ -957,6 +1158,17 @@ Nguyên tắc trả lời bắt buộc:
             answer_text = (
                 f"Dạ, theo kết quả tra cứu tổng hợp về du lịch Cố đô Huế:\n\n{wb_str}\n\n"
                 f"Bạn có thể xem chi tiết vị trí và gợi ý trên bản đồ tương tác nhé!"
+            )
+        elif image_base64 and matched_places:
+            places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
+            answer_text = (
+                f"Dạ, qua hình ảnh bạn gửi, em nhận diện và đối chiếu với dữ liệu di sản Cố đô Huế: {places_str}. "
+                f"Em đã định vị các địa điểm này trên bản đồ tương tác để bạn tiện theo dõi và khám phá nhé!"
+            )
+        elif image_base64:
+            answer_text = (
+                "Dạ, em đã tiếp nhận hình ảnh của bạn và đối chiếu với bản đồ di sản Cố đô Huế. "
+                "Bạn có thể xem các điểm tham quan và quán ăn lân cận ngay trên bản đồ tương tác nhé!"
             )
         else:
             answer_text = "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"

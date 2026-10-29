@@ -459,6 +459,13 @@ function sanitizeMessageForStorage(msg) {
     timestamp: msg.timestamp || Date.now()
   };
 
+  // Lưu trữ ảnh đính kèm của du khách (được nén nhẹ < 200KB để đảm bảo an toàn quota Firestore)
+  if (msg.imageBase64 && typeof msg.imageBase64 === 'string') {
+    if (msg.imageBase64.length < 200000) {
+      clean.imageBase64 = msg.imageBase64;
+    }
+  }
+
   // Nếu là thẻ lịch trình (Itinerary Deck Message)
   if (msg.isItinerary) {
     clean.isItinerary = true;

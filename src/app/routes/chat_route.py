@@ -20,10 +20,18 @@ def chat_assistant(req: ChatRequest):
     - Trả về câu trả lời tự nhiên + tọa độ GPS các địa điểm liên quan để vẽ lên bản đồ (Hue-S / Web).
     """
     try:
+        query_text = (req.query or "").strip()
+        if not query_text and req.image_base64:
+            query_text = "Nhận diện địa danh hoặc món ăn trong ảnh và giới thiệu chi tiết cho du khách"
+
         initial_state = {
-            "query": req.query,
+            "query": query_text,
             "locality": req.locality or "Thành phố Huế",
             "preferences": req.preferences or {},
+            "image_base64": req.image_base64,
+            "image_detected": None,
+            "visual_matches": None,
+            "visual_confidence": 0.0,
             "target_dish": None,
             "target_place": None,
             "matched_places": [],
@@ -214,7 +222,7 @@ def chat_assistant(req: ChatRequest):
 
         return ChatResponse(
             status="success",
-            query=req.query,
+            query=req.query or res.get("query", "Phân tích hình ảnh"),
             answer=res.get("final_answer", ""),
             route_taken=res.get("route_taken", "local_knowledge"),
             confidence_score=conf,

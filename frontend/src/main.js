@@ -1182,6 +1182,109 @@ document.addEventListener('DOMContentLoaded', async () => {
   const chatSendBtn = document.getElementById('chat-send-btn');
   const btnClearChat = document.getElementById('btn-clear-chat');
 
+  // Đính kèm ảnh đa phương thức (Multimodal Image Analysis)
+  const btnUploadImage = document.getElementById('btn-upload-image');
+  const chatImageInput = document.getElementById('chat-image-input');
+  const chatImagePreviewBar = document.getElementById('chat-image-preview-bar');
+  const previewImageElem = document.getElementById('preview-image-elem');
+  const previewImageName = document.getElementById('preview-image-name');
+  const btnRemoveImage = document.getElementById('btn-remove-image');
+  let currentAttachedImageBase64 = null;
+  let currentAttachedImageName = '';
+
+  function clearAttachedImage() {
+    currentAttachedImageBase64 = null;
+    currentAttachedImageName = '';
+    if (chatImagePreviewBar) chatImagePreviewBar.style.display = 'none';
+    if (chatImageInput) chatImageInput.value = '';
+    if (previewImageElem) previewImageElem.src = '';
+    btnUploadImage?.classList.remove('has-image');
+  }
+
+  function compressImageFile(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width;
+          let h = img.height;
+          if (w > maxWidth || h > maxHeight) {
+            if (w / h > maxWidth / maxHeight) {
+              h = Math.round((h * maxWidth) / w);
+              w = maxWidth;
+            } else {
+              w = Math.round((w * maxHeight) / h);
+              h = maxHeight;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+          resolve({
+            base64: compressedBase64,
+            name: file.name
+          });
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleImageFileSelected(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    try {
+      const { base64, name } = await compressImageFile(file);
+      currentAttachedImageBase64 = base64;
+      currentAttachedImageName = name;
+      if (previewImageElem) previewImageElem.src = base64;
+      if (previewImageName) previewImageName.textContent = name;
+      if (chatImagePreviewBar) chatImagePreviewBar.style.display = 'flex';
+      btnUploadImage?.classList.add('has-image');
+      chatInput?.focus();
+    } catch (err) {
+      console.error('Lỗi xử lý ảnh:', err);
+    }
+  }
+
+  btnUploadImage?.addEventListener('click', () => {
+    chatImageInput?.click();
+  });
+
+  chatImageInput?.addEventListener('change', async (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await handleImageFileSelected(file);
+    }
+  });
+
+  btnRemoveImage?.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    clearAttachedImage();
+  });
+
+  // Hỗ trợ dán ảnh trực tiếp từ Clipboard (Ctrl + V)
+  document.addEventListener('paste', async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        if (file) {
+          await handleImageFileSelected(file);
+          break;
+        }
+      }
+    }
+  });
+
   function initPromptCards() {
     if (!chatThread) return;
     chatThread.querySelectorAll('.prompt-card').forEach(card => {
@@ -1495,7 +1598,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       activeSessionMessages.forEach(msg => {
         const textVal = msg.text || msg.content || '';
         if (msg.role === 'user') {
-          if (textVal) appendUserMessage(textVal, false);
+          if (textVal || msg.imageBase64) appendUserMessage(textVal, false, msg.imageBase64 || null);
         } else if (msg.role === 'assistant') {
           if (msg.isItinerary && msg.itineraryRes) {
             appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false, msg.id, msg.feedbackRating);
@@ -1860,18 +1963,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Tải danh sách session ban đầu
   refreshChatHistoryList();
 
-  async function sendChatQuery(query) {
-    if (!query) return;
+  async function sendChatQuery(query, imageBase64 = null) {
+    const activeImage = imageBase64 || currentAttachedImageBase64;
+    const trimmedQuery = (query !== undefined && query !== null) ? String(query).trim() : '';
+
+    // Cho phép gửi nếu có query HOẶC có ảnh
+    if (!trimmedQuery && !activeImage) return;
 
     // Xóa Welcome Hero khi bắt đầu chat
     const hero = document.getElementById('chat-welcome-hero');
     if (hero) hero.remove();
 
     // Kiểm tra câu hỏi có liên quan đến vị trí/không gian/chỉ đường/bản đồ
-    const isSpatialQuery = /chỉ đường|đường đi|đi đến|từ .+ đi|khoảng cách|cách bao xa|gần đây|quanh đây|ở đâu|vị trí|tọa độ|bản đồ|lộ trình|tour|thuê xe/i.test(query);
+    const isSpatialQuery = /chỉ đường|đường đi|đi đến|từ .+ đi|khoảng cách|cách bao xa|gần đây|quanh đây|ở đâu|vị trí|tọa độ|bản đồ|lộ trình|tour|thuê xe/i.test(trimmedQuery);
 
     // Kiểm tra nếu người dùng yêu cầu lập lịch trình qua câu chat
-    const lowerQuery = query.toLowerCase();
+    const lowerQuery = trimmedQuery.toLowerCase();
     const isPlanIntent = (
       lowerQuery.includes('lập lịch trình') ||
       lowerQuery.includes('tạo lịch trình') ||
@@ -1882,11 +1989,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       lowerQuery.includes('tour du lịch')
     );
 
-    if (isPlanIntent || isSpatialQuery) {
-      showMapPanel(true); // Tự động mở bản đồ theo ngữ cảnh không gian
+    if (isPlanIntent || isSpatialQuery || activeImage) {
+      showMapPanel(true); // Tự động mở bản đồ theo ngữ cảnh không gian / ảnh
     }
 
-    if (isPlanIntent) {
+    if (isPlanIntent && !activeImage) {
       let days = 2;
       if (lowerQuery.includes('1 ngày') || lowerQuery.includes('một ngày')) days = 1;
       else if (lowerQuery.includes('3 ngày') || lowerQuery.includes('ba ngày')) days = 3;
@@ -1899,14 +2006,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Hiển thị tin nhắn người dùng
-    lastUserPrompt = query;
-    appendUserMessage(query);
+    // Hiển thị tin nhắn người dùng (kèm ảnh nếu có)
+    const displayPrompt = trimmedQuery || (activeImage ? 'Phân tích địa danh hoặc món ăn trong ảnh này' : '');
+    lastUserPrompt = displayPrompt;
+    appendUserMessage(displayPrompt, true, activeImage);
+
+    // Dọn sạch ảnh đính kèm và input
+    clearAttachedImage();
     if (chatInput) chatInput.value = '';
     if (chatSendBtn) chatSendBtn.disabled = true;
 
     // Hiển thị loading placeholder
-    const loadingId = appendAssistantLoading();
+    const loadingText = activeImage
+      ? 'Đang nhận diện thị giác & phân tích không gian Cố đô...'
+      : 'Đang phân tích không gian và tổng hợp gợi ý...';
+    const loadingId = appendAssistantLoading(loadingText);
 
     try {
       // Truyền tọa độ GPS người dùng nếu đã có định vị & hồ sơ gu du lịch cá nhân hóa
@@ -1914,9 +2028,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const userLng = mapStudio.userLocation ? mapStudio.userLocation.lng : null;
       const userPrefs = userStore.getPreferences();
 
-      const res = await TourismApiClient.askAssistant(query, 'Thành phố Huế', userLat, userLng, userPrefs);
+      const res = await TourismApiClient.askAssistant(trimmedQuery, 'Thành phố Huế', userLat, userLng, userPrefs, activeImage);
       removeLoadingMessage(loadingId);
-      appendAssistantResponse(res, true, query);
+      appendAssistantResponse(res, true, displayPrompt);
     } catch (err) {
       removeLoadingMessage(loadingId);
       appendAssistantError(err.message);
@@ -1932,18 +2046,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     sendChatQuery(query);
   });
 
-  function appendUserMessage(text, persist = true) {
+  function appendUserMessage(text, persist = true, imageBase64 = null) {
     const safeText = (text !== undefined && text !== null) ? String(text).trim() : '';
-    if (!safeText || safeText === 'undefined') return;
+    if (!safeText && !imageBase64) return;
 
     const msg = document.createElement('div');
     msg.className = 'chat-message user';
+
+    let imageHtml = '';
+    if (imageBase64) {
+      imageHtml = `
+        <div class="chat-attached-image-container">
+          <img src="${imageBase64}" class="chat-attached-image" alt="Ảnh đính kèm" />
+        </div>
+      `;
+    }
+
     msg.innerHTML = `
       <div class="message-avatar">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
       <div class="message-bubble">
-        <p>${safeText}</p>
+        ${imageHtml}
+        ${safeText ? `<p>${safeText}</p>` : ''}
       </div>
     `;
     chatThread.appendChild(msg);
@@ -1954,6 +2079,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         role: 'user',
         text: safeText,
         content: safeText,
+        imageBase64: imageBase64 || null,
+        hasImage: !!imageBase64,
         timestamp: Date.now()
       });
       persistActiveSession();

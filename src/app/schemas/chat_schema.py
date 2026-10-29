@@ -7,11 +7,12 @@ from pydantic import BaseModel, Field
 
 
 class ChatRequest(BaseModel):
-    query: str = Field(..., examples=["Tôi vừa tham quan Đại Nội xong, muốn ăn bún bò gần đây thì đi quán nào?"])
+    query: Optional[str] = Field("", examples=["Tôi vừa tham quan Đại Nội xong, muốn ăn bún bò gần đây thì đi quán nào?"])
     locality: Optional[str] = Field("Thành phố Huế", examples=["Thành phố Huế"])
     user_lat: Optional[float] = Field(None, examples=[16.4674])
     user_lng: Optional[float] = Field(None, examples=[107.5905])
     preferences: Optional[Dict[str, Any]] = Field(None, description="Hồ sơ gu du lịch cá nhân hóa của du khách")
+    image_base64: Optional[str] = Field(None, description="Dữ liệu ảnh dạng chuỗi Base64 (hỗ trợ JPG/PNG) để AI nhận diện thị giác")
 
 
 class PlaceItem(BaseModel):

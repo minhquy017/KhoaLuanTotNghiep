@@ -728,10 +728,34 @@
 
           <!-- Chat Input Box Container (Docked at Bottom - ChatGPT Floating Style) -->
           <div class="chat-input-container">
+            <!-- Image Preview Bar (Appears when user attaches photo) -->
+            <div id="chat-image-preview-bar" class="chat-image-preview-bar" style="display: none;">
+              <div class="preview-thumbnail-container">
+                <img id="preview-image-elem" src="" alt="Ảnh đính kèm" />
+                <button type="button" id="btn-remove-image" class="btn-remove-thumb" title="Gỡ ảnh">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+              <div class="preview-meta">
+                <span id="preview-image-name" class="preview-filename">anh_chup.jpg</span>
+                <span class="preview-tag">Sẵn sàng nhận diện</span>
+              </div>
+            </div>
+
             <form id="chat-form" class="chat-input-wrapper">
+              <!-- Upload Image Trigger Button -->
+              <input type="file" id="chat-image-input" accept="image/*" style="display:none;" />
+              <button type="button" id="btn-upload-image" class="chat-tool-btn" aria-label="Tải ảnh lên" title="Gửi ảnh địa điểm hoặc món ăn để AI nhận diện">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+              </button>
+
               <input type="text" id="chat-input" class="chat-input"
-                placeholder="Hỏi về điểm đến, đặc sản, hoặc gõ 'Lập lịch trình 2 ngày'..." autocomplete="off"
-                required />
+                placeholder="Hỏi về điểm đến, đặc sản, hoặc tải ảnh để AI nhận diện..." autocomplete="off" />
+
               <button type="submit" id="chat-send-btn" class="chat-send-btn" aria-label="Gửi câu hỏi"
                 title="Gửi tin nhắn">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -742,7 +766,7 @@
               </button>
             </form>
             <div class="chat-input-hints">
-              <span>Trợ lý Cố đô hỗ trợ tra cứu di sản, kết nối ẩm thực và tối ưu lộ trình tham quan.</span>
+              <span>Trợ lý Cố đô hỗ trợ tra cứu di sản, nhận diện ảnh thắng cảnh & ẩm thực, tối ưu lộ trình tham quan.</span>
             </div>
           </div>
         </section>
