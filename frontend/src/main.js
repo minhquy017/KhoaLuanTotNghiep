@@ -35,25 +35,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   mapStudio.init();
   window.mapStudio = mapStudio;
 
-  // 2. KIỂM TRA TRẠNG THÁI FASTAPI BACKEND
+  // 2. KIỂM TRA TRẠNG THÁI FASTAPI BACKEND (CHẠY NGẦM, KHÔNG ÉP HIỂN THỊ PILL)
   const statusPill = document.getElementById('system-status-pill');
   const statusLabel = document.getElementById('status-label');
-  const statusDot = statusPill.querySelector('.status-dot');
+  const statusDot = statusPill?.querySelector('.status-dot');
 
   async function checkBackendStatus() {
     try {
       const health = await TourismApiClient.checkHealth();
       if (health.status === 'healthy') {
-        statusDot.className = 'status-dot pulse';
-        statusLabel.textContent = 'Trực tuyến';
-        statusPill.title = 'Hệ thống đang hoạt động';
+        if (statusDot) statusDot.className = 'status-dot pulse';
+        if (statusLabel) statusLabel.textContent = 'Trực tuyến';
+        if (statusPill) statusPill.title = 'Hệ thống đang hoạt động';
       } else {
         throw new Error('Offline');
       }
     } catch {
-      statusDot.className = 'status-dot error';
-      statusLabel.textContent = 'Ngoại tuyến';
-      statusPill.title = 'Không thể kết nối máy chủ';
+      if (statusDot) statusDot.className = 'status-dot error';
+      if (statusLabel) statusLabel.textContent = 'Ngoại tuyến';
+      if (statusPill) statusPill.title = 'Không thể kết nối máy chủ';
     }
   }
   await checkBackendStatus();
@@ -120,6 +120,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnHeaderToggleMap?.addEventListener('click', toggleMapPanel);
   btnWorkbenchToggleMap?.addEventListener('click', toggleMapPanel);
   btnCloseMapPanel?.addEventListener('click', hideMapPanel);
+
+  // Tự động căn chỉnh kích thước bản đồ khi xoay điện thoại hoặc thay đổi kích thước cửa sổ
+  window.addEventListener('resize', () => {
+    if (mapStudio && mapStudio.map) {
+      mapStudio.map.invalidateSize({ animate: false });
+    }
+  }, { passive: true });
 
   // Khởi tạo trạng thái nút toggle theo layout ban đầu
   const isInitiallyMapOpen = !studioLayout?.classList.contains('map-collapsed');
@@ -1650,6 +1657,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeUserPopover();
     const isMobile = window.innerWidth <= 1024;
     if (isMobile) {
+      // Trên mobile, sidebar luôn là bản đầy đủ dạng Drawer trượt ra, không dùng dạng thanh icon 56px
+      sidebarGemini.classList.remove('collapsed');
       const willOpen = typeof forceState === 'boolean' ? forceState : !sidebarGemini.classList.contains('mobile-open');
       sidebarGemini.classList.toggle('mobile-open', willOpen);
       sidebarBackdrop?.classList.toggle('active', willOpen);

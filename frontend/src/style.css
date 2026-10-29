@@ -235,16 +235,7 @@ button, input, select, textarea {
 }
 
 .status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  background-color: #FAFAF9;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  padding: 0.3rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-ink-secondary);
+  display: none !important;
 }
 
 .status-dot {
@@ -4611,125 +4602,432 @@ button, input, select, textarea {
 }
 
 /* =============================================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN (TABLET & SMARTPHONE / MOBILE NATIVE EXCELLENCE)
+   Tối ưu hóa hiển thị di động: 100dvh, Touch Targets >= 40px, Bố cục Chat Hero + Fullscreen Map
 ============================================================================= */
+
 @media (max-width: 1024px) {
-  body {
-    height: auto;
-    min-height: 100vh;
-    overflow-y: auto;
+  html, body {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    -webkit-text-size-adjust: 100%;
   }
 
+  .app-layout {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+  }
+
+  .main-workspace-container {
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Compact Sleek Header - Giữ 1 hàng duy nhất trên màn hình cảm ứng */
+  .site-header {
+    height: 52px;
+    padding: 0 10px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: 52px !important;
+    gap: 8px !important;
+    padding: 0 !important;
+  }
+
+  .header-left-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .btn-toggle-sidebar.mobile-only {
+    display: inline-flex !important;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 8px;
+  }
+
+  .header-brand-simple {
+    display: none !important;
+  }
+
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .header-map-toggle-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 17px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    background: #18181B;
+    color: #FFFFFF;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+  }
+
+  .header-map-toggle-btn:active {
+    transform: scale(0.95);
+  }
+
+  .header-map-toggle-btn.active {
+    background: #2563EB;
+    color: #FFFFFF;
+  }
+
+  /* Master Studio Layout on Mobile/Tablet */
   .studio-layout {
-    height: auto;
-    overflow: visible;
-    grid-template-columns: 1fr;
-    padding: 1rem;
-    gap: 1.25rem;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: calc(100vh - 52px) !important;
+    height: calc(100dvh - 52px) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: relative !important;
+    overflow: hidden !important;
+    background: #FFFFFF !important;
+    gap: 0 !important;
   }
 
-  .studio-layout.map-collapsed {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
+  /* Chế độ Mặc định: Chatbot Fullscreen Hero Mode */
   .studio-layout.map-collapsed .spatial-canvas-panel {
     display: none !important;
   }
 
-  .studio-layout.workbench-collapsed {
-    grid-template-columns: 1fr;
+  .studio-layout.map-collapsed .editorial-workbench-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
   }
 
-  .spatial-canvas-panel {
-    height: 440px;
-    position: static;
+  /* Chế độ Mở Bản đồ trên Di động: Bản đồ chiếm toàn màn hình hoặc layer trên cùng mượt mà */
+  .studio-layout:not(.map-collapsed) .spatial-canvas-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 50 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
   }
 
-  .editorial-workbench-panel {
-    height: auto;
-    position: static;
+  .studio-layout:not(.map-collapsed) .spatial-canvas-panel .btn-close-map-panel {
+    display: inline-flex !important;
+    background: #18181B !important;
+    color: #FFFFFF !important;
+    border-radius: 20px !important;
+    padding: 4px 12px !important;
+    font-weight: 600 !important;
+    font-size: 0.78rem !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .studio-layout:not(.map-collapsed) .editorial-workbench-panel {
+    display: none !important;
+  }
+
+  /* Workbench Header: Thanh công cụ di động vuốt ngang, triệt tiêu hoàn toàn va chạm dính chữ */
+  .workbench-header {
+    padding: 6px 10px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    border-bottom: 1px solid #F4F4F5 !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Ẩn dòng chữ dài "Hỏi đáp & Lịch trình Thông minh" trên mobile để tránh chèn ép nút */
+  .workbench-header-main {
+    display: none !important;
+  }
+
+  /* Thanh nút hành động cuộn ngang mượt mà chuẩn mobile */
+  .workbench-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 2px 2px !important;
+  }
+
+  .workbench-header-actions::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .btn-workbench-action {
+    height: 32px !important;
+    padding: 0 10px !important;
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    border-radius: 16px !important;
+    border: 1px solid #E4E4E7 !important;
+    background: #FFFFFF !important;
+    flex-shrink: 0 !important;
   }
 
   #panel-chat.active {
-    height: 560px;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
   }
 
-  .header-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.65rem;
+  .chat-stream-area {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 10px 12px 6px !important;
+    gap: 10px !important;
   }
 
-  .nav-tabs {
-    width: 100%;
-    overflow-x: auto;
+  /* Chat Input Container Docked Firmly at Bottom */
+  .chat-input-container {
+    flex-shrink: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 6px 10px calc(8px + env(safe-area-inset-bottom, 8px)) !important;
+    background: #FFFFFF !important;
+    border-top: 1px solid #F1F3F5 !important;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03) !important;
+    z-index: 40 !important;
   }
 
-  .form-row-grid {
-    grid-template-columns: 1fr;
+  .chat-input-wrapper {
+    border-radius: 24px !important;
+    padding: 3px 6px 3px 12px !important;
+    min-height: 42px !important;
+    background: #F4F4F5 !important;
+    border: 1px solid #E4E4E7 !important;
   }
 
-  .map-toolbar {
-    padding: 0.5rem 0.85rem;
-    overflow-x: auto;
-    scrollbar-width: none;
+  /* CRITICAL: font-size 16px prevents iOS Safari from automatically zooming in on input focus */
+  .chat-input {
+    font-size: 16px !important;
+    padding: 8px 0 !important;
+    line-height: 1.4 !important;
   }
 
-  .map-toolbar::-webkit-scrollbar {
-    display: none;
+  .chat-tool-btn {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 50% !important;
+  }
+
+  .chat-send-btn {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 50% !important;
+  }
+
+  .chat-image-preview-bar {
+    padding: 6px 10px !important;
+    border-radius: 12px !important;
+    margin-bottom: 6px !important;
   }
 }
 
 @media (max-width: 640px) {
-  .studio-layout {
-    padding: 0.75rem;
+  /* Welcome Screen Compact on Small Phones */
+  .welcome-screen {
+    padding: 1.25rem 0.5rem 0.85rem !important;
+    margin: auto 0 !important;
   }
 
-  .spatial-canvas-panel {
-    height: 380px;
+  .welcome-heading {
+    font-size: 1.3rem !important;
+    line-height: 1.25 !important;
   }
 
+  .welcome-subheading {
+    font-size: 0.82rem !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .welcome-prompt-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .welcome-prompt-card {
+    padding: 10px 12px !important;
+  }
+
+  .chat-message {
+    max-width: 92% !important;
+    font-size: 0.88rem !important;
+  }
+
+  .user-msg .chat-bubble {
+    padding: 8px 13px !important;
+    border-radius: 18px 18px 4px 18px !important;
+  }
+
+  .ai-msg .chat-bubble {
+    padding: 10px 14px !important;
+    border-radius: 18px 18px 18px 4px !important;
+  }
+
+  /* Map Controls on Phones */
   .map-toolbar {
-    padding: 0.45rem 0.65rem;
-    gap: 0.4rem;
+    padding: 0.45rem 0.65rem !important;
+    gap: 0.35rem !important;
   }
 
   .toolbar-meta {
-    max-width: 120px;
-    font-size: 0.74rem;
+    max-width: 110px !important;
+    font-size: 0.74rem !important;
   }
 
   .map-btn span {
-    display: none;
+    display: none !important;
+  }
+
+  .map-btn.btn-close-map-panel span {
+    display: inline !important;
   }
 
   .map-btn,
   .map-style-select {
-    padding: 0 0.45rem;
+    padding: 0 0.45rem !important;
+    height: 30px !important;
   }
 
-  .tab-panel {
-    padding: 1.15rem;
+  .map-search-box input {
+    font-size: 16px !important; /* Prevent iOS zoom */
   }
 
-  #panel-chat.active {
-    height: 500px;
-    padding: 1rem;
+  /* Compact Map Legend on Mobile */
+  .map-legend {
+    padding: 0.35rem 0.65rem !important;
+    gap: 0.6rem !important;
+    font-size: 0.68rem !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    flex-wrap: nowrap !important;
+    scrollbar-width: none !important;
   }
 
-  .panel-title {
-    font-size: 1.25rem;
+  .map-legend::-webkit-scrollbar {
+    display: none !important;
   }
 
-  .prompt-chips {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 4px;
+  /* POI Detail Drawer Full Screen on Mobile */
+  .poi-drawer-panel {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-left: none !important;
   }
 
-  .chip-item {
-    white-space: nowrap;
+  /* Modals as Modern Native Bottom Sheets on Phones */
+  .modal-card,
+  .auth-modal-card,
+  .settings-modal-card,
+  .saved-tours-modal-card,
+  .notebook-modal-card,
+  .preferences-modal-card,
+  .budget-modal-card {
+    width: 100% !important;
+    max-width: 100vw !important;
+    max-height: 92vh !important;
+    max-height: 92dvh !important;
+    border-radius: 20px 20px 0 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    margin: 0 !important;
+    padding: 1rem 1rem calc(1.25rem + env(safe-area-inset-bottom, 12px)) !important;
+    box-shadow: 0 -12px 35px rgba(0, 0, 0, 0.25) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .status-pill .status-text {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-weather-pill .weather-desc,
+  .header-weather-pill .weather-city {
+    display: none !important;
+  }
+
+  .btn-auth-header {
+    padding: 0.25rem 0.6rem !important;
+    font-size: 0.72rem !important;
   }
 }
 
@@ -6578,30 +6876,12 @@ button, input, select, textarea {
   .user-name-label {
     display: none;
   }
-  .editorial-workbench-panel {
-    padding: 1rem 0.85rem;
-    height: auto;
-    min-height: calc(100vh - 72px);
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-  }
-  .welcome-heading {
-    font-size: 1.4rem;
-  }
-  .welcome-subheading {
-    font-size: 0.86rem;
-    margin-bottom: 1.5rem;
-  }
   .welcome-prompt-grid {
     grid-template-columns: 1fr;
     gap: 0.65rem;
   }
   .chat-message {
-    max-width: 95%;
-  }
-  .chat-input-container {
-    padding: 0.35rem 0.25rem 0.5rem;
+    max-width: 92%;
   }
 }
 
@@ -6797,9 +7077,7 @@ button, input, select, textarea {
 
 @media (max-width: 1024px) {
   .header-brand-simple {
-    opacity: 1;
-    width: 95px;
-    pointer-events: auto;
+    display: none !important;
   }
 }
 
@@ -8092,27 +8370,98 @@ button, input, select, textarea {
    ============================================================================= */
 @media (max-width: 1024px) {
   .sidebar-gemini {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    transform: translateX(-100%);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    z-index: 10000;
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 300px !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    transform: translateX(-100%) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+    z-index: 10000 !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
   .sidebar-gemini.mobile-open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
+  }
+
+  /* TRÊN MOBILE/TABLET: BẢNG SIDEBAR PHẢI LUÔN LÀ BẢN ĐẦY ĐỦ 100%, KHÔNG BAO GIỜ THU GỌN VỀ RAIL 56PX */
+  .sidebar-gemini.collapsed {
+    width: 300px !important;
+    max-width: 85vw !important;
+  }
+
+  .sidebar-gemini.collapsed .sidebar-header {
+    width: 100% !important;
+  }
+
+  .sidebar-gemini.collapsed .sidebar-brand {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(-50%) translateX(0) !important;
+    pointer-events: auto !important;
+  }
+
+  .sidebar-gemini.collapsed .btn-sidebar-toggle {
+    right: 8px !important;
+    margin: 0 !important;
+  }
+
+  .sidebar-gemini.collapsed .sidebar-action-wrap,
+  .sidebar-gemini.collapsed .sidebar-nav-group,
+  .sidebar-gemini.collapsed .sidebar-footer-group {
+    width: 100% !important;
+    padding: initial !important;
+  }
+
+  .sidebar-gemini.collapsed .btn-sidebar-new-chat,
+  .sidebar-gemini.collapsed .sidebar-nav-item,
+  .sidebar-gemini.collapsed .btn-sidebar-settings,
+  .sidebar-gemini.collapsed .sidebar-user-chip {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 40px !important;
+    padding: 0.5rem 0.85rem !important;
+    margin: initial !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .sidebar-gemini.collapsed .btn-sidebar-new-chat span,
+  .sidebar-gemini.collapsed .sidebar-nav-item span,
+  .sidebar-gemini.collapsed .btn-sidebar-settings span,
+  .sidebar-gemini.collapsed .sidebar-user-info {
+    display: inline !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .sidebar-gemini.collapsed .sidebar-weather-container {
+    opacity: 1 !important;
+    visibility: visible !important;
+    max-height: none !important;
+    pointer-events: auto !important;
+    margin: initial !important;
+    padding: initial !important;
+  }
+
+  .sidebar-gemini.collapsed .sidebar-history-section {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
   }
 }
 
 @media (max-width: 640px) {
-  .sidebar-gemini {
-    width: 290px;
-    max-width: 85vw;
-  }
-  .header-brand-title {
-    font-size: 0.95rem;
+  .sidebar-gemini,
+  .sidebar-gemini.collapsed {
+    width: 290px !important;
+    max-width: 85vw !important;
   }
 }
 
