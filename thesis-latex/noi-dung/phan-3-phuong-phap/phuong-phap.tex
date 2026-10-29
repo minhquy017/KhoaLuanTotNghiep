@@ -7,7 +7,7 @@
 \subsection*{1.1. Hiện trạng đa nguồn dữ liệu và Quy mô tổng thể}
 \addcontentsline{toc}{subsection}{1.1. Hiện trạng đa nguồn dữ liệu và Quy mô tổng thể}
 
-Nghiên cứu được thiết lập dựa trên một cơ sở dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp chặt chẽ giữa thông tin tọa độ không gian chính xác, kho ngữ liệu nhận xét trải nghiệm thực tế từ cộng đồng du khách và hệ thống từ điển ẩm thực chuẩn hóa. Toàn bộ cơ sở dữ liệu được cấu thành từ bốn nguồn dữ liệu thành phần:
+Nghiên cứu được thiết lập dựa trên một cơ sở dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp chặt chẽ giữa thông tin tọa độ không gian chính xác, kho ngữ liệu nhận xét trải nghiệm thực tế từ cộng đồng du khách và hệ thống từ điển ẩm thực chuẩn hóa. Toàn bộ cơ sở dữ liệu được cấu thành từ năm nguồn dữ liệu thành phần:
 
 Nguồn dữ liệu thứ nhất là tập dữ liệu vị trí địa lý thu thập từ OpenStreetMap và Google Maps, cung cấp thông tin định danh, tên gọi chính thức, danh mục dịch vụ và cặp tọa độ địa lý WGS84 cho 9.525 thực thể du lịch trên phạm vi toàn quốc, trong đó trọng tâm khảo sát đặc biệt chuyên sâu là 610 địa điểm du lịch, ẩm thực và lưu trú phân bổ trên địa bàn thành phố Huế và các vùng di sản phụ cận thuộc tỉnh Thừa Thiên Huế.
 
@@ -16,6 +16,8 @@ Nguồn dữ liệu thứ hai là kho ngữ liệu nhận xét du khách khổng
 Nguồn dữ liệu thứ ba là Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer) do nghiên cứu tự xây dựng và chuẩn hóa, bao gồm 570 món ăn đặc sản tiêu biểu của cả ba miền đất nước, với sự tập trung sâu sắc vào hơn 60 món ăn truyền thống đặc trưng của xứ Huế như Bún bò Huế, Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Bánh khoái, Chè bột lọc heo quay, Nem lụi, Vả trộn, Tré Huế và Bún mắm nêm.
 
 Nguồn dữ liệu thứ tư là cấu trúc Đồ thị Tri thức Không gian (Spatial Knowledge Graph -- SKG) được mô hình hóa và liên kết tự động bằng thư viện NetworkX, đạt quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ ngữ nghĩa và không gian hình học.
+
+Nguồn dữ liệu thứ năm là Bộ ngữ liệu hình ảnh di sản Cố đô Huế (Hue Visual Heritage Dataset) gồm 77 hình ảnh chất lượng cao được thu thập, gán nhãn chuẩn hóa và xác minh thực địa từ Wikimedia Commons và các nguồn tư liệu di sản mở, bao phủ 25 danh lam thắng cảnh, di tích lịch sử và công trình kiến trúc đặc trưng nhất của thành phố Huế (tiêu biểu như Cổng Ngọ Môn, Chùa Thiên Mụ, Lăng Khải Định, Lăng Tự Đức, Lăng Minh Mạng, Cung An Định, Cầu Trường Tiền, Chợ Đông Ba, Đồi Vọng Cảnh, Nhà vườn An Hiên). Toàn bộ hình ảnh được chuẩn hóa kích thước, loại bỏ nhiễu và gán nhãn ánh xạ tương thích 100\% với trường định danh \textit{place\_id} trên Đồ thị Tri thức Không gian nhằm phục vụ cơ chế nhận diện điểm mốc thị giác đa phương thức (Multimodal Visual RAG).
 
 Các thông số tổng hợp về quy mô lưu trữ, số lượng bản ghi và định dạng cấu trúc của các nguồn dữ liệu thành phần được thống kê chi tiết tại Bảng \ref{tab:dataset-summary}.
 
@@ -34,11 +36,12 @@ TripAdvisor Huế & JSON / Danh sách & 44.355 bài & Đánh giá thực tế b�
 Địa điểm Du lịch tại Huế & GeoJSON / JSON & 610 thực thể & Thực thể du lịch, ẩm thực, lưu trú chuẩn hóa tại Huế \\
 Culinary Gazetteer & JSON / Cấu trúc & 570 món ăn & Từ điển thực đơn ẩm thực và biến thể nhận diện \\
 Đồ thị Tri thức Không gian & NetworkX / PKL & 9.525 nút / 90.948 cạnh & Đồ thị thực thể, topo lân cận và quan hệ thực đơn \\
+Hình ảnh Di tích Huế & JPEG / RGB & 77 tệp / 25 di tích & Ngữ liệu ảnh di sản phục vụ nhận diện đa phương thức Visual RAG \\
 \hline
 \end{tabularx}
 \end{table}
 
-Từ số liệu tại Bảng \ref{tab:dataset-summary}, việc kết hợp đa nguồn dữ liệu cho phép hệ thống khắc phục triệt để các hạn chế của từng nguồn đơn lẻ: dữ liệu bản đồ số bảo đảm tính chuẩn xác tuyệt đối về mặt tọa độ trắc địa, trong khi tập ngữ liệu hàng chục ngàn bài đánh giá cung cấp nguồn tri thức sống động về chất lượng dịch vụ và thị hiếu ẩm thực thực tế của du khách.
+Từ số liệu tại Bảng \ref{tab:dataset-summary}, việc kết hợp đa nguồn dữ liệu cho phép hệ thống khắc phục triệt để các hạn chế của từng nguồn đơn lẻ: dữ liệu bản đồ số bảo đảm tính chuẩn xác tuyệt đối về mặt tọa độ trắc địa, kho ngữ liệu hàng chục ngàn bài đánh giá cung cấp nguồn tri thức sống động về chất lượng dịch vụ và thị hiếu ẩm thực thực tế, trong khi bộ tư liệu hình ảnh di sản tạo tiền đề vững chắc cho các tác vụ nhận diện thị giác đa phương thức trực tiếp từ ảnh chụp của du khách.
 
 \subsection*{1.2. Giải phẫu cấu trúc tập dữ liệu 44.355 bài đánh giá thực tế tại Huế}
 \addcontentsline{toc}{subsection}{1.2. Giải phẫu cấu trúc tập dữ liệu 44.355 bài đánh giá thực tế tại Huế}
@@ -230,8 +233,8 @@ Giai đoạn 1 (Thu thập và Kiểm toán dữ liệu): Tiến hành thu thậ
 
 Giai đoạn 2 (Xây dựng Đồ thị Tri thức Không gian): Áp dụng công thức khoảng cách mặt cầu Haversine để tính toán ma trận cự ly giữa toàn bộ các cặp thực thể; thiết lập các cạnh liên kết lân cận $\text{NEAR\_BY}$ với ngưỡng $d \le 1,5\text{ km}$; xây dựng các quan hệ phân cấp địa giới $\text{LOCATED\_IN}$ kết nối điểm đến với các phường xã và quận huyện tại thành phố Huế, tạo thành cấu trúc đồ thị gồm 9.525 nút và 90.948 cạnh lưu trữ bằng thư viện NetworkX.
 
-Giai đoạn 3 (Khai phá Thực đơn ngầm và Nhúng ngữ nghĩa): Ứng dụng Bộ từ điển ẩm thực 570 món ăn để quét qua toàn bộ 44.355 bài nhận xét du khách tại Huế; tính toán điểm số tin cậy theo công thức (\ref{eq:dish-confidence}) để gán các cạnh quan hệ $\text{SERVES}$ giữa nhà hàng và món đặc sản; đồng thời thực hiện quy trình Atomic Chunking và tạo lập chỉ mục vector trên ChromaDB bằng mô hình nhúng đa ngôn ngữ.
+Giai đoạn 3 (Khai phá Thực đơn ngầm và Nhúng đa phương thức Ngữ nghĩa -- Thị giác): Ứng dụng Bộ từ điển ẩm thực 570 món ăn để quét qua toàn bộ 44.355 bài nhận xét du khách tại Huế; tính toán điểm số tin cậy theo công thức (\ref{eq:dish-confidence}) để gán các cạnh quan hệ $\text{SERVES}$ giữa nhà hàng và món đặc sản; đồng thời thực hiện quy trình Atomic Chunking tạo chỉ mục văn bản trên ChromaDB bằng mô hình \texttt{paraphrase-multilingual-MiniLM-L12-v2}. Đặc biệt, nghiên cứu tích hợp mô hình thị giác \texttt{clip-ViT-B-32}~\cite{radford2021clip} trích xuất véc-tơ đặc trưng 512 chiều từ bộ tư liệu 77 ảnh di tích, xây dựng bộ chỉ mục thị giác chuyên biệt \texttt{hue\_landmarks\_visual} trên ChromaDB hỗ trợ nhận diện danh lam Cố đô tức thời từ ảnh chụp của du khách.
 
-Giai đoạn 4 (Thiết kế Khung tác tử Agentic RAG): Xây dựng máy trạng thái hữu hạn trên LangGraph với năm nút chức năng chính; tích hợp bộ chấm điểm tin cậy để đánh giá mức độ tương thích giữa câu hỏi và tri thức đồ thị; thiết lập nhánh rẽ phân luồng dự phòng tìm kiếm Internet khi thông tin nội bộ không đủ tin cậy; và kết nối mô hình ngôn ngữ lớn Qwen2.5-3B-Instruct chạy nội bộ qua Ollama trên GPU NVIDIA GeForce RTX 3050.
+Giai đoạn 4 (Thiết kế Khung tác tử Agentic RAG và Mô hình hóa Gu Du lịch): Xây dựng máy trạng thái hữu hạn trên LangGraph với năm nút chức năng chính; tích hợp bộ chấm điểm tin cậy để đánh giá mức độ tương thích giữa câu hỏi và tri thức đồ thị; thiết lập nhánh rẽ phân luồng dự phòng tìm kiếm Internet khi thông tin nội bộ không đủ tin cậy; mô hình hóa 4 trường phái du khách (Traveler Personas) gồm Di sản Lịch sử, Ẩm thực Cố đô, Sinh thái Đầm phá và Nghỉ dưỡng Tâm linh; và kết nối mô hình ngôn ngữ lớn Qwen2.5-3B-Instruct chạy nội bộ qua Ollama trên GPU NVIDIA GeForce RTX 3050 (Zero API Cost).
 
-Giai đoạn 5 (Lập lịch trình không gian, Đóng gói API và Đánh giá Benchmark): Phát triển giải thuật phân cụm lịch trình theo bờ sông Hương nhằm tối ưu hóa cự ly di chuyển; đóng gói toàn bộ chức năng thành Cổng API RESTful chuẩn hóa bằng FastAPI sẵn sàng tích hợp với nền tảng Hue-S; và tiến hành kiểm thử thực nghiệm đối sánh định lượng trên bộ Benchmark 12 kịch bản du lịch thực tế tại Huế so với các mô hình đối chứng Naive RAG và Zero-shot LLM.
+Giai đoạn 5 (Lập lịch trình đường bộ thực tế, Dự toán ngân sách, Đóng gói Web Mobile và Đánh giá Benchmark): Nâng cấp giải thuật lập lịch trình kết hợp mạng lưới đường bộ OpenStreetMap qua OSRM~\cite{luxen2011osrm} thay cho xấp xỉ đường chim bay; phát triển công cụ Dự toán ngân sách chuyến đi (Trip Budget Calculator) dựa trên biểu giá vé tham quan di tích của Trung tâm Bảo tồn Di tích Cố đô Huế~\cite{hmdc2024tickets}; đóng gói toàn bộ chức năng thành Cổng API RESTful chuẩn hóa bằng FastAPI và thiết kế Giao diện Web di động thích ứng chuẩn RWD~\cite{marcotte2010responsive}; đồng thời tiến hành kiểm thử thực nghiệm đối sánh định lượng trên bộ Benchmark 12 kịch bản du lịch thực tế tại Huế so với các mô hình đối chứng Naive RAG và Zero-shot LLM.

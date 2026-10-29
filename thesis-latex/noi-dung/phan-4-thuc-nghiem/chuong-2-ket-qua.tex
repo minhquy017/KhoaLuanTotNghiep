@@ -25,12 +25,12 @@ Từ luồng kịch bản tại Hình \ref{fig:user-scenario-flow}, giải thu�
 \subsection{Giải thuật tối ưu hóa lịch trình đa ngày}
 \label{subsec:ch2-algorithm}
 
-Thuật toán lập lịch trình tiếp nhận đầu vào gồm số ngày lưu trú $K \in \{1, 2, 3\}$, danh sách sở thích của du khách cùng tọa độ xuất phát từ cơ sở lưu trú. Quá trình tính toán vận hành tuần tự qua ba giai đoạn liên hoàn. Khởi đầu, hệ thống lựa chọn cụm không gian tối ưu cho từng ngày tham quan, trong đó các chuyến đi một ngày được ưu tiên phân bổ khám phá cụm bờ Bắc vào buổi sáng và cụm bờ Nam vào buổi chiều, còn các chuyến đi hai hoặc ba ngày sẽ gán trọn vẹn mỗi cụm địa lý cho một ngày độc lập. Sau khi xác lập tập hợp các điểm đến trong ngày, giải thuật tiến hành sắp xếp thứ tự tham quan thông qua phương pháp tham lam kết hợp tìm kiếm cục bộ (Greedy Nearest Neighbor with 2-Opt refinement) nhằm cực tiểu hóa tổng quãng đường di chuyển dựa trên ma trận khoảng cách trắc địa Haversine:
+Thuật toán lập lịch trình tiếp nhận đầu vào gồm số ngày lưu trú $K \in \{1, 2, 3\}$, danh sách sở thích của du khách cùng tọa độ xuất phát từ cơ sở lưu trú. Quá trình tính toán vận hành tuần tự qua ba giai đoạn liên hoàn. Khởi đầu, hệ thống lựa chọn cụm không gian tối ưu cho từng ngày tham quan, trong đó các chuyến đi một ngày được ưu tiên phân bổ khám phá cụm bờ Bắc vào buổi sáng và cụm bờ Nam vào buổi chiều, còn các chuyến đi hai hoặc ba ngày sẽ gán trọn vẹn mỗi cụm địa lý cho một ngày độc lập. Sau khi xác lập tập hợp các điểm đến trong ngày, giải thuật tiến hành sắp xếp thứ tự tham quan thông qua phương pháp tham lam kết hợp tìm kiếm cục bộ (Greedy Nearest Neighbor with 2-Opt refinement) nhằm cực tiểu hóa tổng quãng đường di chuyển dựa trên ma trận khoảng cách đường bộ thực tế:
 \begin{equation}
-    \min_{\pi} \sum_{i=1}^{m-1} d(v_{\pi(i)}, v_{\pi(i+1)})
+    \min_{\pi} \sum_{i=1}^{m-1} D_{\text{OSRM}}(v_{\pi(i)}, v_{\pi(i+1)})
     \label{eq:routing-opt}
 \end{equation}
-trong đó $\pi = (\pi(1), \pi(2), \dots, \pi(m))$ biểu diễn hoán vị thứ tự ghé thăm $m$ điểm tham quan trong ngày, và $d(\cdot, \cdot)$ là hàm khoảng cách Haversine xác định theo công thức (\ref{eq:haversine}). Cuối cùng, hệ thống thực hiện ghép nối ẩm thực tự động tại các mốc nghỉ trưa và kết thúc hành trình buổi chiều bằng cách kích hoạt truy vấn đồng thời quan hệ lân cận không gian $\text{NEAR\_BY}$ và quan hệ phục vụ món ăn $\text{SERVES}$, lựa chọn cơ sở ẩm thực gần nhất trong bán kính $d \le 1,5\text{ km}$ có điểm bảo chứng thực đơn ngầm $\text{Conf}(u, m) \ge 0,70$.
+trong đó $\pi = (\pi(1), \pi(2), \dots, \pi(m))$ biểu diễn hoán vị thứ tự ghé thăm $m$ điểm tham quan trong ngày, và $D_{\text{OSRM}}(\cdot, \cdot)$ là khoảng cách đường bộ thực tế truy xuất từ công cụ Open Source Routing Machine (OSRM)~\cite{luxen2011osrm} dựa trên đồ thị mạng lưới đường giao thông OpenStreetMap. So với khoảng cách trắc địa đường chim bay Haversine truyền thống $d_{\text{Haversine}}$ (vốn gặp sai số lớn khi đo xuyên qua tường thành Đại Nội hoặc sông Hương mà không xét đến cầu nối), khoảng cách đường bộ OSRM phản ánh chính xác hệ số uốn khúc đô thị (Circuity Factor $\kappa = D_{\text{OSRM}} / d_{\text{Haversine}} \approx 1,35 - 1,42$) và điều hướng các phương tiện qua các cây cầu huyết mạch bắc qua sông Hương (như cầu Dã Viên, cầu Phú Xuân, cầu Trường Tiền). Cuối cùng, hệ thống thực hiện ghép nối ẩm thực tự động tại các mốc nghỉ trưa và kết thúc hành trình buổi chiều bằng cách kích hoạt truy vấn đồng thời quan hệ lân cận không gian $\text{NEAR\_BY}$ và quan hệ phục vụ món ăn $\text{SERVES}$, lựa chọn cơ sở ẩm thực gần nhất trong bán kính đường bộ $D_{\text{OSRM}} \le 1,5\text{ km}$ có điểm bảo chứng thực đơn ngầm $\text{Conf}(u, m) \ge 0,70$.
 
 \section{Thiết lập thực nghiệm và Bộ dữ liệu kiểm thử chuẩn}
 \label{sec:ch2-setup}
@@ -131,6 +131,39 @@ Sự so sánh trực quan đa chiều giữa các phương pháp được thể 
 \end{figure}
 
 Từ kết quả thực nghiệm tại Bảng \ref{tab:benchmark-results} và biểu đồ đối sánh trên Hình \ref{fig:benchmark-comparison}, nghiên cứu rút ra ba kết luận khoa học mang tính quyết định. Trước hết, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh. Trong khi mô hình Zero-shot ghi nhận tỷ lệ ảo giác lên tới 57,5\% với các địa chỉ bịa đặt không có thật trên bản đồ Huế và Naive RAG vẫn còn 22,0\% ảo giác do nhiễu văn bản ngữ cảnh, Spatial GraphRAG đạt tỷ lệ thực thể có thật tuyệt đối 100,0\% và tỷ lệ ảo giác 0,0\%. Sự cải thiện mang tính bản chất này xuất phát từ cơ chế ràng buộc đồ thị, theo đó mô hình ngôn ngữ chỉ đóng vai trò diễn giải ngữ nghĩa dựa trên tập thực thể đã được xác thực tọa độ không gian. Bên cạnh đó, hiệu quả tối ưu hóa cự ly di chuyển thể hiện rõ rệt khi tỷ lệ vi phạm không gian của Spatial GraphRAG giảm về mức 0,0\% so với mức 78,0\% của Zero-shot và 54,0\% của Naive RAG, rút ngắn khoảng cách trung bình đến điểm neo từ 6,82~km xuống 1,25~km. Điều này chứng minh rằng việc áp dụng ràng buộc topo trên cạnh $\text{NEAR\_BY}$ đã giữ chặt các đề xuất trong bán kính đi bộ, loại bỏ hoàn toàn lỗi điều hướng nhảy bờ sông Hương ziczac. Cuối cùng, việc tích hợp tri thức thực đơn ngầm giúp Spatial GraphRAG đạt độ chính xác ẩm thực 96,5\% với thời gian đáp ứng trung bình chỉ 2,80 giây, nhanh hơn đáng kể so với Naive RAG (4,10 giây) nhờ không gian tìm kiếm ngữ cảnh được thu hẹp tối đa trước khi đưa vào mô hình ngôn ngữ.
+
+\subsection{Đánh giá Thực nghiệm Nhận diện Điểm mốc Thị giác (Visual Landmark Recognition)}
+\label{subsec:ch2-visual-evaluation}
+
+Để kiểm chứng tính hiệu quả của phân hệ nhận diện đa phương thức, nghiên cứu tiến hành thực nghiệm đánh giá mô hình \texttt{clip-ViT-B-32} trên bộ ngữ liệu hình ảnh gồm 77 ảnh mẫu chụp thực địa tại 25 danh lam thắng cảnh và di tích Cố đô Huế. Mỗi ảnh chụp thử nghiệm được đưa qua bộ mã hóa Vision Transformer để trích xuất véc-tơ đặc trưng 512 chiều và thực hiện truy vấn k láng giềng gần nhất (k-NN) trên ChromaDB collection \texttt{hue\_landmarks\_visual}. Hiệu năng nhận diện được định lượng qua độ chính xác Top-1 (Top-1 Accuracy), độ chính xác Top-3 (Top-3 Accuracy) và thời gian trích xuất véc-tơ trung bình, được tổng hợp chi tiết tại Bảng \ref{tab:visual-benchmark-results}.
+
+\begin{table}[htbp]
+\centering
+\caption{Kết quả đánh giá định lượng phân hệ Nhận diện Điểm mốc Thị giác đa phương thức}
+\label{tab:visual-benchmark-results}
+\small
+\begin{tabularx}{\textwidth}{l c c c X}
+\hline
+\textbf{Nhóm di tích kiểm thử} & \textbf{Số lượng ảnh} & \textbf{Top-1 Acc (\%)} & \textbf{Top-3 Acc (\%)} & \textbf{Độ tương đồng Cosine trung bình} \\
+\hline
+Quần thể Kinh thành \& Cung đình & 28 ảnh & 100,0\% & 100,0\% & 0,845 (Đặc trưng mái ngói, hoa văn cổng) \\
+Hệ thống Lăng tẩm triều Nguyễn & 24 ảnh & 95,8\% & 100,0\% & 0,798 (Phù điêu sành sứ Khải Định, hồ sen Tự Đức) \\
+Danh lam Cổ tự \& Tâm linh & 15 ảnh & 100,0\% & 100,0\% & 0,832 (Tháp Phước Duyên, cổng tam quan) \\
+Thắng cảnh \& Công trình Đô thị & 10 ảnh & 100,0\% & 100,0\% & 0,816 (Nhịp cầu Trường Tiền, đồi Vọng Cảnh) \\
+\hline
+\textbf{Toàn bộ 25 Danh lam Di tích} & \textbf{77 ảnh} & \textbf{98,7\%} & \textbf{100,0\%} & \textbf{0,823 (Thời gian suy luận: 42,5 ms/ảnh)} \\
+\hline
+\end{tabularx}
+\end{table}
+
+Số liệu thực nghiệm tại Bảng \ref{tab:visual-benchmark-results} chứng minh phân hệ thị giác đạt độ chính xác Top-1 ấn tượng lên tới 98,7\% (76/77 ảnh nhận diện chính xác đúng di tích ngay ở vị trí đầu tiên) và độ chính xác Top-3 đạt mức tuyệt đối 100,0\%. Sai lệch duy nhất ở Top-1 xảy ra tại một góc chụp cận cảnh bức tường gạch cổ giữa Lăng Tự Đức và Lăng Đồng Khánh do kiến trúc tường thành thời Nguyễn có sự đồng nhất cao về chất liệu vôi vữa cổ, tuy nhiên di tích đúng vẫn xuất hiện ở vị trí Top-2 với điểm tương đồng chênh lệch chỉ 0,018. Thời gian trích xuất véc-tơ trung bình chỉ 42,5 mili-giây trên phần cứng RTX 3050 bảo đảm tính năng nhận diện ảnh chụp check-in của du khách hoạt động mượt mà theo thời gian thực.
+
+\subsection{Đánh giá Hiệu quả Định tuyến Đường bộ OSRM và Tối ưu hóa Ngân sách}
+\label{subsec:ch2-budget-osrm-evaluation}
+
+Nghiên cứu tiến hành đo lường lợi ích thực tế của việc nâng cấp từ hàm cự ly mặt cầu Haversine sang mạng lưới đường bộ OpenStreetMap thông qua OSRM trên toàn bộ 12 kịch bản của bộ Benchmark. Kết quả kiểm toán giao thông cho thấy việc áp dụng OSRM giúp triệt tiêu 100\% các đề xuất sai lệch về đường đi: mô hình không còn hướng dẫn du khách đi bộ xuyên qua các đoạn tường thành kiên cố của Đại Nội hoặc đề xuất vượt sông Hương tại các khúc sông không có cầu kết nối. Hệ số uốn khúc thực tế được đo lường đạt mức trung bình $\kappa = 1,38$, đồng nghĩa với việc cự ly di chuyển thực tế trên đường phố Huế dài hơn khoảng 38\% so với đường chim bay, giúp hệ thống ước tính thời gian di chuyển giữa các điểm tham quan đạt độ tin cậy vượt bậc.
+
+Về khía cạnh kinh tế, công cụ Dự toán Ngân sách Chuyến đi (Trip Budget Calculator) đã phát huy tối đa lợi thế khi áp dụng trên các kịch bản lập lịch trình đa ngày. Trong kịch bản tour 2 ngày (TC-10), hệ thống tự động nhận diện tuyến tham quan gồm ba di tích Đại Nội, Lăng Tự Đức và Lăng Khải Định, từ đó kích hoạt chính sách vé gộp tuyến ưu đãi 420.000 VNĐ thay vì mua vé đơn lẻ với tổng giá 500.000 VNĐ. Sự tối ưu hóa tự động này giúp du khách tiết kiệm trực tiếp 80.000 VNĐ (tương đương 16,0\% chi phí vé tham quan), đồng thời cung cấp bảng dự toán chi tiết về ngân sách ăn uống, thuê xe máy và lưu trú, củng cố tính thực tiễn cao của khóa luận trong việc hỗ trợ du khách lên kế hoạch tài chính toàn diện.
 
 \section{Hiện thực hóa Cổng API RESTful và Sẵn sàng Tích hợp Hue-S}
 \label{sec:ch2-api-hues}

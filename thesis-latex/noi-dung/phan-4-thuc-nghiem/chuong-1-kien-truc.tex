@@ -15,13 +15,13 @@
 
 Từ sơ đồ tại Hình \ref{fig:system-architecture}, quy trình xử lý luồng dữ liệu và suy luận được vận hành tuần tự qua bốn tầng kiến trúc:
 
-Tầng thứ nhất là Tầng Dữ liệu và Lưu trữ (Data and Storage Layer), chịu trách nhiệm quản lý toàn bộ các nguồn dữ liệu gốc và dữ liệu bán cấu trúc. Tầng này bao gồm cơ sở dữ liệu quan hệ SQLite lưu trữ 1,69 triệu bài nhận xét và hồ sơ thông tin chi tiết của 9.525 địa điểm du lịch; cơ sở dữ liệu vector ChromaDB lưu trữ các véc-tơ nhúng ngữ nghĩa của các phân mảnh nhận xét phân tử; và cấu trúc Đồ thị Tri thức Không gian được biểu diễn và tối ưu hóa trong bộ nhớ thông qua thư viện NetworkX.
+Tầng thứ nhất là Tầng Dữ liệu và Lưu trữ (Data and Storage Layer), chịu trách nhiệm quản lý toàn bộ các nguồn dữ liệu gốc và dữ liệu bán cấu trúc. Tầng này bao gồm cơ sở dữ liệu quan hệ SQLite lưu trữ 1,69 triệu bài nhận xét và hồ sơ thông tin chi tiết của 9.525 địa điểm du lịch; cơ sở dữ liệu vector ChromaDB lưu trữ các véc-tơ nhúng ngữ nghĩa của các phân mảnh nhận xét phân tử cùng bộ chỉ mục thị giác đa phương thức \texttt{hue\_landmarks\_visual} lưu trữ các véc-tơ đặc trưng hình ảnh 512 chiều của 25 danh lam di tích Cố đô; và cấu trúc Đồ thị Tri thức Không gian được biểu diễn và tối ưu hóa trong bộ nhớ thông qua thư viện NetworkX.
 
-Tầng thứ hai là Tầng Tri thức và Đánh chỉ mục Không gian (Knowledge and Spatial Indexing Layer), đóng vai trò cầu nối logic giữa dữ liệu thô và các tác tử suy luận. Tầng này cung cấp ba cơ chế chỉ mục cốt lõi: chỉ mục cự ly không gian dựa trên công thức mặt cầu Haversine phục vụ truy vấn lân cận nhanh với bán kính $\tau_{\text{spatial}} = 1,5\text{ km}$; chỉ mục quan hệ thực đơn ẩm thực $\text{SERVES}$ liên kết các nhà hàng với danh mục 570 món ăn trong từ điển ẩm thực; và bộ mô hình nhúng ngữ nghĩa \texttt{paraphrase-multilingual-MiniLM-L12-v2} chuyển đổi câu hỏi của du khách thành véc-tơ đặc trưng 384 chiều.
+Tầng thứ hai là Tầng Tri thức và Đánh chỉ mục Không gian (Knowledge and Spatial Indexing Layer), đóng vai trò cầu nối logic giữa dữ liệu thô và các tác tử suy luận. Tầng này cung cấp bốn cơ chế chỉ mục cốt lõi: chỉ mục cự ly không gian dựa trên công thức mặt cầu Haversine và mạng lưới đường bộ OpenStreetMap phục vụ truy vấn lân cận nhanh với bán kính $\tau_{\text{spatial}} = 1,5\text{ km}$; chỉ mục quan hệ thực đơn ẩm thực $\text{SERVES}$ liên kết các nhà hàng với danh mục 570 món ăn trong từ điển ẩm thực; bộ mô hình nhúng ngữ nghĩa văn bản \texttt{paraphrase-multilingual-MiniLM-L12-v2} chuyển đổi câu hỏi của du khách thành véc-tơ đặc trưng 384 chiều; và mô hình thị giác \texttt{clip-ViT-B-32} nhúng ảnh chụp di tích thành véc-tơ không gian đa phương thức.
 
-Tầng thứ ba là Tầng Điều phối Tác tử và Lập lịch trình (Agentic Orchestration and Planning Layer), là trái tim trí tuệ nhân tạo của hệ thống. Tầng này tích hợp máy trạng thái hữu hạn LangGraph để kiểm soát luồng hội thoại; bộ chấm điểm tin cậy (Confidence Grading Module) đánh giá mức độ bao phủ của tri thức đồ thị; nhánh rẽ dự phòng tìm kiếm Internet (Web Search Fallback) khi cần bổ sung thông tin sự kiện thời gian thực; mô hình ngôn ngữ lớn cục bộ Qwen2.5-3B-Instruct thực thi suy luận ngữ cảnh; và bộ thuật toán Lập lịch trình phân cụm không gian (Spatial Itinerary Planner) tối ưu hóa lộ trình di chuyển.
+Tầng thứ ba là Tầng Điều phối Tác tử và Lập lịch trình (Agentic Orchestration and Planning Layer), là trái tim trí tuệ nhân tạo của hệ thống. Tầng này tích hợp máy trạng thái hữu hạn LangGraph để kiểm soát luồng hội thoại; bộ chấm điểm tin cậy (Confidence Grading Module) đánh giá mức độ bao phủ của tri thức đồ thị; nhánh rẽ dự phòng tìm kiếm Internet (Web Search Fallback) khi cần bổ sung thông tin sự kiện thời gian thực; bộ phân loại gu du lịch (Traveler Persona Classifier); công cụ dự toán chi phí chuyến đi thực tế (Trip Budget Calculator) dựa trên biểu giá bảo tồn di tích; mô hình ngôn ngữ lớn cục bộ Qwen2.5-3B-Instruct thực thi suy luận ngữ cảnh; và bộ thuật toán Lập lịch trình phân cụm không gian (Spatial Itinerary Planner) tối ưu hóa lộ trình di chuyển.
 
-Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp hai phương thức tương tác người dùng: Cổng API RESTful chuẩn mở được xây dựng trên nền tảng FastAPI với tài liệu Swagger UI tự động, trả về dữ liệu định dạng JSON chuẩn hóa kèm mảng tọa độ GPS để sẵn sàng tích hợp trực tiếp vào ứng dụng công dân số di động Hue-S của tỉnh Thừa Thiên Huế; và giao diện Web tương tác trực quan phát triển bằng công nghệ bản đồ số (Folium/Leaflet) hỗ trợ du khách tra cứu và quan sát trực tiếp lộ trình trên bản đồ nhiệt.
+Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp hai phương thức tương tác người dùng: Cổng API RESTful chuẩn mở được xây dựng trên nền tảng FastAPI với tài liệu Swagger UI tự động, trả về dữ liệu định dạng JSON chuẩn hóa kèm mảng tọa độ GPS để sẵn sàng tích hợp trực tiếp vào ứng dụng công dân số di động Hue-S của tỉnh Thừa Thiên Huế; và giao diện Web tương tác trực quan thích ứng đa nền tảng (Adaptive Responsive Web Client) hỗ trợ du khách trải nghiệm mượt mà trên cả máy tính để bàn lẫn điện thoại di động thông minh khi tham quan thực địa tại Cố đô.
 
 \section{Thiết kế Đồ thị Tri thức Không gian Du lịch Huế}
 \label{sec:ch1-skg-design}
@@ -127,6 +127,8 @@ trong đó $S_{\text{grounding}} \in [0, 1]$ là tỷ lệ các thực thể tro
 Nút 4: Phân luồng dự phòng tìm kiếm mạng (Web Search Fallback). Nếu điểm số tin cậy $S_{\text{conf}} < \tau_{\text{conf}} = 0,65$ (xảy ra khi du khách hỏi về các sự kiện thời sự mới phát sinh ngoài phạm vi đồ thị tĩnh), cạnh có điều kiện sẽ kích hoạt nhánh rẽ sang công cụ tìm kiếm DuckDuckGo/Google Search để thu thập các trang tin mới nhất, sau đó hợp nhất vào ngữ cảnh. Ngược lại, nếu $S_{\text{conf}} \ge 0,65$, hệ thống chuyển thẳng sang nút tạo sinh.
 
 Nút 5: Tạo sinh câu trả lời có kiểm soát (Constrained Generation Node). Mô hình Qwen2.5-3B tiếp nhận toàn bộ ngữ cảnh đã được neo giữ (grounded context) từ đồ thị tri thức để sinh câu trả lời bằng tiếng Việt tự nhiên, bảo đảm không bịa đặt bất kỳ thông tin nào ngoài các nút thực thể đã được cung cấp.
+
+Bên cạnh năng lực sinh câu trả lời tự nhiên, khung tác tử tích hợp cơ chế Giải thích Minh bạch Đồ thị (Explainable AI -- XAI Graph Reasoning Trace thông qua trường trạng thái \texttt{graph\_trace}). Trong các hệ thống RAG truyền thống, mô hình ngôn ngữ lớn hoạt động như một chiếc hộp đen (Black-box), người dùng hoàn toàn không thể kiểm chứng nguồn gốc lập luận vì sao một cơ sở ẩm thực hoặc danh lam lại được đề xuất. Với Spatial GraphRAG, mỗi bước duyệt trên đồ thị (từ Nút neo Anchor POI $\to$ cạnh lân cận $\text{NEAR\_BY}$ kèm cự ly mét $\to$ cạnh phục vụ $\text{SERVES}$ kèm điểm bảo chứng thực đơn ngầm $\text{Conf}(u, m)$) đều được kiên định hóa thành một chuỗi vết suy luận có cấu trúc. Chuỗi vết này được chuyển giao trực tiếp cho giao diện người dùng để trực quan hóa sơ đồ lập luận không gian, mang lại sự tin cậy tuyệt đối và tính minh bạch học thuật cao cho toàn bộ quá trình gợi ý du lịch.
 
 \section{Tầng Lưu trữ Đám mây NoSQL và Quản trị Đa phiên Hội thoại}
 \label{sec:ch1-cloud-storage}
@@ -242,3 +244,111 @@ Phương thức thứ ba là Chế độ Trải nghiệm Khách vãng lai (Guest
 Đặc biệt, để quản lý thông tin cá nhân mà không làm gián đoạn luồng làm việc trên bản đồ, hệ thống thiết kế Menu tài khoản người dùng dưới dạng một khung cửa sổ nổi (Popover Menu) định vị chính xác ngay phía trên chip tài khoản ở góc dưới thanh bên. Khi du khách nhấp chuột vào chip tài khoản, menu popover sẽ bật mở với hiệu ứng chuyển động trượt mượt mà (\texttt{popoverSlideUp}) và tự động đóng lại khi nhấp chuột ra ngoài vùng điều khiển. Menu tự động phân nhánh giao diện theo trạng thái người dùng: đối với khách vãng lai, menu hiển thị các nút thao tác nhanh để Đăng nhập, Đăng ký, Cài đặt kết nối cơ sở dữ liệu Firebase đám mây cá nhân và Nút dùng thử Demo; đối với du khách đã đăng nhập, menu hiển thị huy hiệu xác nhận đồng bộ đám mây, thông tin tài khoản, phím tắt xem các lịch trình đã lưu, quản lý cấu hình kết nối và nút đăng xuất tài khoản an toàn.
 
 Nhằm tăng cường tính linh hoạt khi kiểm thử và triển khai hệ thống trong nhiều môi trường máy chủ khác nhau mà không cần biên dịch lại mã nguồn tĩnh, hệ thống tích hợp Hộp thoại cấu hình Firebase động (\texttt{firebase-config-modal}). Giao diện này cho phép quản trị viên hoặc người nghiên cứu nạp trực tiếp bộ tham số định danh dự án cá nhân (bao gồm API Key, Auth Domain, Project ID, App ID và Measurement ID) thông qua giao diện web trực quan. Khi xác nhận lưu trữ, hệ thống tự động kiểm tra tính hợp lệ của các trường dữ liệu, lưu trữ bền vững vào bộ nhớ cục bộ (\texttt{localStorage}) của trình duyệt và tái khởi tạo kết nối Firebase SDK tức thời ngay trong phiên làm việc, loại bỏ hoàn toàn sự phụ thuộc cứng vào tệp cấu hình môi trường tĩnh khi triển khai phân tán trên môi trường người dùng cuối.
+
+Song song với tính linh hoạt của cấu hình đám mây, hệ thống chú trọng nâng cấp trải nghiệm xác thực người dùng thông qua cơ chế Quản lý Mật khẩu Thông minh và Tiện ích Ghi nhớ Đăng nhập (Remember Password Credentials). Tại hộp thoại đăng nhập, du khách có thể kích hoạt tùy chọn ``Ghi nhớ mật khẩu''. Khi đăng nhập thành công, hệ thống mã hóa xáo trộn an toàn thông tin đăng nhập và kiên định hóa bền vững trong bộ nhớ cục bộ (\texttt{localStorage}) của trình duyệt; ở các phiên làm việc tiếp theo, hệ thống tự động nhận diện và điền sẵn (Auto-fill) thông tin tài khoản giúp du khách tiết kiệm thời gian thao tác. Nếu người dùng chủ động bỏ chọn hộp kiểm, thông tin đã lưu sẽ được dọn sạch hoàn toàn khỏi bộ nhớ. Nhằm nâng cao tính công thái học và kiểm soát lỗi nhập liệu trên màn hình cảm ứng điện thoại, khung nhập liệu tích hợp nút Chuyển đổi Hiển thị/Ẩn Mật khẩu (Show/Hide Password Toggle) với biểu tượng con mắt trực quan kèm nhãn hỗ trợ khả năng tiếp cận (\texttt{aria-label}), đồng thời tuân thủ chuẩn thuộc tính \texttt{autocomplete="username"} và \texttt{autocomplete="current-password"} của các trình duyệt hiện đại.
+
+\subsection{Kiến trúc Thích ứng Đa nền tảng Di động (Adaptive Mobile-First Responsive Web Architecture)}
+\label{subsec:ch1-mobile-responsive}
+
+Trong điều kiện du lịch thực địa tại Cố đô Huế, đa số du khách tra cứu thông tin và định vị điểm đến trực tiếp trên điện thoại thông minh khi đang di chuyển ngoài đường phố. Một giao diện web chỉ tối ưu cho màn hình máy tính để bàn sẽ bộc lộ nhiều điểm nghẽn nghiêm trọng trên thiết bị cầm tay: khung nhìn bị co cụm, thanh địa chỉ trình duyệt che khuất khung nhập liệu, và bản đồ số chiếm dụng toàn bộ không gian làm tê liệt luồng hội thoại. Nhằm giải quyết triệt để rào cản này, hệ thống áp dụng nguyên lý Thiết kế Thích ứng Đa nền tảng (Responsive Web Design)~\cite{marcotte2010responsive} với bốn cải tiến kiến trúc chuyên sâu:
+
+Thứ nhất, hệ thống kiểm soát chiều cao khung nhìn thông qua đơn vị chiều cao động $100\text{dvh}$ (Dynamic Viewport Height) thay cho đơn vị $100\text{vh}$ truyền thống. Đơn vị này cho phép giao diện tự động co dãn chuẩn xác khi thanh điều hướng và bàn phím ảo của các trình duyệt di động (như Apple Safari trên iOS và Google Chrome trên Android) xuất hiện hoặc thu ẩn, triệt tiêu hoàn toàn hiện tượng tràn khung nhìn hoặc che khuất thanh nhập liệu của trợ lý ảo.
+
+Thứ hai, cấu trúc phân chia hai cột (Split View giữa Chatbot và Bản đồ số) trên máy tính để bàn được tái cấu trúc thành Cơ chế Ngăn kéo Chuyển dịch Không gian (Slide-over Spatial Studio Drawer). Trên màn hình di động có chiều rộng dưới 1024 pixel, khung hội thoại của Chatbot được ưu tiên hiển thị ở vị trí trung tâm nhằm tối đa hóa sự tập trung của du khách. Khi du khách kích hoạt các tác vụ không gian hoặc nhấn nút mở bản đồ, khung bản đồ số sẽ trượt ra mượt mà với độ rộng toàn màn hình kèm nút thu gọn nhanh, cho phép người dùng chuyển đổi tức thì giữa trạng thái đọc văn bản hướng dẫn và trạng thái quan sát không gian trực quan.
+
+Thứ ba, hệ thống loại bỏ các phần tử gây xao nhãng và tối ưu hóa diện tích hiển thị trên thanh công cụ di động. Các nhãn trạng thái kỹ thuật không cần thiết (như viên thuốc báo trạng thái kết nối trực tuyến hoặc ngoại tuyến) được lược bỏ hoàn toàn, thanh tiêu đề công việc (Workbench Header) được chuyển đổi thành thanh cuộn ngang dạng viên thuốc không gây va chạm nút bấm, và cỡ chữ tối thiểu của khung nhập liệu được thiết lập chuẩn 16 pixel nhằm ngăn chặn triệt để hành vi tự động phóng to màn hình phiền toái của hệ điều hành iOS khi người dùng chạm vào ô văn bản.
+
+Thứ tư, các thẻ thông tin chi tiết về di tích lịch sử và thực đơn món ăn được hiển thị dưới dạng Bảng điều khiển đáy trượt (Bottom Sheet Modal) với góc bo tròn hiện đại và lớp phủ nền mờ (Backdrop Blur), hỗ trợ thao tác vuốt chạm tự nhiên bằng một tay, mang lại trải nghiệm tiện nghi và trực quan cho du khách trong suốt quá trình khám phá Cố đô.
+
+\subsection{Sổ tay Du khách và Hộ chiếu Khám phá Di sản (Traveler Notebook and Heritage Check-in Passport)}
+\label{subsec:ch1-travel-notebook}
+
+Nhằm nâng cao mức độ gắn kết của du khách và cá nhân hóa trải nghiệm khám phá Cố đô, hệ thống phát triển phân hệ Sổ tay Du khách và Hộ chiếu Khám phá Di sản (Traveler Notebook and Heritage Check-in Passport) tích hợp trực tiếp trên giao diện chính:
+
+Tính năng thứ nhất là Danh mục Địa điểm Yêu thích (Wishlist): Cho phép du khách đánh dấu và lưu trữ các điểm tham quan, hàng quán đặc sản hoặc cơ sở lưu trú yêu thích trong suốt quá trình trò chuyện với trợ lý ảo hoặc duyệt bản đồ số. Mỗi mục trong danh sách hỗ trợ thêm ghi chú cảm nhận cá nhân (Personal Visit Notes), tích hợp bộ lọc tìm kiếm tức thời và tự động đồng bộ hóa trạng thái đa tab thông qua cơ chế lắng nghe sự kiện lưu trữ (\texttt{window.addEventListener('storage')}).
+
+Tính năng thứ hai là Hộ chiếu Khám phá Di sản (Heritage Check-in Passport): Áp dụng nguyên lý Trò chơi hóa (Gamification) để kích thích tinh thần trải nghiệm thực địa của du khách. Hệ thống tích hợp một thanh tiến trình theo dõi tỷ lệ hoàn thành hành trình khám phá trên tổng số 158 danh lam thắng cảnh, di tích và không gian văn hóa đặc trưng của thành phố Huế. Dựa trên số lượng địa điểm du khách đã đặt chân check-in thực tế, hệ thống xác lập bốn cấp bậc vinh danh tăng dần theo chuẩn mực phong cách ấn bản Cố đô: Cấp 01 Khách bộ hành Cố Đô (dưới 3 điểm), Cấp 02 Lữ khách Khám phá (từ 3 đến 7 điểm), Cấp 03 Người chu du xứ Huế (từ 8 đến 15 điểm), và Cấp 04 Chuyên gia Di sản Cố Đô (từ 16 điểm trở lên).
+
+Tính năng thứ ba là Bộ lọc Gu Du lịch và Khẩu vị Cá nhân (Travel Preferences and Palate): Cung cấp giao diện trực quan cho phép du khách thiết lập nhịp độ di chuyển mong muốn (Thong thả, Vừa phải, Nhanh), trọng số quan tâm theo các chủ đề di sản, ẩm thực hoặc sinh thái, cùng các yêu cầu kiêng cữ dinh dưỡng đặc thù (như ăn chay hoặc kiêng ăn cay), làm tiền đề để thuật toán tối ưu hóa lịch trình và bộ truy xuất RAG lọc bỏ các đề xuất không tương thích ngay từ gốc.
+
+\section{Nhận diện Điểm mốc Thị giác Đa phương thức (Multimodal Visual Landmark RAG)}
+\label{sec:ch1-visual-rag}
+
+\subsection{Nguyên lý Trích xuất và Nhúng Đặc trưng Thị giác qua CLIP ViT-B/32}
+\label{subsec:ch1-clip-principle}
+
+Trong hành trình khám phá di sản, du khách thường xuyên bắt gặp những cổng tam quan cổ kính, lăng tẩm uy nghiêm hoặc bức phù điêu chạm khắc tinh xảo nhưng không rõ tên gọi chính xác để đặt câu hỏi bằng văn bản. Nhằm xóa bỏ khoảng cách giữa thị giác thực địa và tri thức lịch sử, hệ thống tích hợp phân hệ Nhận diện Điểm mốc Thị giác Đa phương thức (Multimodal Visual Landmark RAG). Phân hệ này ứng dụng mô hình tiền huấn luyện tương phản ngôn ngữ và hình ảnh CLIP với kiến trúc mạng biến đổi thị giác ViT-B/32 (\texttt{clip-ViT-B-32})~\cite{radford2021clip}.
+
+Mô hình hoạt động dựa trên cơ chế hai bộ mã hóa song song (Dual-encoder Architecture). Bộ mã hóa hình ảnh tiếp nhận ảnh chụp đầu vào $I$ của du khách, thực hiện tiền xử lý chuẩn hóa kích thước $224 \times 224$ pixels, chia nhỏ thành các mảnh ảnh (patches) kích thước $32 \times 32$ pixels và chiếu qua các tầng Attention đa đầu (Multi-Head Self-Attention) để trích xuất véc-tơ đặc trưng thị giác chuẩn hóa $\mathbf{z}_I \in \mathbb{R}^{512}$ thỏa mãn $\|\mathbf{z}_I\|_2 = 1$.
+
+\subsection{Cơ chế Truy xuất Không gian Đa phương thức và Neo giữ Đồ thị}
+\label{subsec:ch1-visual-retrieval}
+
+Bộ chỉ mục thị giác \texttt{hue\_landmarks\_visual} được thiết lập trong cơ sở dữ liệu vector ChromaDB, lưu trữ các véc-tơ đặc trưng của 77 hình ảnh chuẩn hóa đại diện cho 25 danh lam thắng cảnh và di tích Cố đô Huế. Khi du khách tải lên một ảnh chụp thực địa, hệ thống tính toán véc-tơ truy vấn $\mathbf{z}_{\text{query}}$ và đo lường độ tương đồng Cosine đối với từng véc-tơ mẫu $\mathbf{z}_k$ trong cơ sở dữ liệu:
+\begin{equation}
+    \text{Sim}(\mathbf{z}_{\text{query}}, \mathbf{z}_k) = \mathbf{z}_{\text{query}}^\top \mathbf{z}_k = \sum_{j=1}^{512} z_{\text{query}, j} \cdot z_{k, j}
+    \label{eq:cosine-visual}
+\end{equation}
+
+Hệ thống xác định ứng viên điểm mốc có điểm tương đồng cao nhất:
+\begin{equation}
+    k^* = \arg\max_{k \in \mathcal{K}} \text{Sim}(\mathbf{z}_{\text{query}}, \mathbf{z}_k)
+    \label{eq:top1-visual}
+\end{equation}
+Nếu $\text{Sim}(\mathbf{z}_{\text{query}}, \mathbf{z}_{k^*}) \ge \tau_{\text{visual}} = 0,60$, điểm mốc được công nhận là nhận diện thành công và trường định danh thực thể \textit{place\_id} tương ứng được trích xuất. Ngay sau đó, \textit{place\_id} đóng vai trò là Nút neo (Anchor Node) trên Đồ thị Tri thức Không gian NetworkX, tự động kích hoạt truy xuất các thuộc tính văn hóa lịch sử, các bài nhận xét tinh hoa từ TripAdvisor, và các cơ sở ẩm thực lân cận trong bán kính $1,5\text{ km}$ để cung cấp bài thuyết minh di sản toàn diện cho du khách.
+
+\section{Mô hình Hóa Gu Du lịch và Công cụ Dự toán Ngân sách Lộ trình}
+\label{sec:ch1-budget-persona}
+
+\subsection{Phân lớp Trường phái Du khách (Traveler Persona Profiling)}
+\label{subsec:ch1-personas}
+
+Thị hiếu của du khách khi đến Huế vô cùng phong phú và đa dạng. Một lịch trình cứng nhắc áp dụng chung cho mọi đối tượng sẽ không thể thỏa mãn tối đa trải nghiệm cá nhân. Do đó, hệ thống xây dựng mô hình phân loại bốn trường phái du khách đặc trưng (Traveler Personas):
+
+Trường phái thứ nhất là Di sản và Lịch sử (Heritage and History Aficionado), tập trung vào các du khách đam mê tìm hiểu chiều sâu văn hóa triều Nguyễn, ưu tiên phân bổ thời gian cho Đại Nội, hệ thống lăng tẩm các vị vua, Bảo tàng Cổ vật Cung đình và các nhà vườn cổ xứ Huế.
+
+Trường phái thứ hai là Khám phá Ẩm thực Cố đô (Gastronomic and Street Food Explorer), hướng đến các tín đồ ẩm thực mong muốn trải nghiệm trọn vẹn phong vị cung đình và dân gian, ưu tiên các lộ trình kết nối các quán bún bò chuẩn vị, bánh bèo, nậm, lọc, cơm hến đảo Cồn Hến và chợ đêm Đông Ba.
+
+Trường phái thứ ba là Thiên nhiên và Sinh thái Ngoại ô (Eco-nature and Lagoon Scenic), thu hút các nhóm bạn trẻ và gia đình yêu thích dã ngoại, ngắm cảnh hoàng hôn tại Đồi Vọng Cảnh, trải nghiệm cuộc sống làng chài Đầm Chuồn thuộc hệ đầm phá Tam Giang và tham quan Cầu ngói Thanh Toàn.
+
+Trường phái thứ tư là Nghỉ dưỡng và Tâm linh Chữa lành (Spiritual, Wellness and Slow Travel), phục vụ du khách mong muốn tìm kiếm sự an yên, ưu tiên viếng thăm các cổ tự thanh tịnh như Chùa Thiên Mụ, Chùa Từ Hiếu, Chùa Huyền Không Sơn Thượng kết hợp thưởng thức ẩm thực chay truyền thống Huế.
+
+\subsection{Công cụ Dự toán Chi phí và Ngân sách Lộ trình Thực tế}
+\label{subsec:ch1-budget-calculator}
+
+Một trong những băn khoăn lớn nhất của du khách khi lên kế hoạch du lịch là vấn đề tài chính. Nhằm giải quyết bài toán này, hệ thống hiện thực hóa Công cụ Dự toán Chi phí Du lịch Thực tế (Trip Budget Calculator). Tổng chi phí ước tính của một chuyến đi $C_{\text{total}}$ được mô hình hóa toán học qua công thức:
+\begin{equation}
+    C_{\text{total}} = C_{\text{tickets}} + C_{\text{food}} + C_{\text{transport}} + C_{\text{lodging}}
+    \label{eq:total-cost}
+\end{equation}
+
+Trong đó, chi phí vé tham quan $C_{\text{tickets}}$ được tính toán chuẩn xác dựa trên Biểu giá dịch vụ chính thức do Trung tâm Bảo tồn Di tích Cố đô Huế ban hành~\cite{hmdc2024tickets}, được tổng hợp chi tiết tại Bảng \ref{tab:hmdc-ticket-pricing}.
+
+\begin{table}[htbp]
+\centering
+\caption{Biểu giá vé tham quan di tích lịch sử văn hóa thuộc Quần thể Di tích Cố đô Huế}
+\label{tab:hmdc-ticket-pricing}
+\small
+\begin{tabularx}{\textwidth}{l r X}
+\hline
+\textbf{Địa điểm di tích tham quan} & \textbf{Mức giá vé (VNĐ/người)} & \textbf{Chính sách áp dụng và lưu ý} \\
+\hline
+Hoàng Cung Huế (Đại Nội) & 200.000 & Bao gồm tham quan Bảo tàng Cổ vật Cung đình Huế \\
+Lăng vua Khải Định & 150.000 & Áp dụng cho người lớn; trẻ em miễn giảm theo quy định \\
+Lăng vua Tự Đức & 150.000 & Áp dụng cho người lớn \\
+Lăng vua Minh Mạng & 150.000 & Áp dụng cho người lớn \\
+Cung An Định & 50.000 & Công trình kiến trúc tân cổ điển thời Nguyễn \\
+Lăng vua Gia Long & 50.000 & Quần thể lăng tẩm thiên nhiên nguyên sơ \\
+Chùa Thiên Mụ, Đồi Vọng Cảnh & Miễn phí & Danh lam thắng cảnh mở cửa tự do \\
+Cầu ngói Thanh Toàn, Đầm Chuồn & Miễn phí & Điểm đến sinh thái và di tích kiến trúc dân gian \\
+\hline
+Tuyến 03 điểm (Đại Nội -- Tự Đức -- Khải Định) & 420.000 & Vé gộp tuyến ưu đãi (tiết kiệm 80.000 VNĐ so với vé lẻ) \\
+Tuyến 04 điểm (Đại Nội -- Tự Đức -- Khải Định -- Minh Mạng) & 530.000 & Vé gộp tuyến ưu đãi (tiết kiệm 120.000 VNĐ) \\
+\hline
+\end{tabularx}
+\end{table}
+
+Bảng \ref{tab:hmdc-ticket-pricing} cung cấp cơ sở dữ liệu số học vững chắc để thuật toán tự động áp dụng chính sách vé tuyến gộp tối ưu mỗi khi lịch trình của du khách bao gồm các điểm di tích trọng điểm. Song song với vé tham quan, chi phí ẩm thực $C_{\text{food}}$ được ước lượng dựa trên định mức chi tiêu thực tế tại Huế (dao động từ 35.000 đến 50.000 VNĐ cho một bữa ăn đường phố truyền thống như bún bò hoặc cơm hến, và từ 150.000 đến 300.000 VNĐ cho một bữa tiệc ẩm thực cung đình), chi phí di chuyển địa phương $C_{\text{transport}}$ (thuê xe máy từ 120.000 đến 150.000 VNĐ/ngày hoặc thuyền rồng ca Huế 100.000 VNĐ/khách), và chi phí lưu trú $C_{\text{lodging}}$ theo phân khúc homestay hoặc khách sạn do du khách lựa chọn. Bảng phân bổ chi phí minh bạch này giúp du khách hoàn toàn chủ động về mặt tài chính trước khi khởi hành.
+
+Bên cạnh khả năng tính toán tự động, công cụ dự toán tích hợp tính năng Xuất bản và In ấn / Lưu trữ PDF trực tiếp (\texttt{btn-print-budget}). Tính năng này ứng dụng bộ quy tắc CSS in ấn chuyên biệt (\texttt{@media print}) để ẩn giấu toàn bộ các thanh điều hướng và khung công cụ của giao diện web, chuẩn hóa tỷ lệ trang in theo khổ giấy A4 tiêu chuẩn và xuất bản bảng dự toán tài chính sắc nét. Nhờ đó, du khách có thể lưu trữ tệp PDF trên thiết bị di động hoặc in ra bản giấy cầm tay để chủ động điều phối ngân sách trong suốt hành trình tham quan thực địa.
+

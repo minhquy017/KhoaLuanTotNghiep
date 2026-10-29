@@ -27,6 +27,7 @@ export class AuthController {
   init() {
     this.cacheDomElements();
     this.bindEvents();
+    this.loadSavedCredentials();
     this.initAuthObserver();
   }
 
@@ -60,6 +61,11 @@ export class AuthController {
     this.authInputName = document.getElementById('auth-input-name');
     this.authInputEmail = document.getElementById('auth-input-email');
     this.authInputPassword = document.getElementById('auth-input-password');
+    this.btnTogglePassword = document.getElementById('btn-toggle-password');
+    this.eyeOpenIcon = this.btnTogglePassword?.querySelector('.eye-open');
+    this.eyeClosedIcon = this.btnTogglePassword?.querySelector('.eye-closed');
+    this.authOptionsGroup = document.getElementById('auth-options-group');
+    this.authRememberMe = document.getElementById('auth-remember-me');
     this.btnAuthSubmit = document.getElementById('btn-auth-submit');
     this.authErrorBanner = document.getElementById('auth-error-banner');
     this.authSwitchText = document.getElementById('auth-switch-text');
@@ -122,6 +128,31 @@ export class AuthController {
 
     // Đăng nhập Google
     this.btnGoogleAuth?.addEventListener('click', () => this.handleGoogleLogin());
+
+    // Toggle hiện / ẩn mật khẩu
+    this.btnTogglePassword?.addEventListener('click', () => {
+      const isPassword = this.authInputPassword?.type === 'password';
+      if (this.authInputPassword) {
+        this.authInputPassword.type = isPassword ? 'text' : 'password';
+      }
+      this.eyeOpenIcon?.classList.toggle('hidden', isPassword);
+      this.eyeClosedIcon?.classList.toggle('hidden', !isPassword);
+      this.btnTogglePassword?.setAttribute(
+        'title',
+        isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
+      );
+      this.btnTogglePassword?.setAttribute(
+        'aria-label',
+        isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
+      );
+    });
+
+    // Checkbox Ghi nhớ mật khẩu: tự động xóa bộ nhớ nếu người dùng chủ động bỏ chọn
+    this.authRememberMe?.addEventListener('change', () => {
+      if (!this.authRememberMe.checked) {
+        this.clearSavedCredentials();
+      }
+    });
 
     // Submit form Email/Password
     this.authForm?.addEventListener('submit', (e) => this.handleEmailFormSubmit(e));
@@ -222,6 +253,9 @@ export class AuthController {
   openAuthModal(mode = 'login') {
     this.setAuthMode(mode);
     this.clearAuthError();
+    if (mode === 'login') {
+      this.loadSavedCredentials();
+    }
     this.authModal?.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
@@ -230,25 +264,83 @@ export class AuthController {
     this.authModal?.classList.remove('active');
     document.body.style.overflow = '';
     this.clearAuthError();
+    this.resetPasswordVisibility();
+  }
+
+  resetPasswordVisibility() {
+    if (this.authInputPassword) {
+      this.authInputPassword.type = 'password';
+    }
+    this.eyeOpenIcon?.classList.remove('hidden');
+    this.eyeClosedIcon?.classList.add('hidden');
+    this.btnTogglePassword?.setAttribute('title', 'Hiện mật khẩu');
+    this.btnTogglePassword?.setAttribute('aria-label', 'Hiện mật khẩu');
+  }
+
+  loadSavedCredentials(force = false) {
+    try {
+      const raw = localStorage.getItem('hue_remembered_credentials');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (data && data.email && data.hash) {
+        const decodedPassword = decodeURIComponent(atob(data.hash));
+        if (this.authRememberMe) {
+          this.authRememberMe.checked = true;
+        }
+        if (this.authInputEmail && (!this.authInputEmail.value || force)) {
+          this.authInputEmail.value = data.email;
+        }
+        if (this.authInputPassword && (!this.authInputPassword.value || force)) {
+          this.authInputPassword.value = decodedPassword;
+        }
+      }
+    } catch (e) {
+      console.warn('Không thể nạp thông tin đăng nhập đã lưu:', e);
+    }
+  }
+
+  saveSavedCredentials(email, password) {
+    try {
+      const payload = {
+        email,
+        hash: btoa(encodeURIComponent(password)),
+        savedAt: Date.now()
+      };
+      localStorage.setItem('hue_remembered_credentials', JSON.stringify(payload));
+    } catch (e) {
+      console.warn('Không thể ghi nhớ thông tin đăng nhập:', e);
+    }
+  }
+
+  clearSavedCredentials() {
+    try {
+      localStorage.removeItem('hue_remembered_credentials');
+    } catch (e) {
+      console.warn('Không thể xóa thông tin đăng nhập:', e);
+    }
   }
 
   setAuthMode(mode) {
     this.authModalMode = mode;
     this.clearAuthError();
+    this.resetPasswordVisibility();
 
     if (mode === 'login') {
       this.tabLogin?.classList.add('active');
       this.tabSignup?.classList.remove('active');
       this.authNameGroup?.classList.add('hidden');
+      this.authOptionsGroup?.classList.remove('hidden');
       if (this.authModalTitle) this.authModalTitle.textContent = 'Đăng nhập';
       if (this.authModalSubtitle) this.authModalSubtitle.textContent = 'Chào mừng bạn đến với Cố đô Huế Travel';
       if (this.btnAuthSubmit) this.btnAuthSubmit.textContent = 'Đăng nhập';
       if (this.authSwitchText) this.authSwitchText.textContent = 'Chưa có tài khoản?';
       if (this.btnSwitchAuthMode) this.btnSwitchAuthMode.textContent = 'Đăng ký ngay';
+      this.loadSavedCredentials();
     } else {
       this.tabSignup?.classList.add('active');
       this.tabLogin?.classList.remove('active');
       this.authNameGroup?.classList.remove('hidden');
+      this.authOptionsGroup?.classList.add('hidden');
       if (this.authModalTitle) this.authModalTitle.textContent = 'Tạo tài khoản';
       if (this.authModalSubtitle) this.authModalSubtitle.textContent = 'Đăng ký để lưu giữ lịch trình và cá nhân hóa trải nghiệm';
       if (this.btnAuthSubmit) this.btnAuthSubmit.textContent = 'Tạo tài khoản';
@@ -323,6 +415,11 @@ export class AuthController {
 
       if (this.authModalMode === 'login') {
         await loginWithEmail(email, password);
+        if (this.authRememberMe?.checked) {
+          this.saveSavedCredentials(email, password);
+        } else {
+          this.clearSavedCredentials();
+        }
         this.closeAuthModal();
         this.showToast(`Chào mừng ${email} đã quay trở lại!`);
       } else {
