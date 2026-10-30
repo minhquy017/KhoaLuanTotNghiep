@@ -48,6 +48,7 @@ class SpatialGraphRetriever:
         self._dish_name_index: Dict[str, str] = {}       # normalized_dish -> node_id
         self._province_name_index: Dict[str, str] = {}   # normalized_prov -> node_id
         self._all_place_nodes: List[Tuple[str, Dict[str, Any]]] = []
+        self._place_alias_index: Dict[str, str] = {}
         self._load_graph()
 
     def _load_graph(self):
@@ -56,6 +57,75 @@ class SpatialGraphRetriever:
         
         with open(self.kg_path, "rb") as f:
             self.G = pickle.load(f)
+
+        # Từ điển bí danh / tên gọi phổ biến và cụm di tích phụ thuộc
+        DEFAULT_PLACE_ALIASES = {
+            "ngo mon": "place_8875",
+            "cong ngo mon": "place_8875",
+            "ngo mon hue": "place_8875",
+            "meridian gate": "place_8875",
+            "dai noi": "place_8875",
+            "dai noi hue": "place_8875",
+            "kinh thanh": "place_8875",
+            "kinh thanh hue": "place_8875",
+            "hoang thanh": "place_8875",
+            "hoang thanh hue": "place_8875",
+            "ky dai": "place_8875",
+            "cot co": "place_8875",
+            "dien thai hoa": "place_8875",
+            "thai hoa": "place_8875",
+            "the mieu": "place_8875",
+            "hien lam cac": "place_8875",
+            "cuu dinh": "place_8875",
+            "tu cam thanh": "place_8875",
+            "chua thien mu": "place_8876",
+            "thien mu": "place_8876",
+            "thap phuoc duyen": "place_8876",
+            "phuoc duyen": "place_8876",
+            "linh mu": "place_8876",
+            "chua linh mu": "place_8876",
+            "song huong": "place_8882",
+            "ben thuyen toa kham": "place_8882",
+            "toa kham": "place_8882",
+            "cau trang tien": "place_8919",
+            "cau truong tien": "place_8919",
+            "truong tien": "place_8919",
+            "trang tien": "place_8919",
+            "cho dong ba": "place_8920",
+            "dong ba": "place_8920",
+            "lang khai dinh": "place_8879",
+            "khai dinh": "place_8879",
+            "ung lang": "place_8879",
+            "lang tu duc": "place_8880",
+            "tu duc": "place_8880",
+            "khiem lang": "place_8880",
+            "lang minh mang": "place_8878",
+            "minh mang": "place_8878",
+            "hieu lang": "place_8878",
+            "lang dong khanh": "place_8881",
+            "dong khanh": "place_8881",
+            "tu lang": "place_8881",
+            "bach ma": "place_8877",
+            "vuon quoc gia bach ma": "place_8877",
+            "cau ngoi thanh toan": "place_8885",
+            "thanh toan": "place_8885",
+            "doi vong canh": "custom_attr_02",
+            "vong canh": "custom_attr_02",
+            "lang gia long": "custom_attr_01",
+            "gia long": "custom_attr_01",
+            "lang huong thuy xuan": "custom_attr_03",
+            "lang huong": "custom_attr_03",
+            "thuy xuan": "custom_attr_03",
+            "dien hon chen": "custom_attr_04",
+            "hon chen": "custom_attr_04",
+            "huyen khong son thuong": "custom_attr_05",
+            "chua huyen khong": "custom_attr_05",
+            "doi thien an": "custom_local_21",
+            "thien an": "custom_local_21",
+            "cung an dinh": "custom_local_31",
+            "an dinh": "custom_local_31"
+        }
+        self._place_alias_index = dict(DEFAULT_PLACE_ALIASES)
 
         # Tự động nạp và mở rộng Knowledge Graph với các địa điểm tinh tuyển từ hue_top_places.json
         top_places_path = os.path.join(PROJECT_ROOT, "frontend", "src", "hue_top_places.json")
@@ -71,6 +141,15 @@ class SpatialGraphRetriever:
                     if not pid:
                         continue
                     if pid in self.G:
+                        # Luôn đồng bộ tên tiếng Việt chuẩn mực, tags và reviews từ hue_top_places.json
+                        if cp.get("name"):
+                            old_name = self.G.nodes[pid].get("name", "")
+                            self.G.nodes[pid]["name_en"] = old_name
+                            self.G.nodes[pid]["name"] = cp["name"]
+                        if cp.get("tags"):
+                            self.G.nodes[pid]["tags"] = cp["tags"]
+                        if cp.get("desc") and not self.G.nodes[pid].get("description"):
+                            self.G.nodes[pid]["description"] = cp["desc"]
                         if cp.get("reviews") and not self.G.nodes[pid].get("reviews"):
                             self.G.nodes[pid]["reviews"] = cp["reviews"]
                         continue
@@ -84,6 +163,7 @@ class SpatialGraphRetriever:
                     rating = cp.get("rating_value", 4.6)
                     rev_cnt = cp.get("review_count", 500)
                     reviews = cp.get("reviews", [])
+                    tags = cp.get("tags", "")
                     
                     self.G.add_node(pid,
                         node_type=cat,
@@ -97,7 +177,8 @@ class SpatialGraphRetriever:
                         review_count=rev_cnt,
                         locality="Thành phố Huế",
                         category=cat,
-                        reviews=reviews
+                        reviews=reviews,
+                        tags=tags
                     )
                     new_nodes.append((pid, lat, lng))
 
@@ -131,11 +212,26 @@ class SpatialGraphRetriever:
 
             if ntype in ["Restaurant", "Hotel", "Attraction", "Place"]:
                 self._place_name_index[norm_name] = node_id
+                # Index tên tiếng Anh nếu có
+                if data.get("name_en"):
+                    self._place_name_index[strip_accents(data["name_en"])] = node_id
+                # Index các tags/aliases
+                tags_str = data.get("tags", "")
+                if tags_str:
+                    for tag in tags_str.split(","):
+                        clean_tag = strip_accents(tag.strip())
+                        if clean_tag and len(clean_tag) >= 3 and clean_tag not in self._place_alias_index:
+                            self._place_alias_index[clean_tag] = node_id
                 self._all_place_nodes.append((node_id, data))
             elif ntype == "Dish":
                 self._dish_name_index[norm_name] = node_id
             elif ntype == "Province":
                 self._province_name_index[norm_name] = node_id
+
+        # Đồng bộ alias index vào place_name_index
+        for alias, pid in self._place_alias_index.items():
+            if alias not in self._place_name_index and pid in self.G:
+                self._place_name_index[alias] = pid
 
     def get_place(self, place_id_or_name: str) -> Optional[Dict[str, Any]]:
         """Lấy thông tin chi tiết một địa điểm qua ID hoặc Tên."""
@@ -144,7 +240,14 @@ class SpatialGraphRetriever:
             data["node_id"] = place_id_or_name
             return data
         
-        norm = strip_accents(place_id_or_name)
+        norm = strip_accents(str(place_id_or_name).strip(" :.,;!?-"))
+        if norm in self._place_alias_index:
+            node_id = self._place_alias_index[norm]
+            if node_id in self.G:
+                data = dict(self.G.nodes[node_id])
+                data["node_id"] = node_id
+                return data
+
         if norm in self._place_name_index:
             node_id = self._place_name_index[norm]
             data = dict(self.G.nodes[node_id])
@@ -162,7 +265,7 @@ class SpatialGraphRetriever:
     def search_places(self, query: str, locality: Optional[str] = None, 
                       category: Optional[str] = None, limit: int = 5) -> List[Dict[str, Any]]:
         """Tìm kiếm địa điểm theo từ khóa, hỗ trợ lọc theo địa phương và danh mục."""
-        norm_q = strip_accents(query)
+        norm_q = strip_accents(str(query).strip(" :.,;!?-"))
         norm_loc = strip_accents(locality) if locality else None
         norm_cat = category.lower() if category else None
 
@@ -170,11 +273,36 @@ class SpatialGraphRetriever:
         STOP_TOKENS = {
             "hue", "tp", "thanh", "pho", "tinh", "viet", "nam", 
             "quan", "nha", "hang", "hotel", "resort", "cafe", "ca", "phe",
-            "bar", "an", "uong", "du", "lich", "di", "tich", "homestay", "hostel", "inn"
+            "bar", "an", "uong", "du", "lich", "di", "tich", "homestay", "hostel", "inn",
+            "ngon", "dep", "dac", "san", "noi", "tieng", "cho", "co"
         }
 
         candidates = []
+        seen_cand_ids = set()
+
+        # 1. Ưu tiên kiểm tra trực tiếp qua Bí danh / Alias Index (ví dụ: 'ngọ môn' -> 'place_8875')
+        if norm_q in self._place_alias_index:
+            alias_pid = self._place_alias_index[norm_q]
+            if alias_pid in self.G:
+                item = dict(self.G.nodes[alias_pid])
+                item["node_id"] = alias_pid
+                item["_match_score"] = 350.0
+                candidates.append(item)
+                seen_cand_ids.add(alias_pid)
+        else:
+            for alias, alias_pid in self._place_alias_index.items():
+                if len(alias) >= 4 and (alias == norm_q or (alias in norm_q and len(alias) >= len(norm_q) * 0.6)):
+                    if alias_pid in self.G and alias_pid not in seen_cand_ids:
+                        item = dict(self.G.nodes[alias_pid])
+                        item["node_id"] = alias_pid
+                        item["_match_score"] = 280.0 + len(alias)
+                        candidates.append(item)
+                        seen_cand_ids.add(alias_pid)
+
         for node_id, data in self._all_place_nodes:
+            if node_id in seen_cand_ids:
+                continue
+
             # Lọc danh mục
             if norm_cat and data.get("category", "").lower() != norm_cat:
                 continue
@@ -198,14 +326,20 @@ class SpatialGraphRetriever:
             elif norm_name in norm_q and len(norm_name) >= 5:
                 score = 75 + (len(norm_name) / max(len(norm_q), 1)) * 15
             else:
-                q_tokens = [t for t in norm_q.split() if t not in STOP_TOKENS and len(t) > 1]
-                name_tokens = [t for t in norm_name.split() if t not in STOP_TOKENS and len(t) > 1]
-                if q_tokens and name_tokens:
-                    common_tokens = set(q_tokens).intersection(set(name_tokens))
-                    overlap_ratio = len(common_tokens) / len(q_tokens)
-                    # Yêu cầu ít nhất 50% số từ khóa thực chất phải trùng khớp
-                    if overlap_ratio >= 0.5:
-                        score = 45 + overlap_ratio * 30
+                # Kiểm tra trong tags
+                tags_str = data.get("tags", "")
+                norm_tags = strip_accents(tags_str) if tags_str else ""
+                if norm_tags and norm_q in norm_tags and len(norm_q) >= 4:
+                    score = 85
+                else:
+                    q_tokens = [t for t in norm_q.split() if t not in STOP_TOKENS and len(t) > 1]
+                    name_tokens = [t for t in norm_name.split() if t not in STOP_TOKENS and len(t) > 1]
+                    if q_tokens and name_tokens:
+                        common_tokens = set(q_tokens).intersection(set(name_tokens))
+                        overlap_ratio = len(common_tokens) / len(q_tokens)
+                        # Yêu cầu ít nhất 50% số từ khóa thực chất phải trùng khớp
+                        if overlap_ratio >= 0.5:
+                            score = 45 + overlap_ratio * 30
 
             if score > 0:
                 # Ưu tiên rating và số review nhưng không để lấn át điểm khớp tên
@@ -214,6 +348,7 @@ class SpatialGraphRetriever:
                 item["node_id"] = node_id
                 item["_match_score"] = rank_score
                 candidates.append(item)
+                seen_cand_ids.add(node_id)
 
         candidates.sort(key=lambda x: x["_match_score"], reverse=True)
         return candidates[:limit]

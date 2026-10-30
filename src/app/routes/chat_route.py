@@ -54,31 +54,49 @@ def chat_assistant(req: ChatRequest):
         answer_text = res.get("final_answer", "")
         graph_retriever = get_graph_retriever()
         bold_entities = re.findall(r'\*\*(.*?)\*\*', answer_text)
+        STOP_HEADINGS = {
+            "lưu ý", "chú ý", "gợi ý", "địa điểm", "món ăn", "quán ăn", "quán ăn ngon", 
+            "món ăn ngon", "giá vé", "giờ mở cửa", "đặc sản", "ẩm thực", "thông tin", 
+            "lịch sử", "kiến trúc", "di tích lân cận", "địa điểm lân cận", "lưu ý khi tham quan",
+            "kinh nghiệm", "phương tiện", "thời gian", "tổng kết", "chúc bạn", "chào bạn"
+        }
         mentioned_pois = []
         for be in bold_entities:
-            clean_name = be.strip()
-            # Bỏ qua các từ tiêu đề không phải tên quán
-            if len(clean_name) >= 3 and not any(kw in clean_name.lower() for kw in ["lưu ý", "chú ý", "gợi ý", "địa điểm", "món ăn"]):
+            clean_name = be.strip(" :.,;!?-\t\r\n")
+            clean_lower = clean_name.lower()
+            # Bỏ qua các tiêu đề mục không phải tên quán/địa danh
+            if len(clean_name) >= 3 and clean_lower not in STOP_HEADINGS and not any(clean_lower == sh or clean_lower.startswith(sh) for sh in STOP_HEADINGS):
                 found = graph_retriever.search_places(clean_name, locality=req.locality or "Thành phố Huế", limit=1)
-                if found and found[0] not in mentioned_pois:
+                if found and not any((p.get("node_id") or p.get("name")) == (found[0].get("node_id") or found[0].get("name")) for p in mentioned_pois):
                     mentioned_pois.append(found[0])
 
-        # 2. Gộp theo thứ tự ưu tiên: Địa điểm trong câu trả lời > Matched places > Nearby map
-        all_poi_candidates = list(mentioned_pois)
-        for p in res.get("matched_places", []):
-            if p not in all_poi_candidates:
+        # 2. Gộp theo thứ tự ưu tiên:
+        # Nếu có địa danh mốc chính (Anchor Place) trong matched_places (ví dụ: ảnh Ngọ Môn -> place_8875):
+        # BẮT BUỘC giữ địa danh mốc chính ở VỊ TRÍ ĐẦU TIÊN (Index 0) để ghim trọng tâm trên bản đồ!
+        all_poi_candidates = []
+        matched_list = res.get("matched_places", [])
+        if matched_list:
+            all_poi_candidates.append(matched_list[0])
+
+        for mp in mentioned_pois:
+            if not any((p.get("node_id") or p.get("name")) == (mp.get("node_id") or mp.get("name")) for p in all_poi_candidates):
+                all_poi_candidates.append(mp)
+
+        for p in matched_list:
+            if not any((cand.get("node_id") or cand.get("name")) == (p.get("node_id") or p.get("name")) for cand in all_poi_candidates):
                 all_poi_candidates.append(p)
+
         for near_list in res.get("nearby_map", {}).values():
             for np in near_list:
-                if np not in all_poi_candidates:
+                if not any((cand.get("node_id") or cand.get("name")) == (np.get("node_id") or np.get("name")) for cand in all_poi_candidates):
                     all_poi_candidates.append(np)
 
         # Chuẩn hóa danh sách địa điểm trả về kèm tọa độ GPS
         clean_places = []
         seen_ids = set()
 
-        # Nếu hỏi về ẩm thực / quán ăn thuần túy (không phải có lộ trình di chuyển), ưu tiên các quán ăn
-        is_food_query = any(w in req.query.lower() for w in ["quán", "quan", "ăn", "an", "món", "mon", "uống", "cafe", "cà phê"])
+        # Nếu hỏi về ẩm thực / quán ăn thuần túy (không phải có ảnh di tích hay lộ trình di chuyển), ưu tiên các quán ăn
+        is_food_query = any(w in req.query.lower() for w in ["quán", "quan", "ẩm thực", "ăn gì", "an gi", "món", "mon"]) and not req.image_base64
         nav_info = res.get("nav_route_info")
         if is_food_query and not nav_info and len(all_poi_candidates) > 2:
             food_candidates = [p for p in all_poi_candidates if any(c in (p.get("category") or "").lower() for c in ["restaurant", "ẩm thực", "quán", "cafe", "cà phê"])]

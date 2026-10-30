@@ -166,6 +166,126 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     visual_confidence = 0.0
     vis_matched_place_id = None
 
+    # 0. Từ điển bí danh / tên gọi phổ biến và cụm di tích phụ thuộc (dùng chung cho cả ảnh và văn bản)
+    alias_dict = {
+        "dai noi": "place_8875",
+        "dai noi hue": "place_8875",
+        "kinh thanh": "place_8875",
+        "kinh thanh hue": "place_8875",
+        "hoang thanh": "place_8875",
+        "hoang thanh hue": "place_8875",
+        "ngo mon": "place_8875",
+        "cong ngo mon": "place_8875",
+        "ngo mon hue": "place_8875",
+        "meridian gate": "place_8875",
+        "ky dai": "place_8875",
+        "cot co": "place_8875",
+        "dien thai hoa": "place_8875",
+        "thai hoa": "place_8875",
+        "the mieu": "place_8875",
+        "hien lam cac": "place_8875",
+        "cuu dinh": "place_8875",
+        "tu cam thanh": "place_8875",
+        "chua thien mu": "place_8876",
+        "thien mu": "place_8876",
+        "thap phuoc duyen": "place_8876",
+        "phuoc duyen": "place_8876",
+        "linh mu": "place_8876",
+        "chua linh mu": "place_8876",
+        "song huong": "place_8882",
+        "ben thuyen toa kham": "place_8882",
+        "toa kham": "place_8882",
+        "cau trang tien": "place_8919",
+        "cau truong tien": "place_8919",
+        "truong tien": "place_8919",
+        "trang tien": "place_8919",
+        "cho dong ba": "place_8920",
+        "dong ba": "place_8920",
+        "lang khai dinh": "place_8879",
+        "khai dinh": "place_8879",
+        "ung lang": "place_8879",
+        "lang tu duc": "place_8880",
+        "tu duc": "place_8880",
+        "khiem lang": "place_8880",
+        "lang minh mang": "place_8878",
+        "minh mang": "place_8878",
+        "hieu lang": "place_8878",
+        "lang dong khanh": "place_8881",
+        "dong khanh": "place_8881",
+        "tu lang": "place_8881",
+        "bach ma": "place_8877",
+        "cau ngoi thanh toan": "place_8885",
+        "thanh toan": "place_8885",
+        # Các bãi biển danh tiếng của Thừa Thiên Huế
+        "thuan an": "beach_thuan_an",
+        "bien thuan an": "beach_thuan_an",
+        "bai bien thuan an": "beach_thuan_an",
+        "canh duong": "beach_canh_duong",
+        "bien canh duong": "beach_canh_duong",
+        "bai bien canh duong": "beach_canh_duong",
+        "hai duong": "beach_hai_duong",
+        "bien hai duong": "beach_hai_duong",
+        "bai bien hai duong": "beach_hai_duong",
+        "lang co": "beach_lang_co",
+        "bien lang co": "beach_lang_co",
+        "vinh lang co": "beach_lang_co",
+        "dam lap an": "beach_lang_co",
+        "deo hai van": "place_8895",
+        "hai van": "place_8895",
+        # Các danh thắng nổi tiếng ở bờ Nam và ngoại ô Huế
+        "doi vong canh": "custom_attr_02",
+        "vong canh": "custom_attr_02",
+        "lang gia long": "custom_attr_01",
+        "gia long": "custom_attr_01",
+        "lang huong thuy xuan": "custom_attr_03",
+        "lang huong": "custom_attr_03",
+        "thuy xuan": "custom_attr_03",
+        "dien hon chen": "custom_attr_04",
+        "hon chen": "custom_attr_04",
+        "huyen khong son thuong": "custom_attr_05",
+        "chua huyen khong": "custom_attr_05",
+        "doi thien an": "custom_local_21",
+        "thien an": "custom_local_21",
+        "cung an dinh": "custom_local_31",
+        "an dinh": "custom_local_31",
+        "ho thuy tien": "custom_local_21",
+        "chua tu dam": "custom_local_30",
+        "tu dam": "custom_local_30",
+        "con hen": "custom_attr_con_hen",
+        "dao con hen": "custom_attr_con_hen",
+        "vi da": "custom_attr_con_hen",
+        "banh beo ba do": "custom_rest_04",
+        "ba do": "custom_rest_04",
+        "com hen hoa dong": "custom_rest_02",
+        "hoa dong": "custom_rest_02",
+        # Các địa điểm bản địa tinh tuyển mới bổ sung
+        "banh ep gia di": "custom_local_17",
+        "gia di": "custom_local_17",
+        "banh mi o tho": "custom_local_13",
+        "o tho": "custom_local_13",
+        "com am phu": "custom_local_18",
+        "banh canh di huong": "custom_local_25",
+        "di huong": "custom_local_25",
+        "bun bo mu keo": "custom_local_26",
+        "mu keo": "custom_local_26",
+        "nem lui ba ty": "custom_local_27",
+        "ba ty": "custom_local_27",
+        "che mo ton dich": "custom_local_29",
+        "mo ton dich": "custom_local_29",
+        "lang thieu tri": "custom_local_33",
+        "thieu tri": "custom_local_33",
+        "ca phe mat biec": "custom_local_15",
+        "mat biec": "custom_local_15",
+        "banh uot huyen anh": "custom_local_08",
+        "huyen anh": "custom_local_08",
+        "chua dieu de": "custom_local_07",
+        "dieu de": "custom_local_07",
+        "gac trinh": "custom_local_16",
+        "ca phe gac trinh": "custom_local_16",
+        "com hen thuy": "custom_local_01",
+        "banh beo o le": "custom_local_02"
+    }
+
     # A. Xử lý nhận diện ảnh đa phương thức (Multimodal Image RAG)
     if image_base64:
         trace_steps.append({
@@ -179,7 +299,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         # 1. VISUAL IMAGE RAG: So khớp Cosine đặc trưng thị giác 512D với kho ảnh mẫu địa danh Huế trong ChromaDB
         try:
             vis_matches, vis_conf = visual_retriever.query_by_image(image_base64, n_results=3)
-            if vis_matches and vis_conf >= 0.70:
+            if vis_matches and vis_conf >= 0.60:
                 top_vis = vis_matches[0]
                 vis_matched_place_id = top_vis.get("place_id")
                 vis_place_name = top_vis.get("place_name")
@@ -213,14 +333,31 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 "status": "found"
             })
 
+            # Đối sánh định danh thực thể ảnh trực tiếp với Knowledge Graph
+            if not vis_matched_place_id:
+                norm_det = strip_accents(det_name)
+                for a_k, a_pid in alias_dict.items():
+                    if a_k == norm_det or a_k in norm_det or norm_det in a_k:
+                        vis_matched_place_id = a_pid
+                        break
+                if not vis_matched_place_id:
+                    found_p = graph_retriever.get_place(det_name)
+                    if found_p:
+                        vis_matched_place_id = found_p.get("node_id")
+
         # Xác định đối tượng trọng tâm để sinh câu hỏi ngữ cảnh
         focus_name = None
         focus_cat = "DI_TICH"
-        if vis_matched_place_id and visual_matches:
-            focus_name = visual_matches[0]["place_name"]
-        elif img_info and img_info.get("name"):
-            focus_name = img_info["name"]
-            focus_cat = img_info.get("category", "KHAC")
+        if vis_matched_place_id:
+            matched_node = graph_retriever.get_place(vis_matched_place_id)
+            if matched_node:
+                focus_name = matched_node.get("name")
+        if not focus_name:
+            if img_info and img_info.get("name"):
+                focus_name = img_info["name"]
+                focus_cat = img_info.get("category", "KHAC")
+            elif visual_matches:
+                focus_name = visual_matches[0]["place_name"]
 
         if focus_name:
             norm_orig = strip_accents(query)
@@ -228,7 +365,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 if "AM_THUC" in focus_cat:
                     query = f"Giới thiệu món {focus_name} trong ảnh và gợi ý những quán ăn ngon nổi tiếng nhất tại Huế để thưởng thức món này"
                 else:
-                    query = f"Giới thiệu di tích {focus_name} trong ảnh, nguồn gốc lịch sử, giá vé/giờ mở cửa và gợi ý các địa điểm lân cận"
+                    query = f"Giới thiệu di tích {focus_name} trong ảnh, nguồn gốc lịch sử, nét đặc sắc kiến trúc và gợi ý các địa điểm lân cận"
             else:
                 query = f"Về {focus_name} trong ảnh: {query}"
 
@@ -293,101 +430,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 target_dish = graph_retriever.G.nodes[d_node_id].get("name")
                 break
 
-    # 3. Nhận diện địa điểm nổi tiếng (hỗ trợ alias tiếng Việt phổ biến)
-    alias_dict = {
-        "dai noi": "place_8875",
-        "kinh thanh": "place_8875",
-        "hoang thanh": "place_8875",
-        "chua thien mu": "place_8876",
-        "thien mu": "place_8876",
-        "song huong": "place_8882",
-        "ben thuyen toa kham": "place_8882",
-        "toa kham": "place_8882",
-        "cau trang tien": "place_8919",
-        "cau truong tien": "place_8919",
-        "truong tien": "place_8919",
-        "trang tien": "place_8919",
-        "cho dong ba": "place_8920",
-        "dong ba": "place_8920",
-        "lang khai dinh": "place_8879",
-        "khai dinh": "place_8879",
-        "lang tu duc": "place_8880",
-        "lang minh mang": "place_8878",
-        "lang dong khanh": "place_8881",
-        "bach ma": "place_8877",
-        "cau ngoi thanh toan": "place_8885",
-        "thanh toan": "place_8885",
-        # Các bãi biển danh tiếng của Thừa Thiên Huế
-        "thuan an": "beach_thuan_an",
-        "bien thuan an": "beach_thuan_an",
-        "bai bien thuan an": "beach_thuan_an",
-        "canh duong": "beach_canh_duong",
-        "bien canh duong": "beach_canh_duong",
-        "bai bien canh duong": "beach_canh_duong",
-        "hai duong": "beach_hai_duong",
-        "bien hai duong": "beach_hai_duong",
-        "bai bien hai duong": "beach_hai_duong",
-        "lang co": "beach_lang_co",
-        "bien lang co": "beach_lang_co",
-        "vinh lang co": "beach_lang_co",
-        "dam lap an": "beach_lang_co",
-        "deo hai van": "place_8895",
-        "hai van": "place_8895",
-        # Các danh thắng nổi tiếng ở bờ Nam và ngoại ô Huế
-        "doi vong canh": "custom_attr_02",
-        "vong canh": "custom_attr_02",
-        "lang gia long": "custom_attr_01",
-        "gia long": "custom_attr_01",
-        "lang huong thuy xuan": "custom_attr_03",
-        "lang huong": "custom_attr_03",
-        "thuy xuan": "custom_attr_03",
-        "dien hon chen": "custom_attr_04",
-        "hon chen": "custom_attr_04",
-        "huyen khong son thuong": "custom_attr_05",
-        "chua huyen khong": "custom_attr_05",
-        "doi thien an": "custom_local_21",
-        "thien an": "custom_local_21",
-        "ky dai": "place_8875",
-        "cot co": "place_8875",
-        "con hen": "custom_attr_con_hen",
-        "dao con hen": "custom_attr_con_hen",
-        "vi da": "custom_attr_con_hen",
-        "banh beo ba do": "custom_rest_04",
-        "ba do": "custom_rest_04",
-        "com hen hoa dong": "custom_rest_02",
-        "hoa dong": "custom_rest_02",
-        # Các địa điểm bản địa tinh tuyển mới bổ sung
-        "banh ep gia di": "custom_local_17",
-        "gia di": "custom_local_17",
-        "banh mi o tho": "custom_local_13",
-        "o tho": "custom_local_13",
-        "com am phu": "custom_local_18",
-        "cung an dinh": "custom_local_31",
-        "an dinh": "custom_local_31",
-        "ho thuy tien": "custom_local_21",
-        "chua tu dam": "custom_local_30",
-        "tu dam": "custom_local_30",
-        "banh canh di huong": "custom_local_25",
-        "di huong": "custom_local_25",
-        "bun bo mu keo": "custom_local_26",
-        "mu keo": "custom_local_26",
-        "nem lui ba ty": "custom_local_27",
-        "ba ty": "custom_local_27",
-        "che mo ton dich": "custom_local_29",
-        "mo ton dich": "custom_local_29",
-        "lang thieu tri": "custom_local_33",
-        "thieu tri": "custom_local_33",
-        "ca phe mat biec": "custom_local_15",
-        "mat biec": "custom_local_15",
-        "banh uot huyen anh": "custom_local_08",
-        "huyen anh": "custom_local_08",
-        "chua dieu de": "custom_local_07",
-        "dieu de": "custom_local_07",
-        "gac trinh": "custom_local_16",
-        "ca phe gac trinh": "custom_local_16",
-        "com hen thuy": "custom_local_01",
-        "banh beo o le": "custom_local_02"
-    }
+    # 3. Bóc tách TẤT CẢ các địa danh xuất hiện trong câu hỏi (theo thứ tự xuất hiện qua alias_dict)
 
     matched_places = []
     nearby_map = {}
@@ -517,7 +560,9 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
             nearby_map[target_place_id] = nearby
             
-            # QUAN TRỌNG: Loại bỏ chính bản thân điểm mốc (origin_place) và node Sông Hương (place_8882) ra khỏi danh sách gợi ý
+            # QUAN TRỌNG: Đưa origin_place lên ĐẦU matched_places để làm mốc trung tâm trên bản đồ
+            matched_places.append(origin_place)
+
             for nb in nearby:
                 nb_id = nb.get("node_id")
                 if nb_id != target_place_id and nb_id != "place_8882" and nb not in matched_places:
@@ -606,13 +651,19 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 if near:
                     nearby_map[pid] = near
 
-    # Nếu có thực thể nhận diện từ ảnh, đảm bảo đưa vào danh sách địa điểm khớp
+    # Nếu có thực thể nhận diện từ ảnh, đảm bảo đưa vào danh sách địa điểm khớp ở vị trí đầu tiên (Index 0)
     if image_detected_info and image_detected_info.get("name"):
         det_name = image_detected_info["name"]
-        vis_places = graph_retriever.search_places(det_name, locality=locality or "Thành phố Huế", limit=3)
-        for vp in vis_places:
-            if vp not in matched_places:
-                matched_places.insert(0, vp)
+        norm_det = strip_accents(det_name)
+        det_pid = alias_dict.get(norm_det)
+        det_place = graph_retriever.get_place(det_pid) if det_pid else graph_retriever.get_place(det_name)
+        if not det_place:
+            vis_places = graph_retriever.search_places(det_name, locality=locality or "Thành phố Huế", limit=3)
+            det_place = vis_places[0] if vis_places else None
+        if det_place:
+            det_id = det_place.get("node_id") or det_place.get("name")
+            matched_places = [p for p in matched_places if (p.get("node_id") or p.get("name")) != det_id]
+            matched_places.insert(0, det_place)
 
     # XAI: tổng kết bước KG retrieval
     trace_steps.append({
@@ -746,21 +797,30 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
     query_lower = state["query"].lower()
     norm_q = strip_accents(query_lower)
 
-    # Các từ khóa hỏi về thông tin thời gian thực / giờ giấc / giá vé mà KG tĩnh không có
-    external_triggers = [
-        "thoi tiet", "thời tiết", "ve may bay", "vé máy bay", 
-        "nhiet do", "nhiệt độ", "bao nhieu do", "mưa khong", "mưa không", "dự báo thời tiết",
-        "mo cua", "mở cửa", "dong cua", "đóng cửa", "may gio", "mấy giờ", "khi nao mo",
-        "gia ve", "giá vé", "ve vao cong", "vé vào cổng", "phi tham quan", "phí tham quan"
-    ]
-    is_external_query = any(t in norm_q or t in query_lower for t in external_triggers)
+    # 0. Nếu là câu hỏi có ảnh đính kèm và đã có thực thể nhận diện hoặc địa điểm trong KG:
+    if state.get("image_base64") and (has_places or state.get("visual_matches") or state.get("image_detected")):
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "🎯",
+            "label": "Router → Tri thức Thị giác & Di sản Nội bộ",
+            "detail": "Nhận diện ảnh thành công → đối sánh và phản hồi từ CSDL tri thức Cố đô",
+            "decision": "local_knowledge",
+            "status": "confident"
+        })
+        return "node_generate_response"
 
-    if is_external_query:
+    # Các từ khóa hỏi về thông tin thời gian thực ngoài phạm vi dữ liệu tĩnh (thời tiết, vé máy bay)
+    realtime_triggers = [
+        "thoi tiet", "thời tiết", "ve may bay", "vé máy bay", 
+        "nhiet do", "nhiệt độ", "bao nhieu do", "mưa khong", "mưa không", "dự báo thời tiết"
+    ]
+    is_realtime_query = any(t in norm_q or t in query_lower for t in realtime_triggers)
+    if is_realtime_query:
         trace_steps.append({
             "step": "routing_decision",
             "icon": "🌐",
             "label": "Router → Web Search Fallback",
-            "detail": "Câu hỏi thời gian thực (giờ mở cửa/giá vé/thời tiết) → chuyển sang DuckDuckGo",
+            "detail": "Câu hỏi thời tiết / vé máy bay thời gian thực → chuyển sang DuckDuckGo",
             "decision": "web_fallback",
             "status": "redirect"
         })
@@ -844,14 +904,22 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     # 0. Ngữ cảnh đối sánh thị giác từ Visual Image RAG (ChromaDB & CLIP ViT-B/32)
     visual_matches = state.get("visual_matches") or []
     visual_confidence = state.get("visual_confidence", 0.0)
-    if visual_matches and visual_confidence >= 0.70:
+    if visual_matches and visual_confidence >= 0.60:
         top_v = visual_matches[0]
         vis_context = f"""=== KẾT QUẢ ĐỐI SÁNH THỊ GIÁC VISUAL IMAGE RAG (CHROMADB & CLIP ViT-B/32) ===
 - Địa danh khớp chính xác: {top_v['place_name']} ({top_v.get('sub_location', '')})
 - Định danh đồ thị (Place ID): {top_v['place_id']}
-- Điểm tương đồng Cosine: {top_v.get('confidence_pct', round(visual_confidence * 100, 1))}% (Độ tin cậy cao >= 70%)
+- Điểm tương đồng Cosine: {top_v.get('confidence_pct', round(visual_confidence * 100, 1))}% (Độ tin cậy cao >= 60%)
 - Căn cứ đối sánh: Vector thị giác 512 chiều được so khớp Cosine với kho ảnh mẫu di sản văn hóa Cố đô Huế trong ChromaDB."""
         context_blocks.append(vis_context)
+
+    # Bổ sung thông tin nhận diện đối tượng từ Vision Model nếu có
+    if state.get("image_detected"):
+        det = state["image_detected"]
+        img_context = f"""=== KẾT QUẢ NHẬN DIỆN THỊ GIÁC VISION MODEL ===
+- Đối tượng di sản / ẩm thực nhận diện trong ảnh: {det.get('name')} ({det.get('category', 'DI_TICH')})
+- Đặc điểm nhận dạng: {det.get('description', '')}"""
+        context_blocks.append(img_context)
 
     # 1. Ngữ cảnh từ Knowledge Graph
     if matched_places:
