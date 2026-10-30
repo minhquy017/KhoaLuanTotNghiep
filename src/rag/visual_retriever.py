@@ -60,8 +60,19 @@ class VisualRetriever:
                 print(f"⚠️ [VisualRetriever] Collection '{COLLECTION_NAME}' chưa được khởi tạo. Cần chạy scripts/build_visual_index.py.")
                 self.collection = None
 
-            self.model = SentenceTransformer(self.model_name, device=self.device)
-            print(f"✅ [VisualRetriever] Đã tải mô hình thị giác CLIP ({self.model_name}) trên {self.device.upper()}!")
+            try:
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                self.model = SentenceTransformer(self.model_name, device=self.device)
+                print(f"✅ [VisualRetriever] Đã tải mô hình thị giác CLIP ({self.model_name}) trên {self.device.upper()}!")
+            except Exception as e_model:
+                if self.device != "cpu":
+                    print(f"⚠️ [VisualRetriever] Không thể tải CLIP trên {self.device} ({e_model}), chuyển sang chế độ CPU an toàn...")
+                    self.device = "cpu"
+                    self.model = SentenceTransformer(self.model_name, device="cpu")
+                    print(f"✅ [VisualRetriever] Đã tải mô hình thị giác CLIP ({self.model_name}) trên CPU thành công!")
+                else:
+                    raise e_model
         except Exception as e:
             print(f"⚠️ [VisualRetriever] Không thể khởi tạo VisualRetriever: {e}")
 
@@ -119,11 +130,23 @@ class VisualRetriever:
 
         try:
             # 1. Trích xuất vector đặc trưng thị giác 512-dim
-            query_emb = self.model.encode(
-                pil_img, 
-                normalize_embeddings=True, 
-                device=self.device
-            ).tolist()
+            try:
+                query_emb = self.model.encode(
+                    pil_img, 
+                    normalize_embeddings=True, 
+                    device=self.device
+                ).tolist()
+            except Exception as e_enc:
+                if self.device != "cpu":
+                    print(f"⚠️ [VisualRetriever] Chuyển encode ảnh sang CPU do: {e_enc}")
+                    self.device = "cpu"
+                    query_emb = self.model.encode(
+                        pil_img, 
+                        normalize_embeddings=True, 
+                        device="cpu"
+                    ).tolist()
+                else:
+                    raise e_enc
 
             # 2. Truy vấn vector trong ChromaDB theo khoảng cách Cosine
             results = self.collection.query(
@@ -171,11 +194,22 @@ class VisualRetriever:
             return []
 
         try:
-            text_emb = self.model.encode(
-                text_query, 
-                normalize_embeddings=True, 
-                device=self.device
-            ).tolist()
+            try:
+                text_emb = self.model.encode(
+                    text_query, 
+                    normalize_embeddings=True, 
+                    device=self.device
+                ).tolist()
+            except Exception as e_enc:
+                if self.device != "cpu":
+                    self.device = "cpu"
+                    text_emb = self.model.encode(
+                        text_query, 
+                        normalize_embeddings=True, 
+                        device="cpu"
+                    ).tolist()
+                else:
+                    raise e_enc
 
             results = self.collection.query(
                 query_embeddings=[text_emb],

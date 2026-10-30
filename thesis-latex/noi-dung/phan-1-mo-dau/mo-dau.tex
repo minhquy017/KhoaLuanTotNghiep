@@ -53,24 +53,28 @@ Xuất phát từ những đòi hỏi thực tiễn của chính quyền thành 
 \section*{2. Mục tiêu nghiên cứu}
 \addcontentsline{toc}{section}{2. Mục tiêu nghiên cứu}
 
-Mục tiêu tổng quát của khóa luận là thiết kế, hiện thực hóa và đánh giá định lượng một hệ thống hỏi đáp và gợi ý lịch trình du lịch thông minh mang tên Spatial GraphRAG, kết hợp cấu trúc Đồ thị Tri thức Không gian, dữ liệu phản hồi thực tế của du khách và khung tác tử điều phối đa luồng trên nền tảng mô hình ngôn ngữ lớn cục bộ, nhằm cung cấp các đề xuất du lịch chuẩn xác về mặt thực thể và tối ưu về mặt cự ly địa lý tại thành phố Huế.
+Mục tiêu tổng quát của khóa luận là thiết kế, hiện thực hóa và đánh giá định lượng một hệ thống hỏi đáp và gợi ý lịch trình du lịch thông minh mang tên Spatial GraphRAG, kết hợp cấu trúc Đồ thị Tri thức Không gian, dữ liệu phản hồi thực tế của du khách, mô hình thị giác đa phương thức CLIP và khung tác tử điều phối đa luồng trên nền tảng mô hình ngôn ngữ lớn cục bộ, nhằm cung cấp các đề xuất du lịch chuẩn xác về mặt thực thể và tối ưu về mặt cự ly đường bộ tại Cố đô Huế.
 
-Để đạt được mục tiêu tổng quát, nghiên cứu xác lập bốn mục tiêu cụ thể.
+Để đạt được mục tiêu tổng quát, nghiên cứu xác lập sáu mục tiêu cụ thể:
 
-Mục tiêu cụ thể thứ nhất là xây dựng Đồ thị Tri thức Không gian du lịch hoàn chỉnh cho Huế và các tỉnh thành trọng điểm với quy mô hơn 9.500 nút thực thể và hơn 90.000 cạnh quan hệ ngữ nghĩa, tích hợp thuộc tính tọa độ GPS chuẩn WGS84 và bán kính lân cận thực tế theo công thức khoảng cách mặt cầu Haversine.
+Mục tiêu cụ thể thứ nhất là xây dựng Đồ thị Tri thức Không gian du lịch hoàn chỉnh cho Huế và các tỉnh thành trọng điểm với quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ ngữ nghĩa, tích hợp thuộc tính tọa độ GPS chuẩn WGS84 và cơ chế lọc không gian hai bước (Two-stage Spatial Filtering) kết hợp lọc thô Haversine ($d \le 1,5\text{ km}$) với định tuyến đường bộ thực tế qua cầu OSRM.
 
-Mục tiêu cụ thể thứ hai là xây dựng bộ từ điển ẩm thực Việt Nam gồm 570 món ăn (trong đó có hơn 60 món đặc sản Huế) và thiết lập giải thuật khai phá tri thức ngầm từ tập ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế trên nền tảng TripAdvisor để liên kết tự động quan hệ phục vụ món ăn vào đồ thị với độ tin cậy thống kê cao.
+Mục tiêu cụ thể thứ hai là xây dựng bộ từ điển ẩm thực Việt Nam gồm 570 món ăn (trong đó có hơn 60 món đặc sản Huế) và thiết lập giải thuật khai phá thực đơn ngầm từ tập ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế trên nền tảng TripAdvisor để liên kết tự động quan hệ phục vụ món ăn $\text{SERVES}$ vào đồ thị với điểm số bảo chứng tin cậy $\text{Conf}(u,m) \ge 0,70$.
 
-Mục tiêu cụ thể thứ ba là thiết kế khung điều phối Agentic RAG trên LangGraph tích hợp bộ chấm điểm tin cậy (Confidence Grading) và cơ chế phân luồng dự phòng tìm kiếm Internet, vận hành hoàn toàn trên mô hình ngôn ngữ mã nguồn mở cục bộ Qwen2.5-3B nhằm bảo đảm quyền riêng tư của du khách và triệt tiêu toàn bộ chi phí bản quyền API vận hành.
+Mục tiêu cụ thể thứ ba là thiết kế khung điều phối Agentic RAG trên máy trạng thái hữu hạn LangGraph gồm 5 nút tuần tự, tích hợp bộ chấm điểm tin cậy (Confidence Grading) và cơ chế phân luồng dự phòng tìm kiếm Internet, vận hành hoàn toàn trên mô hình ngôn ngữ mã nguồn mở cục bộ Qwen2.5-3B-Instruct nhằm bảo đảm quyền riêng tư và triệt tiêu chi phí bản quyền API.
 
-Mục tiêu cụ thể thứ tư là hiện thực hóa giải thuật lập lịch trình phân cụm địa lý (Spatial Itinerary Planner), phát triển giao diện Web tương tác bản đồ số trực quan và đóng gói Cổng API RESTful chuẩn mở sẵn sàng tích hợp với nền tảng công dân số Hue-S.
+Mục tiêu cụ thể thứ tư là tích hợp mô hình thị giác đa phương thức CLIP ViT-B/32, xây dựng kho ngữ liệu 77 ảnh mẫu cho 25 di tích Cố đô và bộ chỉ mục véc-tơ hình ảnh trên ChromaDB, thiết lập giao thức kiểm định chéo Leave-One-Out (LOOCV) để nhận diện tức thời danh lam thắng cảnh Huế từ ảnh chụp thực địa của du khách.
+
+Mục tiêu cụ thể thứ năm là hiện thực hóa giải thuật lập lịch trình phân cụm không gian (Spatial Itinerary Planner) dựa trên bài toán Người định tuyến có giới hạn (Orienteering Problem), tích hợp ma trận cự ly đường bộ OSRM và công cụ Dự toán ngân sách chuyến đi (Trip Budget Calculator) bám sát biểu giá vé tham quan di tích của Trung tâm Bảo tồn Di tích Cố đô Huế.
+
+Mục tiêu cụ thể thứ sáu là phát triển Giao diện Web thích ứng chuẩn RWD (Mobile-First 100dvh) tích hợp bản đồ tương tác Leaflet và cơ chế quản lý danh tính an toàn với Firebase Auth, đồng thời đóng gói Cổng API RESTful chuẩn mở sẵn sàng tích hợp vào nền tảng công dân số Hue-S.
 
 \section*{3. Câu hỏi nghiên cứu và Giả thuyết khoa học}
 \addcontentsline{toc}{section}{3. Câu hỏi nghiên cứu và Giả thuyết khoa học}
 
-Tiến trình nghiên cứu được định hướng bởi bốn câu hỏi nghiên cứu cốt lõi:
+Tiến trình nghiên cứu được định hướng bởi sáu câu hỏi nghiên cứu cốt lõi:
 
-Câu hỏi nghiên cứu RQ1: Làm thế nào để mô hình hóa mối quan hệ không gian giữa các điểm tham quan, nhà hàng ẩm thực và cơ sở lưu trú thành một Đồ thị Tri thức Không gian có khả năng truy vấn hiệu quả theo bán kính địa lý thực tế?
+Câu hỏi nghiên cứu RQ1: Làm thế nào để mô hình hóa mối quan hệ không gian giữa các điểm tham quan, nhà hàng ẩm thực và cơ sở lưu trú thành một Đồ thị Tri thức Không gian có khả năng truy vấn hiệu quả theo bán kính địa lý và mạng lưới đường bộ thực tế?
 
 Câu hỏi nghiên cứu RQ2: Cơ chế trích xuất thực đơn ngầm từ hàng chục ngàn bài đánh giá văn bản phi cấu trúc của du khách có thể nâng cao độ chính xác và độ phong phú của việc gợi ý món ăn đặc sản so với dữ liệu phân loại tĩnh truyền thống ở mức độ nào?
 
@@ -78,41 +82,49 @@ Câu hỏi nghiên cứu RQ3: Việc tích hợp Đồ thị Tri thức Không g
 
 Câu hỏi nghiên cứu RQ4: Khung tác tử LangGraph kết hợp mô hình ngôn ngữ cục bộ quy mô nhỏ (Qwen2.5-3B) có đáp ứng được yêu cầu về thời gian phản hồi thời gian thực và độ chính xác tổng thể khi vận hành trên hạ tầng máy trạm tiêu chuẩn hay không?
 
-Tương ứng với các câu hỏi nghiên cứu nêu trên, khóa luận xác lập bốn giả thuyết khoa học:
+Câu hỏi nghiên cứu RQ5: Việc ứng dụng mô hình thị giác đa phương thức CLIP ViT-B/32 có thể nhận diện chính xác các điểm di sản kiến trúc Huế từ hình ảnh thực tế của du khách với độ trễ thấp và độ tin cậy ra sao khi kiểm thử chéo không rò rỉ dữ liệu (LOOCV)?
 
-Giả thuyết khoa học $H_1$: Ràng buộc topo không gian (cạnh liên kết lân cận trong bán kính mặt cầu $d \le 1,5\text{ km}$) sẽ triệt tiêu hoàn toàn các lộ trình ziczac nhảy bờ sông Hương vô lý, giảm cự ly di chuyển trung bình ít nhất 50\% so với hệ thống Naive RAG truyền thống.
+Câu hỏi nghiên cứu RQ6: Việc chuyển đổi từ khoảng cách đường chim bay sang khoảng cách mạng lưới đường bộ thực tế OSRM kết hợp dự toán ngân sách chi tiết có nâng cao tính khả thi và độ hài lòng của lịch trình du lịch tự túc hay không?
+
+Tương ứng với các câu hỏi nghiên cứu nêu trên, khóa luận xác lập sáu giả thuyết khoa học:
+
+Giả thuyết khoa học $H_1$: Cơ chế lọc không gian hai bước (kết hợp lọc thô lân cận Haversine $d \le 1,5\text{ km}$ trên đồ thị tĩnh và định tuyến đường bộ thực tế qua cầu OSRM) sẽ triệt tiêu hoàn toàn (0,0\%) các lộ trình ziczac nhảy bờ sông Hương vô lý, giảm cự ly di chuyển trung bình ít nhất 50\% so với hệ thống Naive RAG truyền thống.
 
 Giả thuyết khoa học $H_2$: Khai phá thực đơn ngầm từ tập ngữ liệu nhận xét du khách cho phép mở rộng độ phủ món ăn đặc sản lên trên 90\%, vượt trội so với danh mục ẩm thực phân loại tĩnh.
 
-Giả thuyết khoa học $H_3$: Mô hình Spatial GraphRAG đạt tỷ lệ bảo chứng thực thể (Grounding Rate) 100\% và tỷ lệ ảo giác địa danh 0\% trên toàn bộ các truy vấn kiểm thử thuộc phạm vi đồ thị tri thức.
+Giả thuyết khoa học $H_3$: Mô hình Spatial GraphRAG đạt tỷ lệ bảo chứng thực thể (Grounding Rate) 100\% và tỷ lệ ảo giác địa danh 0,0\% trên toàn bộ các truy vấn kiểm thử thuộc phạm vi đồ thị tri thức.
 
 Giả thuyết khoa học $H_4$: Quy trình phân cụm lịch trình theo không gian kết hợp bộ lập lịch trình thông minh bảo đảm thời gian sinh kết quả dưới 4 giây trên GPU cá nhân, hoàn toàn đủ điều kiện cung cấp dịch vụ trực tuyến ổn định trong điều kiện thực tế.
+
+Giả thuyết khoa học $H_5$: Mô hình CLIP ViT-B/32 đạt độ chính xác Top-1 trên 95\% trong tác vụ nhận diện 25 di tích trọng điểm Cố đô Huế theo giao thức kiểm định chéo Leave-One-Out (LOOCV) với thời gian trích xuất véc-tơ dưới 100ms trên GPU máy trạm.
+
+Giả thuyết khoa học $H_6$: Giải thuật lập lịch trình kết hợp định tuyến OSRM và bộ Dự toán ngân sách chuyến đi (Trip Budget Calculator) kiểm soát triệt để sai số cự ly thực tế qua cầu và cung cấp bảng dự toán chi phí chi tiết khớp 100\% với biểu giá vé chính thức của Trung tâm Bảo tồn Di tích Cố đô Huế.
 
 \section*{4. Đối tượng và Phạm vi nghiên cứu}
 \addcontentsline{toc}{section}{4. Đối tượng và Phạm vi nghiên cứu}
 
-Đối tượng nghiên cứu của khóa luận là các phương pháp biểu diễn tri thức không gian (Spatial Knowledge Representation), kỹ thuật Tăng cường Tạo sinh Truy xuất dựa trên đồ thị (GraphRAG), khung điều phối tác tử hội thoại thông minh (Agentic Workflows) và các giải thuật tối ưu hóa lịch trình du lịch dựa trên địa lý. Về mặt dữ liệu, đối tượng nghiên cứu bao gồm 9.525 thực thể điểm du lịch, ẩm thực, lưu trú và 44.355 bản ghi đánh giá du khách thực tế tại Huế thu thập từ TripAdvisor, kết hợp dữ liệu tọa độ hình học từ OpenStreetMap và Google Maps.
+Đối tượng nghiên cứu của khóa luận là các phương pháp biểu diễn tri thức không gian (Spatial Knowledge Representation), kỹ thuật Tăng cường Tạo sinh Truy xuất dựa trên đồ thị (GraphRAG), khung điều phối tác tử hội thoại thông minh (Agentic Workflows), mô hình thị giác đa phương thức (Vision-Language Models), và các giải thuật tối ưu hóa lịch trình du lịch đường bộ dựa trên địa lý. Về mặt dữ liệu, đối tượng nghiên cứu bao gồm 9.525 thực thể điểm du lịch, ẩm thực, lưu trú (trong đó có 612 địa điểm chuẩn hóa tại Huế), 1.698.641 bài đánh giá toàn quốc (trong đó có 44.355 bản ghi chuyên sâu tại Huế), 77 hình ảnh chất lượng cao của 25 di tích Cố đô, kết hợp dữ liệu tọa độ hình học từ OpenStreetMap và Google Maps.
 
-Về phạm vi nghiên cứu, không gian địa lý trọng tâm của đề tài được định vị tại thành phố Huế và các vùng phụ cận thuộc tỉnh Thừa Thiên Huế (khu vực Kinh thành, cụm lăng tẩm phía Nam, đầm Chuồn, đầm phá Tam Giang, làng cổ Phước Tích, cầu ngói Thanh Toàn). Các thực thể tại các tỉnh thành du lịch lân cận (Đà Nẵng, Quảng Nam) đóng vai trò làm giàu ngữ cảnh đồ thị liên kết vùng. Về mặt công nghệ, nghiên cứu tập trung vào mô hình ngôn ngữ cục bộ Qwen2.5-3B-Instruct vận hành qua môi trường Ollama trên GPU NVIDIA GeForce RTX 3050 (4GB VRAM), bảo đảm tính khả thi triển khai và vận hành tự chủ hoàn toàn tại các cơ quan, đơn vị địa phương.
+Về phạm vi nghiên cứu, không gian địa lý trọng tâm của đề tài được định vị tại thành phố Huế và các vùng phụ cận thuộc tỉnh Thừa Thiên Huế (khu vực Kinh thành, cụm lăng tẩm phía Nam, đầm Chuồn, đầm phá Tam Giang, làng cổ Phước Tích, cầu ngói Thanh Toàn). Các thực thể tại các tỉnh thành du lịch lân cận (Đà Nẵng, Quảng Nam) đóng vai trò làm giàu ngữ cảnh đồ thị liên kết vùng. Về mặt công nghệ, nghiên cứu tập trung vào mô hình ngôn ngữ cục bộ Qwen2.5-3B-Instruct vận hành qua môi trường Ollama trên GPU NVIDIA GeForce RTX 3050 (4GB VRAM), mô hình CLIP ViT-B/32, máy chủ định tuyến OSRM cục bộ, và hệ thống lưu trữ vector ChromaDB, bảo đảm tính khả thi triển khai và vận hành tự chủ hoàn toàn tại các cơ quan, đơn vị địa phương.
 
 \section*{5. Ý nghĩa khoa học và Thực tiễn}
 \addcontentsline{toc}{section}{5. Ý nghĩa khoa học và Thực tiễn}
 
-Về mặt khoa học, khóa luận đóng góp một khung phương pháp luận mới kết hợp giữa tính toán không gian (Spatial Computing) và GraphRAG. Nghiên cứu làm rõ cơ chế tích hợp khoảng cách mặt cầu Haversine vào cấu trúc đồ thị tri thức, đồng thời đề xuất giải pháp dung hợp giữa tri thức có cấu trúc của đồ thị và tri thức phi cấu trúc từ nhận xét du khách để định hướng quá trình suy luận của LLM mà không cần tái huấn luyện mô hình nền tảng.
+Về mặt khoa học, khóa luận đóng góp một khung phương pháp luận mới kết hợp giữa tính toán không gian (Spatial Computing), thị giác máy tính và GraphRAG. Nghiên cứu làm rõ cơ chế tích hợp ràng buộc không gian hai bước (Two-stage Spatial Filtering) vào cấu trúc đồ thị tri thức, đồng thời đề xuất giải pháp dung hợp giữa tri thức có cấu trúc của đồ thị, tri thức đa phương thức từ hình ảnh di tích và phản hồi nhận xét du khách để định hướng quá trình suy luận của LLM mà không cần tái huấn luyện mô hình nền tảng.
 
-Về mặt thực tiễn, sản phẩm của đề tài mang lại giá trị ứng dụng trực tiếp cho ngành du lịch Thừa Thiên Huế. Hệ thống không chỉ cung cấp giải pháp trợ lý ảo thông minh giúp du khách tự lập kế hoạch du lịch tiết kiệm thời gian và chi phí, mà còn sẵn sàng kết nối API vào nền tảng số Hue-S, hỗ trợ chính quyền địa phương giải quyết bài toán: Đi đâu, ăn gì, lưu trú ở đâu, điều tiết dòng khách du lịch hợp lý giữa các cụm di sản, góp phần bảo tồn di tích và thúc đẩy kinh tế đêm bền vững.
+Về mặt thực tiễn, sản phẩm của đề tài mang lại giá trị ứng dụng trực tiếp cho ngành du lịch Thừa Thiên Huế. Hệ thống không chỉ cung cấp giải pháp trợ lý ảo thông minh giúp du khách tự nhận diện di tích từ ảnh chụp, khám phá ẩm thực chuẩn vị và tự lập lịch trình tối ưu cự ly kèm dự toán ngân sách chi tiết, mà còn sẵn sàng kết nối API vào nền tảng số Hue-S, hỗ trợ chính quyền địa phương giải quyết bài toán: Đi đâu, ăn gì, lưu trú ở đâu, điều tiết dòng khách du lịch hợp lý giữa các cụm di sản, góp phần bảo tồn di tích và thúc đẩy kinh tế số bền vững.
 
 \section*{6. Cấu trúc của khóa luận}
 \addcontentsline{toc}{section}{6. Cấu trúc của khóa luận}
 
 Khóa luận được kết cấu thành năm phần theo đúng quy định tại Văn bản số 1967/HD-ĐHH của Đại học Huế:
 
-Phần I trình bày phần mở đầu với tính cấp thiết của đề tài gắn liền với chỉ đạo thực tiễn của lãnh đạo thành phố Huế và hiện trạng ứng dụng Hue-S, mục tiêu nghiên cứu, câu hỏi nghiên cứu, đối tượng và phạm vi đề tài.
+Phần I trình bày phần mở đầu với tính cấp thiết của đề tài gắn liền với chỉ đạo thực tiễn của lãnh đạo thành phố Huế và hiện trạng ứng dụng Hue-S, mục tiêu nghiên cứu (6 mục tiêu cụ thể), câu hỏi nghiên cứu (6 câu hỏi), giả thuyết khoa học (6 giả thuyết), đối tượng và phạm vi đề tài.
 
-Phần II tổng quan cơ sở lý thuyết nền tảng về Đồ thị Tri thức Không gian, tiến trình phát triển từ Naive RAG sang GraphRAG và Agentic RAG, mô hình không gian véc-tơ, bài toán thiết kế chuyến đi du lịch TTDP, và các công trình liên quan.
+Phần II tổng quan cơ sở lý thuyết nền tảng về Đồ thị Tri thức Không gian, tiến trình phát triển từ Naive RAG sang GraphRAG và Agentic RAG, mô hình biểu diễn véc-tơ văn bản và hình ảnh (CLIP / Vision Transformer), kỹ thuật định tuyến đường bộ OSRM dựa trên kỹ thuật thứ bậc co (Contraction Hierarchies), bài toán thiết kế chuyến đi du lịch TTDP, và các công trình liên quan.
 
-Phần III làm rõ đối tượng, nguồn dữ liệu 44.355 đánh giá TripAdvisor tại Huế, quy trình làm sạch dữ liệu và phương pháp luận thiết kế hệ thống.
+Phần III làm rõ đối tượng, nguồn dữ liệu 44.355 đánh giá TripAdvisor và 77 ảnh di tích tại Huế, quy trình kiểm toán làm sạch dữ liệu và phương pháp luận thiết kế hệ thống qua năm giai đoạn tuần tự.
 
-Phần IV là nội dung và kết quả nghiên cứu, bao gồm Chương 1 trình bày chi tiết kiến trúc 4 tầng của Spatial GraphRAG cùng giải thuật khai phá thực đơn ngầm, và Chương 2 trình bày thuật toán lập lịch trình không gian, kết quả thực nghiệm đối sánh định lượng trên bộ benchmark 12 kịch bản và kiến trúc cổng tích hợp Hue-S.
+Phần IV là nội dung và kết quả nghiên cứu, bao gồm Chương 1 trình bày chi tiết kiến trúc 4 tầng của Spatial GraphRAG, giải thuật khai phá thực đơn ngầm, mô-đun thị giác Visual RAG, bộ lập lịch trình kết hợp OSRM và công cụ Dự toán ngân sách; Chương 2 trình bày kết quả thực nghiệm đối sánh định lượng trên bộ benchmark 12 kịch bản du lịch Huế, đánh giá kiểm thử chéo LOOCV mô hình CLIP, và kiến trúc cổng tích hợp Hue-S.
 
-Phần V tổng kết các đóng góp chính của đề tài, phân tích trung thực các hạn chế hiện tại và định hướng phát triển trong tương lai.
+Phần V tổng kết 6 đóng góp chính của đề tài, phân tích trung thực các hạn chế hiện tại và định hướng phát triển trong tương lai.

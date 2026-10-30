@@ -107,20 +107,24 @@ def build_visual_vector_index():
             documents.append(caption)
             success_count += 1
             
-            if success_count % 5 == 0 or success_count == len(landmarks_meta):
+            if success_count % 25 == 0 or success_count == len(landmarks_meta):
                 print(f"   ⚡ Đã trích xuất đặc trưng {success_count}/{len(landmarks_meta)} ảnh ({time.time() - t0:.1f}s)...", flush=True)
         except Exception as e:
             print(f"   ❌ Lỗi trích xuất ảnh {rel_path}: {e}", flush=True)
 
-    # 3. Lưu vào ChromaDB theo batch
+    # 3. Lưu vào ChromaDB theo batch để tránh giới hạn tham số SQLite
     if ids:
         print(f"\n💾 Đang ghi {len(ids)} vector đặc trưng vào ChromaDB...", flush=True)
-        collection.add(
-            ids=ids,
-            embeddings=embeddings,
-            metadatas=metadatas,
-            documents=documents
-        )
+        batch_size = 100
+        for b_idx in range(0, len(ids), batch_size):
+            b_end = min(b_idx + batch_size, len(ids))
+            collection.add(
+                ids=ids[b_idx:b_end],
+                embeddings=embeddings[b_idx:b_end],
+                metadatas=metadatas[b_idx:b_end],
+                documents=documents[b_idx:b_end]
+            )
+            print(f"   💾 Đã nạp batch {b_end}/{len(ids)} vector...", flush=True)
         print(f"✅ Ghi thành công {collection.count()} bản ghi vào ChromaDB '{COLLECTION_NAME}'!", flush=True)
 
     # 4. Kiểm thử kiểm chứng thực nghiệm (Self-Verification)

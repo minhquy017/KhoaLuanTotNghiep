@@ -58,7 +58,17 @@ class VectorRetriever:
             clean_incomplete_hnsw_segments(self.chroma_dir)
             self.chroma_client = chromadb.PersistentClient(path=self.chroma_dir)
             self.collection = self.chroma_client.get_collection(name="vietnam_reviews")
-            self.model = SentenceTransformer(self.model_name, device=self.device)
+            try:
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                self.model = SentenceTransformer(self.model_name, device=self.device)
+            except Exception as e_model:
+                if self.device != "cpu":
+                    print(f"⚠️ [VectorRetriever] Fallback SentenceTransformer sang CPU do: {e_model}")
+                    self.device = "cpu"
+                    self.model = SentenceTransformer(self.model_name, device="cpu")
+                else:
+                    raise e_model
             print(f"✅ [VectorRetriever] Đã kết nối ChromaDB thành công ({self.collection.count()} reviews)!")
         except Exception as e:
             print(f"⚠️ [VectorRetriever] Không thể tải ChromaDB: {e}")
@@ -74,11 +84,22 @@ class VectorRetriever:
         if not self.collection or not self.model:
             return [], 0.0
         # Encode câu query
-        query_emb = self.model.encode(
-            [query_text], 
-            normalize_embeddings=True, 
-            device=self.device
-        ).tolist()
+        try:
+            query_emb = self.model.encode(
+                [query_text], 
+                normalize_embeddings=True, 
+                device=self.device
+            ).tolist()
+        except Exception as e_enc:
+            if self.device != "cpu":
+                self.device = "cpu"
+                query_emb = self.model.encode(
+                    [query_text], 
+                    normalize_embeddings=True, 
+                    device="cpu"
+                ).tolist()
+            else:
+                raise e_enc
 
         # Tạo bộ lọc where nếu có danh sách place_urls
         where_filter = None
@@ -101,7 +122,14 @@ class VectorRetriever:
                 metas = get_res.get("metadatas", [])
                 if docs:
                     import numpy as np
-                    doc_embs = self.model.encode(docs, normalize_embeddings=True, device=self.device)
+                    try:
+                        doc_embs = self.model.encode(docs, normalize_embeddings=True, device=self.device)
+                    except Exception as e_doc:
+                        if self.device != "cpu":
+                            self.device = "cpu"
+                            doc_embs = self.model.encode(docs, normalize_embeddings=True, device="cpu")
+                        else:
+                            raise e_doc
                     q_arr = np.array(query_emb[0])
                     sims = np.dot(doc_embs, q_arr)
                     # Sắp xếp review theo độ tương đồng giảm dần

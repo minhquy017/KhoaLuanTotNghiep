@@ -9,9 +9,9 @@
 
 Nghiên cứu được thiết lập dựa trên một cơ sở dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp chặt chẽ giữa thông tin tọa độ không gian chính xác, kho ngữ liệu nhận xét trải nghiệm thực tế từ cộng đồng du khách và hệ thống từ điển ẩm thực chuẩn hóa. Toàn bộ cơ sở dữ liệu được cấu thành từ năm nguồn dữ liệu thành phần:
 
-Nguồn dữ liệu thứ nhất là tập dữ liệu vị trí địa lý thu thập từ OpenStreetMap và Google Maps, cung cấp thông tin định danh, tên gọi chính thức, danh mục dịch vụ và cặp tọa độ địa lý WGS84 cho 9.525 thực thể du lịch trên phạm vi toàn quốc, trong đó trọng tâm khảo sát đặc biệt chuyên sâu là 610 địa điểm du lịch, ẩm thực và lưu trú phân bổ trên địa bàn thành phố Huế và các vùng di sản phụ cận thuộc tỉnh Thừa Thiên Huế.
+Nguồn dữ liệu thứ nhất là tập dữ liệu vị trí địa lý thu thập từ OpenStreetMap~\cite{openstreetmap2024} và Google Maps, cung cấp thông tin định danh, tên gọi chính thức, danh mục dịch vụ và cặp tọa độ địa lý WGS84 cho 9.525 thực thể du lịch trên phạm vi toàn quốc, trong đó trọng tâm khảo sát đặc biệt chuyên sâu là 612 địa điểm du lịch, ẩm thực và lưu trú phân bổ trên địa bàn thành phố Huế và các vùng di sản phụ cận thuộc tỉnh Thừa Thiên Huế.
 
-Nguồn dữ liệu thứ hai là kho ngữ liệu nhận xét du khách khổng lồ được trích xuất từ nền tảng du lịch trực tuyến TripAdvisor~\cite{tripadvisor2024}, bao gồm 1.692.415 bài đánh giá bằng văn bản của du khách trong và ngoài nước trong giai đoạn từ năm 2015 đến năm 2026. Nhằm phục vụ trực tiếp cho bài toán thực tiễn tại Cố đô Huế, một tập dữ liệu chuyên sâu gồm 44.355 bài nhận xét thực tế đã được bóc tách toàn diện từ 500 địa điểm dịch vụ du lịch trọng điểm trên địa bàn thành phố Huế.
+Nguồn dữ liệu thứ hai là kho ngữ liệu nhận xét du khách khổng lồ được trích xuất từ nền tảng du lịch trực tuyến TripAdvisor~\cite{tripadvisor2024}, bao gồm 1.698.641 bài đánh giá bằng văn bản của du khách trong và ngoài nước trong giai đoạn từ năm 2015 đến năm 2026. Nhằm phục vụ trực tiếp cho bài toán thực tiễn tại Cố đô Huế, một tập dữ liệu chuyên sâu gồm 44.355 bài nhận xét thực tế đã được bóc tách toàn diện từ 500 địa điểm dịch vụ du lịch trọng điểm trên địa bàn thành phố Huế.
 
 Nguồn dữ liệu thứ ba là Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer) do nghiên cứu tự xây dựng và chuẩn hóa, bao gồm 570 món ăn đặc sản tiêu biểu của cả ba miền đất nước, với sự tập trung sâu sắc vào hơn 60 món ăn truyền thống đặc trưng của xứ Huế như Bún bò Huế, Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Bánh khoái, Chè bột lọc heo quay, Nem lụi, Vả trộn, Tré Huế và Bún mắm nêm.
 
@@ -30,10 +30,10 @@ Các thông số tổng hợp về quy mô lưu trữ, số lượng bản ghi v
 \hline
 \textbf{Nguồn dữ liệu} & \textbf{Định dạng tệp} & \textbf{Quy mô bản ghi} & \textbf{Mô tả phạm vi và đặc trưng nội dung} \\
 \hline
-TripAdvisor Toàn quốc & SQLite / JSON & 1.692.415 bài & Ngữ liệu đánh giá trải nghiệm du khách (2015 -- 2026) \\
+TripAdvisor Toàn quốc & SQLite / JSON & 1.698.641 bài & Ngữ liệu đánh giá trải nghiệm du khách (2015 -- 2026) \\
 TripAdvisor Huế & JSON / Danh sách & 44.355 bài & Đánh giá thực tế bóc tách tại 500 địa điểm ở Huế \\
 Địa điểm Du lịch Toàn quốc & GeoJSON / CSV & 8.921 thực thể & Tọa độ GPS, danh mục và địa chỉ đã làm sạch \\
-Địa điểm Du lịch tại Huế & GeoJSON / JSON & 610 thực thể & Thực thể du lịch, ẩm thực, lưu trú chuẩn hóa tại Huế \\
+Địa điểm Du lịch tại Huế & GeoJSON / JSON & 612 thực thể & Thực thể du lịch, ẩm thực, lưu trú chuẩn hóa tại Huế \\
 Culinary Gazetteer & JSON / Cấu trúc & 570 món ăn & Từ điển thực đơn ẩm thực và biến thể nhận diện \\
 Đồ thị Tri thức Không gian & NetworkX / PKL & 9.525 nút / 90.948 cạnh & Đồ thị thực thể, topo lân cận và quan hệ thực đơn \\
 Hình ảnh Di tích Huế & JPEG / RGB & 77 tệp / 25 di tích & Ngữ liệu ảnh di sản phục vụ nhận diện đa phương thức Visual RAG \\
@@ -98,14 +98,14 @@ Không khai báo / Khác & 16.519 lượt & 37,24\% & Du khách không cung cấ
 
 Từ Bảng \ref{tab:trip-type-distribution}, trong số các bản ghi có khai báo rõ kiểu hình chuyến đi, nhóm du khách đi theo cặp đôi và nhóm bạn bè chiếm tỷ trọng áp đảo (hơn 46\% tổng số). Thực tế này đặt ra yêu cầu hệ thống gợi ý lịch trình phải ưu tiên các chuỗi hành trình kết hợp hài hòa giữa tham quan di tích lịch sử ban ngày và trải nghiệm ẩm thực, phố đi bộ ven sông Hương vào buổi tối nhằm đáp ứng trúng thị hiếu của các phân khúc khách hàng chủ đạo.
 
-\subsection*{1.3. Thống kê đặc trưng và Cơ cấu 610 địa điểm du lịch tại Huế}
-\addcontentsline{toc}{subsection}{1.3. Thống kê đặc trưng và Cơ cấu 610 địa điểm du lịch tại Huế}
+\subsection*{1.3. Thống kê đặc trưng và Cơ cấu 612 địa điểm du lịch tại Huế}
+\addcontentsline{toc}{subsection}{1.3. Thống kê đặc trưng và Cơ cấu 612 địa điểm du lịch tại Huế}
 
-Xét riêng trên địa bàn thành phố Huế và các vùng phụ cận, tập dữ liệu bao gồm 610 thực thể địa lý đã được chuẩn hóa toàn diện về tọa độ GPS và địa chỉ hành chính. Sự phân bố số lượng cơ sở dịch vụ theo từng phân loại danh mục và theo đơn vị hành chính được tổng hợp tại Bảng \ref{tab:hue-places-distribution}.
+Xét riêng trên địa bàn thành phố Huế và các vùng phụ cận, tập dữ liệu bao gồm 612 thực thể địa lý đã được chuẩn hóa toàn diện về tọa độ GPS và địa chỉ hành chính. Sự phân bố số lượng cơ sở dịch vụ theo từng phân loại danh mục và theo đơn vị hành chính được tổng hợp tại Bảng \ref{tab:hue-places-distribution}.
 
 \begin{table}[htbp]
 \centering
-\caption{Cơ cấu phân loại và phân bố địa giới của 610 địa điểm du lịch tại Huế}
+\caption{Cơ cấu phân loại và phân bố địa giới của 612 địa điểm du lịch tại Huế}
 \label{tab:hue-places-distribution}
 \small
 \begin{tabularx}{\textwidth}{l r X}
@@ -113,21 +113,21 @@ Xét riêng trên địa bàn thành phố Huế và các vùng phụ cận, t�
 \textbf{Tiêu chí phân loại địa điểm} & \textbf{Số lượng thực thể} & \textbf{Phạm vi không gian và địa danh tiêu biểu} \\
 \hline
 \textit{Phân loại theo danh mục dịch vụ:} & & \\
-Ẩm thực và Nhà hàng (Restaurant) & 477 cơ sở & Quán bún bò, bánh bèo chén, cơm hến, nhà hàng cung đình \\
+Ẩm thực và Nhà hàng (Restaurant) & 479 cơ sở & Quán bún bò, bánh bèo chén, cơm hến, nhà hàng cung đình \\
 Cơ sở lưu trú và Khách sạn (Hotel) & 104 cơ sở & Khách sạn trung tâm, homestay bờ sông, resort ven biển \\
 Điểm tham quan danh thắng (Attraction) & 29 địa danh & Đại Nội, Chùa Thiên Mụ, Lăng Tự Đức, Lăng Khải Định, Đồi Vọng Cảnh \\
 \hline
 \textit{Phân loại theo địa giới hành chính:} & & \\
-Quận Thuận Hóa & 388 địa điểm & Khu vực bờ Nam sông Hương, phố đi bộ, trung tâm dịch vụ mới \\
-Quận Phú Xuân & 183 địa điểm & Khu vực bờ Bắc sông Hương, Quần thể Kinh thành, Chợ Đông Ba \\
+Quận Thuận Hóa & 389 địa điểm & Khu vực bờ Nam sông Hương, phố đi bộ, trung tâm dịch vụ mới \\
+Quận Phú Xuân & 184 địa điểm & Khu vực bờ Bắc sông Hương, Quần thể Kinh thành, Chợ Đông Ba \\
 Các huyện thị di sản phụ cận & 39 địa điểm & Lăng Cô (Phú Lộc), Cầu ngói Thanh Toàn, Đầm Chuồn, Phước Tích \\
 \hline
-\textbf{Tổng số địa điểm tại Huế} & \textbf{610 địa điểm} & \textbf{100\% đã chuẩn hóa tọa độ GPS theo hệ quy chiếu WGS84} \\
+\textbf{Tổng số địa điểm tại Huế} & \textbf{612 địa điểm} & \textbf{100\% đã chuẩn hóa tọa độ GPS theo hệ quy chiếu WGS84} \\
 \hline
 \end{tabularx}
 \end{table}
 
-Số liệu tại Bảng \ref{tab:hue-places-distribution} làm sáng tỏ sự phân hóa địa lý sâu sắc của dịch vụ du lịch Huế: Quận Thuận Hóa ở bờ Nam sông Hương tập trung tới 63,61\% tổng số cơ sở dịch vụ (chủ yếu là các nhà hàng, quán cà phê hiện đại và khách sạn cao tầng), trong khi Quận Phú Xuân ở bờ Bắc là cái nôi di sản chiếm 30,00\% với mật độ dày đặc của các di tích triều Nguyễn và các quán ẩm thực truyền thống lâu đời. Sự phân bố này được trực quan hóa chi tiết thông qua biểu đồ cơ cấu tại Hình \ref{fig:hue-places-category}.
+Số liệu tại Bảng \ref{tab:hue-places-distribution} làm sáng tỏ sự phân hóa địa lý sâu sắc của dịch vụ du lịch Huế: Quận Thuận Hóa ở bờ Nam sông Hương tập trung tới 63,56\% tổng số cơ sở dịch vụ (389/612 cơ sở, chủ yếu là các nhà hàng, quán cà phê hiện đại và khách sạn cao tầng), trong khi Quận Phú Xuân ở bờ Bắc là cái nôi di sản chiếm 30,07\% (184/612 cơ sở) với mật độ dày đặc của các di tích triều Nguyễn và các quán ẩm thực truyền thống lâu đời. Sự phân bố này được trực quan hóa chi tiết thông qua biểu đồ cơ cấu tại Hình \ref{fig:hue-places-category}.
 
 \begin{figure}[htbp]
 \centering
@@ -194,7 +194,7 @@ Giai đoạn 4 -- Ghi vết Checkpoint và Tự phục hồi lỗi (Fault-tolera
 
 Sau khi hoàn tất quá trình thu thập, toàn bộ dữ liệu thô được đưa qua một quy trình Kiểm toán Chất lượng Dữ liệu (Data Quality Audit) nghiêm ngặt gồm ba bước kiểm tra:
 
-Bước 1 -- Kiểm toán tỷ lệ khuyết thiếu (Missing Value Audit): Kiểm tra tính toàn vẹn của các trường bắt buộc. Toàn bộ 610 địa điểm du lịch tại Huế đạt tỷ lệ có đầy đủ tên gọi, danh mục và tọa độ GPS là 100,0\%. Đối với các bài nhận xét, 100\% các bản ghi thu thập đều có đầy đủ trường nội dung văn bản và điểm số xếp hạng sao; trường kiểu hình chuyến đi bị khuyết (chiếm 37,24\%) được gán nhãn chuẩn hóa là Chưa phân loại.
+Bước 1 -- Kiểm toán tỷ lệ khuyết thiếu (Missing Value Audit): Kiểm tra tính toàn vẹn của các trường bắt buộc. Toàn bộ 612 địa điểm du lịch tại Huế đạt tỷ lệ có đầy đủ tên gọi, danh mục và tọa độ GPS là 100,0\%. Đối với các bài nhận xét, 100\% các bản ghi thu thập đều có đầy đủ trường nội dung văn bản và điểm số xếp hạng sao; trường kiểu hình chuyến đi bị khuyết (chiếm 37,24\%) được gán nhãn chuẩn hóa là Chưa phân loại.
 
 Bước 2 -- Kiểm toán tính hợp lệ của tọa độ trắc địa (Bounding Box Validation): Để loại trừ hoàn toàn các sai lệch về tọa độ (như hiện tượng đảo ngược vĩ độ/kinh độ hoặc sai lệch vị trí sang tỉnh thành khác), giải thuật áp dụng bộ lọc Hộp giới hạn địa lý hình chữ nhật bao quanh tỉnh Thừa Thiên Huế:
 \begin{equation}
@@ -229,7 +229,7 @@ Theo quy trình tại Hình \ref{fig:atomic-chunking}, mỗi bài nhận xét th
 
 Nghiên cứu được triển khai theo một khung phương pháp luận khoa học gồm năm giai đoạn tuần tự và khép kín:
 
-Giai đoạn 1 (Thu thập và Kiểm toán dữ liệu): Tiến hành thu thập 610 thực thể địa lý tại Huế (trong tổng số 8.921 địa điểm toàn quốc) và 44.355 bài nhận xét chuyên sâu tại Huế (trong tổng số 1,69 triệu bài toàn quốc); thực hiện kiểm toán toàn vẹn dữ liệu, kiểm tra hộp giới hạn tọa độ GPS và xử lý khử trùng lặp bản ghi.
+Giai đoạn 1 (Thu thập và Kiểm toán dữ liệu): Tiến hành thu thập 612 thực thể địa lý tại Huế (trong tổng số 8.921 địa điểm toàn quốc) và 44.355 bài nhận xét chuyên sâu tại Huế (trong tổng số 1.698.641 bài nhận xét -- gần 1,70 triệu bài toàn quốc); thực hiện kiểm toán toàn vẹn dữ liệu, kiểm tra hộp giới hạn tọa độ GPS và xử lý khử trùng lặp bản ghi.
 
 Giai đoạn 2 (Xây dựng Đồ thị Tri thức Không gian): Áp dụng công thức khoảng cách mặt cầu Haversine để tính toán ma trận cự ly giữa toàn bộ các cặp thực thể; thiết lập các cạnh liên kết lân cận $\text{NEAR\_BY}$ với ngưỡng $d \le 1,5\text{ km}$; xây dựng các quan hệ phân cấp địa giới $\text{LOCATED\_IN}$ kết nối điểm đến với các phường xã và quận huyện tại thành phố Huế, tạo thành cấu trúc đồ thị gồm 9.525 nút và 90.948 cạnh lưu trữ bằng thư viện NetworkX.
 

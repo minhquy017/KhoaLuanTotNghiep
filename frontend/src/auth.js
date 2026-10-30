@@ -279,44 +279,43 @@ export class AuthController {
 
   loadSavedCredentials(force = false) {
     try {
-      const raw = localStorage.getItem('hue_remembered_credentials');
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      if (data && data.email && data.hash) {
-        const decodedPassword = decodeURIComponent(atob(data.hash));
+      // Dọn dẹp khóa cũ nếu có chứa dữ liệu nhạy cảm
+      if (localStorage.getItem('hue_remembered_credentials')) {
+        localStorage.removeItem('hue_remembered_credentials');
+      }
+      const rememberedEmail = localStorage.getItem('hue_remembered_email');
+      if (rememberedEmail) {
         if (this.authRememberMe) {
           this.authRememberMe.checked = true;
         }
         if (this.authInputEmail && (!this.authInputEmail.value || force)) {
-          this.authInputEmail.value = data.email;
+          this.authInputEmail.value = rememberedEmail;
         }
-        if (this.authInputPassword && (!this.authInputPassword.value || force)) {
-          this.authInputPassword.value = decodedPassword;
-        }
+        // Tuyệt đối không nạp/lưu mật khẩu trong localStorage theo chuẩn an toàn OWASP;
+        // Trình duyệt tự động điền mật khẩu qua thuộc tính autocomplete="current-password"
       }
     } catch (e) {
-      console.warn('Không thể nạp thông tin đăng nhập đã lưu:', e);
+      console.warn('Không thể nạp thông tin email đã ghi nhớ:', e);
     }
   }
 
-  saveSavedCredentials(email, password) {
+  saveSavedCredentials(email) {
     try {
-      const payload = {
-        email,
-        hash: btoa(encodeURIComponent(password)),
-        savedAt: Date.now()
-      };
-      localStorage.setItem('hue_remembered_credentials', JSON.stringify(payload));
+      // Chỉ lưu địa chỉ Email đã ghi nhớ, không lưu mật khẩu trong bộ nhớ cục bộ
+      if (email) {
+        localStorage.setItem('hue_remembered_email', email);
+      }
     } catch (e) {
-      console.warn('Không thể ghi nhớ thông tin đăng nhập:', e);
+      console.warn('Không thể ghi nhớ email:', e);
     }
   }
 
   clearSavedCredentials() {
     try {
+      localStorage.removeItem('hue_remembered_email');
       localStorage.removeItem('hue_remembered_credentials');
     } catch (e) {
-      console.warn('Không thể xóa thông tin đăng nhập:', e);
+      console.warn('Không thể xóa email ghi nhớ:', e);
     }
   }
 
@@ -416,7 +415,7 @@ export class AuthController {
       if (this.authModalMode === 'login') {
         await loginWithEmail(email, password);
         if (this.authRememberMe?.checked) {
-          this.saveSavedCredentials(email, password);
+          this.saveSavedCredentials(email);
         } else {
           this.clearSavedCredentials();
         }
