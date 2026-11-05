@@ -1,0 +1,23 @@
+# Chặn hoàn toàn tài liệu, đề cương, báo cáo
+*.docx
+*.pdf
+*.pptx
+*.txt
+docs/
+**/docs/
+
+# Chặn file cấu hình bảo mật cá nhân
+*.env
+*.pem
+*.key
+firebase.json
+**/firebase.json
+
+# Chặn thư mục nặng & code nhạy cảm
+node_modules/
+dist/
+build/
+experiments/
+notebooks/
+*.jpg
+*.png

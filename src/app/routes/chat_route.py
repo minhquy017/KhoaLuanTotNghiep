@@ -4,7 +4,7 @@ ROUTER: TRỢ LÝ HỎI ĐÁP DU LỊCH (CHAT ROUTE)
 """
 from fastapi import APIRouter, HTTPException
 from src.app.schemas.chat_schema import ChatRequest, ChatResponse
-from src.rag.agent_graph import get_tourism_agent, OLLAMA_MODEL
+from src.rag.agent_graph import get_tourism_agent, next_session_context, OLLAMA_MODEL
 
 router = APIRouter(prefix="/api/v1", tags=["Trợ lý Hỏi đáp (Chatbot)"])
 agent = get_tourism_agent()
@@ -43,9 +43,21 @@ def chat_assistant(req: ChatRequest):
             "route_taken": "local_knowledge",
             "formatted_context": "",
             "final_answer": "",
-            "graph_trace": []
+            "graph_trace": [],
+            "user_lat": req.user_lat,
+            "user_lng": req.user_lng,
+            # Trí nhớ phiên chat đa lượt
+            "session_id": req.session_id,
+            "history": req.history or [],
+            "session_context": req.session_context,
+            "resolved_query": None,
+            "anaphora": None
         }
         res = agent.invoke(initial_state)
+
+        # Câu hỏi đã giải đồng tham chiếu ("Từ đó đi Đại Nội" -> "Từ Chùa Thiên Mụ đi Đại Nội"),
+        # dùng thay cho req.query trong mọi heuristic phía dưới để đồng bộ với Agent Graph
+        effective_query = res.get("resolved_query") or query_text
 
         # 1. Trích xuất các địa danh thực sự được LLM nhắc tên trong câu trả lời (Bold text)
         import re
@@ -96,7 +108,7 @@ def chat_assistant(req: ChatRequest):
         seen_ids = set()
 
         # Nếu hỏi về ẩm thực / quán ăn thuần túy (không phải có ảnh di tích hay lộ trình di chuyển), ưu tiên các quán ăn
-        is_food_query = any(w in req.query.lower() for w in ["quán", "quan", "ẩm thực", "ăn gì", "an gi", "món", "mon"]) and not req.image_base64
+        is_food_query = any(w in effective_query.lower() for w in ["quán", "quan", "ẩm thực", "ăn gì", "an gi", "món", "mon"]) and not req.image_base64
         nav_info = res.get("nav_route_info")
         if is_food_query and not nav_info and len(all_poi_candidates) > 2:
             food_candidates = [p for p in all_poi_candidates if any(c in (p.get("category") or "").lower() for c in ["restaurant", "ẩm thực", "quán", "cafe", "cà phê"])]
@@ -122,7 +134,7 @@ def chat_assistant(req: ChatRequest):
                 break
 
         # Nhận diện ý định Chỉ đường / Điều hướng (Navigation Intent)
-        norm_q = req.query.lower()
+        norm_q = effective_query.lower()
         nav_keywords = [
             "chỉ đường", "chi duong", "đường đi", "duong di", "đi đến", "di den", 
             "làm sao để đi", "lam sao de di", "cách đi", "cach di", "dẫn đường", "dan duong",
@@ -184,6 +196,7 @@ def chat_assistant(req: ChatRequest):
                     "is_navigation": True,
                     "origin": origin_place,
                     "destination": {
+                        "node_id": str(dest_place.get("node_id") or ""),
                         "name": dest_place["name"],
                         "category": dest_place.get("category", "Attraction"),
                         "address": dest_place.get("address", "Thành phố Huế"),
@@ -231,12 +244,16 @@ def chat_assistant(req: ChatRequest):
 
         if not trace:
             trace = [
-                {"step": "entity_extraction", "icon": "🔍", "label": "Phân tích Ý định & Không gian", "detail": f"Định vị ngữ cảnh: '{req.query[:45]}...'", "status": "done"},
+                {"step": "entity_extraction", "icon": "🔍", "label": "Phân tích Ý định & Không gian", "detail": f"Định vị ngữ cảnh: '{effective_query[:45]}...'", "status": "done"},
                 {"step": "kg_retrieval", "icon": "🕸️", "label": "Truy vấn Đồ thị Tri thức Cố đô", "detail": f"Khớp {len(clean_places)} địa điểm lân cận", "count": len(clean_places), "status": "found"},
                 {"step": "vector_retrieval", "icon": "🧠", "label": "Truy xuất ChromaDB Reviews", "detail": "Trích xuất kinh nghiệm & đánh giá thực tế", "status": "found"},
                 {"step": "confidence_scoring", "icon": "⚡", "label": "Tính Composite Confidence", "detail": f"Độ tin cậy tổng hợp = {conf:.2f}", "score": conf, "status": "high"},
                 {"step": "llm_generation", "icon": "🤖", "label": f"Sinh phản hồi ({OLLAMA_MODEL.upper()} GPU)", "detail": "Mô hình ngôn ngữ tổng hợp trên GPU T4", "status": "done"}
             ]
+
+        # 4. Cập nhật mốc ngữ cảnh phiên chat (điểm đến chỉ đường > địa danh trong ảnh > địa danh được hỏi)
+        nav_dest_id = ((nav_payload or {}).get("destination") or {}).get("node_id") or None
+        session_context = next_session_context(res, session_id=req.session_id, nav_destination_id=nav_dest_id)
 
         return ChatResponse(
             status="success",
@@ -246,7 +263,8 @@ def chat_assistant(req: ChatRequest):
             confidence_score=conf,
             matched_places=clean_places,
             navigation=nav_payload,
-            graph_trace=trace
+            graph_trace=trace,
+            session_context=session_context
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Lỗi xử lý câu hỏi: {str(e)}")

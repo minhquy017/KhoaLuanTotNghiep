@@ -11,6 +11,10 @@ Cơ sở dữ liệu vector: ChromaDB Collection `hue_landmarks_visual` (HNSW Co
 
 import os
 import sys
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
 import json
 import time
 import torch
@@ -30,6 +34,22 @@ CHROMA_DIR = os.path.join(PROJECT_ROOT, "data", "processed", "chroma_db")
 METADATA_FILE = os.path.join(PROJECT_ROOT, "data", "processed", "visual_database", "landmark_image_index.json")
 COLLECTION_NAME = "hue_landmarks_visual"
 CLIP_MODEL_NAME = "clip-ViT-B-32"
+
+
+def clean_incomplete_hnsw_segments(chroma_dir: str):
+    """Dọn dẹp các file index_metadata.pickle mồ côi nếu có segment bị ngắt dở dang."""
+    if not os.path.exists(chroma_dir):
+        return
+    for item in os.listdir(chroma_dir):
+        sub = os.path.join(chroma_dir, item)
+        if os.path.isdir(sub):
+            files = os.listdir(sub)
+            bin_files = [f for f in files if f.endswith(".bin")]
+            if "index_metadata.pickle" in files and len(bin_files) == 0:
+                try:
+                    os.remove(os.path.join(sub, "index_metadata.pickle"))
+                except Exception:
+                    pass
 
 
 def build_visual_vector_index():
@@ -54,6 +74,7 @@ def build_visual_vector_index():
     print(f"✅ Tải CLIP hoàn tất trong {time.time() - start_load:.2f}s!", flush=True)
 
     # 2. Khởi tạo ChromaDB
+    clean_incomplete_hnsw_segments(CHROMA_DIR)
     print(f"📁 Kết nối ChromaDB tại: {CHROMA_DIR}...", flush=True)
     chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
     

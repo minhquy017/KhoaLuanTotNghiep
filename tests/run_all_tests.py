@@ -29,6 +29,10 @@ from tests.test_graph_retriever import TestGraphRetriever
 from tests.test_itinerary_planner import TestItineraryPlanner
 from tests.test_vector_and_rag import TestVectorAndRag
 from tests.test_api_endpoints import TestApiEndpoints
+from tests.test_session_memory import (
+    TestAnaphoraResolution, TestAnaphoraNegativeCases, TestSessionContextLifecycle,
+    TestHistoryFormatting, TestNodeOneIntegration,
+)
 
 
 def run_comprehensive_test_suite():
@@ -43,6 +47,11 @@ def run_comprehensive_test_suite():
         ("3. Lập Lịch Trình (Spatial Planner)", unittest.TestLoader().loadTestsFromTestCase(TestItineraryPlanner)),
         ("4. Vector & Agentic RAG (ChromaDB)", unittest.TestLoader().loadTestsFromTestCase(TestVectorAndRag)),
         ("5. RESTful API Gateway (FastAPI)", unittest.TestLoader().loadTestsFromTestCase(TestApiEndpoints)),
+        ("6. Trí nhớ Phiên chat Đa lượt (Session Memory)", unittest.TestSuite([
+            unittest.TestLoader().loadTestsFromTestCase(tc) for tc in (
+                TestAnaphoraResolution, TestAnaphoraNegativeCases, TestSessionContextLifecycle,
+                TestHistoryFormatting, TestNodeOneIntegration)
+        ])),
     ]
 
     total_tests = 0

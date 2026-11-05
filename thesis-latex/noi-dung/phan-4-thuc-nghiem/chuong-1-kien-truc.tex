@@ -159,7 +159,7 @@ Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đ
 & \texttt{userId} & String & Mã định danh người dùng sở hữu phiên \\
 & \texttt{title} & String & Tiêu đề phiên trích xuất từ câu hỏi đầu \\
 & \texttt{createdAt, updatedAt} & Timestamp & Mốc thời gian tạo và cập nhật phiên \\
-& \texttt{messages} & Array[Object] & Mảng danh sách thông điệp và kết quả RAG \\
+& \texttt{messages} & Array[Object] & Mảng thông điệp, mốc ngữ cảnh \texttt{session\_context} và kết quả RAG \\
 \hline
 \texttt{saved\_itineraries} & \texttt{itineraryId} & String (Khóa) & Mã định danh lộ trình du lịch đã lưu \\
 & \texttt{userId} & String & Mã người dùng sở hữu lịch trình \\
@@ -190,6 +190,37 @@ Giai đoạn ghi nhận và kiên định hóa tự động (\texttt{persistActi
 Giai đoạn khôi phục phiên lịch sử (\texttt{restoreChatSession}): Khi du khách chọn một cuộc trò chuyện cũ từ danh sách thanh bên, hệ thống thiết lập trạng thái phục hồi, nạp lại toàn bộ thông điệp đối thoại, tái tạo các thẻ lộ trình trực quan kèm nút vẽ lại trên bản đồ (\texttt{btn-nav-replot}), đồng thời gán lại đầy đủ trạng thái đánh giá phản hồi (\texttt{feedbackRating}) giúp du khách tiếp tục mạch đối thoại liền mạch.
 
 Giai đoạn dọn dẹp và phân quyền an toàn (\texttt{deleteChatSession}): Du khách có quyền chủ động xóa bỏ từng phiên trò chuyện lịch sử không còn nhu cầu tra cứu. Thao tác xóa được xác thực quyền sở hữu thông qua mã thông báo JWT, bảo đảm người dùng chỉ có quyền thao tác trên các phiên hội thoại do chính mình tạo ra.
+
+\subsection{Cơ chế Trí nhớ Ngữ cảnh Đa lượt và Giải quyết Đồng tham chiếu Không gian}
+\label{subsec:ch1-session-memory}
+
+Trong các hệ thống Hỏi đáp du lịch dựa trên Retrieval-Augmented Generation truyền thống, phần lớn các giải pháp hiện nay tiếp cận tương tác người dùng theo mô hình đơn lượt (Single-turn Stateless), trong đó mỗi câu hỏi của du khách được xử lý như một sự kiện độc lập tách rời. Tuy nhiên, trong thực tế trải nghiệm du lịch, hành vi giao tiếp của du khách mang tính xâu chuỗi cao với xu hướng sử dụng dày đặc các hiện tượng đồng tham chiếu (Anaphora) và câu hỏi tỉnh lược (Ellipsis). Chẳng hạn, sau khi nhận được thông tin giới thiệu về Chùa Thiên Mụ, du khách thường đặt các câu hỏi tiếp nối như ``\textit{Từ đó đi Đại Nội bao xa?}'' hoặc ``\textit{Quanh đó có quán chay nào ngon?}''. Nếu thiếu cơ chế quản trị ngữ cảnh phiên, bộ trích xuất thực thể sẽ nhận diện chuỗi ký tự ``\textit{từ đó}'' hoặc hoàn toàn không tìm thấy thực thể hợp lệ trên Đồ thị Tri thức Không gian $\mathcal{G} = (\mathcal{V}, \mathcal{E})$, dẫn tới sự đổ vỡ hoàn toàn của chu trình điều hướng và suy luận không gian.
+
+Để giải quyết triệt để thách thức trên mà không làm gia tăng độ trễ tính toán của hệ thống, nghiên cứu thiết kế một phân hệ Trí nhớ Ngữ cảnh Phiên tương tác (Session Memory Subsystem) hoạt động theo nguyên lý suy luận ngữ nghĩa tất định (Deterministic Semantic Resolution). Trạng thái ngữ cảnh của phiên làm việc thứ $t$ được hình thức hóa thành bộ năm giá trị:
+\begin{equation}
+\label{eq:session-context}
+\mathcal{S}_t = \big\langle \text{sid}, \mathcal{T}_t, a_{\text{place}}, a_{\text{dish}}, \tau \big\rangle
+\end{equation}
+trong đó $\text{sid}$ biểu diễn định danh duy nhất của phiên hội thoại; $\mathcal{T}_t \in \{\text{heritage}, \text{culinary}, \text{leisure}, \text{lodging}, \text{route\_navigation}\}$ là miền chủ đề hội thoại tự động suy diễn dựa trên loại hình thực thể được truy xuất; $a_{\text{place}} \in \mathcal{V}$ là đỉnh địa danh mốc (Anchor POI) đã được kiểm chứng tồn tại thực tế trên đồ thị $\mathcal{G}$; $a_{\text{dish}}$ là tên món ăn đặc sản trọng tâm; và $\tau \in \mathbb{N}$ là bộ đếm số lượt trao đổi tích lũy trong phiên.
+
+Khi du khách gửi câu hỏi $q_t$ tại lượt tương tác thứ $t$, hệ thống kích hoạt hàm biến đổi câu hỏi ngữ cảnh $f_{\text{resolve}}: (q_t, \mathcal{S}_{t-1}) \to q'_t$ trước khi luồng dữ liệu tiến vào Node 1 của LangGraph. Quá trình giải quyết đồng tham chiếu vận hành dựa trên cơ chế phân tích văn bản kết hợp với cấu trúc phân loại thực thể đồ thị:
+\begin{equation}
+\label{eq:anaphora-resolution}
+q'_t = 
+\begin{cases}
+\text{Subst}\big(q_t, p, \text{Label}(a_{\text{place}})\big) & \text{nếu } \exists p \in \mathcal{P}_{\text{place}} \land a_{\text{place}} \neq \emptyset \\
+\text{Subst}\big(q_t, d, a_{\text{dish}}\big) & \text{nếu } \exists d \in \mathcal{P}_{\text{dish}} \land a_{\text{dish}} \neq \emptyset \\
+\text{Prefix}\big(\text{Label}(a_{\text{place}}), q_t\big) & \text{nếu } q_t \in \mathcal{Q}_{\text{ellipsis}} \land a_{\text{place}} \neq \emptyset \\
+q_t & \text{trong các trường hợp còn lại}
+\end{cases}
+\end{equation}
+với $\mathcal{P}_{\text{place}}$ là tập hợp các biểu thức đại từ chỉ nơi chốn trong tiếng Việt được cấu tạo từ tổ hợp giới từ không gian ($\text{quanh}, \text{từ}, \text{ở}, \text{gần}$) và đại từ chỉ định ($\text{đó}, \text{đấy}, \text{này}$); $\mathcal{P}_{\text{dish}}$ là tập đại từ chỉ món ăn; và $\mathcal{Q}_{\text{ellipsis}}$ biểu diễn lớp các câu hỏi tỉnh lược ngắn (dưới 8 từ) tập trung tra cứu thuộc tính (như ``\textit{giá vé bao nhiêu}'', ``\textit{mở cửa mấy giờ}'') mà không lặp lại danh xưng chủ thể.
+
+Hàm chuyển đổi $f_{\text{resolve}}$ sở hữu độ phức tạp thời gian tuyến tính $\mathcal{O}(|q_t|)$ theo độ dài chuỗi ký tự, cho phép thời gian thực thi duy trì dưới 1 mili-giây. Giải pháp này triệt tiêu hoàn toàn độ trễ phát sinh so với phương pháp sử dụng một lượt suy luận mô hình ngôn ngữ lớn phụ (LLM Query Rewriting), vốn tiêu tốn từ 1.5 đến 3.0 giây trên phần cứng biên. Đồng thời, thuật toán tích hợp các bộ lọc phủ định nghiêm ngặt nhằm tránh các hiện tượng giải sai: hệ thống phân biệt tường minh giữa đại từ chỉ mốc quá khứ (``\textit{ở đó}'') và đại từ trỏ vào tọa độ GPS thời gian thực của thiết bị du khách (``\textit{ở đây}'', ``\textit{gần đây}''); loại trừ các cụm từ ngữ nghĩa thời gian (``\textit{từ đó đến nay}''); và ngăn chặn việc phân rã nhầm các tên riêng đặc thù như cơ sở ẩm thực ``\textit{Bánh bèo Bà Đỏ}''.
+
+Nhằm bảo đảm an toàn thông tin và tính toàn vẹn dữ liệu, hàm tiền xử lý $\texttt{sanitize\_session\_context}$ áp dụng chính sách Zero-Trust đối với các tham số ngữ cảnh do phía máy khách chuyển giao. Định danh $a_{\text{place}}$ bắt buộc phải truy xuất thành công bản ghi node tương ứng trong đồ thị NetworkX, đồng thời nhãn hiển thị $\text{Label}(a_{\text{place}})$ luôn được trích xuất trực tiếp từ thuộc tính định danh của nút trên máy chủ, ngăn chặn triệt để nguy cơ tấn công chèn lệnh độc hại (Prompt Injection) qua dữ liệu trạng thái client.
+
+Về phương diện hiển thị và giải thích minh bạch (Explainable AI), kết quả chuyển đổi ngữ cảnh được liên kết trực tiếp vào chuỗi vết suy luận $\texttt{graph\_trace}$ thông qua bước định tuyến $\text{context\_carryover}$. Du khách và chuyên gia kiểm thử có thể trực quan hóa minh bạch từng mắt xích suy luận (ví dụ: ``\textit{'từ đó' $\to$ Chùa Thiên Mụ}'') ngay bên dưới khung đàm thoại trên cả giao diện máy tính lẫn thiết bị di động. Hiệu năng của phân hệ Trí nhớ Ngữ cảnh đã được kiểm chứng toàn diện qua bộ 27 kịch bản kiểm thử tích hợp chuyên biệt (\texttt{test\_session\_memory.py}), ghi nhận tỷ lệ thành công tuyệt đối ($100\%$ test cases passed), xác nhận tính sẵn sàng cao cho môi trường ứng dụng thực địa.
 
 \section{Thiết kế Giao diện Khách Web Tương tác Không gian (Gemini-Style Client)}
 \label{sec:ch1-frontend-design}

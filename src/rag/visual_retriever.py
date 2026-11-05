@@ -26,6 +26,22 @@ COLLECTION_NAME = "hue_landmarks_visual"
 CLIP_MODEL_NAME = "clip-ViT-B-32"
 
 
+def clean_incomplete_hnsw_segments(chroma_dir: str):
+    """Dọn dẹp các file index_metadata.pickle mồ côi nếu có segment bị ngắt."""
+    if not os.path.exists(chroma_dir):
+        return
+    for item in os.listdir(chroma_dir):
+        sub = os.path.join(chroma_dir, item)
+        if os.path.isdir(sub):
+            files = os.listdir(sub)
+            bin_files = [f for f in files if f.endswith(".bin")]
+            if "index_metadata.pickle" in files and len(bin_files) == 0:
+                try:
+                    os.remove(os.path.join(sub, "index_metadata.pickle"))
+                except Exception:
+                    pass
+
+
 class VisualRetriever:
     _instance = None
 
@@ -50,6 +66,8 @@ class VisualRetriever:
         if not os.path.exists(self.chroma_dir):
             print(f"⚠️ [VisualRetriever] Chưa phát hiện ChromaDB tại: {self.chroma_dir}")
             return
+
+        clean_incomplete_hnsw_segments(self.chroma_dir)
 
         try:
             self.chroma_client = chromadb.PersistentClient(path=self.chroma_dir)

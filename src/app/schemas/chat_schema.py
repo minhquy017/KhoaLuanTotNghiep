@@ -13,6 +13,17 @@ class ChatRequest(BaseModel):
     user_lng: Optional[float] = Field(None, examples=[107.5905])
     preferences: Optional[Dict[str, Any]] = Field(None, description="Hồ sơ gu du lịch cá nhân hóa của du khách")
     image_base64: Optional[str] = Field(None, description="Dữ liệu ảnh dạng chuỗi Base64 (hỗ trợ JPG/PNG) để AI nhận diện thị giác")
+    # --- Trí nhớ phiên chat đa lượt ---
+    session_id: Optional[str] = Field(None, max_length=80, examples=["session_1741165890"])
+    history: Optional[List[Dict[str, Any]]] = Field(
+        None,
+        max_length=12,
+        description="Các tin nhắn gần nhất [{role: 'user'|'assistant', text}] (server chỉ dùng 2 lượt cuối, đã cắt gọn)"
+    )
+    session_context: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Mốc ngữ cảnh do server trả về ở lượt trước (anchor_place_id, anchor_dish, topic_domain, turn_count)"
+    )
 
 
 class PlaceItem(BaseModel):
@@ -34,3 +45,4 @@ class ChatResponse(BaseModel):
     matched_places: List[Dict[str, Any]]
     navigation: Optional[Dict[str, Any]] = None
     graph_trace: Optional[List[Dict[str, Any]]] = None  # XAI: chuỗi suy luận minh bạch
+    session_context: Optional[Dict[str, Any]] = None    # Mốc ngữ cảnh mới, client gửi lại ở lượt sau

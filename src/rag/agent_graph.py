@@ -53,6 +53,12 @@ from src.graph.spatial_indexer import haversine_distance
 from src.rag.vector_retriever import get_vector_retriever
 from src.rag.visual_retriever import get_visual_retriever
 from src.rag.web_search_tool import get_web_search_tool
+from src.rag.session_memory import (
+    resolve_anaphora,
+    sanitize_session_context,
+    build_session_context,
+    format_history_for_prompt,
+)
 
 
 # =============================================================================
@@ -79,6 +85,14 @@ class TourismAgentState(TypedDict):
     final_answer: str
     graph_trace: List[Dict[str, Any]]     # XAI: chuỗi suy luận minh bạch của đồ thị
     nav_route_info: Optional[Dict[str, Any]]
+    user_lat: Optional[float]             # Vị trí GPS du khách (điểm xuất phát mặc định khi chỉ đường)
+    user_lng: Optional[float]
+    # --- Trí nhớ phiên chat đa lượt (Session Memory) ---
+    session_id: Optional[str]
+    history: Optional[List[Dict[str, Any]]]          # Tối đa 2 lượt hỏi-đáp gần nhất (chỉ văn bản)
+    session_context: Optional[Dict[str, Any]]        # Mốc ngữ cảnh: anchor_place_id / anchor_dish / topic
+    resolved_query: Optional[str]                    # Câu hỏi sau khi giải đồng tham chiếu (trước khi ghép ngữ cảnh ảnh)
+    anaphora: Optional[Dict[str, Any]]               # Kết quả giải nghĩa đại từ (nếu có)
 
 
 # =============================================================================
@@ -155,8 +169,239 @@ def recognize_image_entity(image_base64: str, user_query: str = "") -> Dict[str,
 
 
 # =============================================================================
+# 2.2 TỪ ĐIỂN BÍ DANH ĐỊA DANH & MÓN ĂN (dùng chung cho Node 1, Session Memory, Chat Route)
+# =============================================================================
+# Bí danh / tên gọi phổ biến (không dấu) -> node_id trong KG, gồm cả cụm di tích phụ thuộc
+PLACE_ALIAS_DICT = {
+    "dai noi": "place_8875",
+    "dai noi hue": "place_8875",
+    "kinh thanh": "place_8875",
+    "kinh thanh hue": "place_8875",
+    "hoang thanh": "place_8875",
+    "hoang thanh hue": "place_8875",
+    "ngo mon": "place_8875",
+    "cong ngo mon": "place_8875",
+    "ngo mon hue": "place_8875",
+    "meridian gate": "place_8875",
+    "ky dai": "place_8875",
+    "cot co": "place_8875",
+    "dien thai hoa": "place_8875",
+    "thai hoa": "place_8875",
+    "the mieu": "place_8875",
+    "hien lam cac": "place_8875",
+    "cuu dinh": "place_8875",
+    "tu cam thanh": "place_8875",
+    "chua thien mu": "place_8876",
+    "thien mu": "place_8876",
+    "thap phuoc duyen": "place_8876",
+    "phuoc duyen": "place_8876",
+    "linh mu": "place_8876",
+    "chua linh mu": "place_8876",
+    "song huong": "place_8882",
+    "ben thuyen toa kham": "place_8882",
+    "toa kham": "place_8882",
+    "cau trang tien": "place_8919",
+    "cau truong tien": "place_8919",
+    "truong tien": "place_8919",
+    "trang tien": "place_8919",
+    "cho dong ba": "place_8920",
+    "dong ba": "place_8920",
+    "lang khai dinh": "place_8879",
+    "khai dinh": "place_8879",
+    "ung lang": "place_8879",
+    "lang tu duc": "place_8880",
+    "tu duc": "place_8880",
+    "khiem lang": "place_8880",
+    "lang minh mang": "place_8878",
+    "minh mang": "place_8878",
+    "hieu lang": "place_8878",
+    "lang dong khanh": "place_8881",
+    "dong khanh": "place_8881",
+    "tu lang": "place_8881",
+    "bach ma": "place_8877",
+    "cau ngoi thanh toan": "place_8885",
+    "thanh toan": "place_8885",
+    # Các bãi biển danh tiếng của Thừa Thiên Huế
+    "thuan an": "beach_thuan_an",
+    "bien thuan an": "beach_thuan_an",
+    "bai bien thuan an": "beach_thuan_an",
+    "canh duong": "beach_canh_duong",
+    "bien canh duong": "beach_canh_duong",
+    "bai bien canh duong": "beach_canh_duong",
+    "hai duong": "beach_hai_duong",
+    "bien hai duong": "beach_hai_duong",
+    "bai bien hai duong": "beach_hai_duong",
+    "lang co": "beach_lang_co",
+    "bien lang co": "beach_lang_co",
+    "vinh lang co": "beach_lang_co",
+    "dam lap an": "beach_lang_co",
+    "deo hai van": "place_8895",
+    "hai van": "place_8895",
+    # Các danh thắng nổi tiếng ở bờ Nam và ngoại ô Huế
+    "doi vong canh": "custom_attr_02",
+    "vong canh": "custom_attr_02",
+    "lang gia long": "custom_attr_01",
+    "gia long": "custom_attr_01",
+    "lang huong thuy xuan": "custom_attr_03",
+    "lang huong": "custom_attr_03",
+    "thuy xuan": "custom_attr_03",
+    "dien hon chen": "custom_attr_04",
+    "hon chen": "custom_attr_04",
+    "huyen khong son thuong": "custom_attr_05",
+    "chua huyen khong": "custom_attr_05",
+    "doi thien an": "custom_local_21",
+    "thien an": "custom_local_21",
+    "cung an dinh": "custom_local_31",
+    "an dinh": "custom_local_31",
+    "ho thuy tien": "custom_local_21",
+    "chua tu dam": "custom_local_30",
+    "tu dam": "custom_local_30",
+    "con hen": "custom_attr_con_hen",
+    "dao con hen": "custom_attr_con_hen",
+    "vi da": "custom_attr_con_hen",
+    "banh beo ba do": "custom_rest_04",
+    "ba do": "custom_rest_04",
+    "com hen hoa dong": "custom_rest_02",
+    "hoa dong": "custom_rest_02",
+    # Các địa điểm bản địa tinh tuyển mới bổ sung
+    "banh ep gia di": "custom_local_17",
+    "gia di": "custom_local_17",
+    "banh mi o tho": "custom_local_13",
+    "o tho": "custom_local_13",
+    "com am phu": "custom_local_18",
+    "banh canh di huong": "custom_local_25",
+    "di huong": "custom_local_25",
+    "bun bo mu keo": "custom_local_26",
+    "mu keo": "custom_local_26",
+    "nem lui ba ty": "custom_local_27",
+    "ba ty": "custom_local_27",
+    "che mo ton dich": "custom_local_29",
+    "mo ton dich": "custom_local_29",
+    "lang thieu tri": "custom_local_33",
+    "thieu tri": "custom_local_33",
+    "ca phe mat biec": "custom_local_15",
+    "mat biec": "custom_local_15",
+    "banh uot huyen anh": "custom_local_08",
+    "huyen anh": "custom_local_08",
+    "chua dieu de": "custom_local_07",
+    "dieu de": "custom_local_07",
+    "gac trinh": "custom_local_16",
+    "ca phe gac trinh": "custom_local_16",
+    "com hen thuy": "custom_local_01",
+    "banh beo o le": "custom_local_02"
+}
+
+# Bí danh món đặc sản (không dấu) -> tên món chuẩn
+DISH_ALIASES = {
+    "bun bo": "Bún bò Huế",
+    "banh beo": "Bánh bèo",
+    "banh nam": "Bánh nậm",
+    "banh loc": "Bánh bột lọc",
+    "banh bot loc": "Bánh bột lọc",
+    "com hen": "Cơm hến",
+    "bun hen": "Bún hến",
+    "che heo quay": "Chè bột lọc bọc heo quay",
+    "che bot loc": "Chè bột lọc bọc heo quay",
+    "banh khoai": "Bánh khoái",
+    "nem lui": "Nem lụi",
+    "banh canh": "Bánh canh Nam Phổ",
+    "che bap": "Chè bắp",
+    "me xung": "Mè xửng",
+    "banh ep": "Bánh ép",
+    "banh mi bot loc": "Bánh mì bột lọc",
+    "banh uot thit nuong": "Bánh ướt thịt nướng",
+    "com am phu": "Cơm âm phủ",
+    "com bay mau": "Cơm âm phủ"
+}
+
+
+# =============================================================================
 # 3. NODE 1: TRUY XUẤT ĐỒ THỊ TRI THỨC KHÔNG GIAN (KG RETRIEVAL)
 # =============================================================================
+def lookup_place_by_id(place_id: str) -> Optional[Dict[str, Any]]:
+    """Tra cứu node địa điểm theo ID CHÍNH XÁC (không fuzzy) — dùng để kiểm tra anchor client gửi lên."""
+    if not place_id or place_id not in graph_retriever.G:
+        return None
+    data = graph_retriever.G.nodes[place_id]
+    if data.get("node_type") in ("Dish", "Province"):
+        return None
+    return graph_retriever.get_place(place_id)
+
+
+_FORMAL_DISH_NAMES = {strip_accents(v): v for v in DISH_ALIASES.values()}
+
+
+def validate_dish_name(name: str) -> Optional[str]:
+    """Chỉ chấp nhận tên món có trong từ điển đặc sản hoặc trong KG."""
+    norm = strip_accents(name or "")
+    if norm in _FORMAL_DISH_NAMES:
+        return _FORMAL_DISH_NAMES[norm]
+    node_id = graph_retriever._dish_name_index.get(norm)
+    if node_id:
+        return graph_retriever.G.nodes[node_id].get("name")
+    return None
+
+
+def resolve_session_query(
+    query: str,
+    raw_session_context: Optional[Dict[str, Any]],
+    has_image: bool = False,
+):
+    """Chuẩn hóa session_context + giải đồng tham chiếu cho câu hỏi hiện tại. Trả về (ctx, resolution)."""
+    ctx = sanitize_session_context(raw_session_context, lookup_place_by_id, validate_dish_name)
+    resolution = resolve_anaphora(
+        query,
+        ctx,
+        has_image=has_image,
+        place_aliases=PLACE_ALIAS_DICT.keys(),
+        dish_keywords=DISH_ALIASES.keys(),
+    )
+    return ctx, resolution
+
+
+def next_session_context(
+    result_state: Dict[str, Any],
+    session_id: Optional[str] = None,
+    nav_destination_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Cập nhật mốc ngữ cảnh sau một lượt hỏi đáp. Ưu tiên mốc địa danh:
+    1. Điểm ĐẾN của lộ trình chỉ đường (sau "A → B", "ở đó" ở lượt sau là B)
+    2. Địa danh nhận diện từ ảnh
+    3. Địa danh đầu tiên được bóc tách từ câu hỏi (đã gồm cả mốc kế thừa từ đại từ)
+    4. Câu hỏi về món ăn: quán đầu tiên được gợi ý (để "quán đó" ở lượt sau có nghĩa)
+    """
+    prev = result_state.get("session_context")
+    matched = result_state.get("matched_places") or []
+    nav_info = result_state.get("nav_route_info") or {}
+    target_dish = result_state.get("target_dish")
+
+    candidates = [
+        nav_destination_id or (nav_info.get("destination") or {}).get("node_id"),
+        matched[0].get("node_id") if matched and (result_state.get("image_detected") or result_state.get("visual_matches")) else None,
+        result_state.get("target_place"),
+    ]
+    if target_dish and matched:
+        candidates.append(matched[0].get("node_id"))
+
+    anchor_id, anchor_place = None, None
+    for cid in candidates:
+        place = lookup_place_by_id(str(cid)) if cid else None
+        if place:
+            anchor_id, anchor_place = str(cid), place
+            break
+
+    return build_session_context(
+        prev,
+        session_id=session_id,
+        anchor_place_id=anchor_id,
+        anchor_place=anchor_place,
+        dish=target_dish,
+        reset_place=bool(target_dish and not anchor_id),
+        is_navigation=bool(nav_destination_id or nav_info.get("destination")),
+    )
+
+
 def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     query = state.get("query", "")
     trace_steps = state.get("graph_trace", [])
@@ -167,124 +412,15 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     vis_matched_place_id = None
 
     # 0. Từ điển bí danh / tên gọi phổ biến và cụm di tích phụ thuộc (dùng chung cho cả ảnh và văn bản)
-    alias_dict = {
-        "dai noi": "place_8875",
-        "dai noi hue": "place_8875",
-        "kinh thanh": "place_8875",
-        "kinh thanh hue": "place_8875",
-        "hoang thanh": "place_8875",
-        "hoang thanh hue": "place_8875",
-        "ngo mon": "place_8875",
-        "cong ngo mon": "place_8875",
-        "ngo mon hue": "place_8875",
-        "meridian gate": "place_8875",
-        "ky dai": "place_8875",
-        "cot co": "place_8875",
-        "dien thai hoa": "place_8875",
-        "thai hoa": "place_8875",
-        "the mieu": "place_8875",
-        "hien lam cac": "place_8875",
-        "cuu dinh": "place_8875",
-        "tu cam thanh": "place_8875",
-        "chua thien mu": "place_8876",
-        "thien mu": "place_8876",
-        "thap phuoc duyen": "place_8876",
-        "phuoc duyen": "place_8876",
-        "linh mu": "place_8876",
-        "chua linh mu": "place_8876",
-        "song huong": "place_8882",
-        "ben thuyen toa kham": "place_8882",
-        "toa kham": "place_8882",
-        "cau trang tien": "place_8919",
-        "cau truong tien": "place_8919",
-        "truong tien": "place_8919",
-        "trang tien": "place_8919",
-        "cho dong ba": "place_8920",
-        "dong ba": "place_8920",
-        "lang khai dinh": "place_8879",
-        "khai dinh": "place_8879",
-        "ung lang": "place_8879",
-        "lang tu duc": "place_8880",
-        "tu duc": "place_8880",
-        "khiem lang": "place_8880",
-        "lang minh mang": "place_8878",
-        "minh mang": "place_8878",
-        "hieu lang": "place_8878",
-        "lang dong khanh": "place_8881",
-        "dong khanh": "place_8881",
-        "tu lang": "place_8881",
-        "bach ma": "place_8877",
-        "cau ngoi thanh toan": "place_8885",
-        "thanh toan": "place_8885",
-        # Các bãi biển danh tiếng của Thừa Thiên Huế
-        "thuan an": "beach_thuan_an",
-        "bien thuan an": "beach_thuan_an",
-        "bai bien thuan an": "beach_thuan_an",
-        "canh duong": "beach_canh_duong",
-        "bien canh duong": "beach_canh_duong",
-        "bai bien canh duong": "beach_canh_duong",
-        "hai duong": "beach_hai_duong",
-        "bien hai duong": "beach_hai_duong",
-        "bai bien hai duong": "beach_hai_duong",
-        "lang co": "beach_lang_co",
-        "bien lang co": "beach_lang_co",
-        "vinh lang co": "beach_lang_co",
-        "dam lap an": "beach_lang_co",
-        "deo hai van": "place_8895",
-        "hai van": "place_8895",
-        # Các danh thắng nổi tiếng ở bờ Nam và ngoại ô Huế
-        "doi vong canh": "custom_attr_02",
-        "vong canh": "custom_attr_02",
-        "lang gia long": "custom_attr_01",
-        "gia long": "custom_attr_01",
-        "lang huong thuy xuan": "custom_attr_03",
-        "lang huong": "custom_attr_03",
-        "thuy xuan": "custom_attr_03",
-        "dien hon chen": "custom_attr_04",
-        "hon chen": "custom_attr_04",
-        "huyen khong son thuong": "custom_attr_05",
-        "chua huyen khong": "custom_attr_05",
-        "doi thien an": "custom_local_21",
-        "thien an": "custom_local_21",
-        "cung an dinh": "custom_local_31",
-        "an dinh": "custom_local_31",
-        "ho thuy tien": "custom_local_21",
-        "chua tu dam": "custom_local_30",
-        "tu dam": "custom_local_30",
-        "con hen": "custom_attr_con_hen",
-        "dao con hen": "custom_attr_con_hen",
-        "vi da": "custom_attr_con_hen",
-        "banh beo ba do": "custom_rest_04",
-        "ba do": "custom_rest_04",
-        "com hen hoa dong": "custom_rest_02",
-        "hoa dong": "custom_rest_02",
-        # Các địa điểm bản địa tinh tuyển mới bổ sung
-        "banh ep gia di": "custom_local_17",
-        "gia di": "custom_local_17",
-        "banh mi o tho": "custom_local_13",
-        "o tho": "custom_local_13",
-        "com am phu": "custom_local_18",
-        "banh canh di huong": "custom_local_25",
-        "di huong": "custom_local_25",
-        "bun bo mu keo": "custom_local_26",
-        "mu keo": "custom_local_26",
-        "nem lui ba ty": "custom_local_27",
-        "ba ty": "custom_local_27",
-        "che mo ton dich": "custom_local_29",
-        "mo ton dich": "custom_local_29",
-        "lang thieu tri": "custom_local_33",
-        "thieu tri": "custom_local_33",
-        "ca phe mat biec": "custom_local_15",
-        "mat biec": "custom_local_15",
-        "banh uot huyen anh": "custom_local_08",
-        "huyen anh": "custom_local_08",
-        "chua dieu de": "custom_local_07",
-        "dieu de": "custom_local_07",
-        "gac trinh": "custom_local_16",
-        "ca phe gac trinh": "custom_local_16",
-        "com hen thuy": "custom_local_01",
-        "banh beo o le": "custom_local_02"
-    }
+    alias_dict = PLACE_ALIAS_DICT
+
+    # 0.1 Trí nhớ phiên chat: giải đồng tham chiếu "ở đó / từ đó / quán này / món đó" bằng mốc ngữ cảnh
+    #     -> viết lại câu hỏi để các bước bóc tách alias & chỉ đường A -> B phía sau hoạt động bình thường
+    session_ctx, resolution = resolve_session_query(query, state.get("session_context"), has_image=bool(image_base64))
+    if resolution.changed:
+        query = resolution.query
+        trace_steps.append(resolution.trace_step())
+    resolved_query = query
 
     # A. Xử lý nhận diện ảnh đa phương thức (Multimodal Image RAG)
     if image_base64:
@@ -389,27 +525,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     })
 
     # 2. Nhận diện món ăn đặc sản trong câu hỏi (hỗ trợ alias phổ biến)
-    dish_aliases = {
-        "bun bo": "Bún bò Huế",
-        "banh beo": "Bánh bèo",
-        "banh nam": "Bánh nậm",
-        "banh loc": "Bánh bột lọc",
-        "banh bot loc": "Bánh bột lọc",
-        "com hen": "Cơm hến",
-        "bun hen": "Bún hến",
-        "che heo quay": "Chè bột lọc bọc heo quay",
-        "che bot loc": "Chè bột lọc bọc heo quay",
-        "banh khoai": "Bánh khoái",
-        "nem lui": "Nem lụi",
-        "banh canh": "Bánh canh Nam Phổ",
-        "che bap": "Chè bắp",
-        "me xung": "Mè xửng",
-        "banh ep": "Bánh ép",
-        "banh mi bot loc": "Bánh mì bột lọc",
-        "banh uot thit nuong": "Bánh ướt thịt nướng",
-        "com am phu": "Cơm âm phủ",
-        "com bay mau": "Cơm âm phủ"
-    }
+    dish_aliases = DISH_ALIASES
     target_dish = None
     for alias, formal_name in dish_aliases.items():
         if alias in norm_q:
@@ -676,6 +792,9 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 
     return {
         "query": query,
+        "resolved_query": resolved_query,
+        "session_context": session_ctx,
+        "anaphora": resolution.to_state(),
         "image_detected": image_detected_info,
         "visual_matches": visual_matches,
         "visual_confidence": visual_confidence,
@@ -1047,6 +1166,7 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
                 "origin_name": origin_p.get("name"),
                 "dest_name": dest_p.get("name"),
                 "origin": {
+                    "node_id": origin_p.get("node_id"),
                     "name": origin_p.get("name"),
                     "latitude": float(lat1),
                     "longitude": float(lng1),
@@ -1054,6 +1174,7 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
                     "category": origin_p.get("category", "Attraction")
                 },
                 "destination": {
+                    "node_id": dest_p.get("node_id"),
                     "name": dest_p.get("name"),
                     "latitude": float(lat2),
                     "longitude": float(lng2),
@@ -1133,10 +1254,24 @@ Nguyên tắc trả lời bắt buộc:
    - Nhắc đến các địa danh/quán ăn bằng chữ IN ĐẬM **Tên Địa Danh** để hệ thống tự động ghim vị trí lên bản đồ cho du khách.
 """
 
+    # Trí nhớ hội thoại: 2 lượt gần nhất (đã cắt gọn ở session_memory) giúp câu trả lời liền mạch
+    history_text = format_history_for_prompt(state.get("history"))
+    history_section = ""
+    if history_text:
+        system_prompt += """\n
+7. HỘI THOẠI NHIỀU LƯỢT:
+   - Mục [LỊCH SỬ HỘI THOẠI GẦN ĐÂY] chỉ để hiểu mạch trò chuyện (du khách đang nói tới địa điểm / món nào). Thông tin thực tế (địa chỉ, giờ mở cửa, giá vé, khoảng cách) PHẢI lấy từ [NGỮ CẢNH HỆ THỐNG].
+   - Đây là câu hỏi nối tiếp: KHÔNG chào hỏi lại từ đầu, KHÔNG lặp lại nội dung đã trả lời ở lượt trước, đi thẳng vào ý du khách cần.
+"""
+        history_section = f"""[LỊCH SỬ HỘI THOẠI GẦN ĐÂY]:
+{history_text}
+
+"""
+
     user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
 
-[CÂU HỎI CỦA DU KHÁCH]:
+{history_section}[CÂU HỎI CỦA DU KHÁCH]:
 {query}
 
 [CÂU TRẢ LỜI CỦA BẠN]:"""
@@ -1251,11 +1386,14 @@ Nguyên tắc trả lời bắt buộc:
             "detail": f"Đã áp dụng {len(pref_rules)} tiêu chí khẩu vị & phong cách du khách",
             "status": "applied"
         })
+    history_turns = history_text.count("- Du khách:")
     trace_steps.append({
         "step": "llm_generation",
         "icon": "🤖",
         "label": f"Sinh phản hồi ({OLLAMA_MODEL.upper()} GPU)",
-        "detail": f"LLM tổng hợp từ {len(context_blocks)} khối ngữ cảnh → câu trả lời tự nhiên",
+        "detail": f"LLM tổng hợp từ {len(context_blocks)} khối ngữ cảnh"
+                  + (f" + {history_turns} lượt hội thoại trước" if history_turns else "")
+                  + " → câu trả lời tự nhiên",
         "model": OLLAMA_MODEL,
         "status": "done"
     })
