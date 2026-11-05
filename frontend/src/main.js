@@ -1322,35 +1322,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Gợi ý câu hỏi ở màn hình chào: dạng pill ngắn gọn, bấm là gửi ngay
-  const WELCOME_PROMPTS = [
-    { label: 'Lịch trình Di sản 2 ngày', prompt: 'Lập lịch trình khám phá Huế 2 ngày 1 đêm tối ưu cho gia đình' },
-    { label: 'Ẩm thực đặc sản Cố đô', prompt: 'Gợi ý các quán ăn đặc sản Huế chuẩn vị: bún bò mụ Rơi, bánh bèo nậm lọc, cơm hến và chè hẻm' },
-    { label: 'Hoàng hôn & cà phê sông Hương', prompt: 'Những quán cà phê và điểm ngắm hoàng hôn đẹp nhất bên bờ sông Hương' },
-    { label: 'Đại Nội → Chợ Đông Ba', prompt: 'Từ Đại Nội đi Chợ Đông Ba như thế nào, khoảng cách bao xa và nên ghé những điểm nào dọc đường?' }
-  ];
-
-  function buildPromptGridHtml() {
-    const pills = WELCOME_PROMPTS.map(({ label, prompt }) => `
-      <button type="button" class="prompt-card" data-prompt="${prompt}">
-        <span class="prompt-pill-text">${label}</span>
-        <span class="prompt-card-arrow" aria-hidden="true">↗</span>
-      </button>`).join('');
-    return `<div class="welcome-prompt-grid">${pills}</div>`;
-  }
-
   function initPromptCards() {
-    if (!chatThread) return;
-    const hero = chatThread.querySelector('#chat-welcome-hero');
-    if (hero && !hero.querySelector('.welcome-prompt-grid')) {
-      hero.insertAdjacentHTML('beforeend', buildPromptGridHtml());
-    }
-    chatThread.querySelectorAll('.prompt-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const prompt = card.dataset.prompt;
-        if (prompt) sendChatQuery(prompt);
-      });
-    });
+    // Đã xóa bỏ hoàn toàn 4 thẻ gợi ý màn hình chào
   }
 
   function renderWelcomeHero() {
@@ -1361,10 +1334,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.</p>
       </div>
     `;
-    initPromptCards();
   }
 
-  // Khởi tạo sự kiện cho các thẻ gợi ý ban đầu
+  // Khởi tạo ban đầu
   initPromptCards();
 
   // =============================================================================
