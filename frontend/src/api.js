@@ -82,7 +82,7 @@ export class TourismApiClient {
   /**
    * Gửi câu hỏi đến Trợ lý Du lịch Thông minh (Spatial Agentic RAG)
    */
-  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null) {
+  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000);
@@ -97,6 +97,12 @@ export class TourismApiClient {
       }
       if (imageBase64) {
         payload.image_base64 = imageBase64;
+      }
+      // Trí nhớ phiên chat đa lượt: lịch sử rút gọn + mốc ngữ cảnh server trả về ở lượt trước
+      if (session) {
+        if (session.sessionId) payload.session_id = session.sessionId;
+        if (Array.isArray(session.history) && session.history.length) payload.history = session.history;
+        if (session.sessionContext) payload.session_context = session.sessionContext;
       }
 
       const res = await fetch(`${API_BASE_URL}/api/v1/chat`, {

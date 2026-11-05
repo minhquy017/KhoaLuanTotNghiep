@@ -543,24 +543,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="message-feedback-row" data-message-id="${messageId}">
         <div class="feedback-actions">
           <span class="feedback-hint">Đánh giá câu trả lời:</span>
-          <button type="button" class="btn-msg-feedback btn-feedback-like ${existingRating === 'like' ? 'active' : ''}" title="Hữu ích / Thích câu trả lời này">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
-            </svg>
-            <span>Hữu ích</span>
-          </button>
-          <button type="button" class="btn-msg-feedback btn-feedback-dislike ${existingRating === 'dislike' ? 'active' : ''}" title="Chưa hài lòng / Cần cải thiện">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
-            </svg>
-            <span>Chưa tốt</span>
-          </button>
-          <button type="button" class="btn-msg-feedback btn-copy-msg" title="Sao chép nội dung câu trả lời">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button type="button" class="btn-msg-feedback btn-copy-msg" title="Sao chép" aria-label="Sao chép câu trả lời">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
             <span class="copy-label">Sao chép</span>
+          </button>
+          <button type="button" class="btn-msg-feedback btn-regenerate-msg" title="Tạo lại câu trả lời" aria-label="Tạo lại câu trả lời">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+              <polyline points="21 3 21 9 15 9"></polyline>
+            </svg>
+            <span>Tạo lại</span>
+          </button>
+          <button type="button" class="btn-msg-feedback btn-feedback-like ${existingRating === 'like' ? 'active' : ''}" title="Hữu ích" aria-label="Câu trả lời hữu ích">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+            </svg>
+            <span>Hữu ích</span>
+          </button>
+          <button type="button" class="btn-msg-feedback btn-feedback-dislike ${existingRating === 'dislike' ? 'active' : ''}" title="Chưa tốt" aria-label="Câu trả lời chưa tốt">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
+            </svg>
+            <span>Chưa tốt</span>
           </button>
         </div>
 
@@ -596,6 +603,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cancelBtn = row.querySelector('.btn-cancel-feedback');
 
     let selectedReason = 'incorrect';
+
+    // "Tạo lại": gửi lại đúng câu hỏi gốc, KÈM ẢNH GỐC nếu câu hỏi đó có ảnh.
+    // Truyền attachment tường minh để không vô tình dùng ảnh đang chờ gửi ở ô nhập.
+    const regenerateBtn = row.querySelector('.btn-regenerate-msg');
+    regenerateBtn?.addEventListener('click', () => {
+      const chatSendButton = document.getElementById('chat-send-btn');
+      if (!meta.prompt || chatSendButton?.disabled) return;
+      sendChatQuery(meta.prompt, {
+        image: meta.imageBase64 || null,
+        storageThumb: meta.storageThumb || null
+      });
+    });
 
     chips.forEach(chip => {
       chip.addEventListener('click', () => {
@@ -1197,10 +1216,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const previewImageName = document.getElementById('preview-image-name');
   const btnRemoveImage = document.getElementById('btn-remove-image');
   let currentAttachedImageBase64 = null;
+  let currentAttachedImageStorageBase64 = null;
   let currentAttachedImageName = '';
 
   function clearAttachedImage() {
     currentAttachedImageBase64 = null;
+    currentAttachedImageStorageBase64 = null;
     currentAttachedImageName = '';
     if (chatImagePreviewBar) chatImagePreviewBar.style.display = 'none';
     if (chatImageInput) chatImageInput.value = '';
@@ -1208,55 +1229,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnUploadImage?.classList.remove('has-image');
   }
 
-  function compressImageFile(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
+  // Kích thước ảnh:
+  // - Bản gửi AI Vision + hiển thị trong khung chat: cạnh dài tối đa 1600px (đủ nét để nhận diện
+  //   địa danh/món ăn, nặng ~200–500KB thay vì 3–12MB của ảnh gốc chụp từ điện thoại).
+  // - Bản lưu Firestore: 520px (~40–80KB) để cả phiên chat không vượt giới hạn 1MB/document.
+  const AI_IMAGE_MAX_DIM = 1600;
+  const AI_IMAGE_QUALITY = 0.85;
+  const STORAGE_THUMB_MAX_DIM = 520;
+  const STORAGE_THUMB_QUALITY = 0.68;
+
+  // Giải mã file ảnh một lần duy nhất (dùng object URL, không cần đọc base64 của ảnh gốc)
+  function loadImageFromFile(file) {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          let w = img.width;
-          let h = img.height;
-          if (w > maxWidth || h > maxHeight) {
-            if (w / h > maxWidth / maxHeight) {
-              h = Math.round((h * maxWidth) / w);
-              w = maxWidth;
-            } else {
-              w = Math.round((w * maxHeight) / h);
-              h = maxHeight;
-            }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-          resolve({
-            base64: compressedBase64,
-            name: file.name
-          });
-        };
-        img.onerror = reject;
-        img.src = e.target.result;
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
       };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Trình duyệt không đọc được định dạng ảnh này'));
+      };
+      img.src = url;
     });
+  }
+
+  // Thu nhỏ ảnh (giữ tỉ lệ) và xuất ra JPEG base64. Ảnh nhỏ hơn maxDim thì giữ nguyên kích thước.
+  function renderJpegDataUrl(img, maxDim, quality) {
+    const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    // Nền trắng để ảnh PNG trong suốt không bị đen khi chuyển sang JPEG
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    return canvas.toDataURL('image/jpeg', quality);
   }
 
   async function handleImageFileSelected(file) {
     if (!file || !file.type.startsWith('image/')) return;
     try {
-      const { base64, name } = await compressImageFile(file);
-      currentAttachedImageBase64 = base64;
-      currentAttachedImageName = name;
-      if (previewImageElem) previewImageElem.src = base64;
-      if (previewImageName) previewImageName.textContent = name;
+      const img = await loadImageFromFile(file);
+      currentAttachedImageBase64 = renderJpegDataUrl(img, AI_IMAGE_MAX_DIM, AI_IMAGE_QUALITY);
+      currentAttachedImageStorageBase64 = renderJpegDataUrl(img, STORAGE_THUMB_MAX_DIM, STORAGE_THUMB_QUALITY);
+      currentAttachedImageName = file.name;
+      if (previewImageElem) previewImageElem.src = currentAttachedImageBase64;
+      if (previewImageName) previewImageName.textContent = file.name;
       if (chatImagePreviewBar) chatImagePreviewBar.style.display = 'flex';
       btnUploadImage?.classList.add('has-image');
       chatInput?.focus();
     } catch (err) {
       console.error('Lỗi xử lý ảnh:', err);
+      clearAttachedImage();
+      authController.showToast('Không đọc được ảnh này. Vui lòng chọn ảnh JPG, PNG hoặc WEBP.');
     }
   }
 
@@ -1292,8 +1322,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+  // Gợi ý câu hỏi ở màn hình chào: dạng pill ngắn gọn, bấm là gửi ngay
+  const WELCOME_PROMPTS = [
+    { label: 'Lịch trình Di sản 2 ngày', prompt: 'Lập lịch trình khám phá Huế 2 ngày 1 đêm tối ưu cho gia đình' },
+    { label: 'Ẩm thực đặc sản Cố đô', prompt: 'Gợi ý các quán ăn đặc sản Huế chuẩn vị: bún bò mụ Rơi, bánh bèo nậm lọc, cơm hến và chè hẻm' },
+    { label: 'Hoàng hôn & cà phê sông Hương', prompt: 'Những quán cà phê và điểm ngắm hoàng hôn đẹp nhất bên bờ sông Hương' },
+    { label: 'Đại Nội → Chợ Đông Ba', prompt: 'Từ Đại Nội đi Chợ Đông Ba như thế nào, khoảng cách bao xa và nên ghé những điểm nào dọc đường?' }
+  ];
+
+  function buildPromptGridHtml() {
+    const pills = WELCOME_PROMPTS.map(({ label, prompt }) => `
+      <button type="button" class="prompt-card" data-prompt="${prompt}">
+        <span class="prompt-pill-text">${label}</span>
+        <span class="prompt-card-arrow" aria-hidden="true">↗</span>
+      </button>`).join('');
+    return `<div class="welcome-prompt-grid">${pills}</div>`;
+  }
+
   function initPromptCards() {
     if (!chatThread) return;
+    const hero = chatThread.querySelector('#chat-welcome-hero');
+    if (hero && !hero.querySelector('.welcome-prompt-grid')) {
+      hero.insertAdjacentHTML('beforeend', buildPromptGridHtml());
+    }
     chatThread.querySelectorAll('.prompt-card').forEach(card => {
       card.addEventListener('click', () => {
         const prompt = card.dataset.prompt;
@@ -1308,44 +1359,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="chat-welcome-hero" id="chat-welcome-hero">
         <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
         <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.</p>
-
-        <div class="welcome-prompt-grid">
-          <button type="button" class="prompt-card" data-prompt="Lập lịch trình khám phá Huế 2 ngày 1 đêm tối ưu cho gia đình">
-            <div class="prompt-card-icon">🏛️</div>
-            <div class="prompt-card-content">
-              <div class="prompt-card-title">Hành trình Di sản 2 Ngày</div>
-              <div class="prompt-card-desc">Đại Nội, Lăng Khải Định, Tự Đức & Chùa Thiên Mụ</div>
-            </div>
-            <span class="prompt-card-arrow">↗</span>
-          </button>
-
-          <button type="button" class="prompt-card" data-prompt="Gợi ý các quán ăn đặc sản Huế chuẩn vị: bún bò mụ Rơi, bánh bèo nậm lọc, cơm hến và chè hẻm">
-            <div class="prompt-card-icon">🍜</div>
-            <div class="prompt-card-content">
-              <div class="prompt-card-title">Bản đồ Ẩm thực Cố đô</div>
-              <div class="prompt-card-desc">Bún bò mụ Rơi, bánh ép, cơm hến & chè hẻm nổi tiếng</div>
-            </div>
-            <span class="prompt-card-arrow">↗</span>
-          </button>
-
-          <button type="button" class="prompt-card" data-prompt="Những quán cà phê và điểm ngắm hoàng hôn đẹp nhất bên bờ sông Hương">
-            <div class="prompt-card-icon">🌅</div>
-            <div class="prompt-card-content">
-              <div class="prompt-card-title">Sunset & Cà phê Sông Hương</div>
-              <div class="prompt-card-desc">Điểm ngắm hoàng hôn đồi Vọng Cảnh & bến thuyền thơ mộng</div>
-            </div>
-            <span class="prompt-card-arrow">↗</span>
-          </button>
-
-          <button type="button" class="prompt-card" data-prompt="Từ Đại Nội đi Chợ Đông Ba như thế nào, khoảng cách bao xa và nên ghé những điểm nào dọc đường?">
-            <div class="prompt-card-icon">🧭</div>
-            <div class="prompt-card-content">
-              <div class="prompt-card-title">Chỉ đường & Khoảng cách</div>
-              <div class="prompt-card-desc">Lộ trình từ Đại Nội qua Chợ Đông Ba và cầu Tràng Tiền</div>
-            </div>
-            <span class="prompt-card-arrow">↗</span>
-          </button>
-        </div>
       </div>
     `;
     initPromptCards();
@@ -1602,17 +1615,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (activeSessionMessages.length === 0) {
       renderWelcomeHero();
     } else {
+      // Ghi nhớ ảnh của câu hỏi ngay trước câu trả lời để nút "Tạo lại" gửi kèm được
+      // (sau khi tải lại phiên, chỉ còn bản thumbnail 520px đã lưu trên Firestore)
+      let lastUserImage = null;
       activeSessionMessages.forEach(msg => {
         const textVal = msg.text || msg.content || '';
         if (msg.role === 'user') {
+          lastUserImage = msg.imageBase64 || null;
           if (textVal || msg.imageBase64) appendUserMessage(textVal, false, msg.imageBase64 || null);
         } else if (msg.role === 'assistant') {
           if (msg.isItinerary && msg.itineraryRes) {
             appendItineraryDeckMessage(msg.itineraryRes, msg.days, msg.tripType, msg.preferredDishes, msg.userLocName, false, msg.id, msg.feedbackRating);
           } else {
             const answerVal = textVal || msg.resData?.answer || '';
-            appendAssistantResponse({ ...msg.resData, answer: answerVal, messageId: msg.id, feedbackRating: msg.feedbackRating, prompt: msg.prompt }, false);
+            appendAssistantResponse(
+              { ...msg.resData, answer: answerVal, messageId: msg.id, feedbackRating: msg.feedbackRating, prompt: msg.prompt },
+              false,
+              '',
+              { image: lastUserImage, storageThumb: lastUserImage }
+            );
           }
+          lastUserImage = null;
         }
       });
     }
@@ -1972,8 +1995,48 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Tải danh sách session ban đầu
   refreshChatHistoryList();
 
-  async function sendChatQuery(query, imageBase64 = null) {
-    const activeImage = imageBase64 || currentAttachedImageBase64;
+  // attachment = null  → dùng ảnh đang đính kèm ở ô nhập (gửi tin nhắn bình thường).
+  // attachment = { image, storageThumb } → dùng đúng ảnh này (nút "Tạo lại"), không đụng tới
+  //   ảnh/chữ người dùng đang soạn dở ở ô nhập.
+  /**
+   * Trí nhớ phiên chat đa lượt: lấy tối đa 4 tin nhắn văn bản gần nhất (2 lượt hỏi-đáp, không kèm ảnh)
+   * và mốc ngữ cảnh (session_context) mà server trả về ở lượt trả lời gần nhất. session_context đã nằm
+   * sẵn trong resData của tin nhắn trợ lý được lưu Firestore nên mở lại phiên cũ vẫn nhớ ngữ cảnh.
+   * Khi "Tạo lại" một câu hỏi, bỏ cặp hỏi-đáp cũ của chính câu đó để không tự tham chiếu vào nó.
+   */
+  function buildConversationMemory(query, isRegenerate) {
+    let messages = activeSessionMessages || [];
+    if (isRegenerate) {
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const m = messages[i];
+        if (m.role === 'user' && (m.text || m.content || '').trim() === query) {
+          messages = messages.slice(0, i);
+          break;
+        }
+      }
+    }
+
+    const history = messages
+      .filter(m => (m.role === 'user' || m.role === 'assistant') && !m.isItinerary)
+      .map(m => ({ role: m.role, text: String(m.text || m.content || '').trim().slice(0, 400) }))
+      .filter(m => m.text)
+      .slice(-4);
+
+    let sessionContext = null;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const ctx = messages[i].role === 'assistant' ? messages[i].resData?.session_context : null;
+      if (ctx) { sessionContext = ctx; break; }
+    }
+
+    return { sessionId: activeSessionId, history, sessionContext };
+  }
+
+  async function sendChatQuery(query, attachment = null) {
+    const usePendingInput = attachment === null;
+    const activeImage = usePendingInput ? currentAttachedImageBase64 : (attachment.image || null);
+    const activeStorageImage = usePendingInput
+      ? currentAttachedImageStorageBase64
+      : (attachment.storageThumb || attachment.image || null);
     const trimmedQuery = (query !== undefined && query !== null) ? String(query).trim() : '';
 
     // Cho phép gửi nếu có query HOẶC có ảnh
@@ -2010,19 +2073,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const tripType = selectTripType ? selectTripType.value : 'Couples';
       const preferredDishes = getSelectedDishes();
-      if (chatInput) chatInput.value = '';
+      if (usePendingInput && chatInput) chatInput.value = '';
       generateItineraryInChat(days, tripType, preferredDishes);
       return;
     }
 
-    // Hiển thị tin nhắn người dùng (kèm ảnh nếu có)
+    // Hiển thị tin nhắn người dùng: khung chat dùng bản 1600px, lưu Firestore dùng thumbnail 520px
     const displayPrompt = trimmedQuery || (activeImage ? 'Phân tích địa danh hoặc món ăn trong ảnh này' : '');
+    // Chụp trí nhớ hội thoại TRƯỚC khi đẩy câu hỏi hiện tại vào phiên
+    const conversationMemory = buildConversationMemory(displayPrompt, !usePendingInput);
     lastUserPrompt = displayPrompt;
-    appendUserMessage(displayPrompt, true, activeImage);
+    appendUserMessage(displayPrompt, true, activeImage, activeStorageImage);
 
-    // Dọn sạch ảnh đính kèm và input
-    clearAttachedImage();
-    if (chatInput) chatInput.value = '';
+    // Dọn sạch ảnh đính kèm và input (chỉ khi gửi từ ô nhập)
+    if (usePendingInput) {
+      clearAttachedImage();
+      if (chatInput) chatInput.value = '';
+    }
     if (chatSendBtn) chatSendBtn.disabled = true;
 
     // Hiển thị loading placeholder
@@ -2037,9 +2104,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const userLng = mapStudio.userLocation ? mapStudio.userLocation.lng : null;
       const userPrefs = userStore.getPreferences();
 
-      const res = await TourismApiClient.askAssistant(trimmedQuery, 'Thành phố Huế', userLat, userLng, userPrefs, activeImage);
+      const res = await TourismApiClient.askAssistant(
+        trimmedQuery, 'Thành phố Huế', userLat, userLng, userPrefs, activeImage, conversationMemory
+      );
       removeLoadingMessage(loadingId);
-      appendAssistantResponse(res, true, displayPrompt);
+      appendAssistantResponse(res, true, displayPrompt, { image: activeImage, storageThumb: activeStorageImage });
     } catch (err) {
       removeLoadingMessage(loadingId);
       appendAssistantError(err.message);
@@ -2055,18 +2124,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     sendChatQuery(query);
   });
 
-  function appendUserMessage(text, persist = true, imageBase64 = null) {
+  // Lightbox xem ảnh đính kèm ngay trong trang (đóng bằng nút ×, click nền hoặc phím Esc)
+  let imageLightbox = null;
+
+  function closeImageLightbox() {
+    if (!imageLightbox?.classList.contains('open')) return;
+    imageLightbox.classList.remove('open');
+    imageLightbox.querySelector('img').removeAttribute('src');
+    document.body.style.overflow = '';
+  }
+
+  function openImageLightbox(src) {
+    if (!src) return;
+    if (!imageLightbox) {
+      imageLightbox = document.createElement('div');
+      imageLightbox.className = 'image-lightbox';
+      imageLightbox.setAttribute('role', 'dialog');
+      imageLightbox.setAttribute('aria-modal', 'true');
+      imageLightbox.setAttribute('aria-label', 'Xem ảnh đính kèm');
+      imageLightbox.innerHTML = `
+        <button type="button" class="image-lightbox-close" aria-label="Đóng">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <img class="image-lightbox-img" alt="Ảnh đính kèm phóng to" />
+      `;
+      imageLightbox.addEventListener('click', (e) => {
+        if (e.target === imageLightbox || e.target.closest('.image-lightbox-close')) closeImageLightbox();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeImageLightbox();
+      });
+      document.body.appendChild(imageLightbox);
+    }
+    imageLightbox.querySelector('img').src = src;
+    imageLightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    imageLightbox.querySelector('.image-lightbox-close').focus();
+  }
+
+  function appendUserMessage(text, persist = true, imageBase64 = null, storageThumbBase64 = null) {
     const safeText = (text !== undefined && text !== null) ? String(text).trim() : '';
     if (!safeText && !imageBase64) return;
 
     const msg = document.createElement('div');
-    msg.className = 'chat-message user';
+    msg.className = `chat-message user${imageBase64 ? ' has-image' : ''}`;
 
     let imageHtml = '';
     if (imageBase64) {
       imageHtml = `
         <div class="chat-attached-image-container">
-          <img src="${imageBase64}" class="chat-attached-image" alt="Ảnh đính kèm" />
+          <img src="${imageBase64}" class="chat-attached-image" alt="Ảnh đính kèm" title="Nhấp để xem kích thước lớn" />
         </div>
       `;
     }
@@ -2075,20 +2182,25 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="message-avatar">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
-      <div class="message-bubble">
+      <div class="message-bubble${imageBase64 ? ' has-image' : ''}">
         ${imageHtml}
-        ${safeText ? `<p>${safeText}</p>` : ''}
+        ${safeText ? `<p class="chat-user-caption">${safeText}</p>` : ''}
       </div>
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
+
+    // Xem ảnh kích thước lớn khi nhấp chuột
+    msg.querySelector('.chat-attached-image')?.addEventListener('click', (e) => {
+      openImageLightbox(e.currentTarget.src);
+    });
 
     if (persist && !isRestoringSession) {
       activeSessionMessages.push({
         role: 'user',
         text: safeText,
         content: safeText,
-        imageBase64: imageBase64 || null,
+        imageBase64: storageThumbBase64 || imageBase64 || null,
         hasImage: !!imageBase64,
         timestamp: Date.now()
       });
@@ -2175,18 +2287,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return `
       <div class="xai-trace-wrapper">
         <button type="button" class="xai-trace-toggle" aria-expanded="false" title="Xem tiến trình suy luận GraphRAG">
-          <div class="xai-toggle-left">
-            <span class="xai-trace-dot"></span>
-            <span class="xai-trace-label">GraphRAG Trace</span>
-            <span class="xai-trace-sep">/</span>
-            <span class="xai-trace-route">${routeLabel}</span>
-            <span class="xai-trace-sep">·</span>
-            <span class="xai-trace-conf">Độ tin cậy ${confPct}%</span>
-          </div>
-          <div class="xai-toggle-right">
-            <span class="xai-step-indicator">${trace.length} bước</span>
-            <svg class="xai-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
+          <svg class="xai-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          <span class="xai-trace-label">Đã dùng ${trace.length} bước truy xuất</span>
+          <span class="xai-trace-meta">${routeLabel} · ${confPct}%</span>
         </button>
 
         <div class="xai-trace-drawer">
@@ -2205,7 +2308,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
   }
 
-  function appendAssistantResponse(res, persist = true, promptText = '') {
+  // attachment: ảnh của câu hỏi tương ứng (nếu có) — giữ lại để nút "Tạo lại" gửi kèm
+  function appendAssistantResponse(res, persist = true, promptText = '', attachment = null) {
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
 
@@ -2422,7 +2526,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       messageId: messageId,
       prompt: finalPrompt,
       plainText: res.answer || '',
-      isItinerary: false
+      isItinerary: false,
+      imageBase64: attachment?.image || null,
+      storageThumb: attachment?.storageThumb || null
     });
 
     // Gán sự kiện click nút vẽ lại trên bản đồ trong thẻ lộ trình
