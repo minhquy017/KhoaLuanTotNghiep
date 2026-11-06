@@ -71,6 +71,9 @@ class TestAnaphoraResolution(unittest.TestCase):
             "Đi đến đó mất bao lâu?": "Đi đến Chùa Thiên Mụ mất bao lâu?",
             "Xung quanh đó có gì chơi?": "Xung quanh Chùa Thiên Mụ có gì chơi?",
             "Chùa đó xây năm nào?": "Chùa Thiên Mụ xây năm nào?",
+            "Đường lên đó có khó đi không?": "Đường lên Chùa Thiên Mụ có khó đi không?",
+            "Đường vào đó thế nào?": "Đường vào Chùa Thiên Mụ thế nào?",
+            "Ghé đó ăn gì?": "Ghé Chùa Thiên Mụ ăn gì?",
         }
         for q, expected in cases.items():
             with self.subTest(q=q):

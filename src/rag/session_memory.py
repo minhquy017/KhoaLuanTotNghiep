@@ -36,10 +36,10 @@ TOPIC_LABELS = {
 # Mẫu đại từ chỉ định tiếng Việt
 # -----------------------------------------------------------------------------
 # Có dấu: [giới từ] [danh từ nơi chốn] <đại từ>. Hợp lệ khi có danh từ ("quán này", "chỗ đó") hoặc
-# giới từ + "đó/đấy" ("ở đó", "từ đó", "gần đó"). Cố ý KHÔNG bắt "đây" ("gần đây", "ở đây", "từ đây"
-# = vị trí GPS hiện tại của du khách) và không đụng tới "Đỏ" (Bánh bèo Bà Đỏ) vì so khớp có dấu.
-_PREP_ACC = r"xung quanh|quanh|từ|ở|tại|gần|đến|tới|sang|qua|về|ra"
-_NOUN_ACC = r"địa điểm|điểm|chỗ|nơi|quán ăn|quán|nhà hàng|chùa|lăng|đền|di tích|khu"
+# giới từ + "đó/đấy" ("ở đó", "từ đó", "gần đó", "lên đó", "vào đó", "đến đó"). Cố ý KHÔNG bắt "đây"
+# ("gần đây", "ở đây", "từ đây" = vị trí GPS hiện tại của du khách) và không đụng tới "Đỏ" (Bánh bèo Bà Đỏ).
+_PREP_ACC = r"xung quanh|quanh|từ|ở|tại|trong|ngoài|trên|dưới|gần|đến|tới|sang|qua|về|ra|lên|xuống|vào|ghé|lại"
+_NOUN_ACC = r"địa điểm|điểm|chỗ|nơi|quán ăn|quán|nhà hàng|chùa|lăng|đền|di tích|khu|đồi|núi|cầu|chợ|bãi biển|biển|thác|suối|vịnh|đầm|làng"
 _PLACE_ACC_RE = re.compile(
     rf"(?<!\w)(?:(?P<prep>{_PREP_ACC})\s+)?(?:(?P<noun>{_NOUN_ACC})\s+)?(?P<pro>đó|đấy|ấy|này)(?!\w)"
 )
@@ -47,20 +47,23 @@ _DISH_ACC_RE = re.compile(r"(?<!\w)món(?:\s+ăn)?\s+(?:đó|đấy|ấy|này)(?
 
 # Không dấu: chỉ giữ các cụm có độ chính xác cao ("tu do" chỉ khi theo sau là động từ di chuyển
 # để tránh "tự do"; danh từ chỉ đi với "nay/ay" vì "quan do" dễ là "quán đồ...").
-_PREP_RAW = r"xung quanh|quanh|tu|o|tai|gan"
-_NOUN_RAW = r"dia diem|quan an|quan|nha hang|di tich|cho|khu"
+_PREP_RAW = r"xung quanh|quanh|tu|o|tai|trong|ngoai|tren|duoi|gan|den|toi|sang|qua|ve|ra|len|xuong|vao|ghe|lai"
+_NOUN_RAW = r"dia diem|quan an|quan|nha hang|di tich|cho|khu|doi|nui|cau|bien|bai|thac|suoi|vinh|dam|lang"
 _PLACE_RAW_RE = re.compile(
     rf"(?<!\w)(?:(?P<prep>{_PREP_RAW})\s+)?(?:(?P<noun>{_NOUN_RAW})\s+)?(?P<pro>do|ay|nay)(?!\w)"
 )
 _DISH_RAW_RE = re.compile(r"(?<!\w)mon(?:\s+an)?\s+(?:nay|ay)(?!\w)")
-_RAW_MOVE_AFTER_TU = re.compile(r"\s+(?:di|den|toi|sang|qua|ra|ve)(?!\w)")
+_RAW_MOVE_AFTER_TU = re.compile(r"\s+(?:di|den|toi|sang|qua|ra|ve|len|xuong|vao)(?!\w)")
 
 # "từ đó đến nay", "từ đó trở đi"... mang nghĩa thời gian, không phải địa điểm
 _TEMPORAL_AFTER_TU = re.compile(r"\s*(?:đến nay|tới nay|đến giờ|tới giờ|trở đi|về sau)(?!\w)")
 
 # Danh từ chỉ loại: "quán đó" chỉ trỏ vào quán ăn, "chùa đó" chỉ trỏ vào di tích
 _FOOD_NOUNS = {"quán ăn", "quán", "nhà hàng", "quan an", "quan", "nha hang"}
-_SITE_NOUNS = {"chùa", "lăng", "đền", "di tích", "di tich"}
+_SITE_NOUNS = {
+    "chùa", "lăng", "đền", "di tích", "di tich", "đồi", "doi", "núi", "nui", "cầu", "cau",
+    "chợ", "bãi biển", "biển", "bien", "bai", "thác", "thac", "suối", "suoi", "vịnh", "vinh", "đầm", "dam", "làng", "lang"
+}
 
 # Từ khóa cự ly: "Đại Nội cách chỗ đó bao xa" -> vẫn giải nghĩa dù trước đại từ đã có tên địa danh
 _DISTANCE_HINTS = ("bao xa", "cach", "khoang cach", "may km", "may cay", "duong di", "chi duong", "lo trinh")

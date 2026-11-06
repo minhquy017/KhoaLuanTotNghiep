@@ -248,6 +248,7 @@ PLACE_ALIAS_DICT = {
     "thuy xuan": "custom_attr_03",
     "dien hon chen": "custom_attr_04",
     "hon chen": "custom_attr_04",
+    "chua huyen khong son thuong": "custom_attr_05",
     "huyen khong son thuong": "custom_attr_05",
     "chua huyen khong": "custom_attr_05",
     "doi thien an": "custom_local_21",
