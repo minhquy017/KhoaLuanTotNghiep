@@ -531,6 +531,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let activeSessionId = 'session_' + Date.now();
   let activeSessionTitle = 'Cuộc trò chuyện mới';
   let activeSessionMessages = [];
+  let activeSessionContext = null;
   let isRestoringSession = false;
   let lastUserPrompt = '';
 
@@ -1474,11 +1475,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         : firstUserMsg.text.trim();
     }
 
+    let latestContext = activeSessionContext || null;
+    for (let i = activeSessionMessages.length - 1; i >= 0; i--) {
+      const ctx = activeSessionMessages[i].role === 'assistant' ? activeSessionMessages[i].resData?.session_context : null;
+      if (ctx) { latestContext = ctx; break; }
+    }
+
     try {
       await saveChatSession(uid, {
         id: activeSessionId,
         title: activeSessionTitle || 'Cuộc trò chuyện mới',
-        messages: activeSessionMessages
+        messages: activeSessionMessages,
+        session_context: latestContext
       });
       refreshChatHistoryList(false);
     } catch (e) {
@@ -1576,6 +1584,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSessionId = session.id;
     activeSessionTitle = session.title;
     activeSessionMessages = session.messages || [];
+    activeSessionContext = session.session_context || null;
+
+    // Quét ngược tìm context hoặc fallback từ matched_places nếu session_context gốc bị thiếu
+    if (!activeSessionContext && activeSessionMessages.length > 0) {
+      for (let i = activeSessionMessages.length - 1; i >= 0; i--) {
+        const m = activeSessionMessages[i];
+        if (m.role === 'assistant') {
+          if (m.resData?.session_context) {
+            activeSessionContext = m.resData.session_context;
+            break;
+          }
+          const p = m.resData?.matched_places?.[0];
+          if (p && p.name) {
+            activeSessionContext = {
+              anchor_place_id: p.place_id || null,
+              anchor_place_label: p.name,
+              anchor_place_kind: 'site',
+              topic_domain: 'heritage',
+              turn_count: 1
+            };
+            break;
+          }
+        }
+      }
+    }
 
     // Dọn sạch hoàn toàn trạng thái bản đồ cũ trước khi nạp phiên chat mới
     if (mapStudio && typeof mapStudio.resetToDefaultState === 'function') {
@@ -1623,6 +1656,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSessionId = 'session_' + Date.now();
     activeSessionTitle = 'Cuộc trò chuyện mới';
     activeSessionMessages = [];
+    activeSessionContext = null;
     renderWelcomeHero();
     if (window.innerWidth <= 1024) {
       toggleSidebar(false);
@@ -1999,6 +2033,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       const ctx = messages[i].role === 'assistant' ? messages[i].resData?.session_context : null;
       if (ctx) { sessionContext = ctx; break; }
     }
+    // Fallback cho tin nhắn cũ chỉ còn matched_places:
+    if (!sessionContext) {
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const m = messages[i];
+        if (m.role === 'assistant') {
+          const firstPlace = m.resData?.matched_places?.[0];
+          if (firstPlace && firstPlace.name) {
+            sessionContext = {
+              anchor_place_id: firstPlace.place_id || null,
+              anchor_place_label: firstPlace.name,
+              anchor_place_kind: 'site',
+              topic_domain: 'heritage',
+              turn_count: 1
+            };
+            break;
+          }
+        }
+      }
+    }
+    if (!sessionContext && activeSessionContext) {
+      sessionContext = activeSessionContext;
+    }
 
     return { sessionId: activeSessionId, history, sessionContext };
   }
@@ -2066,8 +2122,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Hiển thị loading placeholder
     const loadingText = activeImage
-      ? 'Đang nhận diện thị giác & phân tích không gian Cố đô...'
-      : 'Đang phân tích không gian và tổng hợp gợi ý...';
+      ? 'Đang nhận diện & phân tích ...'
+      : 'Đang phân tích ...';
     const loadingId = appendAssistantLoading(loadingText);
 
     try {
@@ -2540,6 +2596,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // TỰ ĐỘNG VẼ CÁC ĐỊA ĐIỂM ĐƯỢC GỢI Ý LÊN BẢN ĐỒ BÊN CẠNH NGAY LẬP TỨC
     if (matched.length > 0 && !(nav && nav.is_navigation)) {
       mapStudio.highlightChatPlaces(matched);
+    }
+
+    // Cập nhật trạng thái ngữ cảnh phiên chat hiện tại
+    if (res && res.session_context) {
+      activeSessionContext = res.session_context;
     }
 
     // Lưu phản hồi trợ lý vào phiên chat hiện tại

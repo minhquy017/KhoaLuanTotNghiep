@@ -152,21 +152,30 @@ def sanitize_session_context(
     raw: Any,
     place_lookup: Callable[[str], Optional[Dict[str, Any]]],
     dish_validator: Optional[Callable[[str], Optional[str]]] = None,
+    name_lookup: Optional[Callable[[str], Optional[Dict[str, Any]]]] = None,
 ) -> Optional[Dict[str, Any]]:
     """
     place_lookup(place_id): tra cứu theo ID CHÍNH XÁC (không fuzzy), trả về node KG hoặc None.
     dish_validator(name): trả về tên món chuẩn trong KG hoặc None.
+    name_lookup(name): tra cứu cứu hộ theo tên/nhãn nếu anchor_place_id bị trống hoặc không khớp.
     """
     if not isinstance(raw, dict):
         return None
 
     ctx: Dict[str, Any] = {}
     pid = str(raw.get("anchor_place_id") or "").strip()[:64]
-    if pid:
-        place = place_lookup(pid)
-        label = short_place_label(place.get("name")) if place else ""
+    place = place_lookup(pid) if pid else None
+
+    # Fallback tra cứu bằng nhãn nếu pid không có hoặc không tìm thấy
+    if not place and name_lookup and raw.get("anchor_place_label"):
+        place = name_lookup(str(raw.get("anchor_place_label")).strip())
+        if place:
+            pid = place.get("node_id") or pid
+
+    if place:
+        label = short_place_label(place.get("name"))
         if label:
-            ctx["anchor_place_id"] = pid
+            ctx["anchor_place_id"] = pid or place.get("node_id")
             ctx["anchor_place_label"] = label
             ctx["anchor_place_kind"] = place_kind(place)
 
@@ -187,6 +196,61 @@ def sanitize_session_context(
         ctx["turn_count"] = 0
 
     return ctx if (ctx.get("anchor_place_id") or ctx.get("anchor_dish") or ctx["turn_count"]) else None
+
+
+def infer_context_from_history(
+    history: Optional[List[Dict[str, str]]],
+    alias_dict: Dict[str, str],
+    place_lookup: Callable[[str], Optional[Dict[str, Any]]],
+    dish_dict: Optional[Dict[str, str]] = None,
+) -> Optional[Dict[str, Any]]:
+    """
+    Phục hồi ngữ cảnh cứu hộ từ lịch sử hội thoại khi client gửi session_context = null
+    (ví dụ người dùng F5 tải lại trang, đổi session trên client cũ chưa lưu context).
+    Duyệt ngược tối đa 4 tin nhắn gần nhất để tìm địa danh/món ăn gần nhất.
+    """
+    if not history or not isinstance(history, list):
+        return None
+
+    sorted_aliases = sorted(
+        [a for a in alias_dict.keys() if len(a) >= 4 and a not in AMBIGUOUS_ALIASES],
+        key=len,
+        reverse=True
+    )
+
+    for item in reversed(history[-4:]):
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("text") or item.get("content") or "")
+        if not text.strip():
+            continue
+        folded = fold_text(text)
+
+        # 1. Tìm địa danh trong alias_dict
+        for alias in sorted_aliases:
+            if _contains_word(folded, alias):
+                pid = alias_dict[alias]
+                place = place_lookup(pid)
+                if place:
+                    label = short_place_label(place.get("name"))
+                    return {
+                        "anchor_place_id": pid,
+                        "anchor_place_label": label,
+                        "anchor_place_kind": place_kind(place),
+                        "topic_domain": _infer_topic(place, pid, None, False),
+                        "turn_count": len(history),
+                    }
+
+        # 2. Tìm món ăn
+        if dish_dict:
+            for dish_alias, formal_dish in dish_dict.items():
+                if len(dish_alias) >= 3 and _contains_word(folded, dish_alias):
+                    return {
+                        "anchor_dish": formal_dish,
+                        "topic_domain": "culinary",
+                        "turn_count": len(history),
+                    }
+    return None
 
 
 # -----------------------------------------------------------------------------

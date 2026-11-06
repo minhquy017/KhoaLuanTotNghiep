@@ -58,6 +58,7 @@ from src.rag.session_memory import (
     sanitize_session_context,
     build_session_context,
     format_history_for_prompt,
+    infer_context_from_history,
 )
 
 
@@ -342,13 +343,33 @@ def validate_dish_name(name: str) -> Optional[str]:
     return None
 
 
+def lookup_place_by_name(name: str) -> Optional[Dict[str, Any]]:
+    """Tra cứu địa điểm theo tên hoặc alias nếu client chỉ gửi label (ví dụ session phục hồi từ cache cũ)."""
+    if not name:
+        return None
+    norm = strip_accents(name)
+    node_id = PLACE_ALIAS_DICT.get(norm)
+    if node_id:
+        return lookup_place_by_id(node_id)
+    try:
+        found = graph_retriever.search_places(name, locality="Thành phố Huế", limit=1)
+        if found:
+            return found[0]
+    except Exception:
+        pass
+    return None
+
+
 def resolve_session_query(
     query: str,
     raw_session_context: Optional[Dict[str, Any]],
     has_image: bool = False,
+    history: Optional[List[Dict[str, str]]] = None,
 ):
     """Chuẩn hóa session_context + giải đồng tham chiếu cho câu hỏi hiện tại. Trả về (ctx, resolution)."""
-    ctx = sanitize_session_context(raw_session_context, lookup_place_by_id, validate_dish_name)
+    ctx = sanitize_session_context(raw_session_context, lookup_place_by_id, validate_dish_name, lookup_place_by_name)
+    if not ctx and history:
+        ctx = infer_context_from_history(history, PLACE_ALIAS_DICT, lookup_place_by_id, DISH_ALIASES)
     resolution = resolve_anaphora(
         query,
         ctx,
@@ -416,7 +437,12 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 
     # 0.1 Trí nhớ phiên chat: giải đồng tham chiếu "ở đó / từ đó / quán này / món đó" bằng mốc ngữ cảnh
     #     -> viết lại câu hỏi để các bước bóc tách alias & chỉ đường A -> B phía sau hoạt động bình thường
-    session_ctx, resolution = resolve_session_query(query, state.get("session_context"), has_image=bool(image_base64))
+    session_ctx, resolution = resolve_session_query(
+        query,
+        state.get("session_context"),
+        has_image=bool(image_base64),
+        history=state.get("history")
+    )
     if resolution.changed:
         query = resolution.query
         trace_steps.append(resolution.trace_step())

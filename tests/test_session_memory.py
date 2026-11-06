@@ -25,6 +25,8 @@ from src.rag.session_memory import (
     sanitize_history,
     format_history_for_prompt,
     short_place_label,
+    infer_context_from_history,
+    fold_text,
 )
 
 FAKE_KG = {
@@ -191,6 +193,27 @@ class TestSessionContextLifecycle(unittest.TestCase):
 
     def test_short_label(self):
         self.assertEqual(short_place_label("Đại Nội Huế (Hoàng Thành & Ngọ Môn)"), "Đại Nội Huế")
+
+    def test_label_fallback_lookup(self):
+        def name_lookup(name):
+            if "thien mu" in fold_text(name):
+                return {"node_id": "place_8876", **FAKE_KG["place_8876"]}
+            return None
+        ctx = sanitize_session_context({"anchor_place_label": "Chùa Thiên Mụ"}, self.lookup, name_lookup=name_lookup)
+        self.assertIsNotNone(ctx)
+        self.assertEqual(ctx["anchor_place_id"], "place_8876")
+        self.assertEqual(ctx["anchor_place_label"], "Chùa Thiên Mụ")
+
+    def test_infer_context_from_history_recovery(self):
+        alias_dict = {"chua thien mu": "place_8876", "dai noi": "place_8875"}
+        history = [
+            {"role": "user", "text": "Chùa Thiên Mụ ở đâu và có gì nổi bật?"},
+            {"role": "assistant", "text": "Dạ, Chùa Thiên Mụ nằm ở đồi Hà Khê..."}
+        ]
+        inferred = infer_context_from_history(history, alias_dict, self.lookup)
+        self.assertIsNotNone(inferred)
+        self.assertEqual(inferred["anchor_place_id"], "place_8876")
+        self.assertEqual(inferred["anchor_place_label"], "Chùa Thiên Mụ")
 
 
 class TestHistoryFormatting(unittest.TestCase):

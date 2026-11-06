@@ -505,10 +505,15 @@ function sanitizeMessageForStorage(msg) {
     const rawRes = msg.resData || {};
     clean.resData = {
       answer: textContent,
+      session_context: rawRes.session_context || null,
+      graph_trace: Array.isArray(rawRes.graph_trace) ? rawRes.graph_trace : [],
+      route_taken: rawRes.route_taken || null,
+      confidence_score: rawRes.confidence_score ?? rawRes.retrieval_confidence ?? null,
       matched_places: Array.isArray(rawRes.matched_places)
         ? rawRes.matched_places.slice(0, 8).map(p => ({
             name: p.name || '',
             category: p.category || '',
+            place_id: p.place_id || p.id || '',
             latitude: p.latitude || p.lat || null,
             longitude: p.longitude || p.lng || null
           }))
@@ -545,6 +550,7 @@ export async function saveChatSession(userId, sessionData) {
     id: sessionData.id,
     title: sessionData.title || 'Cuộc trò chuyện mới',
     messages: trimmedMessages,
+    session_context: sessionData.session_context || null,
     messageCount: rawMessages.length,
     createdAt: sessionData.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
