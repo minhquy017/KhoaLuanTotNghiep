@@ -33,6 +33,7 @@ from tests.test_session_memory import (
     TestAnaphoraResolution, TestAnaphoraNegativeCases, TestSessionContextLifecycle,
     TestHistoryFormatting, TestNodeOneIntegration,
 )
+from tests.test_visual_rag import TestVisualRAG
 
 
 def run_comprehensive_test_suite():
@@ -52,6 +53,7 @@ def run_comprehensive_test_suite():
                 TestAnaphoraResolution, TestAnaphoraNegativeCases, TestSessionContextLifecycle,
                 TestHistoryFormatting, TestNodeOneIntegration)
         ])),
+        ("7. Thị Giác Đa Phương Thức (Visual Image RAG)", unittest.TestLoader().loadTestsFromTestCase(TestVisualRAG)),
     ]
 
     total_tests = 0

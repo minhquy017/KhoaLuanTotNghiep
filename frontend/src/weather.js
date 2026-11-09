@@ -1,8 +1,10 @@
 // =============================================================================
 // HUẾ SMART TOURISM — HUE REAL-TIME WEATHER SERVICE & WIDGET
 // Tích hợp dữ liệu thời tiết thời gian thực Cố đô Huế (Open-Meteo API)
-// Cung cấp lời khuyên du lịch, thời tiết hiện tại & dự báo các ngày tới
+// Cung cấp lời khuyên du lịch, thời tiết hiện tại & dự báo các ngày tới (VI & EN)
 // =============================================================================
+
+import { i18n } from './i18n.js';
 
 const HUE_LAT = 16.4674;
 const HUE_LNG = 107.5905;
@@ -10,26 +12,145 @@ const CACHE_KEY = 'hue_smart_tourism_weather_cache';
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 phút cache
 
 /**
- * Bảng mã WMO Weather Code sang tiếng Việt, icon SVG và gợi ý du lịch Huế
+ * Bảng mã WMO Weather Code song ngữ (VI & EN), icon SVG và gợi ý du lịch Huế
  */
 const WMO_MAP = {
-  0: { label: 'Trời quang đãng, nắng đẹp', icon: 'sun', advice: 'Thời tiết tuyệt đẹp, lý tưởng tham quan Đại Nội, Lăng Khải Định & đi thuyền sông Hương.' },
-  1: { label: 'Ít mây, trời nắng nhẹ', icon: 'sun-cloud', advice: 'Nắng nhẹ dịu mát, rất thích hợp chụp ảnh check-in Cung An Định & Chùa Thiên Mụ.' },
-  2: { label: 'Trời có mây, râm mát', icon: 'cloud-sun', advice: 'Tiết trời râm mát, thích hợp dạo bộ Cầu Gỗ Lim, chợ Đông Ba & ngắm hoàng hôn sông Hương.' },
-  3: { label: 'Nhiều mây, dịu trời', icon: 'cloud', advice: 'Trời dịu mát, rất thuận lợi cho các tour khám phá ẩm thực phố cổ Bao Vinh.' },
-  45: { label: 'Có sương mù nhẹ', icon: 'fog', advice: 'Sương sớm Cố đô rất thơ mộng, nên bắt đầu tour sau 8h sáng để ngắm cảnh rõ hơn.' },
-  48: { label: 'Sương mù đọng', icon: 'fog', advice: 'Buổi sáng mờ ảo bên sông Hương, chú ý di chuyển cẩn thận trên các cung đường lăng tẩm.' },
-  51: { label: 'Mưa phùn nhẹ', icon: 'drizzle', advice: 'Mưa phùn đặc trưng Huế, hãy mang theo chiếc ô xinh để dạo Đại Nội trong làn mưa thơ mộng.' },
-  53: { label: 'Mưa phùn vừa', icon: 'drizzle', advice: 'Nên mang theo ô/áo mưa, ghé thưởng thức một tách trà cung đình ấm nóng ngắm mưa rơi.' },
-  55: { label: 'Mưa phùn hạt dày', icon: 'drizzle', advice: 'Chuẩn bị ô khi ra ngoài; một tô Bún bò nóng hổi lúc này là lựa chọn tuyệt vời nhất.' },
-  61: { label: 'Mưa rào nhẹ', icon: 'rain-light', advice: 'Có mưa rào ngắt quãng, hãy chuẩn bị ô hoặc ghé quán cà phê ngắm mưa sông Hương.' },
-  63: { label: 'Mưa rào vừa', icon: 'rain', advice: 'Nên ưu tiên tham quan các điểm trong nhà: Bảo tàng Cổ vật Cung đình, Không gian lưu niệm Lê Bá Đảng.' },
-  65: { label: 'Mưa to', icon: 'rain-heavy', advice: 'Mưa lớn ngoài trời, thích hợp trải nghiệm ẩm thực cung đình hoặc nghỉ ngơi tại khách sạn.' },
-  80: { label: 'Mưa rào rải rác', icon: 'rain', advice: 'Mưa từng cơn rồi tạnh, chú ý theo dõi lộ trình và chuẩn bị áo mưa khi di chuyển bằng xe máy.' },
-  81: { label: 'Mưa rào nặng hạt', icon: 'rain-heavy', advice: 'Nên di chuyển bằng taxi/ô tô khi đi giữa các lăng tẩm xa trung tâm.' },
-  82: { label: 'Mưa rào rất to', icon: 'rain-heavy', advice: 'Nên tránh các hoạt động ven sông hồ hoặc leo đồi Vọng Cảnh lúc này.' },
-  95: { label: 'Dông sét', icon: 'thunder', advice: 'Có dông sét, khuyến cáo ở trong nhà hoặc các điểm tham quan có mái che an toàn.' },
-  96: { label: 'Dông kèm mưa', icon: 'thunder', advice: 'Thời tiết dông mưa, tạm dừng các hoạt động chèo SUP sông Hương và leo núi Bạch Mã.' }
+  0: {
+    label: { vi: 'Trời quang đãng, nắng đẹp', en: 'Clear sky, sunny' },
+    icon: 'sun',
+    advice: {
+      vi: 'Thời tiết tuyệt đẹp, lý tưởng tham quan Đại Nội, Lăng Khải Định & đi thuyền sông Hương.',
+      en: 'Splendid weather, ideal for exploring the Citadel, Khai Dinh Tomb & boat cruising on Perfume River.'
+    }
+  },
+  1: {
+    label: { vi: 'Ít mây, trời nắng nhẹ', en: 'Mainly clear, mild sun' },
+    icon: 'sun-cloud',
+    advice: {
+      vi: 'Nắng nhẹ dịu mát, rất thích hợp chụp ảnh check-in Cung An Định & Chùa Thiên Mụ.',
+      en: 'Gentle sunshine, great for photography at An Dinh Palace & Thien Mu Pagoda.'
+    }
+  },
+  2: {
+    label: { vi: 'Trời có mây, râm mát', en: 'Partly cloudy, mild' },
+    icon: 'cloud-sun',
+    advice: {
+      vi: 'Tiết trời râm mát, thích hợp dạo bộ Cầu Gỗ Lim, chợ Đông Ba & ngắm hoàng hôn sông Hương.',
+      en: 'Pleasant overcast, perfect for walking on Lim Wooden Bridge, Dong Ba Market & river sunset.'
+    }
+  },
+  3: {
+    label: { vi: 'Nhiều mây, dịu trời', en: 'Overcast, cool' },
+    icon: 'cloud',
+    advice: {
+      vi: 'Trời dịu mát, rất thuận lợi cho các tour khám phá ẩm thực phố cổ Bao Vinh.',
+      en: 'Cool and mild, great for culinary exploration in Bao Vinh ancient town.'
+    }
+  },
+  45: {
+    label: { vi: 'Có sương mù nhẹ', en: 'Light fog' },
+    icon: 'fog',
+    advice: {
+      vi: 'Sương sớm Cố đô rất thơ mộng, nên bắt đầu tour sau 8h sáng để ngắm cảnh rõ hơn.',
+      en: 'Early morning mist along the river; start your tour after 8:00 AM for clearer views.'
+    }
+  },
+  48: {
+    label: { vi: 'Sương mù đọng', en: 'Depositing rime fog' },
+    icon: 'fog',
+    advice: {
+      vi: 'Buổi sáng mờ ảo bên sông Hương, chú ý di chuyển cẩn thận trên các cung đường lăng tẩm.',
+      en: 'Misty morning along the Perfume River, take care when driving on royal tomb roads.'
+    }
+  },
+  51: {
+    label: { vi: 'Mưa phùn nhẹ', en: 'Light drizzle' },
+    icon: 'drizzle',
+    advice: {
+      vi: 'Mưa phùn đặc trưng Huế, hãy mang theo chiếc ô xinh để dạo Đại Nội trong làn mưa thơ mộng.',
+      en: 'Hue signature drizzle, bring a small umbrella to stroll the Citadel in romantic rain.'
+    }
+  },
+  53: {
+    label: { vi: 'Mưa phùn vừa', en: 'Moderate drizzle' },
+    icon: 'drizzle',
+    advice: {
+      vi: 'Nên mang theo ô/áo mưa, ghé thưởng thức một tách trà cung đình ấm nóng ngắm mưa rơi.',
+      en: 'Carry an umbrella or raincoat; stop by for a cup of warm imperial tea while watching the rain.'
+    }
+  },
+  55: {
+    label: { vi: 'Mưa phùn hạt dày', en: 'Dense drizzle' },
+    icon: 'drizzle',
+    advice: {
+      vi: 'Chuẩn bị ô khi ra ngoài; một tô Bún bò nóng hổi lúc này là lựa chọn tuyệt vời nhất.',
+      en: 'Bring rain gear; a hot bowl of authentic Hue beef noodle soup is the perfect choice right now.'
+    }
+  },
+  61: {
+    label: { vi: 'Mưa rào nhẹ', en: 'Slight rain shower' },
+    icon: 'rain-light',
+    advice: {
+      vi: 'Có mưa rào ngắt quãng, hãy chuẩn bị ô hoặc ghé quán cà phê ngắm mưa sông Hương.',
+      en: 'Intermittent showers, carry an umbrella or enjoy rain views from a riverside coffee shop.'
+    }
+  },
+  63: {
+    label: { vi: 'Mưa rào vừa', en: 'Moderate rain' },
+    icon: 'rain',
+    advice: {
+      vi: 'Nên ưu tiên tham quan các điểm trong nhà: Bảo tàng Cổ vật Cung đình, Không gian lưu niệm Lê Bá Đảng.',
+      en: 'Prioritize indoor attractions: Museum of Royal Antiquities or Lebadang Memory Space.'
+    }
+  },
+  65: {
+    label: { vi: 'Mưa to', en: 'Heavy rain' },
+    icon: 'rain-heavy',
+    advice: {
+      vi: 'Mưa lớn ngoài trời, thích hợp trải nghiệm ẩm thực cung đình hoặc nghỉ ngơi tại khách sạn.',
+      en: 'Heavy rain outdoors, ideal for imperial dining experiences or relaxing at your hotel.'
+    }
+  },
+  80: {
+    label: { vi: 'Mưa rào rải rác', en: 'Scattered rain showers' },
+    icon: 'rain',
+    advice: {
+      vi: 'Mưa từng cơn rồi tạnh, chú ý theo dõi lộ trình và chuẩn bị áo mưa khi di chuyển bằng xe máy.',
+      en: 'Passing rain showers, check your itinerary and keep a raincoat handy if on a motorbike.'
+    }
+  },
+  81: {
+    label: { vi: 'Mưa rào nặng hạt', en: 'Heavy rain showers' },
+    icon: 'rain-heavy',
+    advice: {
+      vi: 'Nên di chuyển bằng taxi/ô tô khi đi giữa các lăng tẩm xa trung tâm.',
+      en: 'Prefer taxi or private car transit when visiting royal tombs outside the city center.'
+    }
+  },
+  82: {
+    label: { vi: 'Mưa rào rất to', en: 'Violent rain showers' },
+    icon: 'rain-heavy',
+    advice: {
+      vi: 'Nên tránh các hoạt động ven sông hồ hoặc leo đồi Vọng Cảnh lúc này.',
+      en: 'Avoid waterside activities or climbing Vong Canh hill during heavy torrential downpours.'
+    }
+  },
+  95: {
+    label: { vi: 'Dông sét', en: 'Thunderstorm' },
+    icon: 'thunder',
+    advice: {
+      vi: 'Có dông sét, khuyến cáo ở trong nhà hoặc các điểm tham quan có mái che an toàn.',
+      en: 'Thunderstorm warning, recommended to stay indoors or visit sheltered heritage galleries.'
+    }
+  },
+  96: {
+    label: { vi: 'Dông kèm mưa', en: 'Thunderstorm with rain' },
+    icon: 'thunder',
+    advice: {
+      vi: 'Thời tiết dông mưa, tạm dừng các hoạt động chèo SUP sông Hương và leo núi Bạch Mã.',
+      en: 'Stormy weather, suspend river SUP paddle activities and Bach Ma mountain trekking.'
+    }
+  }
 };
 
 export class HueWeatherService {
@@ -67,13 +188,16 @@ export class HueWeatherService {
       const code = current.weather_code || 0;
       const meta = WMO_MAP[code] || WMO_MAP[0];
 
-      // Tinh chỉnh lời khuyên theo nhiệt độ
-      let advice = meta.advice;
       const temp = Math.round(current.temperature_2m || 28);
+      let adviceVi = meta.advice.vi;
+      let adviceEn = meta.advice.en;
+
       if (temp >= 33) {
-        advice = 'Trời khá oi bức (>33°C), nên tham quan di tích vào sáng sớm (trước 9h) hoặc chiều sau 15h30, nhớ mang nón và nước lọc.';
+        adviceVi = 'Trời khá oi bức (>33°C), nên tham quan di tích vào sáng sớm (trước 9h) hoặc chiều sau 15h30, nhớ mang nón và nước lọc.';
+        adviceEn = 'Hot weather (>33°C), visit monuments early in the morning (before 9 AM) or after 3:30 PM, carry water and hats.';
       } else if (temp <= 21) {
-        advice = 'Tiết trời se lạnh se sắt rất tình, đừng quên khoác thêm áo ấm nhẹ khi dạo Cố đô về đêm.';
+        adviceVi = 'Tiết trời se lạnh se sắt rất tình, đừng quên khoác thêm áo ấm nhẹ khi dạo Cố đô về đêm.';
+        adviceEn = 'Pleasantly chilly weather, remember to bring a light jacket when touring Hue at night.';
       }
 
       const processedData = {
@@ -85,11 +209,11 @@ export class HueWeatherService {
         weatherCode: code,
         condition: meta.label,
         iconType: meta.icon,
-        advice: advice,
+        advice: { vi: adviceVi, en: adviceEn },
         isDay: current.is_day !== 0,
         forecast: (daily.time || []).slice(0, 3).map((dateStr, idx) => ({
           date: dateStr,
-          dayName: idx === 0 ? 'Hôm nay' : (idx === 1 ? 'Ngày mai' : 'Ngày kia'),
+          dayIndex: idx,
           maxTemp: Math.round(daily.temperature_2m_max[idx] || 30),
           minTemp: Math.round(daily.temperature_2m_min[idx] || 24),
           code: daily.weather_code[idx] || 0,
@@ -118,14 +242,17 @@ export class HueWeatherService {
         humidity: 78,
         windSpeed: 10,
         weatherCode: 1,
-        condition: 'Trời nắng nhẹ, mát dịu',
+        condition: { vi: 'Trời nắng nhẹ, mát dịu', en: 'Mainly clear, mild' },
         iconType: 'sun-cloud',
-        advice: 'Nắng nhẹ dịu mát, rất lý tưởng để khám phá Đại Nội & thưởng thức ẩm thực Cố đô.',
+        advice: {
+          vi: 'Nắng nhẹ dịu mát, rất lý tưởng để khám phá Đại Nội & thưởng thức ẩm thực Cố đô.',
+          en: 'Mild sunny weather, ideal for discovering the Citadel and savoring Hue delicacies.'
+        },
         isDay: true,
         forecast: [
-          { dayName: 'Hôm nay', maxTemp: 30, minTemp: 24, label: 'Nắng nhẹ', iconType: 'sun-cloud' },
-          { dayName: 'Ngày mai', maxTemp: 31, minTemp: 24, label: 'Nắng đẹp', iconType: 'sun' },
-          { dayName: 'Ngày kia', maxTemp: 29, minTemp: 23, label: 'Mây rải rác', iconType: 'cloud-sun' }
+          { dayIndex: 0, maxTemp: 30, minTemp: 24, label: { vi: 'Nắng nhẹ', en: 'Mild sun' }, iconType: 'sun-cloud' },
+          { dayIndex: 1, maxTemp: 31, minTemp: 24, label: { vi: 'Nắng đẹp', en: 'Sunny' }, iconType: 'sun' },
+          { dayIndex: 2, maxTemp: 29, minTemp: 23, label: { vi: 'Mây rải rác', en: 'Partly cloudy' }, iconType: 'cloud-sun' }
         ],
         updatedAt: 'Vừa xong'
       };
@@ -191,13 +318,37 @@ export class HueWeatherService {
   }
 
   /**
-   * Render widget thời tiết HTML dạng thẻ Editorial tinh tế
+   * Render widget thời tiết HTML dạng thẻ Editorial tinh tế song ngữ
    */
   renderWidgetHtml(data) {
     if (!data) return '';
 
+    const isEn = i18n.currentLang === 'en';
+    const langKey = isEn ? 'en' : 'vi';
+
+    const cityName = isEn ? 'Hue City' : 'TP. Huế';
+    const conditionText = typeof data.condition === 'object' 
+      ? (data.condition[langKey] || data.condition.vi) 
+      : data.condition;
+    const adviceText = typeof data.advice === 'object' 
+      ? (data.advice[langKey] || data.advice.vi) 
+      : data.advice;
+
+    const widgetTitle = i18n.t('weatherWidgetTooltip', 'Thời tiết Cố đô Huế thời gian thực');
+    const expandTitle = i18n.t('weatherExpandTooltip', 'Xem chi tiết thời tiết');
+    const feelsLikeLabel = i18n.t('weatherFeelsLike', 'Cảm nhận');
+    const humidityLabel = i18n.t('weatherHumidity', 'Độ ẩm');
+    const windLabel = i18n.t('weatherWind', 'Sức gió');
+    const forecastTitle = i18n.t('weatherForecast3Days', 'Dự báo 3 ngày tới tại Huế');
+
+    const getDayName = (idx) => {
+      if (idx === 0) return i18n.t('weatherToday', 'Hôm nay');
+      if (idx === 1) return i18n.t('weatherTomorrow', 'Ngày mai');
+      return i18n.t('weatherDayAfter', 'Ngày kia');
+    };
+
     return `
-      <div class="hue-weather-widget" id="hue-weather-widget" title="Thời tiết Cố đô Huế thời gian thực">
+      <div class="hue-weather-widget" id="hue-weather-widget" title="${widgetTitle}">
         <div class="weather-widget-main">
           <div class="weather-icon-wrap">
             ${this.getWeatherIconSvg(data.iconType, 22)}
@@ -205,11 +356,11 @@ export class HueWeatherService {
           <div class="weather-core-info">
             <div class="weather-temp-row">
               <span class="weather-temp">${data.temp}°C</span>
-              <span class="weather-city">${data.city}</span>
+              <span class="weather-city">${cityName}</span>
             </div>
-            <div class="weather-condition">${data.condition}</div>
+            <div class="weather-condition">${conditionText}</div>
           </div>
-          <button type="button" class="btn-weather-expand" id="btn-weather-expand" title="Xem chi tiết thời tiết">
+          <button type="button" class="btn-weather-expand" id="btn-weather-expand" title="${expandTitle}" aria-label="${expandTitle}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -218,36 +369,40 @@ export class HueWeatherService {
 
         <div class="weather-advice-pill">
           <span class="advice-sparkle">💡</span>
-          <span class="advice-text">${data.advice}</span>
+          <span class="advice-text">${adviceText}</span>
         </div>
 
         <!-- Dropdown / Expanded Details -->
         <div class="weather-details-card hidden" id="weather-details-card">
           <div class="weather-metrics-grid">
             <div class="weather-metric-item">
-              <span class="metric-label">Cảm nhận</span>
+              <span class="metric-label">${feelsLikeLabel}</span>
               <strong class="metric-val">${data.feelsLike}°C</strong>
             </div>
             <div class="weather-metric-item">
-              <span class="metric-label">Độ ẩm</span>
+              <span class="metric-label">${humidityLabel}</span>
               <strong class="metric-val">${data.humidity}%</strong>
             </div>
             <div class="weather-metric-item">
-              <span class="metric-label">Sức gió</span>
+              <span class="metric-label">${windLabel}</span>
               <strong class="metric-val">${data.windSpeed} km/h</strong>
             </div>
           </div>
 
           <div class="weather-forecast-list">
-            <div class="forecast-title">Dự báo 3 ngày tới tại Huế</div>
-            ${(data.forecast || []).map(f => `
-              <div class="forecast-item">
-                <span class="forecast-day">${f.dayName}</span>
-                <span class="forecast-icon">${this.getWeatherIconSvg(f.iconType, 16)}</span>
-                <span class="forecast-label">${f.label}</span>
-                <span class="forecast-temps">${f.minTemp}° - ${f.maxTemp}°</span>
-              </div>
-            `).join('')}
+            <div class="forecast-title">${forecastTitle}</div>
+            ${(data.forecast || []).map(f => {
+              const dayName = getDayName(f.dayIndex !== undefined ? f.dayIndex : 0);
+              const labelText = typeof f.label === 'object' ? (f.label[langKey] || f.label.vi) : f.label;
+              return `
+                <div class="forecast-item">
+                  <span class="forecast-day">${dayName}</span>
+                  <span class="forecast-icon">${this.getWeatherIconSvg(f.iconType, 16)}</span>
+                  <span class="forecast-label">${labelText}</span>
+                  <span class="forecast-temps">${f.minTemp}° - ${f.maxTemp}°</span>
+                </div>
+              `;
+            }).join('')}
           </div>
         </div>
       </div>

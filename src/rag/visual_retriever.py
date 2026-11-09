@@ -26,27 +26,25 @@ COLLECTION_NAME = "hue_landmarks_visual"
 CLIP_MODEL_NAME = "clip-ViT-B-32"
 
 
-def clean_incomplete_hnsw_segments(chroma_dir: str):
-    """Dọn dẹp các file index_metadata.pickle mồ côi nếu có segment bị ngắt."""
-    if not os.path.exists(chroma_dir):
-        return
-    for item in os.listdir(chroma_dir):
-        sub = os.path.join(chroma_dir, item)
-        if os.path.isdir(sub):
-            files = os.listdir(sub)
-            bin_files = [f for f in files if f.endswith(".bin")]
-            if "index_metadata.pickle" in files and len(bin_files) == 0:
-                try:
-                    os.remove(os.path.join(sub, "index_metadata.pickle"))
-                except Exception:
-                    pass
+try:
+    from src.rag.vector_retriever import (
+        clean_incomplete_hnsw_segments,
+        get_ascii_safe_path,
+        load_sentence_transformer_fast,
+    )
+except ImportError:
+    from vector_retriever import (
+        clean_incomplete_hnsw_segments,
+        get_ascii_safe_path,
+        load_sentence_transformer_fast,
+    )
 
 
 class VisualRetriever:
     _instance = None
 
     def __init__(self, chroma_dir: str = CHROMA_DIR, model_name: str = CLIP_MODEL_NAME):
-        self.chroma_dir = chroma_dir
+        self.chroma_dir = get_ascii_safe_path(chroma_dir)
         self.model_name = model_name
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         
@@ -81,13 +79,13 @@ class VisualRetriever:
             try:
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
-                self.model = SentenceTransformer(self.model_name, device=self.device)
+                self.model = load_sentence_transformer_fast(self.model_name, self.device)
                 print(f"✅ [VisualRetriever] Đã tải mô hình thị giác CLIP ({self.model_name}) trên {self.device.upper()}!")
             except Exception as e_model:
                 if self.device != "cpu":
                     print(f"⚠️ [VisualRetriever] Không thể tải CLIP trên {self.device} ({e_model}), chuyển sang chế độ CPU an toàn...")
                     self.device = "cpu"
-                    self.model = SentenceTransformer(self.model_name, device="cpu")
+                    self.model = load_sentence_transformer_fast(self.model_name, "cpu")
                     print(f"✅ [VisualRetriever] Đã tải mô hình thị giác CLIP ({self.model_name}) trên CPU thành công!")
                 else:
                     raise e_model

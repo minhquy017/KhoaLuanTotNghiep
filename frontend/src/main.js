@@ -20,8 +20,29 @@ import {
 } from './firebase.js';
 import { HueWeatherService } from './weather.js';
 import { budgetEstimator } from './budgetEstimator.js';
+import { i18n } from './i18n.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  const escapeHtml = (str) => String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  const inferContextFromPlace = (place) => {
+    const cat = String(place?.category || '').toLowerCase();
+    const isFood = cat.includes('restaurant') || cat.includes('cafe') || cat.includes('ẩm thực') || cat.includes('quán');
+    const isHotel = cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('homestay') || cat.includes('resort');
+    return {
+      anchor_place_id: place?.place_id || place?.node_id || null,
+      anchor_place_label: place?.name || '',
+      anchor_place_kind: isFood ? 'food' : (isHotel ? 'lodging' : 'site'),
+      topic_domain: isFood ? 'culinary' : 'heritage',
+      turn_count: 1
+    };
+  };
+
   // Khởi tạo công cụ Dự toán Ngân sách Du lịch Cố Đô Huế
   budgetEstimator.init();
   window.budgetEstimator = budgetEstimator;
@@ -45,15 +66,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       const health = await TourismApiClient.checkHealth();
       if (health.status === 'healthy') {
         if (statusDot) statusDot.className = 'status-dot pulse';
-        if (statusLabel) statusLabel.textContent = 'Trực tuyến';
-        if (statusPill) statusPill.title = 'Hệ thống đang hoạt động';
+        if (statusLabel) statusLabel.textContent = i18n.t('online', 'Trực tuyến');
+        if (statusPill) statusPill.title = i18n.t('systemOperating', 'Hệ thống đang hoạt động');
       } else {
         throw new Error('Offline');
       }
     } catch {
       if (statusDot) statusDot.className = 'status-dot error';
-      if (statusLabel) statusLabel.textContent = 'Ngoại tuyến';
-      if (statusPill) statusPill.title = 'Không thể kết nối máy chủ';
+      if (statusLabel) statusLabel.textContent = i18n.t('offline', 'Ngoại tuyến');
+      if (statusPill) statusPill.title = i18n.t('cannotConnectServer', 'Không thể kết nối máy chủ');
     }
   }
   await checkBackendStatus();
@@ -71,14 +92,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   function updateMapToggleUI(isOpen) {
     if (btnHeaderToggleMap) {
       btnHeaderToggleMap.classList.toggle('active', isOpen);
-      btnHeaderToggleMap.title = isOpen ? 'Thu gọn bản đồ (Tập trung giao diện Chatbot)' : 'Mở bản đồ không gian Cố đô';
+      btnHeaderToggleMap.title = isOpen ? i18n.t('mapToggleClose', 'Thu gọn Bản đồ') : i18n.t('mapToggleOpen', 'Mở Bản đồ');
       if (headerMapToggleLabel) {
-        headerMapToggleLabel.textContent = isOpen ? 'Thu gọn Bản đồ' : 'Mở Bản đồ';
+        headerMapToggleLabel.textContent = isOpen ? i18n.t('mapToggleClose', 'Thu gọn Bản đồ') : i18n.t('mapToggleOpen', 'Mở Bản đồ');
       }
     }
     if (btnWorkbenchToggleMap) {
       btnWorkbenchToggleMap.classList.toggle('active', isOpen);
-      btnWorkbenchToggleMap.title = isOpen ? 'Thu gọn bản đồ bên cạnh' : 'Mở bản đồ bên cạnh';
+      btnWorkbenchToggleMap.title = isOpen ? i18n.t('mapToggleClose', 'Thu gọn bản đồ') : i18n.t('mapToggleOpen', 'Mở bản đồ');
     }
   }
 
@@ -142,9 +163,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const originEl = document.getElementById('planner-origin-name');
     if (!originEl) return;
     if (mapStudio.userLocation && mapStudio.userLocation.name) {
-      originEl.textContent = mapStudio.userLocation.name;
+      const locName = mapStudio.userLocation.name;
+      if (locName.includes('Vị trí') || locName.toLowerCase().includes('your location')) {
+        originEl.textContent = i18n.t('userLocationHere', 'Vị trí hiện tại của bạn');
+      } else {
+        originEl.textContent = locName;
+      }
     } else {
-      originEl.textContent = 'Đang định vị GPS...';
+      originEl.textContent = i18n.t('userLocationHere', 'Vị trí hiện tại của bạn');
     }
   }
 
@@ -194,7 +220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function locateUserPosition(silent = false) {
     if (!navigator.geolocation) {
       if (!silent) {
-        alert('Trình duyệt của bạn không hỗ trợ Geolocation API.');
+        alert(i18n.t('geoNotSupported', 'Trình duyệt của bạn không hỗ trợ Geolocation API.'));
       }
       return;
     }
@@ -211,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Kiểm tra xem vị trí có nằm trong hoặc gần tỉnh Thừa Thiên Huế (15.8 - 16.8 N, 107.0 - 108.3 E)
         const isNearHue = (lat >= 15.8 && lat <= 16.8 && lng >= 107.0 && lng <= 108.3);
-        const locName = isNearHue ? 'Vị trí hiện tại của bạn' : 'Vị trí của bạn (Ngoài Huế)';
+        const locName = isNearHue ? i18n.t('userLocationHere', 'Vị trí hiện tại của bạn') : i18n.t('userLocationOutside', 'Vị trí của bạn (Ngoài Huế)');
 
         mapStudio.setUserLocation(lat, lng, locName);
         updatePlannerOriginDisplay();
@@ -219,21 +245,21 @@ document.addEventListener('DOMContentLoaded', async () => {
           mapStudio.panTo(lat, lng, 16);
           btnLocateUser?.classList.add('active');
         }
-        btnLocateUser.title = `Đã định vị: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        btnLocateUser.title = `${i18n.t('gpsBadge', 'Đã định vị')}: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
       },
       (err) => {
         btnLocateUser?.classList.remove('loading');
         console.warn('Geolocation error or denied:', err);
         const defaultHueLat = 16.4674;
         const defaultHueLng = 107.5905;
-        mapStudio.setUserLocation(defaultHueLat, defaultHueLng, 'Cầu Tràng Tiền (Trung tâm Huế)');
+        mapStudio.setUserLocation(defaultHueLat, defaultHueLng, i18n.t('defaultHueCenter', 'Cầu Tràng Tiền (Trung tâm Huế)'));
         updatePlannerOriginDisplay();
 
         if (!silent) {
           mapStudio.panTo(defaultHueLat, defaultHueLng, 16);
           btnLocateUser?.classList.add('active');
-          btnLocateUser.title = 'Vị trí mặc định: Cầu Tràng Tiền, Huế';
-          alert('Không thể lấy vị trí thực tế của bạn (trình duyệt chặn hoặc chưa cấp quyền). Hệ thống đã đặt vị trí xuất phát mặc định tại Cầu Tràng Tiền, trung tâm Huế!');
+          btnLocateUser.title = `${i18n.t('defaultHueCenter', 'Cầu Tràng Tiền, Huế')}`;
+          alert(i18n.t('geoDenied', 'Không thể lấy vị trí thực tế của bạn (trình duyệt chặn hoặc chưa cấp quyền). Hệ thống đã đặt vị trí xuất phát mặc định tại Cầu Tràng Tiền, trung tâm Huế!'));
         }
       },
       { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
@@ -254,14 +280,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     mapStudio.setMapStyle(e.target.value);
   });
 
-  // Danh mục tiêu đề bản đồ tương ứng
-  const categoryTitles = {
-    all: 'Bản đồ Di sản',
-    attraction: 'Di tích Cố đô',
-    restaurant: 'Ẩm thực Cố đô',
-    cafe: 'Cà phê & Sunset',
-    hotel: 'Khách sạn & Resort'
-  };
+  function getCategoryTitle(cat) {
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
+    const titles = {
+      all: isEn ? 'Heritage Map' : 'Bản đồ Di sản',
+      attraction: isEn ? 'Imperial Monuments' : 'Di tích Cố đô',
+      restaurant: isEn ? 'Hue Cuisine' : 'Ẩm thực Cố đô',
+      cafe: isEn ? 'Cafe & Sunset' : 'Cà phê & Sunset',
+      hotel: isEn ? 'Hotels & Resorts' : 'Khách sạn & Resort'
+    };
+    return titles[cat] || (isEn ? 'Imperial Locations' : 'Địa điểm Cố đô');
+  }
 
   // Xử lý click chọn bộ lọc danh mục
   filterChips.forEach(chip => {
@@ -272,7 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       mapStudio.filterByCategory(cat);
       if (mapActiveMeta) {
-        const title = categoryTitles[cat] || 'Địa điểm Cố đô';
+        const title = getCategoryTitle(cat);
         mapActiveMeta.textContent = title;
         mapActiveMeta.title = title;
       }
@@ -287,8 +316,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       else c.classList.remove('active');
     });
     if (mapActiveMeta) {
-      mapActiveMeta.textContent = 'Bản đồ Di sản';
-      mapActiveMeta.title = 'Bản đồ Di sản';
+      const title = getCategoryTitle('all');
+      mapActiveMeta.textContent = title;
+      mapActiveMeta.title = title;
     }
     btnLocateUser?.classList.remove('active');
     if (mapSearchInput) {
@@ -306,12 +336,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!studioLayout) return;
     const isCollapsed = studioLayout.classList.toggle('workbench-collapsed');
     btnToggleWorkbench.classList.toggle('active', isCollapsed);
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
     if (workbenchToggleText) {
-      workbenchToggleText.textContent = isCollapsed ? 'Hiện trợ lý' : 'Toàn cảnh';
+      workbenchToggleText.textContent = isCollapsed
+        ? (isEn ? 'Show Assistant' : 'Hiện trợ lý')
+        : (isEn ? 'Overview' : 'Toàn cảnh');
     }
     btnToggleWorkbench.title = isCollapsed
-      ? 'Mở lại bảng trợ lý & lịch trình bên phải'
-      : 'Thu gọn bảng trợ lý để xem bản đồ toàn cảnh';
+      ? (isEn ? 'Reopen assistant & itinerary panel' : 'Mở lại bảng trợ lý & lịch trình bên phải')
+      : (isEn ? 'Collapse assistant panel for full map' : 'Thu gọn bảng trợ lý để xem bản đồ toàn cảnh');
 
     // Đợi transition CSS kết thúc rồi cập nhật lại Leaflet Map Viewport
     setTimeout(() => {
@@ -324,10 +357,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Xử lý ô Tìm kiếm nhanh với Autocomplete Dropdown
   function renderSearchResults(results) {
     if (!mapSearchDropdown) return;
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
     if (results.length === 0) {
+      const emptyText = typeof i18n !== 'undefined'
+        ? i18n.t('mapNoSearchResult', 'Không tìm thấy địa điểm phù hợp với từ khóa')
+        : 'Không tìm thấy địa điểm phù hợp với từ khóa';
       mapSearchDropdown.innerHTML = `
         <div class="search-empty-item">
-          Không tìm thấy địa điểm phù hợp với từ khóa
+          ${emptyText}
         </div>
       `;
       mapSearchDropdown.style.display = 'block';
@@ -342,10 +379,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const catLabelMap = {
-      attraction: 'Di tích',
-      restaurant: 'Ẩm thực',
-      cafe: 'Cà phê',
-      hotel: 'Khách sạn'
+      attraction: isEn ? 'Monuments' : 'Di tích',
+      restaurant: isEn ? 'Cuisine' : 'Ẩm thực',
+      cafe: isEn ? 'Cafe' : 'Cà phê',
+      hotel: isEn ? 'Hotels' : 'Khách sạn'
     };
 
     mapSearchDropdown.innerHTML = results.slice(0, 8).map(item => {
@@ -443,7 +480,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return {
         lat: mapStudio.userLocation.lat,
         lng: mapStudio.userLocation.lng,
-        name: mapStudio.userLocation.name || 'Vị trí hiện tại của bạn'
+        name: mapStudio.userLocation.name || i18n.t('userLocationHere', 'Vị trí hiện tại của bạn')
       };
     }
 
@@ -459,7 +496,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         const isNearHue = (lat >= 15.8 && lat <= 16.8 && lng >= 107.0 && lng <= 108.3);
-        const locName = isNearHue ? 'Vị trí hiện tại của bạn' : 'Vị trí của bạn (Ngoài Huế)';
+        const locName = isNearHue
+          ? i18n.t('userLocationHere', 'Vị trí hiện tại của bạn')
+          : i18n.t('userLocationOutside', 'Vị trí của bạn (Ngoài Huế)');
         mapStudio.setUserLocation(lat, lng, locName);
         updatePlannerOriginDisplay();
         return { lat, lng, name: locName };
@@ -471,7 +510,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Fallback trung tâm Huế (Cầu Tràng Tiền)
     const defLat = 16.4674;
     const defLng = 107.5905;
-    const defName = 'Cầu Tràng Tiền (Trung tâm Huế)';
+    const defName = i18n.t('defaultHueCenter', 'Cầu Tràng Tiền (Trung tâm Huế)');
     mapStudio.setUserLocation(defLat, defLng, defName);
     updatePlannerOriginDisplay();
     return { lat: defLat, lng: defLng, name: defName };
@@ -482,21 +521,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     const coords = await getUserCoordinates();
     const userLat = coords.lat;
     const userLng = coords.lng;
-    const userLocName = coords.name;
+    const isEn = i18n.getLanguage() === 'en';
 
-    const dishLabel = preferredDishes && preferredDishes.length > 0
-      ? `ưu tiên các món: ${preferredDishes.join(', ')}`
-      : 'ẩm thực Cố đô đặc sắc';
-    const userQueryText = `📅 Lập lịch trình khám phá Huế ${days} ngày cho ${tripType}, xuất phát từ ${userLocName}, ${dishLabel}.`;
+    let userLocName = coords.name;
+    if (isEn && (userLocName.includes('Vị trí') || userLocName.toLowerCase().includes('your location'))) {
+      userLocName = 'your current location';
+    } else if (!isEn && (userLocName.toLowerCase().includes('your location') || userLocName.toLowerCase().includes('starting point'))) {
+      userLocName = 'Vị trí hiện tại của bạn';
+    }
+
+    const activeTags = document.querySelectorAll('.dish-tag.active');
+    const displayDishes = (isEn && activeTags.length > 0)
+      ? Array.from(activeTags).map(t => t.textContent.trim())
+      : preferredDishes;
+
+    let dishLabel = '';
+    if (displayDishes && displayDishes.length > 0) {
+      dishLabel = isEn ? `prioritizing dishes: ${displayDishes.join(', ')}` : `ưu tiên các món: ${displayDishes.join(', ')}`;
+    } else {
+      dishLabel = isEn ? 'authentic Imperial specialties' : 'ẩm thực Cố đô đặc sắc';
+    }
+
+    const userQueryText = isEn
+      ? `📅 Plan a ${days}-day Hue travel itinerary for ${tripType}, starting from ${userLocName}, ${dishLabel}.`
+      : `📅 Lập lịch trình khám phá Huế ${days} ngày cho ${tripType}, xuất phát từ ${userLocName}, ${dishLabel}.`;
     lastUserPrompt = userQueryText;
     appendUserMessage(userQueryText);
 
     // Thu gọn quick planner card
     togglePlanner(false);
 
-    const loadingId = appendAssistantLoading(
-      `Đang tối ưu hóa hành trình ${days} ngày xuất phát từ ${userLocName}, kết nối ẩm thực và vẽ lộ trình...`
-    );
+    const loadingText = isEn
+      ? `Optimizing ${days}-day itinerary from ${userLocName}, connecting local dining and mapping routes...`
+      : `Đang tối ưu hóa hành trình ${days} ngày xuất phát từ ${userLocName}, kết nối ẩm thực và vẽ lộ trình...`;
+    const loadingId = appendAssistantLoading(loadingText);
 
     if (btnGenItinerary) {
       btnGenItinerary.classList.add('loading');
@@ -504,12 +562,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-      const res = await TourismApiClient.generateItinerary(days, preferredDishes, tripType, userLat, userLng);
+      const userPrefs = userStore.getPreferences ? userStore.getPreferences() : null;
+      const res = await TourismApiClient.generateItinerary(days, preferredDishes, tripType, userLat, userLng, userPrefs);
       removeLoadingMessage(loadingId);
       appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName);
     } catch (err) {
       removeLoadingMessage(loadingId);
-      appendAssistantError(`Không thể tạo lịch trình: ${err.message}. Vui lòng thử lại.`);
+      const errMsg = isEn ? `Could not create itinerary: ${err.message}. Please try again.` : `Không thể tạo lịch trình: ${err.message}. Vui lòng thử lại.`;
+      appendAssistantError(errMsg);
     } finally {
       if (btnGenItinerary) {
         btnGenItinerary.classList.remove('loading');
@@ -529,7 +589,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Quản lý trạng thái phiên chat toàn cục
   let activeSessionId = 'session_' + Date.now();
-  let activeSessionTitle = 'Cuộc trò chuyện mới';
+  let activeSessionTitle = (typeof i18n !== 'undefined' && i18n.getLanguage() === 'en') ? 'New Chat' : 'Cuộc trò chuyện mới';
   let activeSessionMessages = [];
   let activeSessionContext = null;
   let isRestoringSession = false;
@@ -540,50 +600,65 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Ghi nhận phản hồi người dùng phục vụ đánh giá thực nghiệm & RLHF
   // =============================================================================
   function createFeedbackBarHtml(messageId, existingRating = null) {
+    const hintText = typeof i18n !== 'undefined' ? i18n.t('feedbackHint', 'Đánh giá câu trả lời:') : 'Đánh giá câu trả lời:';
+    const copyText = typeof i18n !== 'undefined' ? i18n.t('feedbackCopy', 'Sao chép') : 'Sao chép';
+    const regenText = typeof i18n !== 'undefined' ? i18n.t('feedbackRegenerate', 'Tạo lại') : 'Tạo lại';
+    const regenTitle = typeof i18n !== 'undefined' ? i18n.t('feedbackRegenerateTooltip', 'Tạo lại câu trả lời') : 'Tạo lại câu trả lời';
+    const likeText = typeof i18n !== 'undefined' ? i18n.t('feedbackLike', 'Hữu ích') : 'Hữu ích';
+    const dislikeText = typeof i18n !== 'undefined' ? i18n.t('feedbackDislike', 'Chưa tốt') : 'Chưa tốt';
+    const dislikeTitle = typeof i18n !== 'undefined' ? i18n.t('feedbackDislikeTitle', 'Lý do bạn chưa hài lòng:') : 'Lý do bạn chưa hài lòng:';
+    const reasonIncorrect = typeof i18n !== 'undefined' ? i18n.t('feedbackReasonIncorrect', 'Thông tin chưa chính xác') : 'Thông tin chưa chính xác';
+    const reasonIrrelevant = typeof i18n !== 'undefined' ? i18n.t('feedbackReasonIrrelevant', 'Chưa đúng trọng tâm câu hỏi') : 'Chưa đúng trọng tâm câu hỏi';
+    const reasonLocation = typeof i18n !== 'undefined' ? i18n.t('feedbackReasonLocation', 'Địa điểm/Lộ trình chưa hợp lý') : 'Địa điểm/Lộ trình chưa hợp lý';
+    const reasonOther = typeof i18n !== 'undefined' ? i18n.t('feedbackReasonOther', 'Khác') : 'Khác';
+    const commentPlaceholder = typeof i18n !== 'undefined' ? i18n.t('feedbackCommentPlaceholder', 'Góp ý chi tiết để AI cải thiện tốt hơn...') : 'Góp ý chi tiết để AI cải thiện tốt hơn...';
+    const submitText = typeof i18n !== 'undefined' ? i18n.t('feedbackSubmitBtn', 'Gửi') : 'Gửi';
+    const closeTitle = typeof i18n !== 'undefined' ? i18n.t('closeModal', 'Đóng') : 'Đóng';
+
     return `
       <div class="message-feedback-row" data-message-id="${messageId}">
         <div class="feedback-actions">
-          <span class="feedback-hint">Đánh giá câu trả lời:</span>
-          <button type="button" class="btn-msg-feedback btn-copy-msg" title="Sao chép" aria-label="Sao chép câu trả lời">
+          <span class="feedback-hint">${hintText}</span>
+          <button type="button" class="btn-msg-feedback btn-copy-msg" title="${copyText}" aria-label="${copyText}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            <span class="copy-label">Sao chép</span>
+            <span class="copy-label">${copyText}</span>
           </button>
-          <button type="button" class="btn-msg-feedback btn-regenerate-msg" title="Tạo lại câu trả lời" aria-label="Tạo lại câu trả lời">
+          <button type="button" class="btn-msg-feedback btn-regenerate-msg" title="${regenTitle}" aria-label="${regenTitle}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
               <polyline points="21 3 21 9 15 9"></polyline>
             </svg>
-            <span>Tạo lại</span>
+            <span>${regenText}</span>
           </button>
-          <button type="button" class="btn-msg-feedback btn-feedback-like ${existingRating === 'like' ? 'active' : ''}" title="Hữu ích" aria-label="Câu trả lời hữu ích">
+          <button type="button" class="btn-msg-feedback btn-feedback-like ${existingRating === 'like' ? 'active' : ''}" title="${likeText}" aria-label="${likeText}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
             </svg>
-            <span>Hữu ích</span>
+            <span>${likeText}</span>
           </button>
-          <button type="button" class="btn-msg-feedback btn-feedback-dislike ${existingRating === 'dislike' ? 'active' : ''}" title="Chưa tốt" aria-label="Câu trả lời chưa tốt">
+          <button type="button" class="btn-msg-feedback btn-feedback-dislike ${existingRating === 'dislike' ? 'active' : ''}" title="${dislikeText}" aria-label="${dislikeText}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path>
             </svg>
-            <span>Chưa tốt</span>
+            <span>${dislikeText}</span>
           </button>
         </div>
 
         <div class="feedback-dislike-box hidden">
-          <div class="feedback-dislike-title">Lý do bạn chưa hài lòng:</div>
+          <div class="feedback-dislike-title">${dislikeTitle}</div>
           <div class="feedback-chips">
-            <button type="button" class="feedback-chip active" data-reason="incorrect">Thông tin chưa chính xác</button>
-            <button type="button" class="feedback-chip" data-reason="irrelevant">Chưa đúng trọng tâm câu hỏi</button>
-            <button type="button" class="feedback-chip" data-reason="location">Địa điểm/Lộ trình chưa hợp lý</button>
-            <button type="button" class="feedback-chip" data-reason="other">Khác</button>
+            <button type="button" class="feedback-chip active" data-reason="incorrect">${reasonIncorrect}</button>
+            <button type="button" class="feedback-chip" data-reason="irrelevant">${reasonIrrelevant}</button>
+            <button type="button" class="feedback-chip" data-reason="location">${reasonLocation}</button>
+            <button type="button" class="feedback-chip" data-reason="other">${reasonOther}</button>
           </div>
           <div class="feedback-input-row">
-            <input type="text" class="feedback-comment-input" placeholder="Góp ý chi tiết để AI cải thiện tốt hơn..." />
-            <button type="button" class="btn-submit-feedback">Gửi</button>
-            <button type="button" class="btn-cancel-feedback" title="Đóng">✕</button>
+            <input type="text" class="feedback-comment-input" placeholder="${commentPlaceholder}" />
+            <button type="button" class="btn-submit-feedback">${submitText}</button>
+            <button type="button" class="btn-cancel-feedback" title="${closeTitle}">✕</button>
           </div>
         </div>
       </div>
@@ -630,10 +705,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const textToCopy = meta.plainText || container.querySelector('.answer-content')?.innerText || container.innerText || '';
         await navigator.clipboard.writeText(textToCopy);
         const copyLabel = copyBtn.querySelector('.copy-label');
-        if (copyLabel) copyLabel.textContent = 'Đã chép!';
+        if (copyLabel) copyLabel.textContent = typeof i18n !== 'undefined' ? i18n.t('feedbackCopied', 'Đã chép!') : 'Đã chép!';
         copyBtn.classList.add('copied');
         setTimeout(() => {
-          if (copyLabel) copyLabel.textContent = 'Sao chép';
+          if (copyLabel) copyLabel.textContent = typeof i18n !== 'undefined' ? i18n.t('feedbackCopy', 'Sao chép') : 'Sao chép';
           copyBtn.classList.remove('copied');
         }, 2000);
       } catch (e) {
@@ -658,7 +733,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         isItinerary: Boolean(meta.isItinerary)
       });
 
-      authController.showToast('Cảm ơn bạn! Đánh giá hữu ích đã được ghi nhận vào Firestore.');
+      authController.showToast(typeof i18n !== 'undefined' ? i18n.t('feedbackLikeRecordedToast', 'Cảm ơn bạn! Đánh giá hữu ích đã được ghi nhận.') : 'Cảm ơn bạn! Đánh giá hữu ích đã được ghi nhận.');
     });
 
     dislikeBtn?.addEventListener('click', async () => {
@@ -685,7 +760,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         isItinerary: Boolean(meta.isItinerary)
       });
 
-      authController.showToast('Đã ghi nhận! Bạn có thể chọn lý do góp ý bên dưới.');
+      authController.showToast(typeof i18n !== 'undefined' ? i18n.t('feedbackRecordedToast', 'Đã ghi nhận! Bạn có thể chọn lý do góp ý bên dưới.') : 'Đã ghi nhận! Bạn có thể chọn lý do góp ý bên dưới.');
     });
 
     cancelBtn?.addEventListener('click', () => {
@@ -711,14 +786,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       updateMessageFeedbackInSession(meta.messageId, 'dislike', selectedReason, comment);
 
       if (dislikeBox) {
+        const thanksNote = typeof i18n !== 'undefined' ? i18n.t('feedbackThanksDetailed', 'Cảm ơn đóng góp của bạn! Phản hồi này sẽ dùng để hoàn thiện mô hình AI.') : 'Cảm ơn đóng góp của bạn! Phản hồi này sẽ dùng để hoàn thiện mô hình AI.';
         dislikeBox.innerHTML = `
           <div class="feedback-thankyou-note">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>Cảm ơn đóng góp của bạn! Phản hồi này sẽ dùng để hoàn thiện mô hình AI.</span>
+            <span>${thanksNote}</span>
           </div>
         `;
       }
-      authController.showToast('Đã gửi phản hồi thành công!');
+      authController.showToast(typeof i18n !== 'undefined' ? i18n.t('ratingThanksToast', 'Đã gửi phản hồi thành công!') : 'Đã gửi phản hồi thành công!');
     });
   }
 
@@ -733,10 +809,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = 'Vị trí của bạn', persist = true, customDeckId = null, existingRating = null) {
+  function appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName = null, persist = true, customDeckId = null, existingRating = null) {
+    const isEn = i18n.getLanguage() === 'en';
+    let cleanLocName = userLocName;
+    if (isEn) {
+      if (!cleanLocName || cleanLocName.includes('Vị trí') || cleanLocName.toLowerCase().includes('your location')) {
+        cleanLocName = 'your current location';
+      }
+    } else {
+      if (!cleanLocName || cleanLocName.toLowerCase().includes('your location')) {
+        cleanLocName = 'Vị trí hiện tại của bạn';
+      }
+    }
+    userLocName = cleanLocName;
     const plan = res.itinerary_data;
     if (!plan || !plan.days || plan.days.length === 0) {
-      appendAssistantError('Không tìm thấy dữ liệu lịch trình phù hợp với tiêu chí đã chọn.');
+      appendAssistantError(isEn ? 'No suitable itinerary data found for the selected criteria.' : 'Không tìm thấy dữ liệu lịch trình phù hợp với tiêu chí đã chọn.');
       return;
     }
 
@@ -795,9 +883,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const dotColor = dayColors[day.day_number] || '#18181B';
 
       dayTabsHtml += `
-        <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}" title="Xem lịch trình và lộ trình Ngày ${day.day_number}">
+        <button type="button" class="deck-day-tab ${isFirstDay ? 'active' : ''}" data-deck="${deckId}" data-day="${day.day_number}" title="${i18n.t('viewScheduleDay', 'Xem lịch trình và lộ trình Ngày')} ${day.day_number}">
           <span class="day-tab-dot" style="background-color: ${dotColor};"></span>
-          <span>Ngày ${day.day_number}</span>
+          <span>${i18n.t('legDayPrefix', 'Ngày')} ${day.day_number}</span>
         </button>
       `;
 
@@ -815,7 +903,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const waypoints = dayStops.slice(1, -1).map(s => `${s.lat},${s.lng}`).join('|');
         const gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}${waypoints ? `&waypoints=${encodeURIComponent(waypoints)}` : ''}`;
         gmapsRouteBtn = `
-          <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-gmaps-route" title="Mở chỉ đường toàn tuyến Ngày ${day.day_number} trên Google Maps">
+          <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-gmaps-route" title="${i18n.t('openRouteGmaps', 'Mở chỉ đường toàn tuyến Ngày')} ${day.day_number} Google Maps">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
             <span>Google Maps</span>
           </a>
@@ -841,12 +929,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const legNum = hasOriginInDay ? slotIdx : (slotIdx + 1);
         const legBadge = isUserOrigin
           ? ''
-          : `<span class="meta-pill pill-leg-num">Chặng ${legNum}</span>`;
+          : `<span class="meta-pill pill-leg-num">${i18n.t('tourLegItem', 'Chặng')} ${legNum}</span>`;
 
         let distanceBadge = '';
         if (slot.distance_from_prev_km && slot.distance_from_prev_km > 0) {
           const distLabel = (isFirstDay && slotIdx === 1)
-            ? `Cách vị trí bạn: ${slot.distance_from_prev_km.toFixed(1)} km`
+            ? `${i18n.t('distFromYou', 'Cách vị trí bạn')}: ${slot.distance_from_prev_km.toFixed(1)} km`
             : `${slot.distance_from_prev_km.toFixed(1)} km`;
           distanceBadge = `<span class="meta-pill pill-distance">${distLabel}</span>`;
         } else if (slot.distance_to_anchor_km) {
@@ -854,24 +942,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const dishBadge = slot.dish_highlight || slot.specialty_dish
-          ? `<span class="meta-pill pill-dish">Món: ${slot.dish_highlight || slot.specialty_dish}</span>`
+          ? `<span class="meta-pill pill-dish">${i18n.t('dishLabel', 'Món')}: ${slot.dish_highlight || slot.specialty_dish}</span>`
           : '';
 
         const ratingBadge = (!isUserOrigin && slot.rating)
           ? `<span class="meta-pill pill-rating">⭐ ${slot.rating.toFixed(1)}</span>`
           : '';
 
+        let displayActivityType = slot.activity_type || slot.category;
+        if (isEn && displayActivityType) {
+          const actLower = displayActivityType.toLowerCase();
+          if (actLower.includes('di tích') || actLower.includes('tham quan') || actLower.includes('thắng cảnh') || actLower.includes('di sản') || actLower.includes('attraction')) {
+            displayActivityType = 'Historical Heritage';
+          } else if (actLower.includes('ẩm thực') || actLower.includes('ăn uống') || actLower.includes('đặc sản') || actLower.includes('restaurant')) {
+            displayActivityType = 'Traditional Cuisine';
+          } else if (actLower.includes('cà phê') || actLower.includes('cafe') || actLower.includes('coffee')) {
+            displayActivityType = 'Coffee & Sunset';
+          } else if (actLower.includes('khách sạn') || actLower.includes('nghỉ dưỡng') || actLower.includes('hotel') || actLower.includes('lưu trú')) {
+            displayActivityType = 'Hotel & Resort';
+          } else if (actLower.includes('khởi hành') || actLower.includes('xuất phát') || actLower.includes('userlocation')) {
+            displayActivityType = 'Departure';
+          } else if (actLower.includes('ngắm cảnh') || actLower.includes('giải trí')) {
+            displayActivityType = 'Scenic & Entertainment';
+          }
+        } else if (!displayActivityType) {
+          displayActivityType = isFood ? i18n.t('cuisine', 'Ẩm thực') : i18n.t('monuments', 'Di tích');
+        }
+
         const typeBadge = isUserOrigin
-          ? `<span class="meta-pill pill-origin">Điểm xuất phát</span>`
-          : `<span class="meta-pill">${slot.activity_type || slot.category || (isFood ? 'Ẩm thực' : 'Di tích')}</span>`;
+          ? `<span class="meta-pill pill-origin">${i18n.t('legOriginDefault', 'Điểm xuất phát')}</span>`
+          : `<span class="meta-pill">${displayActivityType}</span>`;
 
         let timeBadgeHtml = '';
         if (isUserOrigin) {
           const rawMatch = (slot.slot_name || '').match(/\((.*?)\)/);
           const timeRange = (rawMatch ? rawMatch[1] : '07:30 – 08:00').replace(/-/g, '–').trim();
-          timeBadgeHtml = `<span class="badge-period">Khởi hành</span><span class="badge-time">${timeRange}</span>`;
+          timeBadgeHtml = `<span class="badge-period">${i18n.t('departureLabel', 'Khởi hành')}</span><span class="badge-time">${timeRange}</span>`;
         } else {
-          const raw = slot.slot_name || slot.slot_time || 'Chặng tour';
+          const raw = slot.slot_name || slot.slot_time || i18n.t('tourLeg', 'Chặng tour');
           const match = raw.match(/^(.*?)\s*\((.*?)\)$/);
           if (match) {
             const timeRange = match[2].replace(/-/g, '–').trim();
@@ -882,25 +990,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const locateBtn = (lat && lng)
-          ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}" title="Xem vị trí trên bản đồ">
+          ? `<button type="button" class="btn-locate" data-lat="${lat}" data-lng="${lng}" data-name="${slot.place_name || slot.name}" title="${i18n.t('viewOnMap', 'Xem vị trí trên bản đồ')}">
                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2 2"/></svg>
-               <span>Định vị</span>
+               <span>${i18n.t('itineraryLocateBtn', 'Định vị')}</span>
              </button>`
           : '';
 
         const detailBtn = isUserOrigin
           ? ''
           : `<button type="button" class="btn-step-detail" data-name="${slot.place_name || slot.name}">
-               <span>Xem chi tiết</span>
+               <span>${i18n.t('itineraryDetailBtn', 'Xem chi tiết')}</span>
                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
              </button>`;
+
+        let displayPlaceName = slot.place_name || slot.name;
+        let displayPlaceDesc = slot.description || slot.address || i18n.t('poiHeritageExp', 'Điểm trải nghiệm di sản Cố đô');
+        if (isUserOrigin) {
+          displayPlaceName = isEn ? 'Your location (Starting Point)' : (slot.place_name || slot.name || 'Vị trí của bạn (Điểm xuất phát)');
+          displayPlaceDesc = isEn ? 'Imperial heritage tour departure point' : (slot.description || slot.address || 'Điểm xuất phát hành trình Cố đô');
+        } else if (isEn) {
+          if (displayPlaceDesc === 'Điểm trải nghiệm di sản Cố đô') {
+            displayPlaceDesc = 'Imperial heritage experience spot';
+          }
+        }
 
         timelineStepsHtml += `
           <div class="timeline-step ${isUserOrigin ? 'timeline-step-origin' : ''}" data-name="${slot.place_name || slot.name}" data-step-index="${slotIdx}">
             <div class="step-time-badge">${timeBadgeHtml}</div>
             <div class="step-content">
-              <h4 class="step-poi-name ${isUserOrigin ? 'origin-name' : ''}" data-name="${slot.place_name || slot.name}" title="${isUserOrigin ? 'Điểm xuất phát tour của bạn' : 'Nhấp để xem hồ sơ & đánh giá chi tiết'}">${slot.place_name || slot.name}</h4>
-              <p class="step-poi-desc">${slot.description || slot.address || 'Điểm trải nghiệm di sản Cố đô'}</p>
+              <h4 class="step-poi-name ${isUserOrigin ? 'origin-name' : ''}" data-name="${slot.place_name || slot.name}" title="${isUserOrigin ? i18n.t('userOriginTitle', 'Điểm xuất phát tour của bạn') : i18n.t('clickForDetails', 'Nhấp để xem hồ sơ & đánh giá chi tiết')}">${displayPlaceName}</h4>
+              <p class="step-poi-desc">${displayPlaceDesc}</p>
               <div class="step-meta-row">
                 <div class="step-meta-tags">
                   ${legBadge}
@@ -919,13 +1038,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
       });
 
+      let themeText = day.theme || day.cluster_name || i18n.t('exploreHeritage', 'Khám phá Cố đô');
+      if (isEn && themeText) {
+        themeText = themeText
+          .replace(/Kinh Thành Huế & Hương vị Ẩm thực Cố đô/gi, 'Hue Citadel & Imperial Culinary Delights')
+          .replace(/Di tích bờ Nam & Cảnh quan lăng tẩm/gi, 'Southern Monuments & Royal Tombs')
+          .replace(/Sông Hương & Làng nghề truyền thống/gi, 'Perfume River & Traditional Craft Villages')
+          .replace(/Hành trình Di sản Hoàng cung & Cổ tự ven Sông Hương/gi, 'Imperial Citadel Heritage & Perfume River Ancient Temples')
+          .replace(/Khám phá Quần thể Lăng tẩm Vương triều & Làng hương Cổ/gi, 'Royal Tombs Complex & Ancient Incense Craft Village')
+          .replace(/Trải nghiệm Cảnh quan Sinh thái & Làng quê Cố Đô/gi, 'Eco-scenic Landscape & Imperial Countryside Experience')
+          .replace(/Khám phá Cố đô/gi, 'Hue Heritage Discovery');
+      }
+
       dayContentsHtml += `
         <div class="deck-day-content ${isFirstDay ? 'active' : ''}" id="${deckId}-day-${day.day_number}">
           <div class="deck-day-summary">
-            <div class="deck-day-theme">Ngày ${day.day_number}: ${day.theme || day.cluster_name || 'Khám phá Cố đô'}</div>
+            <div class="deck-day-theme">${i18n.t('legDayPrefix', 'Ngày')} ${day.day_number}: ${themeText}</div>
             <div class="deck-day-actions">
               ${gmapsRouteBtn}
-              <span class="day-badge">${slots.length} chặng${totalKm}</span>
+              <span class="day-badge">${slots.length} ${i18n.t('legsUnit', 'chặng')}${totalKm}</span>
             </div>
           </div>
           <div class="day-body" style="padding: 0;">
@@ -937,14 +1068,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (plan.days.length > 1) {
       dayTabsHtml += `
-        <button type="button" class="deck-day-tab" data-deck="${deckId}" data-day="all" title="Xem tuyến đường toàn bộ các ngày cùng lúc">
+        <button type="button" class="deck-day-tab" data-deck="${deckId}" data-day="all" title="${i18n.t('allDaysRouteTitle', 'Xem tuyến đường toàn bộ các ngày cùng lúc')}">
           <span class="day-tab-dot" style="background: #18181B;"></span>
-          <span>Tất cả ngày</span>
+          <span>${i18n.t('allDaysTab', 'Tất cả ngày')}</span>
         </button>
       `;
     }
 
     const totalKmText = totalTripDistanceKm > 0 ? ` · ~${totalTripDistanceKm.toFixed(1)} km` : '';
+
+    const introHtml = isEn
+      ? `<p>I have optimized the <strong>${days}-day itinerary</strong> for <strong>${tripType}</strong> departing from <strong>${userLocName || 'your current location'}</strong> based on realistic travel distances. The full route is synchronized on the map.</p>`
+      : `<p>Mình đã tối ưu hóa lịch trình <strong>${days} ngày</strong> cho <strong>${tripType}</strong> xuất phát từ <strong>${userLocName || 'Vị trí của bạn'}</strong> theo khoảng cách di chuyển thực tế. Toàn bộ lộ trình đã được đồng bộ lên bản đồ bên cạnh.</p>`;
 
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant has-deck';
@@ -957,32 +1092,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         </svg>
       </div>
       <div class="message-bubble">
-        <div class="message-author">Lịch trình Tour Cố đô</div>
-        <p>Mình đã tối ưu hóa lịch trình <strong>${days} ngày</strong> cho <strong>${tripType}</strong> xuất phát từ <strong>${userLocName || 'Vị trí của bạn'}</strong> theo khoảng cách di chuyển thực tế. Toàn bộ lộ trình đã được đồng bộ lên bản đồ bên cạnh.</p>
+        <div class="message-author">${i18n.t('itineraryTourAuthor', 'Lịch trình Tour Cố đô')}</div>
+        ${introHtml}
         
         <div class="chat-itinerary-deck" id="${deckId}">
           <div class="deck-header">
             <div class="deck-header-info">
               <h3 class="deck-title">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-                Lộ trình Khám phá Huế (${days} ngày)
+                ${i18n.t('itineraryTitlePrefix', 'Lộ trình Khám phá Huế')} (${days} ${i18n.t('daysUnit', 'ngày')})
               </h3>
-              <span class="deck-subtitle">Đối tượng: ${tripType} · ${totalStopsCount} điểm đến</span>
+              <span class="deck-subtitle">${i18n.t('targetAudience', 'Đối tượng')}: ${tripType} · ${totalStopsCount} ${i18n.t('stopsCount', 'điểm đến')}</span>
             </div>
             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <div class="deck-badge">${days} Ngày${totalKmText}</div>
-              <button type="button" class="btn-deck-budget" id="btn-budget-${deckId}" title="Dự toán chi phí vé di tích, ẩm thực và phương tiện">
+              <div class="deck-badge">${days} ${i18n.t('daysUnit', 'Ngày')}${totalKmText}</div>
+              <button type="button" class="btn-deck-budget" id="btn-budget-${deckId}" title="${i18n.t('budgetBtnTooltip', 'Dự toán chi phí vé di tích, ẩm thực và phương tiện')}">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="2" y="4" width="20" height="16" rx="2"></rect>
                   <line x1="2" y1="10" x2="22" y2="10"></line>
                 </svg>
-                <span>Dự toán chi phí</span>
+                <span>${i18n.t('itineraryBudgetBtn', 'Dự toán chi phí')}</span>
               </button>
-              <button type="button" class="btn-deck-save-tour" id="btn-save-${deckId}" title="Lưu lịch trình này vào tài khoản cá nhân">
+              <button type="button" class="btn-deck-save-tour" id="btn-save-${deckId}" title="${i18n.t('saveTourTooltip', 'Lưu lịch trình này vào tài khoản cá nhân')}">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span>Lưu Tour</span>
+                <span>${i18n.t('itinerarySaveBtn', 'Lưu Tour')}</span>
               </button>
             </div>
           </div>
@@ -996,10 +1131,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
 
           <div class="deck-followup">
-            <span class="deck-followup-label">Hỏi tiếp:</span>
-            <button type="button" class="btn-deck-followup">Chi phí dự kiến chuyến đi này khoảng bao nhiêu?</button>
-            <button type="button" class="btn-deck-followup">Thời điểm tham quan Đại Nội đẹp nhất trong ngày?</button>
-            <button type="button" class="btn-deck-followup">Phương tiện di chuyển hợp lý nhất ở Huế?</button>
+            <span class="deck-followup-label">${i18n.t('followupLabel', 'Hỏi tiếp:')}</span>
+            <button type="button" class="btn-deck-followup">${i18n.t('followupCost', 'Chi phí dự kiến chuyến đi này khoảng bao nhiêu?')}</button>
+            <button type="button" class="btn-deck-followup">${i18n.t('followupBestTime', 'Thời điểm tham quan Đại Nội đẹp nhất trong ngày?')}</button>
+            <button type="button" class="btn-deck-followup">${i18n.t('followupTransport', 'Phương tiện di chuyển hợp lý nhất ở Huế?')}</button>
           </div>
 
           <div class="deck-feedback-wrapper">
@@ -1014,8 +1149,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Gán sự kiện Feedback cho thẻ lịch trình
     bindFeedbackEvents(msg, {
       messageId: deckId,
-      prompt: `Lập lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
-      plainText: `Lộ trình Khám phá Huế (${days} ngày) cho ${tripType} với ${totalStopsCount} điểm đến.`,
+      prompt: isEn ? `Create Hue Imperial tour ${days} days for ${tripType}` : `Lập lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
+      plainText: isEn ? `Hue Imperial Itinerary (${days} days) for ${tripType} with ${totalStopsCount} destinations.` : `Lộ trình Khám phá Huế (${days} ngày) cho ${tripType} với ${totalStopsCount} điểm đến.`,
       isItinerary: true
     });
 
@@ -1112,8 +1247,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       deckEl.querySelectorAll('.btn-deck-followup').forEach(btn => {
         btn.addEventListener('click', () => {
           const query = btn.textContent.trim();
-          if (query.includes('Chi phí dự kiến')) {
-            budgetEstimator.openModal(plan, `Lịch trình Huế ${days} ngày (${tripType})`);
+          if (query.includes('Chi phí dự kiến') || query.includes('estimated budget') || query.includes('cost')) {
+            const tourTitle = `${i18n.t('itineraryTitlePrefix', 'Lịch trình Huế')} ${days} ${i18n.t('daysUnit', 'ngày')} (${tripType})`;
+            budgetEstimator.openModal(plan, tourTitle);
           } else {
             sendChatQuery(query);
           }
@@ -1123,7 +1259,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Gán sự kiện cho nút Dự toán chi phí
       const btnBudget = document.getElementById(`btn-budget-${deckId}`);
       btnBudget?.addEventListener('click', () => {
-        budgetEstimator.openModal(plan, `Lịch trình Huế ${days} ngày (${tripType})`);
+        const tourTitle = `${i18n.t('itineraryTitlePrefix', 'Lịch trình Huế')} ${days} ${i18n.t('daysUnit', 'ngày')} (${tripType})`;
+        budgetEstimator.openModal(plan, tourTitle);
       });
 
       // Gán sự kiện cho nút Lưu Tour vào tài khoản Google / Cloud
@@ -1131,18 +1268,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnSaveTour?.addEventListener('click', async () => {
         if (!authController.currentUser) {
           authController.openAuthModal('login');
-          authController.showToast('Vui lòng đăng nhập để lưu lịch trình vào tài khoản.');
+          authController.showToast(i18n.t('loginToSaveTour', 'Vui lòng đăng nhập để lưu lịch trình vào tài khoản.'));
           return;
         }
 
         try {
           btnSaveTour.disabled = true;
-          btnSaveTour.innerHTML = '<span>Đang lưu...</span>';
+          btnSaveTour.innerHTML = `<span>${i18n.t('savingTour', 'Đang lưu...')}</span>`;
+          const tourTitle = `${i18n.t('itineraryTitlePrefix', 'Lịch trình Huế')} ${days} ${i18n.t('daysUnit', 'ngày')} (${tripType})`;
           await saveItinerary(authController.currentUser.uid, {
-            title: `Lịch trình Huế ${days} ngày (${tripType})`,
+            title: tourTitle,
             days,
             tripType,
-            userLocationName: userLocName || 'Thành phố Huế',
+            userLocationName: userLocName || (isEn ? 'Hue City' : 'Thành phố Huế'),
             stopsCount: totalStopsCount,
             totalKm: totalTripDistanceKm,
             rawResult: res,
@@ -1153,13 +1291,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            <span>Đã lưu</span>
+            <span>${i18n.t('savedTourBtn', 'Đã lưu')}</span>
           `;
-          authController.showToast('Đã lưu lịch trình thành công vào tài khoản!');
+          authController.showToast(i18n.t('tourSavedSuccess', 'Đã lưu lịch trình thành công vào tài khoản!'));
         } catch (err) {
           btnSaveTour.disabled = false;
-          btnSaveTour.innerHTML = '<span>Lưu Tour</span>';
-          authController.showToast(`Lỗi khi lưu lịch trình: ${err.message}`);
+          btnSaveTour.innerHTML = `<span>${i18n.t('itinerarySaveBtn', 'Lưu Tour')}</span>`;
+          authController.showToast(`${i18n.t('cannotSaveTour', 'Lỗi khi lưu lịch trình')}: ${err.message}`);
         }
       });
     }
@@ -1176,7 +1314,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       activeSessionMessages.push({
         id: deckId,
         role: 'assistant',
-        text: `📅 Lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
+        text: isEn ? `📅 ${days}-day Hue Imperial Tour for ${tripType}` : `📅 Lịch trình tour Cố đô Huế ${days} ngày cho ${tripType}`,
         isItinerary: true,
         itineraryRes: res,
         days,
@@ -1250,7 +1388,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       };
       img.onerror = () => {
         URL.revokeObjectURL(url);
-        reject(new Error('Trình duyệt không đọc được định dạng ảnh này'));
+        reject(new Error(i18n.t('cannotReadImageFormat', 'Trình duyệt không đọc được định dạng ảnh này')));
       };
       img.src = url;
     });
@@ -1287,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (err) {
       console.error('Lỗi xử lý ảnh:', err);
       clearAttachedImage();
-      authController.showToast('Không đọc được ảnh này. Vui lòng chọn ảnh JPG, PNG hoặc WEBP.');
+      authController.showToast(i18n.t('imgNotSupported', 'Không đọc được ảnh này. Vui lòng chọn ảnh JPG, PNG hoặc WEBP.'));
     }
   }
 
@@ -1331,8 +1469,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!chatThread) return;
     chatThread.innerHTML = `
       <div class="chat-welcome-hero" id="chat-welcome-hero">
-        <h1 class="welcome-heading">Hôm nay bạn muốn khám phá Huế như thế nào?</h1>
-        <p class="welcome-subheading">Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.</p>
+        <h1 class="welcome-heading">${i18n.t('welcomeHeading', 'Hôm nay bạn muốn khám phá Huế như thế nào?')}</h1>
+        <p class="welcome-subheading">${i18n.t('welcomeSubheading', 'Tra cứu di tích lịch sử, tìm quán ăn đặc sản chuẩn vị hoặc để AI tối ưu hóa lộ trình tham quan cho bạn.')}</p>
       </div>
     `;
   }
@@ -1407,7 +1545,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (headerWeatherPill) {
         headerWeatherPill.innerHTML = `
           ${hueWeatherService.getWeatherIconSvg(data.iconType, 15)}
-          <span>${data.temp}°C Huế</span>
+          <span>${data.temp}°C ${i18n.getLanguage() === 'en' ? 'Hue' : 'Huế'}</span>
         `;
         headerWeatherPill.addEventListener('click', () => {
           if (sidebarGemini?.classList.contains('collapsed')) {
@@ -1446,18 +1584,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function formatRelativeTime(dateVal) {
-    if (!dateVal) return 'Vừa xong';
+    if (!dateVal) return i18n.t('justNow', 'Vừa xong');
     const date = parseTimestamp(dateVal);
     const now = new Date();
     const diffSec = Math.floor((now - date) / 1000);
-    if (isNaN(diffSec) || diffSec < 60) return 'Vừa xong';
+    if (isNaN(diffSec) || diffSec < 60) return i18n.t('justNow', 'Vừa xong');
     const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return `${diffMin} phút trước`;
+    if (diffMin < 60) return `${diffMin} ${i18n.t('minsAgo', 'phút trước')}`;
     const diffHour = Math.floor(diffMin / 60);
-    if (diffHour < 24) return `${diffHour} giờ trước`;
+    if (diffHour < 24) return `${diffHour} ${i18n.t('hoursAgo', 'giờ trước')}`;
     const diffDay = Math.floor(diffHour / 24);
-    if (diffDay === 1) return 'Hôm qua';
-    if (diffDay < 7) return `${diffDay} ngày trước`;
+    if (diffDay === 1) return i18n.t('yesterday', 'Hôm qua');
+    if (diffDay < 7) return `${diffDay} ${i18n.t('daysAgo', 'ngày trước')}`;
     const day = (date.getDate() || 1).toString().padStart(2, '0');
     const month = ((date.getMonth() || 0) + 1).toString().padStart(2, '0');
     return `${day}/${month}`;
@@ -1469,7 +1607,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Tự động gán tiêu đề session theo câu hỏi đầu tiên của người dùng
     const firstUserMsg = activeSessionMessages.find(m => m.role === 'user');
-    if (firstUserMsg && (!activeSessionTitle || activeSessionTitle === 'Cuộc trò chuyện mới')) {
+    if (firstUserMsg && (!activeSessionTitle || activeSessionTitle === 'Cuộc trò chuyện mới' || activeSessionTitle === 'New Chat')) {
       activeSessionTitle = firstUserMsg.text.length > 36
         ? firstUserMsg.text.substring(0, 36).trim() + '...'
         : firstUserMsg.text.trim();
@@ -1484,7 +1622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       await saveChatSession(uid, {
         id: activeSessionId,
-        title: activeSessionTitle || 'Cuộc trò chuyện mới',
+        title: activeSessionTitle || i18n.t('newChat', 'Cuộc trò chuyện mới'),
         messages: activeSessionMessages,
         session_context: latestContext
       });
@@ -1495,6 +1633,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function refreshChatHistoryList(openAfterRefresh = false) {
+    const isEn = i18n.getLanguage() === 'en';
     const uid = getCurrentUserId();
     const sessions = await getUserChatSessions(uid);
 
@@ -1509,7 +1648,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (historyCountBadge) {
       historyCountBadge.textContent = sessionCount;
     }
-    document.querySelectorAll('.sidebar-count-badge, .history-count-badge').forEach(badge => {
+    document.querySelectorAll('.history-count-badge').forEach(badge => {
       badge.textContent = sessionCount;
     });
 
@@ -1521,7 +1660,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          <p>Chưa có cuộc trò chuyện nào.<br><span style="font-size:0.75rem; color:#A1A1AA;">Bắt đầu hỏi AI để tự động lưu lịch sử!</span></p>
+          <p>${i18n.t('noHistory', 'Chưa có cuộc trò chuyện nào.')}<br><span style="font-size:0.75rem; color:#A1A1AA;">${i18n.t('noHistorySub', 'Bắt đầu hỏi AI để tự động lưu lịch sử!')}</span></p>
         </div>
       `;
       return;
@@ -1532,6 +1671,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const item = document.createElement('div');
       item.className = `chat-session-item ${sess.id === activeSessionId ? 'active' : ''}`;
       item.dataset.sessionId = sess.id;
+      const safeSessionTitle = escapeHtml(sess.title || i18n.t('sessionDefaultTitle', 'Cuộc trò chuyện'));
+      const msgCountText = isEn ? `${(sess.messages || []).length} msgs` : `${(sess.messages || []).length} tin`;
       item.innerHTML = `
         <div class="session-main">
           <div class="session-icon">
@@ -1540,11 +1681,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             </svg>
           </div>
           <div class="session-meta">
-            <span class="session-title" title="${sess.title || 'Cuộc trò chuyện'}">${sess.title || 'Cuộc trò chuyện'}</span>
-            <span class="session-date">${formatRelativeTime(sess.updatedAt || sess.createdAt)} · ${(sess.messages || []).length} tin</span>
+            <span class="session-title" title="${safeSessionTitle}">${safeSessionTitle}</span>
+            <span class="session-date">${formatRelativeTime(sess.updatedAt || sess.createdAt)} · ${msgCountText}</span>
           </div>
         </div>
-        <button type="button" class="btn-delete-session" title="Xóa cuộc trò chuyện này" aria-label="Xóa">
+        <button type="button" class="btn-delete-session" title="${i18n.t('deleteSessionTooltip', 'Xóa cuộc trò chuyện này')}" aria-label="${i18n.t('delete', 'Xóa')}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3 6 5 6 21 6" />
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -1560,7 +1701,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const btnDel = item.querySelector('.btn-delete-session');
       btnDel?.addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (confirm(`Bạn có chắc muốn xóa cuộc trò chuyện "${sess.title}" không?`)) {
+        const confirmMsg = isEn ? `Are you sure you want to delete "${sess.title}"?` : `Bạn có chắc muốn xóa cuộc trò chuyện "${sess.title}" không?`;
+        if (confirm(confirmMsg)) {
           await deleteChatSession(uid, sess.id);
           if (activeSessionId === sess.id) {
             startNewChatSession();
@@ -1597,13 +1739,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
           const p = m.resData?.matched_places?.[0];
           if (p && p.name) {
-            activeSessionContext = {
-              anchor_place_id: p.place_id || null,
-              anchor_place_label: p.name,
-              anchor_place_kind: 'site',
-              topic_domain: 'heritage',
-              turn_count: 1
-            };
+            activeSessionContext = inferContextFromPlace(p);
             break;
           }
         }
@@ -1654,7 +1790,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function startNewChatSession() {
     activeSessionId = 'session_' + Date.now();
-    activeSessionTitle = 'Cuộc trò chuyện mới';
+    activeSessionTitle = (typeof i18n !== 'undefined' && i18n.getLanguage() === 'en') ? 'New Chat' : 'Cuộc trò chuyện mới';
     activeSessionMessages = [];
     activeSessionContext = null;
     renderWelcomeHero();
@@ -1697,7 +1833,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const toggleBtn = btnSidebarToggle || btnSidebarCollapse;
       if (toggleBtn) {
-        const tooltipText = willCollapse ? 'Mở thanh bên' : 'Thu gọn thanh bên';
+        const tooltipText = willCollapse ? i18n.t('sidebarExpand', 'Mở thanh bên') : i18n.t('sidebarToggle', 'Thu gọn thanh bên');
         toggleBtn.setAttribute('title', tooltipText);
         toggleBtn.setAttribute('data-tooltip', tooltipText);
       }
@@ -1722,8 +1858,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       sidebarGemini?.classList.add('collapsed');
       const toggleBtn = btnSidebarToggle || btnSidebarCollapse;
       if (toggleBtn) {
-        toggleBtn.setAttribute('title', 'Mở thanh bên');
-        toggleBtn.setAttribute('data-tooltip', 'Mở thanh bên');
+        toggleBtn.setAttribute('title', i18n.t('sidebarExpand', 'Mở thanh bên'));
+        toggleBtn.setAttribute('data-tooltip', i18n.t('sidebarExpand', 'Mở thanh bên'));
       }
     }
   } catch { }
@@ -1731,17 +1867,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   function updateSidebarUserProfile(user) {
     if (!sidebarUserName) return;
     if (user) {
-      const displayName = user.displayName || user.email?.split('@')[0] || 'Du khách Cố đô';
+      const displayName = user.displayName || user.email?.split('@')[0] || i18n.t('guestTourist', 'Du khách Cố đô');
       const email = user.email || 'Cloud Firestore';
       const initial = (displayName || 'U')[0].toUpperCase();
 
       sidebarUserName.textContent = displayName;
-      sidebarUserStatus.textContent = user.isDemo ? 'Tài khoản Demo' : 'Đồng bộ Cloud Firestore';
+      sidebarUserStatus.textContent = user.isDemo ? i18n.t('demoAccount', 'Tài khoản Demo') : i18n.t('syncFirestore', 'Đồng bộ Cloud Firestore');
 
       if (popoverUserName) popoverUserName.textContent = displayName;
       if (popoverUserEmail) popoverUserEmail.textContent = email;
       if (popoverBadgeStatus) {
-        popoverBadgeStatus.textContent = user.isDemo ? 'Bản Demo' : (user.providerData?.some(p => p.providerId === 'google.com') ? 'Google' : 'Đã đăng nhập');
+        popoverBadgeStatus.textContent = user.isDemo ? i18n.t('badgeDemo', 'Bản Demo') : (user.providerData?.some(p => p.providerId === 'google.com') ? 'Google' : i18n.t('loggedInBadge', 'Đã đăng nhập'));
         popoverBadgeStatus.className = 'popover-badge-status badge-logged-in';
       }
 
@@ -1774,18 +1910,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
     } else {
-      sidebarUserName.textContent = 'Khách vãng lai';
-      sidebarUserStatus.textContent = 'Bấm để đăng nhập';
+      sidebarUserName.textContent = i18n.t('guestUser', 'Khách vãng lai');
+      sidebarUserStatus.textContent = i18n.t('clickToLogin', 'Bấm để đăng nhập');
       sidebarAvatarImg?.classList.add('hidden');
       if (sidebarAvatarFallback) {
         sidebarAvatarFallback.textContent = 'U';
         sidebarAvatarFallback.classList.remove('hidden');
       }
 
-      if (popoverUserName) popoverUserName.textContent = 'Khách vãng lai';
-      if (popoverUserEmail) popoverUserEmail.textContent = 'Chưa đăng nhập';
+      if (popoverUserName) popoverUserName.textContent = i18n.t('guestUser', 'Khách vãng lai');
+      if (popoverUserEmail) popoverUserEmail.textContent = i18n.t('notLoggedIn', 'Chưa đăng nhập');
       if (popoverBadgeStatus) {
-        popoverBadgeStatus.textContent = 'Khách';
+        popoverBadgeStatus.textContent = i18n.t('guestBadge', 'Khách');
         popoverBadgeStatus.className = 'popover-badge-status';
       }
 
@@ -1843,7 +1979,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     closeUserPopover();
     try {
       await logoutUser();
-      window.authController?.showToast('Đã đăng xuất tài khoản thành công.');
+      window.authController?.showToast(i18n.t('logoutSuccess', 'Đã đăng xuất tài khoản thành công.'));
     } catch (err) {
       console.error('Lỗi khi đăng xuất:', err);
     }
@@ -1862,7 +1998,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnPopoverDemo?.addEventListener('click', () => {
     closeUserPopover();
     loginWithDemoUser();
-    window.authController?.showToast('Đã kích hoạt chế độ Trải nghiệm Khách (Demo).');
+    window.authController?.showToast(i18n.t('demoModeActive', 'Đã kích hoạt chế độ Trải nghiệm Khách (Demo).'));
   });
 
   // Khởi tạo và quản lý Modal Cài đặt Ứng dụng (Application Settings)
@@ -1909,16 +2045,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (animToggle) {
-      animToggle.checked = localStorage.getItem('hue_pref_animations') !== 'false';
+      const animEnabled = localStorage.getItem('hue_pref_animations') !== 'false';
+      animToggle.checked = animEnabled;
+      document.body.classList.toggle('reduce-motion', !animEnabled);
       animToggle.addEventListener('change', (e) => {
         localStorage.setItem('hue_pref_animations', e.target.checked);
+        document.body.classList.toggle('reduce-motion', !e.target.checked);
       });
     }
 
     if (weatherToggle) {
-      weatherToggle.checked = localStorage.getItem('hue_pref_weather_tips') !== 'false';
+      const weatherEnabled = localStorage.getItem('hue_pref_weather_tips') !== 'false';
+      weatherToggle.checked = weatherEnabled;
+      document.getElementById('weather-smart-tip')?.classList.toggle('hidden', !weatherEnabled);
       weatherToggle.addEventListener('change', (e) => {
         localStorage.setItem('hue_pref_weather_tips', e.target.checked);
+        document.getElementById('weather-smart-tip')?.classList.toggle('hidden', !e.target.checked);
       });
     }
 
@@ -1944,12 +2086,140 @@ document.addEventListener('DOMContentLoaded', async () => {
         sessionStorage.clear();
         localStorage.removeItem('hue_cached_places_v1');
         localStorage.removeItem('hue_last_query');
-        window.authController?.showToast('Đã làm mới bộ nhớ đệm và dữ liệu tạm thành công.');
+        window.authController?.showToast(i18n.t('cacheRefreshed', 'Đã làm mới bộ nhớ đệm và dữ liệu tạm thành công.'));
       });
     }
   };
 
+  /**
+   * Theme & Language Controller (evon:ui-ux Minimalist Design)
+   * Tích hợp Dark/Light theme toggle & Chuyển đổi ngôn ngữ VI / EN
+   */
+  const initThemeAndLanguage = () => {
+    // 1. Language Switcher (Segmented pill VI | EN)
+    const langBtns = document.querySelectorAll('.lang-btn');
+    langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selectedLang = btn.dataset.lang;
+        if (!selectedLang) return;
+        i18n.setLanguage(selectedLang);
+        window.authController?.showToast?.(i18n.t('toastLangChanged'));
+      });
+    });
+
+    // Cập nhật DOM theo ngôn ngữ lưu trong máy
+    i18n.updateDomTranslations();
+
+    // 2. Dark Mode Toggle
+    const btnThemeToggle = document.getElementById('btn-header-theme-toggle');
+    const prefThemeSelect = document.getElementById('pref-theme-select');
+    const moonIcon = btnThemeToggle?.querySelector('.theme-icon-moon');
+    const sunIcon = btnThemeToggle?.querySelector('.theme-icon-sun');
+
+    const getSavedTheme = () => {
+      try {
+        return localStorage.getItem('hue_theme') || 'system';
+      } catch {
+        return 'system';
+      }
+    };
+
+    const updateThemeUI = (effectiveTheme, themeChoice) => {
+      document.documentElement.setAttribute('data-theme', effectiveTheme);
+
+      if (effectiveTheme === 'dark') {
+        moonIcon?.classList.add('hidden');
+        sunIcon?.classList.remove('hidden');
+        btnThemeToggle?.setAttribute('title', i18n.t('themeToggleLight'));
+        btnThemeToggle?.setAttribute('aria-label', i18n.t('themeToggleLight'));
+      } else {
+        moonIcon?.classList.remove('hidden');
+        sunIcon?.classList.add('hidden');
+        btnThemeToggle?.setAttribute('title', i18n.t('themeToggleDark'));
+        btnThemeToggle?.setAttribute('aria-label', i18n.t('themeToggleDark'));
+      }
+
+      if (prefThemeSelect && prefThemeSelect.value !== themeChoice) {
+        prefThemeSelect.value = themeChoice;
+      }
+    };
+
+    const applyTheme = (themeChoice) => {
+      let effective = themeChoice;
+      if (themeChoice === 'system') {
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        effective = systemPrefersDark ? 'dark' : 'light';
+      }
+      updateThemeUI(effective, themeChoice);
+    };
+
+    // Áp dụng theme ban đầu
+    applyTheme(getSavedTheme());
+
+    // Nút toggle trên Header
+    btnThemeToggle?.addEventListener('click', () => {
+      const currentEffective = document.documentElement.getAttribute('data-theme') || 'light';
+      const nextTheme = currentEffective === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('hue_theme', nextTheme);
+      } catch { }
+      applyTheme(nextTheme);
+      window.authController?.showToast?.(
+        nextTheme === 'dark' ? i18n.t('toastThemeDark') : i18n.t('toastThemeLight')
+      );
+    });
+
+    // Tùy chọn trong Settings Modal
+    prefThemeSelect?.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      try {
+        localStorage.setItem('hue_theme', selected);
+      } catch { }
+      applyTheme(selected);
+      window.authController?.showToast?.(i18n.t('toastThemeDark'));
+    });
+
+    // Lắng nghe thay đổi theme từ hệ thống khi để "system"
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (getSavedTheme() === 'system') {
+          applyTheme('system');
+        }
+      });
+    }
+
+    // Khi ngôn ngữ thay đổi, cập nhật tooltip của nút theme và các widget reactive
+    window.addEventListener('hue:language-change', () => {
+      const currentEffective = document.documentElement.getAttribute('data-theme') || 'light';
+      btnThemeToggle?.setAttribute(
+        'title',
+        currentEffective === 'dark' ? i18n.t('themeToggleLight') : i18n.t('themeToggleDark')
+      );
+      initHueWeatherWidget();
+      updateMapToggleUI(!studioLayout?.classList.contains('map-collapsed'));
+      checkBackendStatus();
+      updatePlannerOriginDisplay();
+      refreshChatHistoryList(false);
+
+      // Nếu đang ở màn hình chào mừng (chưa có tin nhắn), re-render hero bằng ngôn ngữ mới
+      const welcomeHero = document.getElementById('chat-welcome-hero');
+      if (welcomeHero && activeSessionMessages.length === 0) {
+        renderWelcomeHero();
+      }
+
+      // Re-render Sổ tay du lịch nếu đang mở
+      if (notebookModal?.classList.contains('active')) {
+        if (tabWishlist?.classList.contains('active')) {
+          renderWishlist(searchWishlistInput?.value || '');
+        } else if (tabCheckin?.classList.contains('active')) {
+          renderCheckinList(currentCheckinCategory);
+        }
+      }
+    });
+  };
+
   initSettingsModal();
+  initThemeAndLanguage();
 
   btnToggleSidebar?.addEventListener('click', () => toggleSidebar());
   btnSidebarToggle?.addEventListener('click', () => toggleSidebar());
@@ -1968,7 +2238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.authController) {
       if (!window.authController.currentUser) {
         window.authController.openAuthModal('login');
-        window.authController.showToast('Vui lòng đăng nhập để xem các lịch trình đã lưu.');
+        window.authController.showToast(i18n.t('loginToViewSavedTours', 'Vui lòng đăng nhập để xem các lịch trình đã lưu.'));
       } else {
         window.authController.openSavedToursModal();
       }
@@ -1979,7 +2249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.authController) {
       if (!window.authController.currentUser) {
         window.authController.openAuthModal('login');
-        window.authController.showToast('Vui lòng đăng nhập để xem các lịch trình đã lưu.');
+        window.authController.showToast(i18n.t('loginToViewSavedTours', 'Vui lòng đăng nhập để xem các lịch trình đã lưu.'));
       } else {
         window.authController.openSavedToursModal();
       }
@@ -2040,13 +2310,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (m.role === 'assistant') {
           const firstPlace = m.resData?.matched_places?.[0];
           if (firstPlace && firstPlace.name) {
-            sessionContext = {
-              anchor_place_id: firstPlace.place_id || null,
-              anchor_place_label: firstPlace.name,
-              anchor_place_kind: 'site',
-              topic_domain: 'heritage',
-              turn_count: 1
-            };
+            sessionContext = inferContextFromPlace(firstPlace);
             break;
           }
         }
@@ -2089,7 +2353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       lowerQuery.includes('tour du lịch')
     );
 
-    if (isPlanIntent || isSpatialQuery || activeImage) {
+    if ((isPlanIntent || isSpatialQuery || activeImage) && localStorage.getItem('hue_pref_auto_map') !== 'false') {
       showMapPanel(true); // Tự động mở bản đồ theo ngữ cảnh không gian / ảnh
     }
 
@@ -2107,7 +2371,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Hiển thị tin nhắn người dùng: khung chat dùng bản 1600px, lưu Firestore dùng thumbnail 520px
-    const displayPrompt = trimmedQuery || (activeImage ? 'Phân tích địa danh hoặc món ăn trong ảnh này' : '');
+    const isEn = i18n.getLanguage() === 'en';
+    const displayPrompt = trimmedQuery || (activeImage ? (isEn ? 'Analyze landmark or dish in this photo' : 'Phân tích địa danh hoặc món ăn trong ảnh này') : '');
     // Chụp trí nhớ hội thoại TRƯỚC khi đẩy câu hỏi hiện tại vào phiên
     const conversationMemory = buildConversationMemory(displayPrompt, !usePendingInput);
     lastUserPrompt = displayPrompt;
@@ -2122,8 +2387,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Hiển thị loading placeholder
     const loadingText = activeImage
-      ? 'Đang nhận diện & phân tích ...'
-      : 'Đang phân tích ...';
+      ? (isEn ? 'Identifying & analyzing photo...' : 'Đang nhận diện & phân tích ...')
+      : (isEn ? 'Analyzing query...' : 'Đang phân tích ...');
     const loadingId = appendAssistantLoading(loadingText);
 
     try {
@@ -2133,7 +2398,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const userPrefs = userStore.getPreferences();
 
       const res = await TourismApiClient.askAssistant(
-        trimmedQuery, 'Thành phố Huế', userLat, userLng, userPrefs, activeImage, conversationMemory
+        trimmedQuery, isEn ? 'Hue City' : 'Thành phố Huế', userLat, userLng, userPrefs, activeImage, conversationMemory
       );
       removeLoadingMessage(loadingId);
       appendAssistantResponse(res, true, displayPrompt, { image: activeImage, storageThumb: activeStorageImage });
@@ -2169,12 +2434,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       imageLightbox.className = 'image-lightbox';
       imageLightbox.setAttribute('role', 'dialog');
       imageLightbox.setAttribute('aria-modal', 'true');
-      imageLightbox.setAttribute('aria-label', 'Xem ảnh đính kèm');
+      const isEn = i18n.getLanguage() === 'en';
+      imageLightbox.setAttribute('aria-label', isEn ? 'View attached photo' : 'Xem ảnh đính kèm');
       imageLightbox.innerHTML = `
-        <button type="button" class="image-lightbox-close" aria-label="Đóng">
+        <button type="button" class="image-lightbox-close" aria-label="${isEn ? 'Close' : 'Đóng'}">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
-        <img class="image-lightbox-img" alt="Ảnh đính kèm phóng to" />
+        <img class="image-lightbox-img" alt="${isEn ? 'Attached photo enlarged' : 'Ảnh đính kèm phóng to'}" />
       `;
       imageLightbox.addEventListener('click', (e) => {
         if (e.target === imageLightbox || e.target.closest('.image-lightbox-close')) closeImageLightbox();
@@ -2199,9 +2465,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let imageHtml = '';
     if (imageBase64) {
+      const isEn = i18n.getLanguage() === 'en';
       imageHtml = `
         <div class="chat-attached-image-container">
-          <img src="${imageBase64}" class="chat-attached-image" alt="Ảnh đính kèm" title="Nhấp để xem kích thước lớn" />
+          <img src="${imageBase64}" class="chat-attached-image" alt="${isEn ? 'Attached photo' : 'Ảnh đính kèm'}" title="${isEn ? 'Click to view full size' : 'Nhấp để xem kích thước lớn'}" />
         </div>
       `;
     }
@@ -2212,7 +2479,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>
       <div class="message-bubble${imageBase64 ? ' has-image' : ''}">
         ${imageHtml}
-        ${safeText ? `<p class="chat-user-caption">${safeText}</p>` : ''}
+        ${safeText ? `<p class="chat-user-caption">${escapeHtml(safeText)}</p>` : ''}
       </div>
     `;
     chatThread.appendChild(msg);
@@ -2236,7 +2503,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function appendAssistantLoading(customText = 'Đang phân tích không gian và tổng hợp gợi ý...') {
+  function appendAssistantLoading(customText = null) {
+    const isEn = i18n.getLanguage() === 'en';
+    const text = customText || (isEn ? 'Analyzing spatial context and synthesizing suggestions...' : 'Đang phân tích không gian và tổng hợp gợi ý...');
     const id = `loading-${Date.now()}`;
     const msg = document.createElement('div');
     msg.id = id;
@@ -2246,8 +2515,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
       </div>
       <div class="message-bubble">
-        <div class="message-author">Trợ lý Cố đô</div>
-        <p class="loading-text">${customText}</p>
+        <div class="message-author">${i18n.t('assistantName', 'Trợ lý Cố đô')}</div>
+        <p class="loading-text">${text}</p>
       </div>
     `;
     chatThread.appendChild(msg);
@@ -2266,9 +2535,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   function createGraphTraceHtml(trace, routeTaken = 'local_knowledge', confidenceScore = 0.88) {
     if (!trace || !Array.isArray(trace) || trace.length === 0) return '';
 
+    const isEn = i18n.getLanguage() === 'en';
     const confPct = Math.round((confidenceScore || 0.85) * 100);
     const isWeb = routeTaken === 'web_fallback';
-    const routeLabel = isWeb ? 'Web Search (DuckDuckGo)' : 'Tri thức Cố đô';
+    const routeLabel = isWeb ? 'Web Search (DuckDuckGo)' : (isEn ? 'Hue Heritage Knowledge' : 'Tri thức Cố đô');
 
     const stepsHtml = trace.map((step, idx) => {
       const label = step.label || step.step;
@@ -2278,9 +2548,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (step.score !== undefined) {
         metricHtml = `<span class="xai-step-metric">${(step.score * 100).toFixed(0)}%</span>`;
       } else if (step.count !== undefined) {
-        metricHtml = `<span class="xai-step-metric">${step.count} kết quả</span>`;
+        metricHtml = `<span class="xai-step-metric">${step.count} ${isEn ? 'results' : 'kết quả'}</span>`;
       } else if (step.decision) {
-        const decText = step.decision === 'local_knowledge' ? 'Tri thức nội bộ' : 'Web Fallback';
+        const decText = step.decision === 'local_knowledge' ? (isEn ? 'Internal Knowledge' : 'Tri thức nội bộ') : 'Web Fallback';
         metricHtml = `<span class="xai-step-metric">${decText}</span>`;
       }
 
@@ -2314,16 +2584,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     return `
       <div class="xai-trace-wrapper">
-        <button type="button" class="xai-trace-toggle" aria-expanded="false" title="Xem tiến trình suy luận GraphRAG">
+        <button type="button" class="xai-trace-toggle" aria-expanded="false" title="${isEn ? 'View GraphRAG reasoning process' : 'Xem tiến trình suy luận GraphRAG'}">
           <svg class="xai-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
-          <span class="xai-trace-label">Đã dùng ${trace.length} bước truy xuất</span>
+          <span class="xai-trace-label">${isEn ? `Used ${trace.length} retrieval steps` : `Đã dùng ${trace.length} bước truy xuất`}</span>
           <span class="xai-trace-meta">${routeLabel} · ${confPct}%</span>
         </button>
 
         <div class="xai-trace-drawer">
           <div class="xai-drawer-inner">
             <div class="xai-drawer-header">
-              <span class="xai-drawer-title">Tiến trình truy xuất &amp; lập luận</span>
+              <span class="xai-drawer-title">${isEn ? 'Retrieval & Reasoning Process' : 'Tiến trình truy xuất &amp; lập luận'}</span>
               <span class="xai-drawer-tag">LangGraph · NetworkX KG · ChromaDB</span>
             </div>
 
@@ -2338,6 +2608,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // attachment: ảnh của câu hỏi tương ứng (nếu có) — giữ lại để nút "Tạo lại" gửi kèm
   function appendAssistantResponse(res, persist = true, promptText = '', attachment = null) {
+    const isEn = i18n.getLanguage() === 'en';
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
 
@@ -2347,7 +2618,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const rawAnswer = res.answer || res.text || res.content || '';
     const formattedAnswer = rawAnswer
-      ? rawAnswer
+      ? escapeHtml(rawAnswer)
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
         .replace(/\n/g, '<br/>')
@@ -2375,14 +2646,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       if ((!origin.lat || !origin.lng) && mapStudio.userLocation) {
         origin.lat = mapStudio.userLocation.lat;
         origin.lng = mapStudio.userLocation.lng;
-        origin.name = mapStudio.userLocation.name || 'Vị trí của bạn';
+        origin.name = mapStudio.userLocation.name || i18n.t('userLocationHere', 'Vị trí của bạn');
       }
 
       // Fallback nếu vẫn thiếu tọa độ origin: Cầu Tràng Tiền (Trung tâm Huế)
       if (!origin.lat || !origin.lng) {
         origin.lat = 16.4674;
         origin.lng = 107.5905;
-        origin.name = origin.name || 'Cầu Tràng Tiền (Trung tâm Huế)';
+        origin.name = origin.name || i18n.t('defaultHueCenter', 'Cầu Tràng Tiền (Trung tâm Huế)');
       }
 
       // Tính khoảng cách ước lượng ban đầu
@@ -2412,13 +2683,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
               </div>
               <div>
-                <div class="nav-card-title">Lộ trình Chỉ đường Tối ưu</div>
-                <div class="nav-card-subtitle">${isWalking ? 'Tuyến đi bộ ngắm cảnh' : 'Xe máy / Ô tô theo đường nội đô Huế'}</div>
+                <div class="nav-card-title">${i18n.t('navRouteOptimal', 'Lộ trình Chỉ đường Tối ưu')}</div>
+                <div class="nav-card-subtitle">${isWalking ? (isEn ? 'Scenic walking route' : 'Tuyến đi bộ ngắm cảnh') : (isEn ? 'Motorbike / Car via inner city routes' : 'Xe máy / Ô tô theo đường nội đô Huế')}</div>
               </div>
             </div>
             <div class="nav-card-badge-metrics">
               <span class="nav-metric-pill nav-metric-dist">~${estDistKm} km</span>
-              <span class="nav-metric-pill highlight nav-metric-dur">~${estDurationMin} phút</span>
+              <span class="nav-metric-pill highlight nav-metric-dur">~${estDurationMin} ${isEn ? 'mins' : 'phút'}</span>
             </div>
           </div>
 
@@ -2426,7 +2697,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="nav-route-row origin">
               <div class="route-marker-badge origin">A</div>
               <div class="route-point-content">
-                <div class="route-point-label">Điểm khởi hành</div>
+                <div class="route-point-label">${i18n.t('navPointDepart', 'Điểm khởi hành')}</div>
                 <div class="route-point-name">${origin.name}</div>
               </div>
             </div>
@@ -2440,7 +2711,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="nav-route-row destination">
               <div class="route-marker-badge dest">B</div>
               <div class="route-point-content">
-                <div class="route-point-label">Điểm đến</div>
+                <div class="route-point-label">${i18n.t('navPointDest', 'Điểm đến')}</div>
                 <div class="route-point-name">${destination.name}</div>
                 ${destination.address ? `<div class="route-point-address">📍 ${destination.address}</div>` : ''}
               </div>
@@ -2450,11 +2721,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="nav-card-actions">
             <button type="button" class="btn-nav-replot" data-origin-lat="${origin.lat}" data-origin-lng="${origin.lng}" data-origin-name="${origin.name}" data-dest-lat="${destination.lat}" data-dest-lng="${destination.lng}" data-dest-name="${destination.name}" data-profile="${profile}">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-              <span>Vẽ lại trên Bản đồ</span>
+              <span>${i18n.t('navReplotBtn', 'Vẽ lại trên Bản đồ')}</span>
             </button>
-            <a href="${gmapsDirUrl}" target="_blank" rel="noopener noreferrer" class="btn-nav-gmaps" title="Mở chỉ đường trên ứng dụng Google Maps">
+            <a href="${gmapsDirUrl}" target="_blank" rel="noopener noreferrer" class="btn-nav-gmaps" title="${isEn ? 'Open directions on Google Maps app' : 'Mở chỉ đường trên ứng dụng Google Maps'}">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-              <span>Mở Google Maps</span> &rarr;
+              <span>${i18n.t('navGmapsBtn', 'Mở Google Maps')}</span> &rarr;
             </a>
           </div>
         </div>
@@ -2470,7 +2741,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               const distEl = cardEl.querySelector('.nav-metric-dist');
               const durEl = cardEl.querySelector('.nav-metric-dur');
               if (distEl) distEl.textContent = `~${routeRes.distanceKm} km`;
-              if (durEl) durEl.textContent = `~${routeRes.durationMin} phút`;
+              if (durEl) durEl.textContent = `~${routeRes.durationMin} ${isEn ? 'mins' : 'phút'}`;
             }
           }
         } catch (e) {
@@ -2487,7 +2758,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="chat-suggested-places">
           <div class="suggested-places-label">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-            <span>Điểm đến gợi ý trên bản đồ:</span>
+            <span>${i18n.t('suggestedDestOnMap', 'Điểm đến gợi ý trên bản đồ:')}</span>
           </div>
           <div class="suggested-places-list">
             ${matched.map(p => {
@@ -2510,10 +2781,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></svg>`;
         }
 
+        const safePoiName = escapeHtml(p.name || '');
+        const safePlaceId = escapeHtml(p.place_id || p.node_id || '');
+
         return `
-                <button type="button" class="chat-poi-btn ${catClass}" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${p.name}" title="Ghim điểm này lên bản đồ">
+                <button type="button" class="chat-poi-btn ${catClass}" data-lat="${p.latitude}" data-lng="${p.longitude}" data-name="${safePoiName}" data-place-id="${safePlaceId}" title="${i18n.t('pinOnMap', 'Ghim điểm này lên bản đồ')}">
                   <span class="poi-btn-icon">${iconSvg}</span>
-                  <span class="poi-btn-name">${p.name}</span>
+                  <span class="poi-btn-name">${safePoiName}</span>
                   <span class="poi-btn-action">&rarr;</span>
                 </button>
               `;
@@ -2528,7 +2802,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
       </div>
       <div class="message-bubble">
-        <div class="message-author">Trợ lý Cố đô</div>
+        <div class="message-author">${i18n.t('assistantName', 'Trợ lý Cố đô')}</div>
         <div class="answer-content">${formattedAnswer}</div>
         ${createGraphTraceHtml(res.graph_trace, res.route_taken, res.confidence_score)}
         ${navCardHtml}
@@ -2586,15 +2860,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const lat = parseFloat(btn.dataset.lat);
         const lng = parseFloat(btn.dataset.lng);
         const name = btn.dataset.name;
+        const placeId = btn.dataset.placeId || null;
         mapStudio.panTo(lat, lng, 17);
         if (name && window.openPoiDetail) {
-          window.openPoiDetail(name);
+          window.openPoiDetail(name, placeId);
         }
       });
     });
 
     // TỰ ĐỘNG VẼ CÁC ĐỊA ĐIỂM ĐƯỢC GỢI Ý LÊN BẢN ĐỒ BÊN CẠNH NGAY LẬP TỨC
-    if (matched.length > 0 && !(nav && nav.is_navigation)) {
+    if (matched.length > 0 && !(nav && nav.is_navigation) && localStorage.getItem('hue_pref_auto_map') !== 'false') {
       mapStudio.highlightChatPlaces(matched);
     }
 
@@ -2619,12 +2894,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function appendAssistantError(errorMsg) {
+    const isEn = i18n.getLanguage() === 'en';
+    const errPrefix = isEn ? 'Query Error' : 'Lỗi truy vấn';
+    const errSuffix = isEn ? 'Please check your Backend connection.' : 'Vui lòng kiểm tra lại kết nối Backend.';
     const msg = document.createElement('div');
     msg.className = 'chat-message assistant';
     msg.innerHTML = `
       <div class="message-avatar">⚠️</div>
       <div class="message-bubble" style="border-color: #EF4444;">
-        <p style="color: #DC2626;">Lỗi truy vấn: ${errorMsg}. Vui lòng kiểm tra lại kết nối Backend.</p>
+        <p style="color: #DC2626;">${errPrefix}: ${errorMsg}. ${errSuffix}</p>
       </div>
     `;
     chatThread.appendChild(msg);
@@ -2660,26 +2938,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   let currentPoiData = null;
 
   function updateDrawerUserStatus(targetName, targetId) {
+    const isEn = i18n.getLanguage() === 'en';
     const isFav = userStore.isFavorite(targetId || targetName);
     const isCheck = userStore.isCheckedIn(targetId || targetName);
 
     if (poiBtnFavorite) {
       poiBtnFavorite.classList.toggle('active', isFav);
-      if (poiFavLabel) poiFavLabel.textContent = isFav ? 'Đã thích' : 'Yêu thích';
-      poiBtnFavorite.title = isFav ? 'Bỏ lưu yêu thích' : 'Lưu vào sổ tay yêu thích';
+      if (poiFavLabel) poiFavLabel.textContent = isFav ? i18n.t('poiFavDone', 'Đã thích') : i18n.t('poiFavLabel', 'Yêu thích');
+      poiBtnFavorite.title = isFav ? (isEn ? 'Remove from favorites' : 'Bỏ lưu yêu thích') : (isEn ? 'Save to notebook' : 'Lưu vào sổ tay yêu thích');
       const favSvg = poiBtnFavorite.querySelector('svg');
       if (favSvg) favSvg.setAttribute('fill', isFav ? 'currentColor' : 'none');
     }
 
     if (poiBtnCheckin) {
       poiBtnCheckin.classList.toggle('active', isCheck);
-      if (poiCheckinLabel) poiCheckinLabel.textContent = isCheck ? 'Đã check-in' : 'Check-in';
-      poiBtnCheckin.title = isCheck ? 'Hủy check-in' : 'Đánh dấu đã ghé thăm';
+      if (poiCheckinLabel) poiCheckinLabel.textContent = isCheck ? i18n.t('poiCheckinDone', 'Đã check-in') : i18n.t('poiCheckinLabel', 'Check-in');
+      poiBtnCheckin.title = isCheck ? (isEn ? 'Undo check-in' : 'Hủy check-in') : (isEn ? 'Mark as visited' : 'Đánh dấu đã ghé thăm');
     }
   }
 
   async function openPoiDetail(name, placeId = null) {
     if (!name && !placeId) return;
+    const isEn = i18n.getLanguage() === 'en';
     showMapPanel(true); // Hiển thị bản đồ để người dùng quan sát vị trí địa điểm
 
     // 1. Mở Drawer ngay lập tức với trạng thái sẵn sàng
@@ -2691,10 +2971,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       (placeId && p.place_id === placeId) || (name && p.name === name)
     );
 
-    const initialName = localPlace?.name || name || 'Đang tải thông tin...';
+    const initialName = localPlace?.name || name || i18n.t('poiLoadingInfo', 'Đang tải thông tin...');
     if (poiTitle) poiTitle.textContent = initialName;
-    if (poiAddressText) poiAddressText.textContent = localPlace?.address || localPlace?.desc || 'Thành phố Huế';
-    if (poiDescText) poiDescText.textContent = localPlace?.desc || 'Đang đồng bộ hồ sơ văn hóa và điểm đánh giá...';
+    if (poiAddressText) poiAddressText.textContent = localPlace?.address || localPlace?.desc || (isEn ? 'Hue City' : 'Thành phố Huế');
+    if (poiDescText) poiDescText.textContent = localPlace?.desc || i18n.t('poiLoadingDesc', 'Đang đồng bộ hồ sơ văn hóa và điểm đánh giá...');
 
     // Cập nhật trạng thái Yêu thích & Check-in ngay lập tức
     updateDrawerUserStatus(initialName, placeId);
@@ -2703,20 +2983,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const initialCat = (localPlace?.cat || 'Attraction').toLowerCase();
     let initialCatClass = 'attraction';
     let initialCatIcon = '🏯';
-    let initialCatLabel = 'Di tích & Thắng cảnh';
+    let initialCatLabel = i18n.t('legendAttraction', 'Di tích & Thắng cảnh');
 
     if (initialCat.includes('restaurant') || initialCat.includes('ẩm thực') || initialCat.includes('quán')) {
       initialCatClass = 'restaurant';
       initialCatIcon = '🍲';
-      initialCatLabel = 'Ẩm thực Cố đô';
+      initialCatLabel = i18n.t('legendRestaurant', 'Ẩm thực Cố đô');
     } else if (initialCat.includes('cafe') || initialCat.includes('cà phê') || initialCat.includes('sunset')) {
       initialCatClass = 'cafe';
       initialCatIcon = '☕';
-      initialCatLabel = 'Cà phê & Sunset';
+      initialCatLabel = i18n.t('legendCafe', 'Cà phê & Sunset');
     } else if (initialCat.includes('hotel') || initialCat.includes('khách sạn') || initialCat.includes('resort')) {
       initialCatClass = 'hotel';
       initialCatIcon = '🏨';
-      initialCatLabel = 'Khách sạn / Resort';
+      initialCatLabel = i18n.t('legendHotel', 'Khách sạn / Resort');
     }
 
     if (poiCatBadge) {
@@ -2724,7 +3004,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       poiCatBadge.textContent = `${initialCatIcon} ${initialCatLabel}`;
     }
     if (poiRatingVal) poiRatingVal.textContent = (localPlace?.rating_value || 4.6).toFixed(1);
-    if (poiReviewCount) poiReviewCount.textContent = `(${localPlace?.review_count || 350} đánh giá)`;
+    if (poiReviewCount) poiReviewCount.textContent = `(${localPlace?.review_count || 350} ${i18n.t('reviewsCount', 'đánh giá')})`;
 
     if (poiReviewsList) {
       if (localPlace?.reviews && localPlace.reviews.length > 0) {
@@ -2733,17 +3013,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="poi-review-card">
             <div class="review-header">
               <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
-              <span class="review-tag">👤 ${r.trip_type || 'Du khách'} · ${r.visit_date || '2024'}</span>
+              <span class="review-tag">👤 ${r.trip_type || i18n.t('tourist', 'Du khách')} · ${r.visit_date || '2024'}</span>
             </div>
             <h5 class="review-title">${r.title}</h5>
             <p class="review-comment">“${r.comment}”</p>
           </div>
         `).join('');
       } else {
-        poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang đồng bộ nhận xét từ du khách...</div>';
+        poiReviewsList.innerHTML = `<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">${i18n.t('poiReviewSyncing', 'Đang đồng bộ nhận xét từ du khách...')}</div>`;
       }
     }
-    if (poiNearbyList) poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">Đang tìm các địa điểm lân cận...</div>';
+    if (poiNearbyList) poiNearbyList.innerHTML = `<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">${i18n.t('poiNearbySearching', 'Đang tìm các địa điểm lân cận...')}</div>`;
 
     try {
       const data = await TourismApiClient.getPlaceDetail(name, placeId);
@@ -2752,27 +3032,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // 2. Cập nhật Tiêu đề và Địa chỉ (bảo vệ tránh lệch tên)
       if (poiTitle) poiTitle.textContent = data.name || initialName;
-      if (poiAddressText) poiAddressText.textContent = data.address || localPlace?.address || 'Thành phố Huế';
-      if (poiDescText) poiDescText.textContent = data.description || localPlace?.desc || 'Địa điểm du lịch và ẩm thực nổi tiếng tại Cố đô Huế.';
+      if (poiAddressText) poiAddressText.textContent = data.address || localPlace?.address || (isEn ? 'Hue City' : 'Thành phố Huế');
+      if (poiDescText) poiDescText.textContent = data.description || localPlace?.desc || (isEn ? 'Famous tourism and culinary destination in Imperial Hue.' : 'Địa điểm du lịch và ẩm thực nổi tiếng tại Cố đô Huế.');
 
       // 3. Category badge
       const cat = (data.category || '').toLowerCase();
       let catClass = 'attraction';
       let catIcon = '🏯';
-      let catLabel = 'Di tích & Thắng cảnh';
+      let catLabel = i18n.t('legendAttraction', 'Di tích & Thắng cảnh');
 
       if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) {
         catClass = 'restaurant';
         catIcon = '🍲';
-        catLabel = 'Ẩm thực Cố đô';
+        catLabel = i18n.t('legendRestaurant', 'Ẩm thực Cố đô');
       } else if (cat.includes('cafe') || cat.includes('cà phê') || cat.includes('sunset')) {
         catClass = 'cafe';
         catIcon = '☕';
-        catLabel = 'Cà phê & Sunset';
+        catLabel = i18n.t('legendCafe', 'Cà phê & Sunset');
       } else if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) {
         catClass = 'hotel';
         catIcon = '🏨';
-        catLabel = 'Khách sạn / Resort';
+        catLabel = i18n.t('legendHotel', 'Khách sạn / Resort');
       }
 
       if (poiCatBadge) {
@@ -2782,7 +3062,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // 4. Rating & Reviews
       if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || localPlace?.rating_value || 4.7).toFixed(1);
-      if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || localPlace?.review_count || 120} đánh giá)`;
+      if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || localPlace?.review_count || 120} ${i18n.t('reviewsCount', 'đánh giá')})`;
 
       // 5. Nhận xét chân thực từ du khách (TripAdvisor / SQLite / Curated Local)
       const activeReviews = (data.reviews && data.reviews.length > 0) ? data.reviews : (localPlace?.reviews || []);
@@ -2793,14 +3073,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="poi-review-card">
               <div class="review-header">
                 <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
-                <span class="review-tag">👤 ${r.trip_type || 'Du khách'} · ${r.visit_date || '2024'}</span>
+                <span class="review-tag">👤 ${r.trip_type || i18n.t('tourist', 'Du khách')} · ${r.visit_date || '2024'}</span>
               </div>
               <h5 class="review-title">${r.title}</h5>
               <p class="review-comment">“${r.comment}”</p>
             </div>
           `).join('');
         } else {
-          poiReviewsList.innerHTML = '<div style="font-size: 0.78rem; color: #64748B;">Chưa có trích đoạn nhận xét chi tiết.</div>';
+          poiReviewsList.innerHTML = `<div style="font-size: 0.78rem; color: #64748B;">${i18n.t('poiNoReviews', 'Chưa có trích đoạn nhận xét chi tiết.')}</div>`;
         }
       }
 
@@ -2835,7 +3115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
           });
         } else {
-          poiNearbyList.innerHTML = '<div style="font-size: 0.78rem; color: var(--color-ink-muted);">Không có địa điểm lân cận trong bán kính gần.</div>';
+          poiNearbyList.innerHTML = `<div style="font-size: 0.78rem; color: var(--color-ink-muted);">${i18n.t('poiNoNearby', 'Không có địa điểm lân cận trong bán kính gần.')}</div>`;
         }
       }
 
@@ -2844,7 +3124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (data.latitude && data.longitude) {
           poiBtnGoogleMaps.href = `https://www.google.com/maps/dir/?api=1&destination=${data.latitude},${data.longitude}`;
         } else {
-          poiBtnGoogleMaps.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.name + ' Huế')}`;
+          poiBtnGoogleMaps.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.name + ' Hue')}`;
         }
       }
 
@@ -2878,7 +3158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const destName = currentPoiData.name;
 
     if (!destLat || !destLng) {
-      alert('Địa điểm này chưa có thông tin tọa độ chính xác để chỉ đường.');
+      alert(i18n.t('poiNoCoordsAlert', 'Địa điểm này chưa có thông tin tọa độ chính xác để chỉ đường.'));
       return;
     }
 
@@ -2889,7 +3169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const origin = mapStudio.userLocation || {
       lat: 16.4674,
       lng: 107.5905,
-      name: 'Cầu Tràng Tiền (Trung tâm Huế)'
+      name: i18n.t('defaultHueCenter', 'Cầu Tràng Tiền (Trung tâm Huế)')
     };
 
     const destination = {
@@ -2906,8 +3186,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   poiBtnAddTour?.addEventListener('click', () => {
     if (!currentPoiData) return;
     closePoiDetail();
-    const tabItinerary = document.getElementById('tab-btn-itinerary');
-    if (tabItinerary) tabItinerary.click();
+    togglePlanner(true);
     // Bật tag món ăn tương ứng nếu có
     dishTags.forEach(tag => {
       if (currentPoiData.name.includes(tag.dataset.dish) || (currentPoiData.cuisines || '').includes(tag.dataset.dish)) {
@@ -2920,14 +3199,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   poiBtnAskAi?.addEventListener('click', () => {
     if (!currentPoiData) return;
     closePoiDetail();
+    const isEn = i18n.getLanguage() === 'en';
     const tabChat = document.getElementById('tab-btn-chat');
     if (tabChat) tabChat.click();
-    if (chatInput) chatInput.value = `Hãy giới thiệu chi tiết về ${currentPoiData.name} và các món ăn đặc sản nổi tiếng ở đây.`;
+    if (chatInput) {
+      chatInput.value = isEn
+        ? `Please introduce ${currentPoiData.name} and specialty dishes around here in detail.`
+        : `Hãy giới thiệu chi tiết về ${currentPoiData.name} và các món ăn đặc sản nổi tiếng ở đây.`;
+    }
     chatForm?.dispatchEvent(new Event('submit'));
   });
 
   // Action: Lưu vào sổ tay yêu thích từ POI drawer
   poiBtnFavorite?.addEventListener('click', () => {
+    const isEn = i18n.getLanguage() === 'en';
     const activeName = currentPoiData?.name || poiTitle?.textContent;
     if (!activeName) return;
 
@@ -2935,7 +3220,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       place_id: currentPoiData?.place_id || currentPoiData?.id,
       name: activeName,
       category: currentPoiData?.category || poiCatBadge?.textContent || 'Attraction',
-      address: currentPoiData?.address || poiAddressText?.textContent || 'Thành phố Huế',
+      address: currentPoiData?.address || poiAddressText?.textContent || (isEn ? 'Hue City' : 'Thành phố Huế'),
       latitude: currentPoiData?.latitude || currentPoiData?.lat,
       longitude: currentPoiData?.longitude || currentPoiData?.lng,
       rating_value: currentPoiData?.rating_value || parseFloat(poiRatingVal?.textContent) || 4.6
@@ -2943,11 +3228,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const { isFav } = userStore.toggleFavorite(target);
     updateDrawerUserStatus(target.name, target.place_id);
-    showHueToast(isFav ? `Đã lưu "${target.name}" vào Sổ tay` : `Đã bỏ lưu "${target.name}"`);
+    showHueToast(isFav ? `${i18n.t('savedPoiPrefix', 'Đã lưu')} "${target.name}" ${i18n.t('toWishlistSuffix', 'vào Sổ tay')}` : `${i18n.t('unsavedPoiPrefix', 'Đã bỏ lưu')} "${target.name}"`);
   });
 
   // Action: Check-in từ POI drawer
   poiBtnCheckin?.addEventListener('click', () => {
+    const isEn = i18n.getLanguage() === 'en';
     const activeName = currentPoiData?.name || poiTitle?.textContent;
     if (!activeName) return;
 
@@ -2955,7 +3241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       place_id: currentPoiData?.place_id || currentPoiData?.id,
       name: activeName,
       category: currentPoiData?.category || poiCatBadge?.textContent || 'Attraction',
-      address: currentPoiData?.address || poiAddressText?.textContent || 'Thành phố Huế',
+      address: currentPoiData?.address || poiAddressText?.textContent || (isEn ? 'Hue City' : 'Thành phố Huế'),
       latitude: currentPoiData?.latitude || currentPoiData?.lat,
       longitude: currentPoiData?.longitude || currentPoiData?.lng
     };
@@ -2963,7 +3249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { isChecked } = userStore.toggleCheckin(target);
     updateDrawerUserStatus(target.name, target.place_id);
     const stats = userStore.getExplorerStats();
-    showHueToast(isChecked ? `Đã check-in: "${target.name}" (${stats.rankTitle})` : `Đã hủy check-in "${target.name}"`);
+    showHueToast(isChecked ? `${i18n.t('checkedInPrefix', 'Đã check-in:')} "${target.name}" (${stats.rankTitle})` : `${i18n.t('uncheckedInPrefix', 'Đã hủy check-in')} "${target.name}"`);
   });
 
   // Action: Click vào các thẻ địa điểm nổi bật ở màn hình chào mừng
@@ -2994,7 +3280,7 @@ document.addEventListener('DOMContentLoaded', async () => {
    */
   window.navigateToDestination = (destLat, destLng, destName = '', destAddress = '') => {
     if (!destLat || !destLng) {
-      alert('Địa điểm này chưa có tọa độ chính xác để chỉ đường.');
+      alert(i18n.t('poiNoCoordsAlert', 'Địa điểm này chưa có tọa độ chính xác để chỉ đường.'));
       return;
     }
 
@@ -3013,13 +3299,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const origin = mapStudio.userLocation || {
       lat: 16.4674,
       lng: 107.5905,
-      name: 'Cầu Tràng Tiền (Trung tâm Huế)'
+      name: i18n.t('defaultHueCenter', 'Cầu Tràng Tiền (Trung tâm Huế)')
     };
 
     const destination = {
       lat: parseFloat(destLat),
       lng: parseFloat(destLng),
-      name: destName || 'Điểm đến',
+      name: destName || i18n.t('destinationLabel', 'Điểm đến'),
       address: destAddress || ''
     };
 
@@ -3059,6 +3345,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 10. GLOBAL POPUP FAVORITE & CHECK-IN HANDLERS (LEAFLET POPUP TOOLS)
   // =============================================================================
   window.togglePlaceFavorite = (name, placeId, category, address, lat, lng, btnEl) => {
+    const isEn = i18n.getLanguage() === 'en';
     const target = {
       name,
       place_id: placeId,
@@ -3071,12 +3358,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (btnEl) {
       btnEl.classList.toggle('active', isFav);
       const span = btnEl.querySelector('span');
-      if (span) span.textContent = isFav ? 'Đã thích' : 'Yêu thích';
-      btnEl.title = isFav ? 'Bỏ lưu yêu thích' : 'Lưu vào sổ tay yêu thích';
+      if (span) span.textContent = isFav ? i18n.t('poiFavDone', 'Đã thích') : i18n.t('poiFavLabel', 'Yêu thích');
+      btnEl.title = isFav ? (isEn ? 'Remove from favorites' : 'Bỏ lưu yêu thích') : (isEn ? 'Save to notebook' : 'Lưu vào sổ tay yêu thích');
       const svg = btnEl.querySelector('svg');
       if (svg) svg.setAttribute('fill', isFav ? 'currentColor' : 'none');
     }
-    showHueToast(isFav ? `Đã lưu "${name}" vào Sổ tay` : `Đã bỏ lưu "${name}"`);
+    showHueToast(isFav ? `${i18n.t('savedPoiPrefix', 'Đã lưu')} "${name}" ${i18n.t('toWishlistSuffix', 'vào Sổ tay')}` : `${i18n.t('unsavedPoiPrefix', 'Đã bỏ lưu')} "${name}"`);
   };
 
   window.togglePlaceCheckin = (name, placeId, category, address, lat, lng, btnEl) => {
@@ -3092,11 +3379,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (btnEl) {
       btnEl.classList.toggle('active', isChecked);
       const span = btnEl.querySelector('span');
-      if (span) span.textContent = isChecked ? 'Đã check-in' : 'Check-in';
-      btnEl.title = isChecked ? 'Hủy check-in' : 'Đánh dấu đã ghé thăm';
+      if (span) span.textContent = isChecked ? i18n.t('poiCheckinDone', 'Đã check-in') : i18n.t('poiCheckinLabel', 'Check-in');
+      btnEl.title = isChecked ? i18n.t('removeCheckinTooltip', 'Hủy check-in') : i18n.t('markVisitedTooltip', 'Đánh dấu đã ghé thăm');
     }
     const stats = userStore.getExplorerStats();
-    showHueToast(isChecked ? `Đã check-in: "${name}" (${stats.rankTitle})` : `Đã hủy check-in "${name}"`);
+    showHueToast(isChecked ? `${i18n.t('checkedInPrefix', 'Đã check-in:')} "${name}" (${stats.rankTitle})` : `${i18n.t('uncheckedInPrefix', 'Đã hủy check-in')} "${name}"`);
   };
 
   // =============================================================================
@@ -3133,10 +3420,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (headerNotebookBadge) {
       headerNotebookBadge.textContent = favCount;
+      headerNotebookBadge.classList.toggle('hidden', favCount === 0);
       headerNotebookBadge.style.display = favCount > 0 ? 'inline-flex' : 'none';
     }
     if (sidebarNotebookBadge) {
       sidebarNotebookBadge.textContent = favCount;
+      sidebarNotebookBadge.classList.toggle('hidden', favCount === 0);
       sidebarNotebookBadge.style.display = favCount > 0 ? 'inline-flex' : 'none';
     }
     if (badgeWishlistCount) badgeWishlistCount.textContent = favCount;
@@ -3197,7 +3486,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Triggers mở Sổ tay Du lịch & Gu cá nhân
   document.getElementById('btn-sidebar-travel-notebook')?.addEventListener('click', () => openNotebookModal('wishlist'));
-  document.getElementById('btn-sidebar-budget')?.addEventListener('click', () => budgetEstimator.openModal(null, 'Dự toán Ngân sách Du lịch Cố Đô Huế'));
+  document.getElementById('btn-sidebar-budget')?.addEventListener('click', () => {
+    const isEn = i18n.getLanguage() === 'en';
+    budgetEstimator.openModal(null, isEn ? 'Hue Imperial Trip Budget Estimator' : 'Dự toán Ngân sách Du lịch Cố Đô Huế');
+  });
   document.getElementById('btn-open-travel-notebook')?.addEventListener('click', () => {
     document.getElementById('user-dropdown-menu')?.classList.remove('active');
     openNotebookModal('wishlist');
@@ -3226,14 +3518,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (wishlistTotalPill) {
-      wishlistTotalPill.textContent = `${favorites.length} địa điểm`;
+      wishlistTotalPill.textContent = `${favorites.length} ${i18n.t('placesUnit', 'địa điểm')}`;
     }
+
+    const isEn = i18n.getLanguage() === 'en';
 
     if (favorites.length === 0) {
       wishlistItemsList.innerHTML = `
         <div class="notebook-empty-state">
-          <p class="empty-state-title">Chưa có địa điểm lưu trữ</p>
-          <p class="empty-state-desc">${query.trim() ? 'Không tìm thấy địa điểm phù hợp với từ khóa.' : 'Khám phá các địa danh trên bản đồ và nhấn Lưu để quản lý danh sách của bạn.'}</p>
+          <p class="empty-state-title">${i18n.t('wishlistEmptyTitle', 'Chưa có địa điểm lưu trữ')}</p>
+          <p class="empty-state-desc">${query.trim() ? i18n.t('mapNoSearchResult', 'Không tìm thấy địa điểm phù hợp với từ khóa.') : i18n.t('wishlistEmptyDesc', 'Khám phá các địa danh trên bản đồ và nhấn Lưu để quản lý danh sách của bạn.')}</p>
         </div>
       `;
       return;
@@ -3241,17 +3535,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     wishlistItemsList.innerHTML = favorites.map(item => {
       const cat = (item.category || '').toLowerCase();
-      let catLabel = 'DI TÍCH';
+      let catLabel = i18n.t('monumentsUpper', 'DI TÍCH');
       if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) {
-        catLabel = 'ẨM THỰC';
+        catLabel = i18n.t('cuisineUpper', 'ẨM THỰC');
       } else if (cat.includes('cafe') || cat.includes('cà phê')) {
-        catLabel = 'CÀ PHÊ';
+        catLabel = i18n.t('cafeUpper', 'CÀ PHÊ');
       } else if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) {
-        catLabel = 'NGHỈ DƯỠNG';
+        catLabel = i18n.t('resortUpper', 'NGHỈ DƯỠNG');
       }
 
       const safeName = (item.name || '').replace(/"/g, '&quot;');
-      const safeAddr = (item.address || 'Thành phố Huế').replace(/"/g, '&quot;');
+      const safeAddr = (item.address || (isEn ? 'Hue City' : 'Thành phố Huế')).replace(/"/g, '&quot;');
       const safeNote = (item.note || '').replace(/"/g, '&quot;');
 
       return `
@@ -3259,15 +3553,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="wishlist-card-header">
             <span class="wishlist-cat-tag">${catLabel}</span>
             <div class="wishlist-actions">
-              <button type="button" class="btn-wishlist-action btn-fly-map">Bản đồ</button>
+              <button type="button" class="btn-wishlist-action btn-fly-map">${i18n.t('mapBtn', 'Bản đồ')}</button>
               <span class="wishlist-action-sep">/</span>
-              <button type="button" class="btn-wishlist-action btn-remove-fav">Bỏ lưu</button>
+              <button type="button" class="btn-wishlist-action btn-remove-fav">${i18n.t('removeFavBtn', 'Bỏ lưu')}</button>
             </div>
           </div>
           <h4 class="wishlist-card-title">${item.name}</h4>
           <p class="wishlist-card-address">${safeAddr}</p>
           <div class="wishlist-note-wrap">
-            <input type="text" class="wishlist-note-input" placeholder="Ghi chú cá nhân..." value="${safeNote}" />
+            <input type="text" class="wishlist-note-input" placeholder="${i18n.t('personalNotePlaceholder', 'Ghi chú cá nhân...')}" value="${safeNote}" />
           </div>
         </div>
       `;
@@ -3298,20 +3592,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!card) return;
       const name = card.dataset.name;
       userStore.removeFavorite(name);
-      showHueToast(`Đã bỏ lưu "${name}"`);
+      showHueToast(`${i18n.t('unsavedPoiPrefix', 'Đã bỏ lưu')} "${name}"`);
       renderWishlist(searchWishlistInput?.value || '');
       return;
     }
   });
 
   wishlistItemsList?.addEventListener('change', (e) => {
+    const isEn = i18n.getLanguage() === 'en';
     const noteInput = e.target.closest('.wishlist-note-input');
     if (noteInput) {
       const card = noteInput.closest('.wishlist-card');
       if (!card) return;
       const name = card.dataset.name;
       userStore.updateFavoriteNote(name, noteInput.value.trim());
-      showHueToast(`Đã lưu ghi chú cho "${name}"`);
+      showHueToast(isEn ? `Saved note for "${name}"` : `Đã lưu ghi chú cho "${name}"`);
     }
   });
 
@@ -3320,30 +3615,32 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function updateExplorerRankUi(stats) {
+    const isEn = i18n.getLanguage() === 'en';
     const levelTag = document.getElementById('explorer-level-tag');
-    if (levelTag) levelTag.textContent = `CẤP ${stats.level || '01'}`;
+    if (levelTag) levelTag.textContent = `${i18n.t('passportLevel', 'CẤP')} ${stats.level || '01'}`;
     if (explorerRankTitle) explorerRankTitle.textContent = stats.rankTitle;
     if (explorerRankCount) explorerRankCount.textContent = `${stats.count} / ${stats.total}`;
     if (explorerProgressFill) explorerProgressFill.style.width = `${stats.percentage}%`;
     if (explorerRankDesc) {
       explorerRankDesc.textContent = stats.remainingForNext > 0
-        ? `Cần thêm ${stats.remainingForNext} điểm check-in để đạt "${stats.nextRankTitle}".`
-        : 'Đã hoàn thành toàn bộ hành trình di sản Cố Đô.';
+        ? (isEn ? `Need ${stats.remainingForNext} more check-ins to reach "${stats.nextRankTitle}".` : `Cần thêm ${stats.remainingForNext} điểm check-in để đạt "${stats.nextRankTitle}".`)
+        : (isEn ? 'Completed all Imperial heritage trails.' : 'Đã hoàn thành toàn bộ hành trình di sản Cố Đô.');
     }
   }
 
   function getCategoryLabel(catRaw) {
     const cat = (catRaw || '').toLowerCase();
-    if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) return 'ẨM THỰC';
-    if (cat.includes('cafe') || cat.includes('cà phê')) return 'CÀ PHÊ';
-    if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) return 'NGHỈ DƯỠNG';
-    return 'DI TÍCH';
+    if (cat.includes('restaurant') || cat.includes('ẩm thực') || cat.includes('quán')) return i18n.t('cuisineUpper', 'ẨM THỰC');
+    if (cat.includes('cafe') || cat.includes('cà phê')) return i18n.t('cafeUpper', 'CÀ PHÊ');
+    if (cat.includes('hotel') || cat.includes('khách sạn') || cat.includes('resort')) return i18n.t('resortUpper', 'NGHỈ DƯỠNG');
+    return i18n.t('monumentsUpper', 'DI TÍCH');
   }
 
   function renderCheckinList(category = 'all') {
     currentCheckinCategory = category;
     if (!checkinItemsList) return;
 
+    const isEn = i18n.getLanguage() === 'en';
     const stats = userStore.getExplorerStats();
     updateExplorerRankUi(stats);
 
@@ -3368,11 +3665,11 @@ document.addEventListener('DOMContentLoaded', async () => {
               <div class="checkin-name">${item.name}</div>
               <div class="checkin-meta">
                 <span class="checkin-cat-tag">${catLabel}</span>
-                ${isChecked ? '<span class="checkin-done-tag">Đã ghé thăm</span>' : ''}
+                ${isChecked ? `<span class="checkin-done-tag">${i18n.t('visitedBadge', 'Đã ghé thăm')}</span>` : ''}
               </div>
             </div>
           </div>
-          <button type="button" class="btn-checkin-fly" title="Xem trên bản đồ">Bản đồ</button>
+          <button type="button" class="btn-checkin-fly" title="${isEn ? 'View on map' : 'Xem trên bản đồ'}">${i18n.t('mapBtn', 'Bản đồ')}</button>
         </div>
       `;
     }).join('');
@@ -3422,11 +3719,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       card.classList.toggle('checked', isChecked);
       const metaEl = card.querySelector('.checkin-meta');
       if (metaEl) {
-        metaEl.innerHTML = `<span class="checkin-cat-tag">${catLabel}</span>${isChecked ? '<span class="checkin-done-tag">Đã ghé thăm</span>' : ''}`;
+        metaEl.innerHTML = `<span class="checkin-cat-tag">${catLabel}</span>${isChecked ? `<span class="checkin-done-tag">${i18n.t('visitedBadge', 'Đã ghé thăm')}</span>` : ''}`;
       }
 
       updateExplorerRankUi(newStats);
-      showHueToast(isChecked ? `Đã check-in: "${name}"` : `Đã hủy check-in: "${name}"`);
+      showHueToast(isChecked ? `${i18n.t('checkedInPrefix', 'Đã check-in:')} "${name}"` : `${i18n.t('uncheckedInPrefix', 'Đã hủy check-in:')} "${name}"`);
     }
   });
 
@@ -3477,8 +3774,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const selectedStyles = Array.from(document.querySelectorAll('input[name="pref_style"]:checked')).map(el => el.value);
     const selectedDietary = Array.from(document.querySelectorAll('input[name="pref_dietary"]:checked')).map(el => el.value);
-    const party = prefSelectParty?.value || 'Cặp đôi';
-    const transport = prefSelectTransport?.value || 'Xe máy';
+    const party = prefSelectParty?.value || 'Couples';
+    const transport = prefSelectTransport?.value || 'Motorbike';
     const customNotes = prefInputNotes?.value?.trim() || '';
 
     userStore.savePreferences({
@@ -3489,7 +3786,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       customNotes
     });
 
-    showHueToast('Đã lưu Hồ sơ Gu Du Lịch thành công.');
+    showHueToast(i18n.t('prefSavedSuccess', 'Đã lưu Hồ sơ Gu Du Lịch thành công.'));
   });
 
   // Triggers mở Hồ sơ Gu du lịch

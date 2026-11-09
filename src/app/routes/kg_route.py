@@ -4,9 +4,10 @@ ROUTER: TRUY VẤN ĐỒ THỊ TRI THỨC KHÔNG GIAN (SPATIAL KG ROUTE)
 """
 import json
 import sqlite3
+import threading
 from pathlib import Path
 from typing import Optional, Dict, Any
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from src.graph.graph_retriever import get_graph_retriever, strip_accents
 from src.graph.spatial_indexer import haversine_distance
 
@@ -56,36 +57,47 @@ import urllib.parse
 _REVIEW_TRANSLATION_CACHE: Optional[Dict[str, str]] = None
 _CACHE_FILE = Path(__file__).resolve().parent.parent.parent.parent / "data" / "processed" / "hue_reviews_vi_cache.json"
 _cache_mtime: float = 0.0
+_CACHE_LOCK = threading.Lock()
+_cache_dirty: bool = False
 
 def _load_review_cache():
     global _REVIEW_TRANSLATION_CACHE, _cache_mtime
-    if _CACHE_FILE.exists():
-        try:
-            mtime = _CACHE_FILE.stat().st_mtime
-            if _REVIEW_TRANSLATION_CACHE is None or mtime > _cache_mtime:
-                with open(_CACHE_FILE, "r", encoding="utf-8") as f:
-                    _REVIEW_TRANSLATION_CACHE = json.load(f)
-                _cache_mtime = mtime
-        except Exception:
-            if _REVIEW_TRANSLATION_CACHE is None:
-                _REVIEW_TRANSLATION_CACHE = {}
-    elif _REVIEW_TRANSLATION_CACHE is None:
-        _REVIEW_TRANSLATION_CACHE = {}
+    with _CACHE_LOCK:
+        if _CACHE_FILE.exists():
+            try:
+                mtime = _CACHE_FILE.stat().st_mtime
+                if _REVIEW_TRANSLATION_CACHE is None or mtime > _cache_mtime:
+                    with open(_CACHE_FILE, "r", encoding="utf-8") as f:
+                        _REVIEW_TRANSLATION_CACHE = json.load(f)
+                    _cache_mtime = mtime
+            except Exception:
+                if _REVIEW_TRANSLATION_CACHE is None:
+                    _REVIEW_TRANSLATION_CACHE = {}
+        elif _REVIEW_TRANSLATION_CACHE is None:
+            _REVIEW_TRANSLATION_CACHE = {}
 
 def _save_review_cache():
-    global _REVIEW_TRANSLATION_CACHE
-    if _REVIEW_TRANSLATION_CACHE is not None:
-        try:
-            _CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-            with open(_CACHE_FILE, "w", encoding="utf-8") as f:
-                json.dump(_REVIEW_TRANSLATION_CACHE, f, ensure_ascii=False, indent=2)
-        except Exception:
-            pass
+    global _REVIEW_TRANSLATION_CACHE, _cache_dirty, _cache_mtime
+    with _CACHE_LOCK:
+        if _REVIEW_TRANSLATION_CACHE is not None and _cache_dirty:
+            try:
+                _CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+                with open(_CACHE_FILE, "w", encoding="utf-8") as f:
+                    json.dump(_REVIEW_TRANSLATION_CACHE, f, ensure_ascii=False, indent=2)
+                _cache_mtime = _CACHE_FILE.stat().st_mtime
+                _cache_dirty = False
+            except Exception:
+                pass
 
 def is_vietnamese(text: str) -> bool:
     if not text:
         return True
-    return bool(re.search(r'[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđĐ]', text))
+    # Ký tự đặc trưng riêng của Tiếng Việt (dấu hỏi, ngã, nặng, ă, ơ, ư, đ, ế/ề/ệ, ố/ồ/ộ...)
+    if re.search(r'[ăằắẳẵặầấẩẫậảạẻẽẹềếểễệỉĩịỏõọồốổỗộơờớởỡợủũụưừứửữựỳýỷỹỵđĐ]', text, re.I):
+        return True
+    # Nếu chỉ có dấu sắc/huyền/mũ đơn lẻ (như từ 'café', 'crème' trong câu tiếng Anh), yêu cầu >= 2 ký tự có dấu
+    accent_matches = re.findall(r'[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđĐ]', text, re.I)
+    return len(accent_matches) >= 2
 
 # Bảng chuyển đổi tiêu đề ngắn sang văn phong du lịch tinh tế, trang nhã xứ Huế
 _TITLE_REWRITES = {
@@ -201,7 +213,8 @@ def _polish_vietnamese_review(text: str) -> str:
     return res
 
 def translate_review_text(text: str) -> str:
-    """Tự động chuyển ngữ câu đánh giá sang tiếng Việt tự nhiên và lưu cache tức thì."""
+    """Tự động chuyển ngữ câu đánh giá sang tiếng Việt tự nhiên và lưu vào bộ nhớ đệm."""
+    global _cache_dirty
     if not text:
         return ""
     text_clean = text.strip()
@@ -215,8 +228,9 @@ def translate_review_text(text: str) -> str:
         return _polish_vietnamese_review(text_clean)
 
     _load_review_cache()
-    if text_clean in _REVIEW_TRANSLATION_CACHE:
-        return _REVIEW_TRANSLATION_CACHE[text_clean]
+    with _CACHE_LOCK:
+        if _REVIEW_TRANSLATION_CACHE and text_clean in _REVIEW_TRANSLATION_CACHE:
+            return _REVIEW_TRANSLATION_CACHE[text_clean]
 
     # Tiền xử lý các thuật ngữ dịch vụ ẩm thực tránh dịch máy thô cứng
     cleaned = re.sub(r'\bour server\b', 'our staff', text_clean, flags=re.I)
@@ -230,8 +244,10 @@ def translate_review_text(text: str) -> str:
             t = ''.join([part[0] for part in data[0] if part[0]])
             # Hậu xử lý văn phong du lịch Cố Đô mượt mà
             t = _polish_vietnamese_review(t)
-            _REVIEW_TRANSLATION_CACHE[text_clean] = t
-            _save_review_cache()
+            with _CACHE_LOCK:
+                if _REVIEW_TRANSLATION_CACHE is not None:
+                    _REVIEW_TRANSLATION_CACHE[text_clean] = t
+                    _cache_dirty = True
             return t
     except Exception:
         return text_clean
@@ -325,12 +341,12 @@ def get_place_detail(
 
     target_key = place_id or name
     if not target_key:
-        return {"error": "Cần cung cấp name hoặc place_id"}
+        raise HTTPException(status_code=400, detail="Cần cung cấp tham số name hoặc place_id")
 
     place_data = None
 
-    # 1. Tra cứu theo ID (nếu ID không phải dạng custom của frontend)
-    if place_id and not place_id.startswith("custom_"):
+    # 1. Tra cứu theo ID trong Knowledge Graph (bao gồm cả custom_* đã nạp vào KG)
+    if place_id:
         place_data = retriever.get_place(place_id)
 
     # 2. Tra cứu theo Tên chính xác trong Knowledge Graph
@@ -438,14 +454,21 @@ def get_place_detail(
     nearby_list = []
     raw_nearby = retriever.find_nearby_places(p_id, max_distance_km=1.5, limit=4)
     for nb in raw_nearby:
+        nb_id = str(nb.get("node_id") or nb.get("place_id") or "")
+        nb_lat = nb.get("latitude") or nb.get("lat")
+        nb_lng = nb.get("longitude") or nb.get("lng")
         nearby_list.append({
+            "node_id": nb_id,
+            "place_id": nb_id,
             "name": nb.get("name", ""),
             "category": nb.get("category", "Attraction"),
             "distance_km": round(nb.get("distance_km", 0.0), 2),
             "walk_time_min": nb.get("walk_time_min", 0),
             "drive_time_min": nb.get("drive_time_min", 0),
-            "lat": nb.get("latitude") or nb.get("lat"),
-            "lng": nb.get("longitude") or nb.get("lng")
+            "lat": nb_lat,
+            "lng": nb_lng,
+            "latitude": nb_lat,
+            "longitude": nb_lng
         })
 
     # Nếu không có cạnh NEAR_BY trong đồ thị, tính khoảng cách trực tiếp từ tọa độ GPS
@@ -462,13 +485,17 @@ def get_place_detail(
                 d = haversine_distance(float(lat0), float(lng0), float(n_lat), float(n_lng))
                 if 0.05 < d <= 1.8:
                     cand_nearby.append({
+                        "node_id": str(n_id),
+                        "place_id": str(n_id),
                         "name": n_data.get("name", ""),
                         "category": n_data.get("category", "Attraction"),
                         "distance_km": round(d, 2),
                         "walk_time_min": max(1, int(d / 4.0 * 60)),
                         "drive_time_min": max(1, int(d / 25.0 * 60)),
                         "lat": float(n_lat),
-                        "lng": float(n_lng)
+                        "lng": float(n_lng),
+                        "latitude": float(n_lat),
+                        "longitude": float(n_lng)
                     })
         cand_nearby.sort(key=lambda x: x["distance_km"])
         nearby_list = cand_nearby[:4]
@@ -568,6 +595,7 @@ def get_place_detail(
             "trip_type": localize_trip_type(r.get("trip_type", "")),
             "visit_date": localize_visit_date(r.get("visit_date", ""))
         })
+    _save_review_cache()
     reviews = localized_reviews
 
     # Tính toán rating và review count chuẩn

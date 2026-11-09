@@ -2,7 +2,7 @@
 """
 GRAPH RETRIEVER (BỘ TRUY XUẤT ĐỒ THỊ TRI THỨC DU LỊCH)
 Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu và Trí tuệ Nhân tạo (DS&AI K3 - HUET)
-Trường Kỹ thuật và Công nghệ - Đại học Huế
+Khoa Kỹ thuật và Công nghệ - Đại học Huế
 Đề tài: Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM
 -----------------------------------------------------------------------------------------------------
 Nhiệm vụ:
@@ -109,6 +109,23 @@ class SpatialGraphRetriever:
             "vuon quoc gia bach ma": "place_8877",
             "cau ngoi thanh toan": "place_8885",
             "thanh toan": "place_8885",
+            # Các bãi biển danh tiếng của Thừa Thiên Huế
+            "thuan an": "beach_thuan_an",
+            "bien thuan an": "beach_thuan_an",
+            "bai bien thuan an": "beach_thuan_an",
+            "canh duong": "beach_canh_duong",
+            "bien canh duong": "beach_canh_duong",
+            "bai bien canh duong": "beach_canh_duong",
+            "hai duong": "beach_hai_duong",
+            "bien hai duong": "beach_hai_duong",
+            "bai bien hai duong": "beach_hai_duong",
+            "lang co": "beach_lang_co",
+            "bien lang co": "beach_lang_co",
+            "vinh lang co": "beach_lang_co",
+            "dam lap an": "beach_lang_co",
+            "deo hai van": "place_8895",
+            "hai van": "place_8895",
+            # Các danh thắng nổi tiếng ở bờ Nam và ngoại ô Huế
             "doi vong canh": "custom_attr_02",
             "vong canh": "custom_attr_02",
             "lang gia long": "custom_attr_01",
@@ -118,12 +135,50 @@ class SpatialGraphRetriever:
             "thuy xuan": "custom_attr_03",
             "dien hon chen": "custom_attr_04",
             "hon chen": "custom_attr_04",
+            "chua huyen khong son thuong": "custom_attr_05",
             "huyen khong son thuong": "custom_attr_05",
             "chua huyen khong": "custom_attr_05",
-            "doi thien an": "custom_local_21",
-            "thien an": "custom_local_21",
+            "doi thien an": "custom_attr_thienan",
+            "thien an": "custom_attr_thienan",
+            "dan vien thien an": "custom_attr_thienan",
+            "ho thuy tien": "custom_local_21",
+            "cong vien ho thuy tien": "custom_local_21",
             "cung an dinh": "custom_local_31",
-            "an dinh": "custom_local_31"
+            "an dinh": "custom_local_31",
+            "chua tu dam": "custom_local_30",
+            "tu dam": "custom_local_30",
+            "con hen": "custom_attr_con_hen",
+            "dao con hen": "custom_attr_con_hen",
+            "vi da": "custom_attr_con_hen",
+            "banh beo ba do": "custom_rest_04",
+            "ba do": "custom_rest_04",
+            "com hen hoa dong": "custom_rest_02",
+            "hoa dong": "custom_rest_02",
+            "banh ep gia di": "custom_local_17",
+            "gia di": "custom_local_17",
+            "banh mi o tho": "custom_local_13",
+            "o tho": "custom_local_13",
+            "com am phu": "custom_local_18",
+            "banh canh di huong": "custom_local_25",
+            "di huong": "custom_local_25",
+            "bun bo mu keo": "custom_local_26",
+            "mu keo": "custom_local_26",
+            "nem lui ba ty": "custom_local_27",
+            "ba ty": "custom_local_27",
+            "che mo ton dich": "custom_local_29",
+            "mo ton dich": "custom_local_29",
+            "lang thieu tri": "custom_local_33",
+            "thieu tri": "custom_local_33",
+            "ca phe mat biec": "custom_local_15",
+            "mat biec": "custom_local_15",
+            "banh uot huyen anh": "custom_local_08",
+            "huyen anh": "custom_local_08",
+            "chua dieu de": "custom_local_07",
+            "dieu de": "custom_local_07",
+            "gac trinh": "custom_local_16",
+            "ca phe gac trinh": "custom_local_16",
+            "com hen thuy": "custom_local_01",
+            "banh beo o le": "custom_local_02"
         }
         self._place_alias_index = dict(DEFAULT_PLACE_ALIASES)
 
@@ -152,6 +207,7 @@ class SpatialGraphRetriever:
                             self.G.nodes[pid]["description"] = cp["desc"]
                         if cp.get("reviews") and not self.G.nodes[pid].get("reviews"):
                             self.G.nodes[pid]["reviews"] = cp["reviews"]
+                        self.G.nodes[pid]["is_hue"] = 1
                         continue
 
                     cat = cp.get("cat") or cp.get("category", "Attraction")
@@ -176,15 +232,18 @@ class SpatialGraphRetriever:
                         rating_value=rating,
                         review_count=rev_cnt,
                         locality="Thành phố Huế",
+                        is_hue=1,
                         category=cat,
                         reviews=reviews,
                         tags=tags
                     )
                     new_nodes.append((pid, lat, lng))
 
-                    # Liên kết LOCATED_IN vào Thừa Thiên Huế
-                    if "province_004" in self.G:
-                        self.G.add_edge(pid, "province_004", relation="LOCATED_IN")
+                    # Liên kết LOCATED_IN vào Thành phố Huế / Thừa Thiên Huế
+                    for prov_node in ("prov_Thành phố Huế", "province_004"):
+                        if prov_node in self.G:
+                            self.G.add_edge(pid, prov_node, relation="LOCATED_IN")
+                            break
 
                 # Tự động kết nối quan hệ không gian NEAR_BY giữa các node mới và các node trong đồ thị (bán kính 2km)
                 from src.graph.spatial_indexer import haversine_distance
@@ -192,15 +251,17 @@ class SpatialGraphRetriever:
                     if not lat1 or not lng1:
                         continue
                     for other_id, other_data in self.G.nodes(data=True):
-                        if other_id == pid or other_data.get("node_type") not in ["Restaurant", "Hotel", "Attraction", "Place"]:
+                        if other_id == pid or other_data.get("node_type") not in ["Restaurant", "Hotel", "Attraction", "Place", "Cafe"]:
                             continue
                         lat2 = other_data.get("latitude")
                         lng2 = other_data.get("longitude")
                         if lat2 and lng2:
                             d = haversine_distance(lat1, lng1, lat2, lng2)
                             if d <= 2.0:
-                                self.G.add_edge(pid, other_id, relation="NEAR_BY", distance_km=round(d, 2))
-                                self.G.add_edge(other_id, pid, relation="NEAR_BY", distance_km=round(d, 2))
+                                walk_m = max(1, int(round(d * 12)))
+                                drive_m = max(1, int(round(d * 2)))
+                                self.G.add_edge(pid, other_id, relation="NEAR_BY", distance_km=round(d, 2), walk_time_min=walk_m, drive_time_min=drive_m)
+                                self.G.add_edge(other_id, pid, relation="NEAR_BY", distance_km=round(d, 2), walk_time_min=walk_m, drive_time_min=drive_m)
             except Exception as e:
                 print(f"[GraphRetriever] Cảnh báo nạp mở rộng hue_top_places.json: {e}")
 
@@ -210,7 +271,7 @@ class SpatialGraphRetriever:
             raw_name = data.get("name", "")
             norm_name = strip_accents(raw_name)
 
-            if ntype in ["Restaurant", "Hotel", "Attraction", "Place"]:
+            if ntype in ["Restaurant", "Hotel", "Attraction", "Place", "Cafe"]:
                 self._place_name_index[norm_name] = node_id
                 # Index tên tiếng Anh nếu có
                 if data.get("name_en"):

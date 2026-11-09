@@ -2,7 +2,7 @@
 """
 KNOWLEDGE GRAPH BUILDER (XÂY DỰNG ĐỒ THỊ TRI THỨC DU LỊCH KHÔNG GIAN)
 Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu và Trí tuệ Nhân tạo (DS&AI K3 - HUET)
-Trường Kỹ thuật và Công nghệ - Đại học Huế
+Khoa Kỹ thuật và Công nghệ - Đại học Huế
 Đề tài: Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM
 -----------------------------------------------------------------------------------------------------
 - Nguồn dữ liệu:
@@ -38,7 +38,10 @@ OUTPUT_PKL = os.path.join(PROJECT_ROOT, "data", "processed", "knowledge_graph.pk
 OUTPUT_GRAPHML = os.path.join(PROJECT_ROOT, "data", "processed", "knowledge_graph.graphml")
 OUTPUT_STATS = os.path.join(PROJECT_ROOT, "data", "processed", "kg_statistics.json")
 
-from spatial_indexer import compute_spatial_edges
+try:
+    from src.graph.spatial_indexer import compute_spatial_edges
+except ImportError:
+    from spatial_indexer import compute_spatial_edges
 
 
 def normalize_province_name(raw_name: str) -> str:

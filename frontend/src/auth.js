@@ -17,6 +17,7 @@ import {
   getUserItineraries,
   deleteItinerary
 } from './firebase.js';
+import { i18n } from './i18n.js';
 
 export class AuthController {
   constructor() {
@@ -190,6 +191,16 @@ export class AuthController {
         this.renderSavedTours();
       }
     });
+
+    window.addEventListener('hue:language-change', () => {
+      if (this.savedToursModal?.classList.contains('active')) {
+        this.renderSavedTours();
+      }
+      if (this.authModal?.classList.contains('active')) {
+        this.setAuthMode(this.authModalMode);
+      }
+      this.updateHeaderUI(this.currentUser);
+    });
   }
 
   initAuthObserver() {
@@ -206,7 +217,10 @@ export class AuthController {
       this.btnHeaderSignup?.classList.add('hidden');
       this.userProfileChip?.classList.remove('hidden');
 
-      const displayName = user.displayName || user.email?.split('@')[0] || 'Du Khách';
+      const defaultName = user.isDemo 
+        ? (i18n.currentLang === 'en' ? 'Demo User' : 'Khách Dùng thử') 
+        : i18n.t('userDefault', 'Du Khách');
+      const displayName = user.displayName || user.email?.split('@')[0] || defaultName;
       const initial = displayName.charAt(0).toUpperCase();
 
       if (this.userNameLabel) {
@@ -236,7 +250,7 @@ export class AuthController {
       if (this.dropdownBadgeGoogle) {
         this.dropdownBadgeGoogle.classList.toggle('hidden', !isGoogle && !user.isDemo);
         if (user.isDemo) {
-          this.dropdownBadgeGoogle.textContent = 'Bản Thử Nghiệm';
+          this.dropdownBadgeGoogle.textContent = i18n.t('badgeDemo', 'Bản Thử Nghiệm');
         } else {
           this.dropdownBadgeGoogle.textContent = 'Google Account';
         }
@@ -329,22 +343,22 @@ export class AuthController {
       this.tabSignup?.classList.remove('active');
       this.authNameGroup?.classList.add('hidden');
       this.authOptionsGroup?.classList.remove('hidden');
-      if (this.authModalTitle) this.authModalTitle.textContent = 'Đăng nhập';
-      if (this.authModalSubtitle) this.authModalSubtitle.textContent = 'Chào mừng bạn đến với Cố đô Huế Travel';
-      if (this.btnAuthSubmit) this.btnAuthSubmit.textContent = 'Đăng nhập';
-      if (this.authSwitchText) this.authSwitchText.textContent = 'Chưa có tài khoản?';
-      if (this.btnSwitchAuthMode) this.btnSwitchAuthMode.textContent = 'Đăng ký ngay';
+      if (this.authModalTitle) this.authModalTitle.textContent = i18n.t('authModalTitleLogin', 'Đăng nhập');
+      if (this.authModalSubtitle) this.authModalSubtitle.textContent = i18n.t('authModalSubtitle', 'Chào mừng bạn đến với Cố đô Huế Travel');
+      if (this.btnAuthSubmit) this.btnAuthSubmit.textContent = i18n.t('authSubmitLogin', 'Đăng nhập');
+      if (this.authSwitchText) this.authSwitchText.textContent = i18n.t('authNoAccount', 'Chưa có tài khoản?');
+      if (this.btnSwitchAuthMode) this.btnSwitchAuthMode.textContent = i18n.t('authSwitchSignup', 'Đăng ký ngay');
       this.loadSavedCredentials();
     } else {
       this.tabSignup?.classList.add('active');
       this.tabLogin?.classList.remove('active');
       this.authNameGroup?.classList.remove('hidden');
       this.authOptionsGroup?.classList.add('hidden');
-      if (this.authModalTitle) this.authModalTitle.textContent = 'Tạo tài khoản';
-      if (this.authModalSubtitle) this.authModalSubtitle.textContent = 'Đăng ký để lưu giữ lịch trình và cá nhân hóa trải nghiệm';
-      if (this.btnAuthSubmit) this.btnAuthSubmit.textContent = 'Tạo tài khoản';
-      if (this.authSwitchText) this.authSwitchText.textContent = 'Đã có tài khoản?';
-      if (this.btnSwitchAuthMode) this.btnSwitchAuthMode.textContent = 'Đăng nhập ngay';
+      if (this.authModalTitle) this.authModalTitle.textContent = i18n.t('authModalTitleSignup', 'Tạo tài khoản');
+      if (this.authModalSubtitle) this.authModalSubtitle.textContent = i18n.t('authModalSubtitle', 'Đăng ký để lưu giữ lịch trình và cá nhân hóa trải nghiệm');
+      if (this.btnAuthSubmit) this.btnAuthSubmit.textContent = i18n.t('authSubmitSignup', 'Tạo tài khoản');
+      if (this.authSwitchText) this.authSwitchText.textContent = i18n.t('authHasAccount', 'Đã có tài khoản?');
+      if (this.btnSwitchAuthMode) this.btnSwitchAuthMode.textContent = i18n.t('authSwitchLogin', 'Đăng nhập ngay');
     }
   }
 
@@ -469,9 +483,9 @@ export class AuthController {
 
   async renderSavedTours() {
     if (!this.savedToursList) return;
-    this.savedToursList.innerHTML = '<div class="saved-tours-loading">Đang tải các lịch trình đã lưu từ Cloud...</div>';
+    this.savedToursList.innerHTML = `<div class="saved-tours-loading">${i18n.t('savedToursSubtitle', 'Đang tải các lịch trình đã lưu từ Cloud...')}</div>`;
 
-    const items = await getUserItineraries(this.currentUser.uid);
+    const items = await getUserItineraries(this.currentUser?.uid);
     if (!items || items.length === 0) {
       this.savedToursList.innerHTML = `
         <div class="saved-tours-empty">
@@ -482,29 +496,46 @@ export class AuthController {
             <line x1="16" y1="17" x2="8" y2="17"></line>
             <polyline points="10 9 9 9 8 9"></polyline>
           </svg>
-          <h4>Chưa có lịch trình nào được lưu</h4>
-          <p>Khi trợ lý AI tạo cho bạn một kế hoạch du lịch Huế, hãy bấm nút "Lưu vào tài khoản" để xem lại bất kỳ lúc nào.</p>
+          <h4>${i18n.t('savedToursEmpty', 'Chưa có lịch trình nào được lưu.')}</h4>
+          <p>${i18n.t('savedToursEmptySub', 'Hãy yêu cầu Trợ lý AI tạo lịch trình và lưu lại để xem bất kỳ lúc nào!')}</p>
         </div>
       `;
       return;
     }
 
+    const escapeHtml = (str) => String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
     this.savedToursList.innerHTML = '';
+    const isEn = i18n.currentLang === 'en';
+    const localeStr = isEn ? 'en-US' : 'vi-VN';
+
     items.forEach(tour => {
       const card = document.createElement('div');
       card.className = 'saved-tour-card';
       
-      const dateStr = tour.savedAt ? new Date(tour.savedAt).toLocaleDateString('vi-VN', {
+      const dateStr = tour.savedAt ? new Date(tour.savedAt).toLocaleDateString(localeStr, {
         day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-      }) : 'Gần đây';
+      }) : (isEn ? 'Recent' : 'Gần đây');
+
+      const safeTitle = escapeHtml(tour.title || (isEn ? 'Hue Imperial Itinerary' : 'Lịch trình Cố đô Huế'));
+      const safeTripType = escapeHtml(tour.tripType || (isEn ? 'Self-guided' : 'Tự túc'));
+      const safeUserLocation = escapeHtml(tour.userLocationName || (isEn ? 'Central Hue City' : 'Trung tâm TP. Huế'));
+      const safeId = escapeHtml(tour.id || '');
+      const safeDays = Number(tour.days) || 1;
+      const safeStops = Number(tour.stopsCount || tour.items?.length || 0);
 
       card.innerHTML = `
         <div class="saved-tour-header">
           <div class="saved-tour-title-group">
-            <span class="saved-tour-tag">${tour.days} Ngày</span>
-            <h4 class="saved-tour-title">${tour.title}</h4>
+            <span class="saved-tour-tag">${safeDays} ${i18n.t('savedTourDaysTag', 'Ngày')}</span>
+            <h4 class="saved-tour-title">${safeTitle}</h4>
           </div>
-          <button type="button" class="btn-delete-saved-tour" title="Xóa lịch trình này" data-id="${tour.id}">
+          <button type="button" class="btn-delete-saved-tour" title="${i18n.t('savedTourDeleteConfirm', 'Xóa lịch trình này')}" data-id="${safeId}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -512,24 +543,24 @@ export class AuthController {
           </button>
         </div>
         <div class="saved-tour-meta">
-          <span>👥 Đối tượng: ${tour.tripType}</span>
-          <span>📍 Xuất phát: ${tour.userLocationName}</span>
-          <span>🏛️ Số điểm: ${tour.stopsCount || tour.items?.length || 0} điểm</span>
-          <span>⏱️ Lưu ngày: ${dateStr}</span>
+          <span>👥 ${i18n.t('savedTourParty', 'Đối tượng')}: ${safeTripType}</span>
+          <span>📍 ${i18n.t('savedTourOrigin', 'Xuất phát')}: ${safeUserLocation}</span>
+          <span>🏛️ ${i18n.t('savedTourStops', 'Số điểm')}: ${safeStops} ${i18n.t('itineraryStopsCount', 'điểm đến')}</span>
+          <span>⏱️ ${i18n.t('savedTourDate', 'Lưu ngày')}: ${dateStr}</span>
         </div>
         <div class="saved-tour-actions">
-          <button type="button" class="btn-load-saved-tour" data-id="${tour.id}">
+          <button type="button" class="btn-load-saved-tour" data-id="${safeId}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
-            <span>Mở lại trên Bản đồ & Chat</span>
+            <span>${i18n.t('savedTourRestoreBtn', 'Mở lại trên Bản đồ & Chat')}</span>
           </button>
-          <button type="button" class="btn-budget-saved-tour" data-id="${tour.id}" title="Dự toán ngân sách cho lịch trình này">
+          <button type="button" class="btn-budget-saved-tour" data-id="${safeId}" title="${i18n.t('savedTourBudgetBtn', 'Dự toán ngân sách cho lịch trình này')}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="4" width="20" height="16" rx="2"></rect>
               <line x1="2" y1="10" x2="22" y2="10"></line>
             </svg>
-            <span>Dự toán chi phí</span>
+            <span>${i18n.t('savedTourBudgetBtn', 'Dự toán chi phí')}</span>
           </button>
         </div>
       `;
@@ -537,10 +568,10 @@ export class AuthController {
       // Nút xóa
       card.querySelector('.btn-delete-saved-tour')?.addEventListener('click', async (e) => {
         e.stopPropagation();
-        if (confirm(`Bạn có chắc muốn xóa lịch trình "${tour.title}"?`)) {
+        if (confirm(`${i18n.t('savedTourDeleteConfirm', 'Bạn có chắc muốn xóa lịch trình này?')} ("${tour.title}")`)) {
           await deleteItinerary(this.currentUser.uid, tour.id);
           this.renderSavedTours();
-          this.showToast('Đã xóa lịch trình.');
+          this.showToast(i18n.t('savedTourDeletedToast', 'Đã xóa lịch trình thành công.'));
         }
       });
 
@@ -548,7 +579,7 @@ export class AuthController {
       card.querySelector('.btn-load-saved-tour')?.addEventListener('click', () => {
         this.closeSavedToursModal();
         window.dispatchEvent(new CustomEvent('load-saved-tour', { detail: tour }));
-        this.showToast(`Đã tải lại lịch trình "${tour.title}" lên bản đồ!`);
+        this.showToast(i18n.t('itineraryLoadedToast', 'Đã tải lại lịch trình lên bản đồ & chat!'));
       });
 
       // Nút dự toán chi phí tour đã lưu

@@ -41,7 +41,7 @@ export class TourismApiClient {
    * Gọi API Lập Lịch Trình Du Lịch Tối Ưu (Spatial Itinerary Planner)
    * Có cơ chế tự phục hồi thông minh (Offline Fallback)
    */
-  static async generateItinerary(numDays = 2, preferredDishes = [], tripType = 'Couples', userLat = null, userLng = null) {
+  static async generateItinerary(numDays = 2, preferredDishes = [], tripType = 'Couples', userLat = null, userLng = null, preferences = null) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 45000);
@@ -54,6 +54,9 @@ export class TourismApiClient {
       if (userLat !== null && userLng !== null) {
         payload.user_lat = userLat;
         payload.user_lng = userLng;
+      }
+      if (preferences) {
+        payload.preferences = preferences;
       }
 
       const res = await fetch(`${API_BASE_URL}/api/v1/itinerary`, {

@@ -342,6 +342,27 @@
     ]
   },
   {
+    "place_id": "custom_attr_thienan",
+    "name": "Đồi Thiên An & Đan Viện Benedict",
+    "lat": 16.4112,
+    "lng": 107.5678,
+    "cat": "Attraction",
+    "desc": "Thủy Bằng, TP Huế · Đồi thông xanh ngắt được mệnh danh là Đà Lạt xứ Huế và Đan viện Biển Đức cổ kính",
+    "address": "Đồi Thiên An, X. Thủy Bằng, TP Huế",
+    "rating_value": 4.7,
+    "review_count": 1420,
+    "tags": "doi thien an, dan vien thien an, thien an monastery, rung thong thien an, thuy bang",
+    "reviews": [
+      {
+        "title": "Rừng thông Thiên An mát lạnh tựa Đà Lạt thu nhỏ giữa lòng Cố Đô",
+        "comment": "Con đường nhựa uốn lượn xuyên qua những rặng thông già cao vút rì rào trong gió, không khí trong lành và dịu mát quanh năm. Đan viện Thiên An nằm trên đỉnh đồi mang kiến trúc Á Đông kết hợp Công giáo trang nghiêm, đứng từ sân đan viện nhìn xuống thung lũng thông xanh mướt bình yên vô cùng.",
+        "rating": 5.0,
+        "trip_type": "Cặp đôi / Bạn bè",
+        "visit_date": "Tháng 8/2024"
+      }
+    ]
+  },
+  {
     "place_id": "place_7326",
     "name": "Dmz Bar & Restaurant",
     "lat": 16.470036,

@@ -13,6 +13,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
+from unittest.mock import patch
 from src.rag.visual_retriever import get_visual_retriever
 from src.rag.agent_graph import get_tourism_agent
 
@@ -75,7 +76,9 @@ class TestVisualRAG(unittest.TestCase):
             "final_answer": "",
             "graph_trace": []
         }
-        res = self.agent.invoke(initial_state)
+        with patch("src.rag.agent_graph.llm") as mock_llm:
+            mock_llm.invoke.side_effect = RuntimeError("Offline unit test fallback")
+            res = self.agent.invoke(initial_state)
         self.assertIsNotNone(res.get("visual_matches"))
         self.assertGreaterEqual(res.get("visual_confidence", 0.0), 0.70)
         matched_ids = [p.get("node_id") for p in res.get("matched_places", [])]

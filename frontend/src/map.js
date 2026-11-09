@@ -10,6 +10,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import hueTopPlaces from './hue_top_places.json';
 import { userStore } from './userStore.js';
+import { i18n } from './i18n.js';
 
 export class SpatialMapStudio {
   constructor(containerId = 'map-container') {
@@ -21,6 +22,7 @@ export class SpatialMapStudio {
     this.defaultZoom = 13;
     this.activeCategoryFilter = 'all';
     this.currentTileLayer = null;
+    this.currentTileStyle = 'google_streets';
     this.markerInstances = new Map();
     this.userLocation = null;
     this.userLocationMarker = null;
@@ -40,12 +42,29 @@ export class SpatialMapStudio {
 
     // Dữ liệu Top 158 Địa danh & Cơ sở Dịch vụ Chuẩn Cố đô Huế (Khai phá từ Đồ thị Tri thức & CSDL)
     this.masterLandmarks = hueTopPlaces;
+
+    window.addEventListener('hue:language-change', () => {
+      if (this.currentTileLayer && this.currentTileStyle) {
+        this.setTileLayer(this.currentTileStyle);
+      }
+      if (this.currentItinerary) {
+        if (this.routeDisplayMode === 'all') {
+          this.updateLegStepperForFullView(this.currentItineraryDay === 'all');
+        } else {
+          const leg = this.currentDayLegs[this.activeLegIndex];
+          if (leg) {
+            this.updateLegStepperUI(leg);
+          }
+        }
+      }
+    });
   }
 
   getTileUrlConfig(styleName) {
+    const hl = (typeof i18n !== 'undefined' && i18n.currentLang === 'en') ? 'en' : 'vi';
     const configs = {
       google_streets: {
-        url: 'https://mt{s}.google.com/vt/lyrs=m&hl=vi&x={x}&y={y}&z={z}',
+        url: `https://mt{s}.google.com/vt/lyrs=m&hl=${hl}&x={x}&y={y}&z={z}`,
         options: {
           subdomains: ['0', '1', '2', '3'],
           attribution: '&copy; Google Maps',
@@ -53,10 +72,10 @@ export class SpatialMapStudio {
         }
       },
       google_satellite: {
-        url: 'https://mt{s}.google.com/vt/lyrs=y&hl=vi&x={x}&y={y}&z={z}',
+        url: `https://mt{s}.google.com/vt/lyrs=y&hl=${hl}&x={x}&y={y}&z={z}`,
         options: {
           subdomains: ['0', '1', '2', '3'],
-          attribution: '&copy; Google Maps Vệ Tinh',
+          attribution: (typeof i18n !== 'undefined' && i18n.currentLang === 'en') ? '&copy; Google Maps Satellite' : '&copy; Google Maps Vệ Tinh',
           maxZoom: 20
         }
       }
@@ -92,10 +111,12 @@ export class SpatialMapStudio {
           const count = cluster.getChildCount();
           const isLarge = count > 12;
           const isMedium = count > 4;
+          const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
+          const clusterTitle = isEn ? 'Destination cluster (Click to expand)' : 'Quần thể điểm đến (Nhấp để mở rộng)';
 
           return L.divIcon({
             html: `
-              <div class="stacked-cluster-pin ${isLarge ? 'cluster-large' : isMedium ? 'cluster-medium' : 'cluster-small'}" title="Quần thể điểm đến (Nhấp để mở rộng)">
+              <div class="stacked-cluster-pin ${isLarge ? 'cluster-large' : isMedium ? 'cluster-medium' : 'cluster-small'}" title="${clusterTitle}">
                 <div class="pin-layer pin-back-left"></div>
                 ${isMedium ? '<div class="pin-layer pin-back-right"></div>' : ''}
                 <div class="pin-layer pin-front-center">
@@ -390,65 +411,93 @@ export class SpatialMapStudio {
 
     const icon = this.createCustomIcon(category, '', stepNumber, badgeBg);
 
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
     const catLower = (category || '').toLowerCase();
-    let catBadgeName = 'Di tích';
+    let catBadgeName = isEn ? 'Attractions' : 'Di tích';
     let catClass = 'attraction';
     if (catLower.includes('restaurant') || catLower.includes('ẩm thực') || catLower.includes('quán')) {
-      catBadgeName = 'Ẩm thực';
+      catBadgeName = isEn ? 'Cuisine' : 'Ẩm thực';
       catClass = 'restaurant';
     } else if (catLower.includes('cafe') || catLower.includes('cà phê') || catLower.includes('bar')) {
-      catBadgeName = 'Cà phê';
+      catBadgeName = isEn ? 'Cafe' : 'Cà phê';
       catClass = 'cafe';
     } else if (catLower.includes('hotel') || catLower.includes('khách sạn') || catLower.includes('resort')) {
-      catBadgeName = 'Nghỉ dưỡng';
+      catBadgeName = isEn ? 'Hotel' : 'Khách sạn';
       catClass = 'hotel';
     }
 
+    const legPrefix = typeof i18n !== 'undefined' ? i18n.t('legStepPrefix', 'Chặng') : 'Chặng';
     const stepLabel = stepNumber !== null 
-      ? `<span class="popup-step-pill" ${badgeBg ? `style="background: ${badgeBg}; color: #FFFFFF;"` : ''}>Chặng ${stepNumber}</span>` 
+      ? `<span class="popup-step-pill" ${badgeBg ? `style="background: ${badgeBg}; color: #FFFFFF;"` : ''}>${legPrefix} ${stepNumber}</span>` 
       : '';
 
-    const safeName = (name || '').replace(/'/g, "\\'");
-    const safePlaceId = (placeId || '').replace(/'/g, "\\'");
-    const safeAddress = (address || '').replace(/'/g, "\\'");
+    const escapeHtmlAttr = (str) => String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    const escapeJsStr = (str) => escapeHtmlAttr(String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'"));
+
+    const safeName = escapeJsStr(name);
+    const safePlaceId = escapeJsStr(placeId);
+    const safeAddress = escapeJsStr(address);
+    const htmlName = escapeHtmlAttr(name);
+    const htmlPlaceId = escapeHtmlAttr(placeId);
+    const htmlAddress = escapeHtmlAttr(address || (isEn ? 'Hue City' : 'Thành phố Huế'));
+
+    const detailText = typeof i18n !== 'undefined' ? i18n.t('poiDetailBtn', 'Chi tiết') : 'Chi tiết';
+    const directionsText = typeof i18n !== 'undefined' ? i18n.t('poiDirectionsBtn', 'Chỉ đường') : 'Chỉ đường';
+    const navTitle = isEn ? 'Get directions from your location on map' : 'Chỉ đường từ vị trí của bạn trực tiếp trên bản đồ';
+
     const detailBtnHtml = `
       <button type="button" class="btn-popup-detail" onclick="window.openPoiDetail && window.openPoiDetail('${safeName}', '${safePlaceId}')">
-        <span>Chi tiết</span>
+        <span>${detailText}</span>
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
     `;
 
     const navBtnHtml = `
-      <button type="button" class="btn-popup-gmaps" onclick="window.navigateToDestination && window.navigateToDestination(${lat}, ${lng}, '${safeName}', '${safeAddress}')" title="Chỉ đường từ vị trí của bạn trực tiếp trên bản đồ">
+      <button type="button" class="btn-popup-gmaps" onclick="window.navigateToDestination && window.navigateToDestination(${lat}, ${lng}, '${safeName}', '${safeAddress}')" title="${navTitle}">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-        <span>Chỉ đường</span>
+        <span>${directionsText}</span>
       </button>
     `;
 
     const isFav = userStore ? userStore.isFavorite(placeId || name) : false;
     const isChecked = userStore ? userStore.isCheckedIn(placeId || name) : false;
 
+    const favTitle = isFav 
+      ? (isEn ? 'Remove from favorites' : 'Bỏ lưu yêu thích') 
+      : (isEn ? 'Save to travel notebook' : 'Lưu vào sổ tay yêu thích');
+    const favLabel = isFav ? (isEn ? 'Liked' : 'Đã thích') : (typeof i18n !== 'undefined' ? i18n.t('poiFavLabel', 'Yêu thích') : 'Yêu thích');
+
     const favBtnHtml = `
       <button type="button" class="btn-popup-tool ${isFav ? 'active' : ''}" 
-        data-place-name="${safeName}" data-place-id="${safePlaceId}"
+        data-place-name="${htmlName}" data-place-id="${htmlPlaceId}"
         onclick="window.togglePlaceFavorite && window.togglePlaceFavorite('${safeName}', '${safePlaceId}', '${catBadgeName}', '${safeAddress}', ${lat}, ${lng}, this)" 
-        title="${isFav ? 'Bỏ lưu yêu thích' : 'Lưu vào sổ tay yêu thích'}">
+        title="${favTitle}">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
-        <span>${isFav ? 'Đã thích' : 'Yêu thích'}</span>
+        <span>${favLabel}</span>
       </button>
     `;
 
+    const checkinTitle = isChecked 
+      ? (isEn ? 'Cancel check-in' : 'Hủy check-in') 
+      : (isEn ? 'Mark as visited' : 'Đánh dấu đã ghé thăm');
+    const checkinLabel = isChecked ? (isEn ? 'Checked-in' : 'Đã check-in') : (typeof i18n !== 'undefined' ? i18n.t('poiCheckinLabel', 'Check-in') : 'Check-in');
+
     const checkinBtnHtml = `
       <button type="button" class="btn-popup-tool ${isChecked ? 'active' : ''}" 
-        data-place-name="${safeName}" data-place-id="${safePlaceId}"
+        data-place-name="${htmlName}" data-place-id="${htmlPlaceId}"
         onclick="window.togglePlaceCheckin && window.togglePlaceCheckin('${safeName}', '${safePlaceId}', '${catBadgeName}', '${safeAddress}', ${lat}, ${lng}, this)" 
-        title="${isChecked ? 'Hủy check-in' : 'Đánh dấu đã ghé thăm'}">
+        title="${checkinTitle}">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-        <span>${isChecked ? 'Đã check-in' : 'Check-in'}</span>
+        <span>${checkinLabel}</span>
       </button>
     `;
 
@@ -458,10 +507,10 @@ export class SpatialMapStudio {
           ${stepLabel}
           <span class="popup-cat-pill cat-${catClass}">${catBadgeName}</span>
         </div>
-        <h4 class="popup-title">${name}</h4>
+        <h4 class="popup-title">${htmlName}</h4>
         <div class="popup-address">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>${address || 'Thành phố Huế'}</span>
+          <span>${htmlAddress}</span>
         </div>
         <div class="popup-actions">
           ${detailBtnHtml}
@@ -891,7 +940,7 @@ export class SpatialMapStudio {
       console.warn('Lỗi OSRM leg routing:', e);
     }
 
-    const dist = this.haversineDistance(from.lat, from.lng, to.lat, to.lng);
+    const dist = this.calcDistance(from.lat, from.lng, to.lat, to.lng);
     const fallback = {
       coordinates: [[from.lat, from.lng], [to.lat, to.lng]],
       distanceKm: dist.toFixed(1),
@@ -899,6 +948,10 @@ export class SpatialMapStudio {
     };
     this.cachedLegRoutes.set(key, fallback);
     return fallback;
+  }
+
+  haversineDistance(lat1, lon1, lat2, lon2) {
+    return this.calcDistance(lat1, lon1, lat2, lon2);
   }
 
   showLegStepper(info) {
@@ -918,19 +971,24 @@ export class SpatialMapStudio {
     const nextBtn = document.getElementById('btn-next-leg');
     const modeLabel = document.getElementById('route-mode-label');
 
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
+    const legPrefix = typeof i18n !== 'undefined' ? i18n.t('legStepPrefix', 'Chặng') : 'Chặng';
+    const dayPrefix = typeof i18n !== 'undefined' ? i18n.t('legDayPrefix', 'Ngày') : 'Ngày';
+    const minSuffix = typeof i18n !== 'undefined' ? i18n.t('minsDrive', 'phút') : 'phút';
+
     if (stepBadge) {
-      stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>Chặng ${info.legIndex + 1}/${info.totalLegs}</span>`;
+      stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>${legPrefix} ${info.legIndex + 1}/${info.totalLegs}</span>`;
       stepBadge.style.color = '#FFFFFF';
     }
     if (dayBadge) {
-      dayBadge.textContent = `Ngày ${info.dayNum}`;
+      dayBadge.textContent = `${dayPrefix} ${info.dayNum}`;
     }
     if (routeTitle) {
       routeTitle.innerHTML = `<span class="leg-point-from">${info.fromName}</span><span class="leg-arrow-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span class="leg-point-to">${info.toName}</span>`;
-      routeTitle.title = `${info.fromName} đến ${info.toName}`;
+      routeTitle.title = `${info.fromName} ➔ ${info.toName}`;
     }
     if (distanceText) {
-      const distVal = info.distanceKm ? `${info.distanceKm} km` : 'Lộ trình';
+      const distVal = info.distanceKm ? `${info.distanceKm} km` : (typeof i18n !== 'undefined' ? i18n.t('legRouteDefault', 'Lộ trình') : 'Lộ trình');
       distanceText.innerHTML = `
         <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
         <span>${distVal}</span>
@@ -940,7 +998,7 @@ export class SpatialMapStudio {
       if (info.durationMin) {
         durationText.innerHTML = `
           <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          <span>~${info.durationMin} phút</span>
+          <span>~${info.durationMin} ${minSuffix}</span>
         `;
         durationText.style.display = 'inline-flex';
       } else {
@@ -954,7 +1012,7 @@ export class SpatialMapStudio {
       nextBtn.disabled = info.legIndex >= info.totalLegs - 1;
     }
     if (modeLabel) {
-      modeLabel.textContent = 'Toàn cảnh';
+      modeLabel.textContent = typeof i18n !== 'undefined' ? i18n.t('legModeAll', 'Toàn cảnh') : 'Toàn cảnh';
     }
   }
 
@@ -975,26 +1033,35 @@ export class SpatialMapStudio {
     const nextBtn = document.getElementById('btn-next-leg');
     const modeLabel = document.getElementById('route-mode-label');
 
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
+    const dayPrefix = typeof i18n !== 'undefined' ? i18n.t('legDayPrefix', 'Ngày') : 'Ngày';
+    const allDaysText = typeof i18n !== 'undefined' ? i18n.t('allDays', 'Tất cả ngày') : 'Tất cả ngày';
+    const legsText = typeof i18n !== 'undefined' ? i18n.t('itineraryLegsCount', 'chặng') : 'chặng';
+
     if (stepBadge) {
-      stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>${isAllDays ? 'Tất cả ngày' : `Ngày ${this.currentItineraryDay}`}</span>`;
+      stepBadge.innerHTML = `<span class="step-badge-dot"></span><span>${isAllDays ? allDaysText : `${dayPrefix} ${this.currentItineraryDay}`}</span>`;
       stepBadge.style.color = '#FFFFFF';
     }
     if (dayBadge) {
-      dayBadge.textContent = `${this.currentDayLegs.length} chặng`;
+      dayBadge.textContent = `${this.currentDayLegs.length} ${legsText}`;
     }
     if (routeTitle) {
-      routeTitle.innerHTML = `<span class="leg-point-to">${isAllDays ? 'Toàn bộ tour Cố đô Huế' : `Toàn cảnh Ngày ${this.currentItineraryDay}`}</span>`;
+      const tourTitle = isAllDays 
+        ? (typeof i18n !== 'undefined' ? i18n.t('entireHueTour', 'Toàn bộ tour Cố đô Huế') : 'Toàn bộ tour Cố đô Huế')
+        : (typeof i18n !== 'undefined' ? `${i18n.t('overviewDay', 'Toàn cảnh Ngày')} ${this.currentItineraryDay}` : `Toàn cảnh Ngày ${this.currentItineraryDay}`);
+      routeTitle.innerHTML = `<span class="leg-point-to">${tourTitle}</span>`;
     }
     if (distanceText) {
+      const overviewRouteText = typeof i18n !== 'undefined' ? i18n.t('overviewRoute', 'Toàn cảnh lộ trình') : 'Toàn cảnh lộ trình';
       distanceText.innerHTML = `
         <svg class="leg-meta-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-        <span>Toàn cảnh lộ trình</span>
+        <span>${overviewRouteText}</span>
       `;
     }
     if (durationText) durationText.style.display = 'none';
     if (prevBtn) prevBtn.disabled = true;
     if (nextBtn) nextBtn.disabled = true;
-    if (modeLabel) modeLabel.textContent = 'Từng chặng';
+    if (modeLabel) modeLabel.textContent = typeof i18n !== 'undefined' ? i18n.t('legModeStep', 'Từng chặng') : 'Từng chặng';
     this.clearTimelineHighlight();
   }
 
@@ -1125,7 +1192,9 @@ export class SpatialMapStudio {
         lng,
         p.name,
         cat,
-        p.address || 'Địa điểm gợi ý'
+        p.address || 'Địa điểm gợi ý',
+        null,
+        p.place_id || p.node_id || ''
       );
       if (marker) addedMarkers.push(marker);
     });
@@ -1151,8 +1220,12 @@ export class SpatialMapStudio {
   /**
    * Thiết lập và hiển thị vị trí người dùng trên bản đồ (với radar pulse beacon & callout nổi bật)
    */
-  setUserLocation(lat, lng, name = 'Vị trí của bạn') {
+  setUserLocation(lat, lng, name = null) {
     if (!lat || !lng) return null;
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
+    if (!name) {
+      name = typeof i18n !== 'undefined' ? i18n.t('userLocationHere', 'Vị trí của bạn') : 'Vị trí của bạn';
+    }
     this.userLocation = { lat, lng, name };
 
     if (this.userLocationMarker) {
@@ -1180,14 +1253,18 @@ export class SpatialMapStudio {
       iconAnchor: [20, 20]
     });
 
+    const gpsBadgeText = typeof i18n !== 'undefined' ? i18n.t('gpsBadge', 'Định vị GPS') : 'Định vị GPS';
+    const coordsText = typeof i18n !== 'undefined' ? i18n.t('gpsCoords', 'Tọa độ') : 'Tọa độ';
+    const gpsHintText = typeof i18n !== 'undefined' ? i18n.t('gpsHint', '✓ Hệ thống tính khoảng cách và dẫn đường từ điểm này') : '✓ Hệ thống tính khoảng cách và dẫn đường từ điểm này';
+
     const popupHtml = `
       <div class="custom-leaflet-popup user-location-popup">
         <div class="popup-gps-header">
-          <span class="popup-gps-badge">Định vị GPS</span>
+          <span class="popup-gps-badge">${gpsBadgeText}</span>
           <h4 class="popup-gps-title">📍 ${name}</h4>
         </div>
-        <p class="popup-gps-coords">Tọa độ: ${lat.toFixed(4)}°B, ${lng.toFixed(4)}°Đ</p>
-        <div class="popup-gps-hint">✓ Hệ thống tính khoảng cách và dẫn đường từ điểm này</div>
+        <p class="popup-gps-coords">${coordsText}: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E</p>
+        <div class="popup-gps-hint">${gpsHintText}</div>
       </div>
     `;
 
@@ -1216,12 +1293,16 @@ export class SpatialMapStudio {
       this.navigationLayer = L.layerGroup().addTo(this.map);
     }
 
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
+    const originDefault = typeof i18n !== 'undefined' ? i18n.t('legOriginDefault', 'Điểm xuất phát') : 'Điểm xuất phát';
+    const destDefault = typeof i18n !== 'undefined' ? i18n.t('legDestDefault', 'Điểm đến') : 'Điểm đến';
+
     // 1. Tạo Start Marker (Cờ xuất phát / Origin)
-    const originName = origin.name || 'Điểm xuất phát';
+    const originName = origin.name || originDefault;
     const originIcon = L.divIcon({
       className: 'nav-flag-marker',
       html: `
-        <div class="nav-flag-pin start" title="Điểm xuất phát: ${originName}">
+        <div class="nav-flag-pin start" title="${originDefault}: ${originName}">
           <span class="flag-icon">🚩</span>
           <span class="flag-label">${originName.substring(0, 16)}</span>
         </div>
@@ -1231,15 +1312,15 @@ export class SpatialMapStudio {
     });
 
     L.marker([originLat, originLng], { icon: originIcon })
-      .bindPopup(`<div class="custom-leaflet-popup"><b>🚩 Điểm xuất phát:</b><br/>${originName}</div>`)
+      .bindPopup(`<div class="custom-leaflet-popup"><b>🚩 ${originDefault}:</b><br/>${originName}</div>`)
       .addTo(this.navigationLayer);
 
     // 2. Tạo End Marker (Cờ đích đến / Destination)
-    const destName = destination.name || 'Điểm đến';
+    const destName = destination.name || destDefault;
     const destIcon = L.divIcon({
       className: 'nav-flag-marker',
       html: `
-        <div class="nav-flag-pin destination" title="Điểm đến: ${destName}">
+        <div class="nav-flag-pin destination" title="${destDefault}: ${destName}">
           <span class="flag-icon">🏁</span>
           <span class="flag-label">${destName.substring(0, 16)}</span>
         </div>
@@ -1249,7 +1330,7 @@ export class SpatialMapStudio {
     });
 
     L.marker([destLat, destLng], { icon: destIcon })
-      .bindPopup(`<div class="custom-leaflet-popup"><b>🏁 Điểm đến:</b><br/>${destName}<p style="margin:2px 0 0 0;font-size:0.75rem;color:#71717A;">${destination.address || ''}</p></div>`)
+      .bindPopup(`<div class="custom-leaflet-popup"><b>🏁 ${destDefault}:</b><br/>${destName}<p style="margin:2px 0 0 0;font-size:0.75rem;color:#71717A;">${destination.address || ''}</p></div>`)
       .addTo(this.navigationLayer);
 
     // 3. Gọi OSRM Routing Engine
@@ -1332,9 +1413,15 @@ export class SpatialMapStudio {
 
     const gmapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${info.originLat},${info.originLng}&destination=${info.destLat},${info.destLng}`;
 
+    const isEn = typeof i18n !== 'undefined' && i18n.currentLang === 'en';
+    const minSuffix = typeof i18n !== 'undefined' ? i18n.t('minsDrive', 'phút') : 'phút';
+    const navBadgeTitle = isEn ? 'Active navigation directions' : 'Đang chỉ đường di chuyển';
+    const gmapsTitle = isEn ? 'Open Turn-by-Turn directions on Google Maps' : 'Mở chỉ đường Turn-by-Turn trên Google Maps';
+    const closeTitle = isEn ? 'Close navigation route' : 'Tắt lộ trình chỉ đường';
+
     banner.innerHTML = `
       <div class="nav-banner-left">
-        <div class="nav-banner-badge" title="Đang chỉ đường di chuyển">
+        <div class="nav-banner-badge" title="${navBadgeTitle}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
             <polygon points="3 11 22 2 13 21 11 13 3 11"/>
           </svg>
@@ -1351,18 +1438,18 @@ export class SpatialMapStudio {
           </div>
           <div class="nav-banner-metrics">
             <span class="metric-chip dist">${info.distanceKm} km</span>
-            <span class="metric-chip time">~${info.durationMin} phút</span>
+            <span class="metric-chip time">~${info.durationMin} ${minSuffix}</span>
           </div>
         </div>
       </div>
       <div class="nav-banner-right">
-        <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-banner-gmaps" title="Mở chỉ đường Turn-by-Turn trên Google Maps">
+        <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn-banner-gmaps" title="${gmapsTitle}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
           </svg>
           <span>Google Maps</span>
         </a>
-        <button type="button" class="btn-banner-close" id="btn-close-nav-banner" title="Tắt lộ trình chỉ đường" aria-label="Đóng">
+        <button type="button" class="btn-banner-close" id="btn-close-nav-banner" title="${closeTitle}" aria-label="${typeof i18n !== 'undefined' ? i18n.t('closeModal', 'Đóng') : 'Đóng'}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
             <line x1="18" y1="6" x2="6" y2="18"/>
             <line x1="6" y1="6" x2="18" y2="18"/>

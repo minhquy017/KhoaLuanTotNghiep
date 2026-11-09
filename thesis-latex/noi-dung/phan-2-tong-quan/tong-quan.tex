@@ -2,9 +2,11 @@
 \label{phan:tong-quan}
 
 \section*{1. Cơ sở lý thuyết nền tảng}
+\phantomsection
 \addcontentsline{toc}{section}{1. Cơ sở lý thuyết nền tảng}
 
 \subsection*{1.1. Đồ thị Tri thức Không gian và Khoảng cách Mặt cầu}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.1. Đồ thị Tri thức Không gian và Khoảng cách Mặt cầu}
 
 Đồ thị Tri thức (Knowledge Graph -- KG) là một cấu trúc toán học biểu diễn tri thức dưới dạng đồ thị có hướng và có nhãn $\mathcal{G} = (\mathcal{V}, \mathcal{E}, \mathcal{R})$, trong đó $\mathcal{V}$ là tập hợp các nút đại diện cho các thực thể (Entities), $\mathcal{R}$ là tập hợp các kiểu quan hệ ngữ nghĩa (Relations), và $\mathcal{E} \subseteq \mathcal{V} \times \mathcal{R} \times \mathcal{V}$ là tập hợp các cạnh định hướng dưới dạng bộ ba tri thức $(h, r, t)$ phản ánh việc thực thể đầu $h$ có mối quan hệ $r$ với thực thể cuối $t$~\cite{hogan2021kg}. Trong miền du lịch, các thực thể bao gồm Điểm tham quan di tích (Attraction), Nhà hàng quán ăn (Restaurant), Cơ sở lưu trú (Hotel), Món ăn đặc sản (Dish) và Đơn vị hành chính (Locality).
@@ -30,6 +32,7 @@ Nhằm giải quyết triệt để sự khác biệt giữa hình học mặt c
 Ở Bước 2 (Định tuyến đường bộ chi tiết -- Fine-grained Road Network Routing), công cụ mã nguồn mở OSRM (Open Source Routing Machine) dựa trên đồ thị giao thông OpenStreetMap được kích hoạt trong bài toán lập lịch trình di chuyển đa chặng để tính toán khoảng cách đường bộ thực tế $D_{\text{OSRM}}(u, v)$, phản ánh hệ số uốn khúc đô thị (Circuity Factor $\kappa = D_{\text{OSRM}} / d \approx 1,35 - 1,42$) và bắt buộc các phương tiện phải lưu thông qua các cây cầu hợp lệ bắc qua sông Hương. Sự kết hợp hai bước này bảo đảm hệ thống vừa duy trì tốc độ truy vấn đồ thị tức thời, vừa kiểm soát tuyệt đối tính khả thi của lộ trình thực địa.
 
 \subsection*{1.2. Sự tiến hóa từ Naive RAG sang GraphRAG và Agentic RAG}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.2. Sự tiến hóa từ Naive RAG sang GraphRAG và Agentic RAG}
 
 Kiến trúc Tăng cường Tạo sinh Truy xuất (Retrieval-Augmented Generation -- RAG) được đề xuất ban đầu nhằm khắc phục hiện tượng ảo giác và bổ sung tri thức chuyên biệt cho LLM mà không cần tái huấn luyện toàn bộ trọng số mô hình~\cite{lewis2020rag}. Quá trình phát triển của công nghệ RAG đã trải qua ba thế hệ tiến hóa phương pháp luận căn bản:
@@ -48,6 +51,7 @@ Thế hệ thứ hai là GraphRAG, được tiên phong bởi Microsoft Research
 Thế hệ thứ ba là Agentic RAG, chuyển dịch từ luồng xử lý tuyến tính cố định sang mô hình tác tử tự chủ có khả năng tự suy ngẫm (Self-reflection), tự đánh giá chất lượng thông tin truy xuất (Confidence Grading), và định tuyến động (Dynamic Routing) giữa nhiều công cụ khác nhau~\cite{pan2024unifying}. Khi tri thức nội bộ từ đồ thị không đủ độ tin cậy để trả lời các sự kiện thời gian thực (như giá vé mới cập nhật hay lễ hội đột xuất), tác tử có khả năng tự động rẽ nhánh sang công cụ tìm kiếm mạng (Web Search Fallback) nhằm bổ sung thông tin kịp thời.
 
 \subsection*{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5}
 
 Để hiện thực hóa kiến trúc Agentic RAG với khả năng kiểm soát luồng thực thi nghiêm ngặt, thư viện LangGraph được lựa chọn làm nền tảng điều phối~\cite{langgraph2024}. Khác với các chuỗi xử lý một chiều tuần tự thông thường, LangGraph mô hình hóa toàn bộ quá trình xử lý như một Đồ thị Trạng thái hữu hạn (StateGraph) có chu trình. Trạng thái của hệ thống được đóng gói trong một cấu trúc dữ liệu chung (GraphState) chứa đựng toàn bộ ngữ cảnh bao gồm câu hỏi của du khách, các thực thể đã nhận diện, các nút đồ thị đã truy xuất, điểm số tin cậy và phản hồi tạo sinh cuối cùng.
@@ -57,6 +61,7 @@ Các nút xử lý trong đồ thị trạng thái thực hiện các chức nă
 Về mô hình suy luận ngôn ngữ, nghiên cứu tích hợp mô hình mã nguồn mở Qwen2.5-3B-Instruct do Alibaba Cloud phát triển~\cite{qwen2024team}, vận hành nội bộ thông qua môi trường thực thi Ollama trên máy trạm cá nhân. Qwen2.5-3B là mô hình ngôn ngữ thế hệ mới đạt năng lực vượt trội về khả năng hiểu tiếng Việt, tuân thủ chỉ dẫn định dạng có cấu trúc (JSON Schema) và khả năng suy luận logic trong phân khúc mô hình dưới 7 tỷ tham số. Việc vận hành mô hình hoàn toàn cục bộ trên GPU cá nhân (NVIDIA RTX 3050 với 4GB VRAM) bảo đảm ba ưu thế cốt tử: triệt tiêu 100\% chi phí cuộc gọi API thương mại (Zero API Cost), bảo mật tuyệt đối dữ liệu người dùng, và bảo đảm tính sẵn sàng hoạt động ngoại tuyến phục vụ các kịch bản triển khai tại địa phương.
 
 \subsection*{1.4. Khai phá thực đơn ngầm từ Dữ liệu Nhận xét Du khách}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.4. Khai phá thực đơn ngầm từ Dữ liệu Nhận xét Du khách}
 
 Một trong những hạn chế lớn của các hệ thống gợi ý ẩm thực hiện nay là sự phụ thuộc vào các menu tĩnh đăng ký trên giấy phép kinh doanh, vốn chỉ liệt kê tên quán và danh mục chung mà không phản ánh được món ăn thực sự làm nên danh tiếng của quán. Trong thực tế, du khách đến một quán ăn cụ thể thường vì một hoặc hai món đặc sản gia truyền được cộng đồng truyền tai nhau.
@@ -69,6 +74,7 @@ Một trong những hạn chế lớn của các hệ thống gợi ý ẩm th�
 trong đó $\mathcal{K}_{u, m} = \{k \in \mathcal{K}_u \mid m \in \text{text}_k\}$ là tập hợp các bài đánh giá về nhà hàng $u$ có nhắc trực tiếp đến món ăn $m$; $|\mathcal{K}_{u, m}|$ là số lượng bài đánh giá đề cập món $m$ (với điều kiện tần suất xuất hiện tối thiểu $|\mathcal{K}_{u, m}| \ge N_{\min} = 3$ bài nhằm triệt tiêu các trường hợp nhắc đến ngẫu nhiên); $\text{Rating}_k \in [1, 5]$ là điểm số xếp hạng của bài đánh giá thứ $k$; $\overline{\text{Rating}}_{u, m}$ là điểm số hài lòng trung bình của du khách dành riêng cho món ăn $m$ tại quán $u$; và $\tau_{\text{dish}} = 0,70$ là ngưỡng tin cậy bảo chứng chất lượng (tương ứng với việc món ăn đó phải đạt điểm trung bình từ $3,5 / 5$ sao trở lên). Nhờ cơ chế này, một nhà hàng dù phục vụ đồng thời nhiều món đặc sản (như quán Cơm hến Hoa Đông có cả cơm hến, bún hến và chè bắp) vẫn có thể đạt điểm tin cậy cao trên từng món riêng biệt nếu món ăn đó được cộng đồng đánh giá tích cực, khắc phục triệt để nghịch lý mẫu số toàn cục của các công thức phân bố truyền thống.
 
 \subsection*{1.5. Mô hình Không gian Véc-tơ và Kỹ thuật Nhúng Ngữ nghĩa Đa ngôn ngữ}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.5. Mô hình Không gian Véc-tơ và Kỹ thuật Nhúng Ngữ nghĩa Đa ngôn ngữ}
 
 Trong các hệ thống xử lý ngôn ngữ tự nhiên hiện đại, Mô hình Không gian Véc-tơ (Vector Space Model -- VSM) biểu diễn các đơn vị ngôn ngữ (từ, đoạn văn bản, hoặc câu hỏi truy vấn) dưới dạng các véc-tơ liên tục trong không gian véc-tơ thực $D$ chiều~\cite{reimers2019sentencebert}. Quá trình ánh xạ này được thực thi bởi mạng nơ-ron Transformer thông qua hàm ánh xạ mã hóa ngữ nghĩa:
@@ -83,6 +89,7 @@ Nhằm tối ưu hóa năng lực nắm bắt ngữ nghĩa đối với ngôn ng
 Tuy nhiên, như đã phân tích, mô hình véc-tơ thuần túy chỉ giải quyết được sự tương đồng phân bố từ vựng trong không gian ngữ nghĩa mà hoàn toàn không thể mã hóa được các tiên đề tô-pô không gian địa lý. Do đó, việc kết hợp mô hình không gian véc-tơ với Đồ thị Tri thức Không gian là điều kiện tiên quyết để đạt được khả năng truy xuất chính xác cả về mặt ngữ nghĩa lẫn cự ly thực tế.
 
 \subsection*{1.6. Cơ chế Tự suy ngẫm và Phân loại Đánh giá Tin cậy trong Agentic RAG}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.6. Cơ chế Tự suy ngẫm và Phân loại Đánh giá Tin cậy trong Agentic RAG}
 
 Khác biệt cốt lõi giữa hệ thống RAG thụ động truyền thống và hệ thống RAG hướng tác tử (Agentic RAG) nằm ở khả năng Tự suy ngẫm (Self-Reflection) và Đánh giá chất lượng tài liệu trước khi tạo sinh (Document and Context Grading)~\cite{asai2024selfrag}. Thay vì trực tiếp đưa toàn bộ ngữ cảnh truy xuất vào dấu nhắc sinh câu trả lời của mô hình ngôn ngữ lớn, tác tử sẽ thực thi một bước phản tư nhằm đánh giá độ tương thích giữa ngữ cảnh $\mathcal{C}$ thu được từ đồ thị với câu hỏi $q$ của người dùng.
@@ -105,6 +112,7 @@ Dựa trên điểm số tin cậy $S_{\text{conf}}(\mathcal{C}, q)$, máy trạ
 trong đó $\tau_{\text{conf}} = 0,65$ là ngưỡng quyết định định tuyến đã được tinh chỉnh qua thực nghiệm. Khi điểm tin cậy đạt từ 0,65 trở lên, ngữ cảnh nội bộ từ đồ thị được xác nhận là đủ phong phú và chính xác để mô hình ngôn ngữ lớn sinh câu trả lời; ngược lại, khi điểm tin cậy dưới 0,65, hệ thống tự động kích hoạt công cụ tìm kiếm mạng DuckDuckGo để bổ sung thông tin cập nhật thời gian thực, bảo đảm triệt tiêu hiện tượng tạo sinh ảo giác.
 
 \subsection*{1.7. Mô hình hóa Toán học Bài toán Thiết kế Chuyến đi Du lịch có Ràng buộc}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.7. Mô hình hóa Toán học Bài toán TTDP có Ràng buộc}
 
 Bài toán Thiết kế Chuyến đi Du lịch (Tourist Trip Design Problem -- TTDP) là bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem -- OP)~\cite{vansteenwegen2011orienteering}. Trong nghiên cứu này, bài toán TTDP được mô hình hóa trên mạng lưới địa lý của thành phố Huế có xét đến các ràng buộc thời gian, điểm ưa thích của du khách và cự ly di chuyển thực tế.
@@ -140,6 +148,7 @@ với hệ thống các điều kiện ràng buộc:
 Trong hệ thống ràng buộc trên, điều kiện (\ref{eq:ttdp-spatial-constraint}) áp dụng nghiêm ngặt cho tập các cung ghép nối $\mathcal{A}_{\text{dine}} \subset \mathcal{A}$ giữa Điểm tham quan di tích neo giữ ($v_i \in \mathcal{V}_{\text{attr}}$) và Cơ sở ẩm thực dùng bữa ($v_j \in \mathcal{V}_{\text{rest}}$) nhằm khống chế bán kính đi bộ ăn trưa/tối trong phạm vi $\tau_{\text{spatial}} = 1,5\text{ km}$; trong khi các cung di chuyển liên kết giữa các Điểm tham quan chính trong cùng cụm phân vùng địa lý (như giữa Đại Nội và Chùa Thiên Mụ hay giữa các Lăng tẩm) được tối ưu hóa toàn cục theo hàm mục tiêu ma trận đường bộ OSRM mà không bị giới hạn cứng bởi ngưỡng đi bộ lân cận.
 
 \subsection*{1.8. Mô hình Thị giác Đa phương thức CLIP và Kiến trúc Vision Transformer}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.8. Mô hình Thị giác Đa phương thức CLIP và Kiến trúc Vision Transformer}
 
 Trong bối cảnh du lịch thực địa tại Cố đô Huế, du khách thường xuyên bắt gặp các công trình kiến trúc cổ kính (cổng thành, bia đá, lăng tẩm, mái đình) nhưng không nắm rõ tên gọi chính xác để nhập liệu dạng văn bản. Nhằm hỗ trợ khả năng tìm kiếm và hỏi đáp đa phương thức (Multimodal Visual Search), nghiên cứu tích hợp mô hình Học biểu diễn ngôn ngữ -- thị giác tương phản (Contrastive Language-Image Pre-training -- CLIP) do Radford và các cộng sự tại OpenAI phát triển~\cite{radford2021clip}.
@@ -159,6 +168,7 @@ Mức độ tương thích giữa một hình ảnh truy vấn $I_q$ và một �
 Nhờ cơ chế này, hệ thống có khả năng nhận diện điểm mốc di sản tức thời (Top-1 Visual Landmark Recognition) bằng cách so khớp véc-tơ ảnh tải lên của du khách với kho véc-tơ đặc trưng của 25 di tích trọng điểm tại Huế lưu trữ trong bộ chỉ mục ChromaDB \texttt{hue\_landmarks\_visual}, đạt thời gian trích xuất véc-tơ dưới 100 mili-giây trên GPU mà không cần huấn luyện lại toàn bộ mô hình nền tảng.
 
 \subsection*{1.9. Kỹ thuật Định tuyến Mạng lưới Đường bộ OSRM và Phân cấp Co rút Đồ thị}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.9. Kỹ thuật Định tuyến Mạng lưới Đường bộ OSRM và Phân cấp Co rút Đồ thị}
 
 Để chuyển đổi từ cự ly đường chim bay lý thuyết sang khoảng cách di chuyển thực tế của du khách, nghiên cứu tích hợp công cụ mã nguồn mở Open Source Routing Machine (OSRM)~\cite{luxen2011osrm}. OSRM vận hành trực tiếp trên dữ liệu mạng lưới giao thông đường bộ trích xuất từ OpenStreetMap, mô hình hóa hạ tầng giao thông đô thị dưới dạng đồ thị có hướng $\mathcal{G}_{\text{road}} = (\mathcal{V}_{\text{road}}, \mathcal{E}_{\text{road}})$, trong đó các nút $\mathcal{V}_{\text{road}}$ biểu diễn các giao lộ và các cạnh $\mathcal{E}_{\text{road}}$ đại diện cho các cung đường với trọng số thời gian di chuyển hoặc độ dài vật lý.
@@ -171,6 +181,7 @@ Thách thức lớn nhất khi giải bài toán tìm đường ngắn nhất tr
 Khi nhận yêu cầu truy vấn thời gian thực giữa hai điểm bất kỳ, giải thuật tìm kiếm hai chiều Dijkstra chỉ cần duyệt theo chiều tăng dần của thứ bậc co rút, giảm số nút cần xét từ hàng trăm ngàn xuống chỉ còn vài chục nút, đạt thời gian đáp ứng ma trận cự ly $D_{\text{OSRM}}(u, v)$ dưới 5 mili-giây. Khoảng cách này phản ánh chính xác hệ số uốn khúc đô thị thực tế và điều hướng bắt buộc các phương tiện giao thông phải lưu thông qua các cây cầu hợp lệ bắc qua sông Hương (cầu Dã Viên, cầu Phú Xuân, cầu Trường Tiền).
 
 \subsection*{1.10. Nền tảng Đám mây Google Firebase và Cơ sở Dữ liệu NoSQL Cloud Firestore}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.10. Nền tảng Đám mây Google Firebase và Cơ sở Dữ liệu NoSQL Cloud Firestore}
 
 Bên cạnh các cơ sở dữ liệu quan hệ truyền thống và cơ sở dữ liệu véc-tơ phục vụ lưu trữ tri thức tĩnh, việc quản lý trạng thái tương tác động của du khách (lịch sử trò chuyện đa phiên, các hành trình được đánh dấu lưu trữ và phản hồi đánh giá trải nghiệm) đòi hỏi một mô hình lưu trữ phân tán linh hoạt và có khả năng mở rộng cao. Mô hình Nền tảng phụ trợ như một dịch vụ (Backend-as-a-Service -- BaaS) thông qua hệ sinh thái Google Firebase~\cite{moroney2017firebase}, đặc biệt là cơ sở dữ liệu hướng tài liệu NoSQL (Document-oriented NoSQL Database) Google Cloud Firestore, cung cấp giải pháp tối ưu cho lớp dữ liệu này nhờ kiến trúc phi cấu trúc cố định (Schema-less) và khả năng mở rộng theo chiều ngang (Horizontal Scalability)~\cite{davoudian2018nosql, google2024firestore}.
@@ -180,6 +191,7 @@ Trong mô hình hướng tài liệu, dữ liệu được tổ chức dưới d
 Đặc tính vượt trội của Cloud Firestore nằm ở cơ chế đồng bộ hóa dữ liệu thời gian thực thông qua bộ lắng nghe chụp nhanh trạng thái (Real-time Snapshot Listeners). Thay vì áp dụng phương pháp thăm dò định kỳ (Polling) gây lãng phí băng thông mạng và tạo độ trễ thông tin, hệ thống thiết lập một kênh kết nối song công liên tục (Full-duplex Streaming qua giao thức gRPC và WebSocket) giữa máy khách và máy chủ đám mây. Mỗi khi tài liệu trên đám mây có sự biến đổi (ví dụ: một phiên hội thoại mới được khởi tạo hoặc một lộ trình được lưu vết), máy chủ sẽ chủ động đẩy (push) gói tin biến đổi vi sai (delta update) xuống toàn bộ các máy khách đang đăng ký theo dõi trong thời gian dưới 100 mili-giây. Đồng thời, kiến trúc này hỗ trợ cơ chế lưu đệm ngoại tuyến (Offline Persistence), cho phép máy khách tiếp tục ghi nhận hành vi du khách ngay cả khi mất kết nối mạng và tự động đồng bộ hóa lên đám mây khi đường truyền được khôi phục dựa trên nguyên lý tính nhất quán cuối cùng (Eventual Consistency).
 
 \subsection*{1.11. Kiến trúc Xác thực Phân tán và Giao thức Ủy quyền OAuth 2.0}
+\phantomsection
 \addcontentsline{toc}{subsection}{1.11. Kiến trúc Xác thực Phân tán và Giao thức Ủy quyền OAuth 2.0}
 
 Nhằm bảo đảm tính riêng tư của dữ liệu cá nhân hóa và quản lý quyền sở hữu đối với các lịch trình du lịch, hệ thống ứng dụng kiến trúc xác thực phân tán dựa trên giao thức ủy quyền tiêu chuẩn mở OAuth 2.0 và nền tảng Firebase Authentication~\cite{hardt2012oauth}.
@@ -197,9 +209,11 @@ trong đó $\text{request.auth.uid}$ là định danh người dùng được gi
 Bên cạnh phương thức đăng nhập qua bên thứ ba, hệ thống duy trì song song cơ chế xác thực truyền thống dựa trên cặp thông tin Thư điện tử và Mật khẩu (Email/Password Authentication) được mã hóa bảo vệ bằng các hàm băm mật mã chậm (scrypt/bcrypt) nhằm phòng chống triệt để các cuộc tấn công tra cứu bảng cầu vồng (Rainbow Table). Đặc biệt, để xóa bỏ rào cản thao tác ban đầu đối với khách du lịch vãng lai cần tra cứu nhanh thông tin, hệ thống tích hợp chế độ Trải nghiệm Khách vãng lai (Guest Demo Session), cho phép du khách tương tác đầy đủ với tác tử thông minh và bản đồ không gian mà không bắt buộc phải thực hiện quy trình đăng ký rườm rà, qua đó tối ưu hóa tối đa trải nghiệm người dùng trong môi trường di động thực tế.
 
 \section*{2. Tổng quan các công trình nghiên cứu liên quan}
+\phantomsection
 \addcontentsline{toc}{section}{2. Tổng quan các công trình nghiên cứu liên quan}
 
 \subsection*{2.1. Các hướng tiếp cận RAG và GraphRAG trong miền Du lịch}
+\phantomsection
 \addcontentsline{toc}{subsection}{2.1. Các hướng tiếp cận RAG và GraphRAG trong miền Du lịch}
 
 Kể từ khi kiến trúc RAG được Lewis và các cộng sự giới thiệu vào năm 2020~\cite{lewis2020rag}, ứng dụng của nó trong lĩnh vực du lịch và dịch vụ lữ hành đã thu hút sự chú ý sâu sắc của giới học thuật. Hầu hết các nghiên cứu giai đoạn đầu tập trung vào việc nhúng các cẩm nang hướng dẫn du lịch vào kho vector và áp dụng mô hình ngôn ngữ lớn để trả lời câu hỏi của người dùng. Tuy nhiên, các báo cáo gần đây chỉ ra rằng các hệ thống Naive RAG thuần túy bộc lộ tỷ lệ ảo giác đáng kể đối với các địa danh ít phổ biến và gặp khó khăn lớn khi phải tổng hợp thông tin phân bố qua nhiều trang tài liệu khác nhau.
@@ -207,6 +221,7 @@ Kể từ khi kiến trúc RAG được Lewis và các cộng sự giới thiệ
 Sự xuất hiện của GraphRAG do Edge và các đồng nghiệp đề xuất vào năm 2024~\cite{edge2024graphrag} đã đánh dấu một bước chuyển dịch quan trọng, chứng minh rằng việc xây dựng đồ thị tri thức từ văn bản cho phép LLM nắm bắt được cấu trúc toàn cục và thực hiện suy luận tổng hợp tốt hơn nhiều so với việc chỉ đối sánh các đoạn văn bản cục bộ. Nghiên cứu của Pan và các cộng sự năm 2024~\cite{pan2024unifying} đã hệ thống hóa lộ trình hợp nhất giữa LLM và Đồ thị Tri thức, kế thừa các tiếp cận suy luận đồ thị kinh điển như mạng tích chập đồ thị GCN~\cite{kipf2017gcn} và kiến trúc kết hợp QA-GNN~\cite{yasunaga2021qagnn}, qua đó khẳng định rằng đồ thị đóng vai trò là một cơ chế neo giữ chân lý (Grounding Anchor), giúp hạn chế triệt để ảo giác của LLM thông qua các ràng buộc logic có cấu trúc. Dù vậy, phần lớn các công trình GraphRAG hiện nay vẫn chỉ tập trung vào các quan hệ ngữ nghĩa văn bản trừu tượng mà chưa tích hợp sâu các đặc tính không gian địa lý vào cấu trúc đồ thị.
 
 \subsection*{2.2. Các giải pháp định tuyến và Lập lịch trình du lịch thông minh}
+\phantomsection
 \addcontentsline{toc}{subsection}{2.2. Các giải pháp định tuyến và Lập lịch trình du lịch thông minh}
 
 Bài toán Lập lịch trình du lịch tự động (Tourist Trip Design Problem -- TTDP) là một bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem)~\cite{vansteenwegen2011orienteering}. Các tiếp cận truyền thống thường sử dụng các thuật giải di truyền (Genetic Algorithms), tối ưu hóa bầy đàn (Particle Swarm Optimization) hoặc quy hoạch động để tìm kiếm tuyến đường tối đa hóa điểm số ưa thích của du khách trong giới hạn ngân sách thời gian.
@@ -214,6 +229,7 @@ Bài toán Lập lịch trình du lịch tự động (Tourist Trip Design Probl
 Trong những năm gần đây, xu hướng tích hợp LLM vào bài toán TTDP đã mở ra khả năng hiểu sâu ngôn ngữ tự nhiên và nắm bắt sở thích phức tạp của người dùng. Tuy nhiên, việc để LLM tự do sinh lịch trình mà không có sự kiểm soát của giải thuật không gian thường dẫn đến các tuyến đường đi lại ziczac, phân bố thời gian phi thực tế và vi phạm nghiêm trọng cự ly di chuyển giữa các điểm đến. Nghiên cứu của Ballatore và các đồng sự~\cite{ballatore2014spatial} đã nhấn mạnh tầm quan trọng của việc kiểm soát chất lượng dữ liệu không gian trong các dịch vụ định vị. Đặc biệt, như khảo cứu của Gavalas và các cộng sự~\cite{gavalas2014context} đã chỉ ra, việc bổ sung các yếu tố ngữ cảnh động thời gian thực -- tiêu biểu là điều kiện thời tiết và khí tượng -- vào quá trình lập lịch trình đóng vai trò quyết định đến tính khả thi và độ hài lòng của du khách, ngăn ngừa tình trạng du khách bị động trước các biến động môi trường bất lợi. Do đó, việc kết hợp giữa năng lực hiểu ngôn ngữ của LLM, giải thuật phân cụm không gian và cơ chế thích ứng khí tượng thời gian thực là hướng đi tất yếu để tạo ra các lịch trình du lịch khả thi trong thực tiễn.
 
 \section*{3. Nhận diện các khoảng trống nghiên cứu}
+\phantomsection
 \addcontentsline{toc}{section}{3. Nhận diện các khoảng trống nghiên cứu}
 
 Qua quá trình khảo cứu hệ thống các công trình khoa học trong và ngoài nước, khóa luận nhận diện ba khoảng trống nghiên cứu then chốt mà các giải pháp hiện nay chưa giải quyết thỏa đáng:

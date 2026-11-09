@@ -19,6 +19,41 @@ PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
 CHROMA_DIR = os.path.join(PROJECT_ROOT, "data", "processed", "chroma_db")
 
 
+def get_ascii_safe_path(path: str) -> str:
+    """Chuyển đường dẫn có dấu tiếng Việt sang dạng ASCII-safe (8.3 short path hoặc relative path) trên Windows để C++ hnswlib không bị lỗi mở file."""
+    if not path:
+        return path
+    try:
+        path.encode("ascii")
+        return path
+    except UnicodeEncodeError:
+        pass
+    try:
+        rel = os.path.relpath(path)
+        rel.encode("ascii")
+        if not rel.startswith(".."):
+            return rel
+    except Exception:
+        pass
+    if os.name == "nt" and os.path.exists(path):
+        try:
+            import ctypes
+            buf = ctypes.create_unicode_buffer(1024)
+            if ctypes.windll.kernel32.GetShortPathNameW(path, buf, 1024) > 0:
+                return buf.value
+        except Exception:
+            pass
+    return path
+
+
+def load_sentence_transformer_fast(model_name: str, device: str) -> SentenceTransformer:
+    """Ưu tiên nạp SentenceTransformer từ bộ nhớ đệm cục bộ (local_files_only=True) để tránh độ trễ kiểm tra mạng HuggingFace; tự động tải mạng nếu chưa có cache."""
+    try:
+        return SentenceTransformer(model_name, device=device, local_files_only=True)
+    except Exception:
+        return SentenceTransformer(model_name, device=device)
+
+
 def clean_incomplete_hnsw_segments(chroma_dir: str):
     """Dọn dẹp các file index_metadata.pickle mồ côi khi segment chưa hoàn tất để tránh lỗi Rust HNSW segment reader."""
     if not os.path.exists(chroma_dir):
@@ -40,7 +75,7 @@ class VectorRetriever:
 
     def __init__(self, chroma_dir: str = CHROMA_DIR, 
                  model_name: str = "paraphrase-multilingual-MiniLM-L12-v2"):
-        self.chroma_dir = chroma_dir
+        self.chroma_dir = get_ascii_safe_path(chroma_dir)
         self.model_name = model_name
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         
@@ -61,12 +96,12 @@ class VectorRetriever:
             try:
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
-                self.model = SentenceTransformer(self.model_name, device=self.device)
+                self.model = load_sentence_transformer_fast(self.model_name, self.device)
             except Exception as e_model:
                 if self.device != "cpu":
                     print(f"⚠️ [VectorRetriever] Fallback SentenceTransformer sang CPU do: {e_model}")
                     self.device = "cpu"
-                    self.model = SentenceTransformer(self.model_name, device="cpu")
+                    self.model = load_sentence_transformer_fast(self.model_name, "cpu")
                 else:
                     raise e_model
             print(f"✅ [VectorRetriever] Đã kết nối ChromaDB thành công ({self.collection.count()} reviews)!")
@@ -115,22 +150,29 @@ class VectorRetriever:
             try:
                 get_res = self.collection.get(
                     where=where_filter,
-                    limit=max(n_results * 3, 10),
-                    include=["documents", "metadatas"]
+                    limit=max(n_results * 6, 30),
+                    include=["documents", "metadatas", "embeddings"]
                 )
                 docs = get_res.get("documents", [])
                 metas = get_res.get("metadatas", [])
+                stored_embs = get_res.get("embeddings", None)
                 if docs:
                     import numpy as np
-                    try:
-                        doc_embs = self.model.encode(docs, normalize_embeddings=True, device=self.device)
-                    except Exception as e_doc:
-                        if self.device != "cpu":
-                            self.device = "cpu"
-                            doc_embs = self.model.encode(docs, normalize_embeddings=True, device="cpu")
-                        else:
-                            raise e_doc
-                    q_arr = np.array(query_emb[0])
+                    if stored_embs is not None and len(stored_embs) == len(docs):
+                        doc_embs = np.array(stored_embs, dtype=np.float32)
+                        norms = np.linalg.norm(doc_embs, axis=1, keepdims=True)
+                        norms[norms == 0] = 1.0
+                        doc_embs = doc_embs / norms
+                    else:
+                        try:
+                            doc_embs = self.model.encode(docs, normalize_embeddings=True, device=self.device)
+                        except Exception as e_doc:
+                            if self.device != "cpu":
+                                self.device = "cpu"
+                                doc_embs = self.model.encode(docs, normalize_embeddings=True, device="cpu")
+                            else:
+                                raise e_doc
+                    q_arr = np.array(query_emb[0], dtype=np.float32)
                     sims = np.dot(doc_embs, q_arr)
                     # Sắp xếp review theo độ tương đồng giảm dần
                     sorted_indices = np.argsort(sims)[::-1][:n_results]
@@ -138,7 +180,6 @@ class VectorRetriever:
                     max_conf = 0.0
                     for idx in sorted_indices:
                         s = float(sims[idx])
-                        # Giới hạn trong khoảng [0, 1]
                         norm_s = max(0.0, min(1.0, s / 1.5 if s > 1.0 else s))
                         if norm_s > max_conf:
                             max_conf = norm_s

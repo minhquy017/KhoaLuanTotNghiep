@@ -477,20 +477,39 @@ function sanitizeMessageForStorage(msg) {
     if (msg.itineraryRes && msg.itineraryRes.itinerary_data) {
       const plan = msg.itineraryRes.itinerary_data;
       clean.itineraryRes = {
+        status: 'success',
         success: true,
+        locality: msg.itineraryRes.locality || plan.locality || 'Thành phố Huế',
+        num_days: msg.itineraryRes.num_days || plan.num_days || clean.days,
+        trip_type: msg.itineraryRes.trip_type || plan.trip_type || clean.tripType,
         itinerary_data: {
+          locality: plan.locality || 'Thành phố Huế',
+          num_days: plan.num_days || clean.days,
+          trip_type: plan.trip_type || clean.tripType,
+          total_places: plan.total_places || 0,
           days: (plan.days || []).map(d => ({
             day_number: d.day_number,
             theme: d.theme || '',
             total_distance_km: d.total_distance_km || 0,
             slots: (d.slots || d.stops || []).map(s => ({
+              slot_name: s.slot_name || '',
+              slot_time: s.slot_time || '',
               place_name: s.place_name || s.name || '',
               activity_type: s.activity_type || '',
               category: s.category || '',
-              latitude: s.latitude || s.lat || null,
-              longitude: s.longitude || s.lng || null,
+              latitude: s.latitude ?? s.lat ?? null,
+              longitude: s.longitude ?? s.lng ?? null,
               address: s.address || '',
-              place_id: s.place_id || s.placeId || ''
+              rating: s.rating ?? 4.6,
+              review_count: s.review_count ?? 0,
+              description: s.description || '',
+              dish_highlight: s.dish_highlight || '',
+              specialty_dish: s.specialty_dish || '',
+              distance_from_prev_km: s.distance_from_prev_km ?? 0,
+              distance_to_anchor_km: s.distance_to_anchor_km ?? null,
+              travel_time_min: s.travel_time_min ?? 0,
+              node_id: s.node_id || s.place_id || s.placeId || '',
+              place_id: s.place_id || s.node_id || s.placeId || ''
             }))
           }))
         }
@@ -504,6 +523,7 @@ function sanitizeMessageForStorage(msg) {
   if (msg.role === 'assistant' && !msg.isItinerary) {
     const rawRes = msg.resData || {};
     clean.resData = {
+      status: rawRes.status || 'success',
       answer: textContent,
       session_context: rawRes.session_context || null,
       graph_trace: Array.isArray(rawRes.graph_trace) ? rawRes.graph_trace : [],
@@ -513,9 +533,12 @@ function sanitizeMessageForStorage(msg) {
         ? rawRes.matched_places.slice(0, 8).map(p => ({
             name: p.name || '',
             category: p.category || '',
-            place_id: p.place_id || p.id || '',
-            latitude: p.latitude || p.lat || null,
-            longitude: p.longitude || p.lng || null
+            node_id: p.node_id || p.place_id || p.id || '',
+            place_id: p.place_id || p.node_id || p.id || '',
+            address: p.address || '',
+            rating: p.rating ?? p.rating_value ?? 4.5,
+            latitude: p.latitude ?? p.lat ?? null,
+            longitude: p.longitude ?? p.lng ?? null
           }))
         : [],
       navigation: rawRes.navigation
@@ -523,7 +546,9 @@ function sanitizeMessageForStorage(msg) {
             is_navigation: Boolean(rawRes.navigation.is_navigation),
             origin: rawRes.navigation.origin,
             destination: rawRes.navigation.destination,
-            profile: rawRes.navigation.profile
+            profile: rawRes.navigation.profile,
+            distance_km: rawRes.navigation.distance_km ?? null,
+            duration_min: rawRes.navigation.duration_min ?? null
           }
         : null
     };

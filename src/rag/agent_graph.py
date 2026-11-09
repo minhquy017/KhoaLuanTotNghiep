@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-LANGGRAPH AGENTIC RAG (ĐIỀU PHỐI ĐA NGUỒN TRI THỨC VỚI LANGGRAPH & QWEN2.5)
+LANGGRAPH AGENTIC RAG (ĐIỀU PHỐI ĐA NGUỒN TRI THỨC VỚI LANGGRAPH & QWEN2.5-VL)
 Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu và Trí tuệ Nhân tạo (DS&AI K3 - HUET)
-Trường Kỹ thuật và Công nghệ - Đại học Huế
+Khoa Kỹ thuật và Công nghệ - Đại học Huế
 Đề tài: Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM
 -----------------------------------------------------------------------------------------------------
 Kiến trúc State Graph:
@@ -23,7 +23,7 @@ Kiến trúc State Graph:
                                    3. [web_search_fallback] (DuckDuckGo / Wiki)
                                                │      │
                                                ▼      ▼
-                                      4. [generate_response] (Ollama Qwen2.5:3b GPU)
+                                      4. [generate_response] (Ollama Qwen2.5-VL:7b GPU)
                                                │
                                                ▼
                                              [END]
@@ -251,11 +251,13 @@ PLACE_ALIAS_DICT = {
     "chua huyen khong son thuong": "custom_attr_05",
     "huyen khong son thuong": "custom_attr_05",
     "chua huyen khong": "custom_attr_05",
-    "doi thien an": "custom_local_21",
-    "thien an": "custom_local_21",
+    "doi thien an": "custom_attr_thienan",
+    "thien an": "custom_attr_thienan",
+    "dan vien thien an": "custom_attr_thienan",
     "cung an dinh": "custom_local_31",
     "an dinh": "custom_local_31",
     "ho thuy tien": "custom_local_21",
+    "cong vien ho thuy tien": "custom_local_21",
     "chua tu dam": "custom_local_30",
     "tu dam": "custom_local_30",
     "con hen": "custom_attr_con_hen",
@@ -840,7 +842,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 # =============================================================================
 def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
     query = state["query"]
-    trace_steps = state.get("graph_trace", [])
+    trace_steps = list(state.get("graph_trace") or [])
     norm_q = strip_accents(query)
     matched_places = state.get("matched_places", [])
 
@@ -849,9 +851,18 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
     is_pure_fact = any(f in norm_q for f in pure_fact_triggers) and not any(k in norm_q for k in ["review", "danh gia", "ngon", "kinh nghiem", "khen", "che"])
 
     if is_pure_fact:
+        trace_steps.append({
+            "step": "vector_search",
+            "icon": "⚡",
+            "label": "Bỏ qua Vector Search (Truy vấn thông tin thực thể)",
+            "detail": "Câu hỏi trực tiếp về địa chỉ / giá vé / giờ mở cửa → ưu tiên dữ liệu chuẩn xác từ Đồ thị Tri thức",
+            "confidence": 50.0,
+            "status": "high"
+        })
         return {
             "reviews": [],
-            "confidence_score": 0.5
+            "confidence_score": 0.5,
+            "graph_trace": trace_steps
         }
 
     # Lọc theo place_urls nếu đã tìm được địa điểm cụ thể từ KG
@@ -1371,6 +1382,12 @@ Nguyên tắc trả lời bắt buộc:
                 f"📍 **Địa chỉ:** {addr}{nearby_text}\n\n"
                 f"Em đã ghim vị trí chính xác lên bản đồ di sản bên cạnh để bạn dễ dàng định vị và lên kế hoạch tham quan nhé!"
             )
+        elif image_base64 and matched_places:
+            places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
+            answer_text = (
+                f"Dạ, qua hình ảnh bạn gửi, em nhận diện và đối chiếu với dữ liệu di sản Cố đô Huế: {places_str}. "
+                f"Em đã định vị các địa điểm này trên bản đồ tương tác để bạn tiện theo dõi và khám phá nhé!"
+            )
         elif matched_places:
             places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
             answer_text = (
@@ -1389,12 +1406,6 @@ Nguyên tắc trả lời bắt buộc:
                 f"Dạ, theo kết quả tra cứu tổng hợp về du lịch Cố đô Huế:\n\n{wb_str}\n\n"
                 f"Bạn có thể xem chi tiết vị trí và gợi ý trên bản đồ tương tác nhé!"
             )
-        elif image_base64 and matched_places:
-            places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
-            answer_text = (
-                f"Dạ, qua hình ảnh bạn gửi, em nhận diện và đối chiếu với dữ liệu di sản Cố đô Huế: {places_str}. "
-                f"Em đã định vị các địa điểm này trên bản đồ tương tác để bạn tiện theo dõi và khám phá nhé!"
-            )
         elif image_base64:
             answer_text = (
                 "Dạ, em đã tiếp nhận hình ảnh của bạn và đối chiếu với bản đồ di sản Cố đô Huế. "
@@ -1404,7 +1415,7 @@ Nguyên tắc trả lời bắt buộc:
             answer_text = "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"
 
     # XAI trace: ghi lại bước sinh phản hồi cuối cùng
-    trace_steps = state.get("graph_trace", [])
+    trace_steps = list(state.get("graph_trace") or [])
     if pref_rules:
         trace_steps.append({
             "step": "user_personalization",

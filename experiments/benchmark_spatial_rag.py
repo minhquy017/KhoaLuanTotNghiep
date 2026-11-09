@@ -2,7 +2,7 @@
 """
 BENCHMARK & THÍ NGHIỆM ĐỊNH LƯỢNG: ĐỐI SÁNH HIỆU NĂNG SPATIAL GRAPHRAG
 Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu và Trí tuệ Nhân tạo (DS&AI K3 - HUET)
-Trường Kỹ thuật và Công nghệ - Đại học Huế
+Khoa Kỹ thuật và Công nghệ - Đại học Huế
 Đề tài: Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM
 Sinh viên thực hiện: Lê Hoàng Minh Quý
 Giảng viên hướng dẫn: TS. Hồ Quốc Dũng
@@ -110,7 +110,7 @@ BENCHMARK_QUERIES = [
         "id": "Q06",
         "category": "Spatial_Proximity",
         "query": "Từ lăng Khải Định nên ghé những điểm tham quan nào lân cận tiện đường?",
-        "anchor_node": "place_8881",  # Lăng Khải Định [16.398, 107.590]
+        "anchor_node": "place_8879",  # Lăng Khải Định [16.3989, 107.5903]
         "anchor_name": "Lăng Khải Định",
         "target_dish": None,
         "max_valid_distance_km": 4.0
@@ -251,7 +251,7 @@ def run_spatial_graphrag(query: str, is_itinerary: bool = False) -> Tuple[str, f
                 num_days = 2
             elif "3 ngày" in query or "ba ngày" in query:
                 num_days = 3
-            plan = planner.build_itinerary(num_days=num_days, trip_type="Couples")
+            plan = planner.plan_itinerary(num_days=num_days, trip_type="Couples")
             ans = planner.format_itinerary_markdown(plan)
         else:
             initial_state: TourismAgentState = {
@@ -374,7 +374,7 @@ def extract_and_evaluate_places(text: str, q_meta: Dict[str, Any]) -> Dict[str, 
             if nid in graph_retriever.G:
                 for nbr in graph_retriever.G.neighbors(nid):
                     nbr_data = graph_retriever.G.nodes[nbr]
-                    if nbr_data.get("type") == "dish":
+                    if (nbr_data.get("node_type") or nbr_data.get("type") or "").lower() == "dish":
                         d_name = nbr_data.get("name", "")
                         if strip_accents(target_dish.lower()) in strip_accents(d_name.lower()):
                             serves_dish = True
@@ -601,7 +601,7 @@ def run_benchmark():
     with open(report_md_path, "w", encoding="utf-8") as f:
         f.write("# BÁO CÁO KẾT QUẢ THÍ NGHIỆM ĐỊNH LƯỢNG: ĐỐI SÁNH HIỆU NĂNG SPATIAL GRAPHRAG\n")
         f.write("**Đề tài:** Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM\n")
-        f.write("**Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu & Trí tuệ Nhân tạo (DS&AI K3) – Trường Kỹ thuật và Công nghệ, Đại học Huế**\n\n")
+        f.write("**Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu & Trí tuệ Nhân tạo (DS&AI K3) – Khoa Kỹ thuật và Công nghệ, Đại học Huế**\n\n")
         f.write(f"- **Thời gian chạy thí nghiệm:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f"- **Mô hình suy luận cục bộ:** Qwen2.5-3B-Instruct (Ollama Local GPU RTX 3050)\n")
         f.write(f"- **Mô hình nhúng Vector:** SentenceTransformer (`paraphrase-multilingual-MiniLM-L12-v2`)\n")

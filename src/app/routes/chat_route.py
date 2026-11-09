@@ -70,16 +70,19 @@ def chat_assistant(req: ChatRequest):
             "lưu ý", "chú ý", "gợi ý", "địa điểm", "món ăn", "quán ăn", "quán ăn ngon", 
             "món ăn ngon", "giá vé", "giờ mở cửa", "đặc sản", "ẩm thực", "thông tin", 
             "lịch sử", "kiến trúc", "di tích lân cận", "địa điểm lân cận", "lưu ý khi tham quan",
-            "kinh nghiệm", "phương tiện", "thời gian", "tổng kết", "chúc bạn", "chào bạn"
+            "kinh nghiệm", "phương tiện", "thời gian", "tổng kết", "chúc bạn", "chào bạn",
+            "thông tin di sản", "địa chỉ", "gợi ý điểm đến lân cận thuận đường",
+            "bún bò huế", "bún bò", "cơm hến", "bún hến", "bánh bèo", "bánh nậm",
+            "bánh lọc", "bánh bột lọc", "bánh khoái", "nem lụi", "bánh ép", "chè huế", "cà phê muối"
         }
         mentioned_pois = []
         for be in bold_entities:
             clean_name = be.strip(" :.,;!?-\t\r\n")
             clean_lower = clean_name.lower()
-            # Bỏ qua các tiêu đề mục không phải tên quán/địa danh
-            if len(clean_name) >= 3 and clean_lower not in STOP_HEADINGS and not any(clean_lower == sh or clean_lower.startswith(sh) for sh in STOP_HEADINGS):
+            # Bỏ qua các tiêu đề mục hoặc tên món ăn thuần túy không phải tên quán/địa danh
+            if len(clean_name) >= 3 and clean_lower not in STOP_HEADINGS and not any(clean_lower == sh or clean_lower.startswith(sh + ":") for sh in STOP_HEADINGS):
                 found = graph_retriever.search_places(clean_name, locality=req.locality or "Thành phố Huế", limit=1)
-                if found and not any((p.get("node_id") or p.get("name")) == (found[0].get("node_id") or found[0].get("name")) for p in mentioned_pois):
+                if found and found[0].get("_match_score", 0) >= 85 and not any((p.get("node_id") or p.get("name")) == (found[0].get("node_id") or found[0].get("name")) for p in mentioned_pois):
                     mentioned_pois.append(found[0])
 
         # 2. Gộp theo thứ tự ưu tiên:
@@ -116,18 +119,20 @@ def chat_assistant(req: ChatRequest):
             all_poi_candidates = food_candidates + other_candidates
 
         for p in all_poi_candidates:
-            nid = p.get("node_id") or p.get("name")
+            nid = p.get("node_id") or p.get("place_id") or p.get("name")
             lat = p.get("latitude") or p.get("lat")
             lng = p.get("longitude") or p.get("lng")
             if lat and lng and nid not in seen_ids:
                 seen_ids.add(nid)
+                pid_str = str(p.get("node_id") or p.get("place_id") or "")
                 clean_places.append({
-                    "node_id": str(p.get("node_id", "")),
+                    "node_id": pid_str,
+                    "place_id": pid_str,
                     "name": p.get("name", ""),
                     "category": p.get("category", "Attraction"),
                     "latitude": float(lat),
                     "longitude": float(lng),
-                    "rating": float(p.get("rating_value", 4.5)),
+                    "rating": float(p.get("rating_value", p.get("rating", 4.5))),
                     "address": p.get("street_address", p.get("address", "Thành phố Huế"))
                 })
             if len(clean_places) >= 6:
@@ -192,11 +197,13 @@ def chat_assistant(req: ChatRequest):
                         }
 
             if origin_place and dest_place:
+                dest_pid = str(dest_place.get("node_id") or dest_place.get("place_id") or "")
                 nav_payload = {
                     "is_navigation": True,
                     "origin": origin_place,
                     "destination": {
-                        "node_id": str(dest_place.get("node_id") or ""),
+                        "node_id": dest_pid,
+                        "place_id": dest_pid,
                         "name": dest_place["name"],
                         "category": dest_place.get("category", "Attraction"),
                         "address": dest_place.get("address", "Thành phố Huế"),
@@ -216,7 +223,8 @@ def chat_assistant(req: ChatRequest):
                 head_places = []
                 if dest_place.get("latitude") and dest_place.get("longitude"):
                     head_places.append({
-                        "node_id": str(dest_place.get("node_id", "")),
+                        "node_id": dest_pid,
+                        "place_id": dest_pid,
                         "name": dest_place["name"],
                         "category": dest_place.get("category", "Attraction"),
                         "latitude": float(dest_place["latitude"]),
@@ -225,8 +233,10 @@ def chat_assistant(req: ChatRequest):
                         "address": dest_place.get("address", dest_place.get("street_address", "Thành phố Huế"))
                     })
                 if origin_place.get("latitude") and origin_place.get("longitude") and origin_place.get("category") != "CurrentLocation":
+                    orig_pid = str(origin_place.get("node_id") or origin_place.get("place_id") or "")
                     head_places.append({
-                        "node_id": str(origin_place.get("node_id", "")),
+                        "node_id": orig_pid,
+                        "place_id": orig_pid,
                         "name": origin_place["name"],
                         "category": origin_place.get("category", "Attraction"),
                         "latitude": float(origin_place["latitude"]),
@@ -238,8 +248,12 @@ def chat_assistant(req: ChatRequest):
 
         # 3. Đảm bảo Graph Trace và Confidence Score luôn được truyền đầy đủ về Frontend
         trace = res.get("graph_trace") or []
-        conf = float(res.get("confidence_score") or 0.88)
-        if conf <= 0.0:
+        raw_conf = res.get("confidence_score")
+        if raw_conf is not None and float(raw_conf) > 0.0:
+            conf = float(raw_conf)
+        elif res.get("route_taken") == "web_fallback":
+            conf = 0.35
+        else:
             conf = 0.88
 
         if not trace:

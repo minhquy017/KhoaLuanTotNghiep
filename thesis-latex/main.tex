@@ -1,9 +1,15 @@
-\documentclass[13pt,a4paper,oneside]{extreport}
+\documentclass[12pt,a4paper,oneside]{extreport}
 \usepackage[utf8]{inputenc}
 \usepackage[T5]{fontenc}
 \usepackage[vietnamese]{babel}
 \usepackage{mathptmx} % Times New Roman
 \DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n} % Khắc phục triệt để lỗi hiển thị ký hiệu tập rỗng / ký tự lạ khi dùng mathcal với mathptmx
+\makeatletter
+\renewcommand\normalsize{\@setfontsize\normalsize{13pt}{15.6pt}}
+\renewcommand\small{\@setfontsize\small{11.5pt}{14pt}}
+\renewcommand\footnotesize{\@setfontsize\footnotesize{10.5pt}{12.5pt}}
+\normalsize
+\makeatother
 \usepackage{graphicx}
 \usepackage{tabularx}
 \usepackage{multirow}
@@ -16,7 +22,7 @@
 \usepackage{tocloft}
 \usepackage{indentfirst}
 \usepackage[top=3cm, bottom=3cm, left=3cm, right=2cm]{geometry}
-\usepackage[unicode]{hyperref}
+\usepackage[unicode,hypertexnames=false]{hyperref}
 \usepackage{cite}
 \usepackage{tikz}
 
@@ -112,8 +118,10 @@
 \begin{document}
 
 % Các trang bìa ngoài và bìa phụ (không đánh số trang)
+\hypersetup{pageanchor=false}
 \include{bia/bia-ngoai}
 \include{bia/bia-phu}
+\hypersetup{pageanchor=true}
 
 % Các trang trước phần mở đầu đánh số La Mã, bắt đầu từ trang i theo Mẫu 6
 \pagenumbering{roman}
@@ -131,6 +139,7 @@
 % Phần nội dung chính (đánh số Ả Rập từ trang 1 của Phần I)
 \pagenumbering{arabic}
 \setcounter{page}{1}
+\renewcommand{\theequation}{\arabic{equation}}
 
 \include{noi-dung/phan-1-mo-dau/mo-dau}
 \include{noi-dung/phan-2-tong-quan/tong-quan}
@@ -139,6 +148,7 @@
 % Phần IV chứa các chương nghiên cứu
 \phan{PHẦN IV. NỘI DUNG VÀ KẾT QUẢ NGHIÊN CỨU}
 \addtocontents{toc}{\protect\setlength{\cftchapindent}{0.5cm}}
+\renewcommand{\theequation}{\thechapter.\arabic{equation}}
 \renewcommand{\thesection}{\thechapter.\arabic{section}}
 \renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
 \renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}

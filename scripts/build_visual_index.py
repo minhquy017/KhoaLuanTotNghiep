@@ -30,26 +30,43 @@ except Exception:
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 CHROMA_DIR = os.path.join(PROJECT_ROOT, "data", "processed", "chroma_db")
 METADATA_FILE = os.path.join(PROJECT_ROOT, "data", "processed", "visual_database", "landmark_image_index.json")
 COLLECTION_NAME = "hue_landmarks_visual"
 CLIP_MODEL_NAME = "clip-ViT-B-32"
 
+try:
+    from src.rag.vector_retriever import (
+        clean_incomplete_hnsw_segments,
+        get_ascii_safe_path,
+        load_sentence_transformer_fast,
+    )
+except ImportError:
+    def get_ascii_safe_path(path: str) -> str:
+        return os.path.relpath(path) if os.path.exists(path) else path
 
-def clean_incomplete_hnsw_segments(chroma_dir: str):
-    """Dọn dẹp các file index_metadata.pickle mồ côi nếu có segment bị ngắt dở dang."""
-    if not os.path.exists(chroma_dir):
-        return
-    for item in os.listdir(chroma_dir):
-        sub = os.path.join(chroma_dir, item)
-        if os.path.isdir(sub):
-            files = os.listdir(sub)
-            bin_files = [f for f in files if f.endswith(".bin")]
-            if "index_metadata.pickle" in files and len(bin_files) == 0:
-                try:
-                    os.remove(os.path.join(sub, "index_metadata.pickle"))
-                except Exception:
-                    pass
+    def load_sentence_transformer_fast(model_name: str, device: str) -> SentenceTransformer:
+        try:
+            return SentenceTransformer(model_name, device=device, local_files_only=True)
+        except Exception:
+            return SentenceTransformer(model_name, device=device)
+
+    def clean_incomplete_hnsw_segments(chroma_dir: str):
+        if not os.path.exists(chroma_dir):
+            return
+        for item in os.listdir(chroma_dir):
+            sub = os.path.join(chroma_dir, item)
+            if os.path.isdir(sub):
+                files = os.listdir(sub)
+                bin_files = [f for f in files if f.endswith(".bin")]
+                if "index_metadata.pickle" in files and len(bin_files) == 0:
+                    try:
+                        os.remove(os.path.join(sub, "index_metadata.pickle"))
+                    except Exception:
+                        pass
 
 
 def build_visual_vector_index():
@@ -70,20 +87,23 @@ def build_visual_vector_index():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"⚙️ Khởi tạo mô hình CLIP ({CLIP_MODEL_NAME}) trên thiết bị: {device.upper()}...", flush=True)
     start_load = time.time()
-    clip_model = SentenceTransformer(CLIP_MODEL_NAME, device=device)
+    clip_model = load_sentence_transformer_fast(CLIP_MODEL_NAME, device=device)
     print(f"✅ Tải CLIP hoàn tất trong {time.time() - start_load:.2f}s!", flush=True)
 
-    # 2. Khởi tạo ChromaDB
-    clean_incomplete_hnsw_segments(CHROMA_DIR)
-    print(f"📁 Kết nối ChromaDB tại: {CHROMA_DIR}...", flush=True)
-    chroma_client = chromadb.PersistentClient(path=CHROMA_DIR)
+    # 2. Khởi tạo ChromaDB với đường dẫn ASCII-safe trên Windows
+    safe_chroma_dir = get_ascii_safe_path(CHROMA_DIR)
+    clean_incomplete_hnsw_segments(safe_chroma_dir)
+    print(f"📁 Kết nối ChromaDB tại: {safe_chroma_dir}...", flush=True)
+    chroma_client = chromadb.PersistentClient(path=safe_chroma_dir)
     
-    # Xóa collection cũ nếu muốn làm mới hoàn toàn
-    try:
-        chroma_client.delete_collection(name=COLLECTION_NAME)
-        print(f"🔄 Đã làm mới collection '{COLLECTION_NAME}'...", flush=True)
-    except Exception:
-        pass
+    # Xóa collection cũ và collection test tạm nếu có
+    for col_to_drop in (COLLECTION_NAME, "test_flush"):
+        try:
+            chroma_client.delete_collection(name=col_to_drop)
+            if col_to_drop == COLLECTION_NAME:
+                print(f"🔄 Đã làm mới collection '{COLLECTION_NAME}'...", flush=True)
+        except Exception:
+            pass
 
     collection = chroma_client.create_collection(
         name=COLLECTION_NAME,
@@ -91,12 +111,14 @@ def build_visual_vector_index():
     )
 
     ids = []
-    embeddings = []
     metadatas = []
     documents = []
+    pil_batch = []
+    embeddings = []
 
     success_count = 0
     t0 = time.time()
+    encode_batch_size = 64
 
     for idx, item in enumerate(landmarks_meta, 1):
         rel_path = item.get("file_path", "")
@@ -107,15 +129,14 @@ def build_visual_vector_index():
             continue
             
         try:
-            pil_img = Image.open(abs_path).convert("RGB")
-            # Trích xuất vector đặc trưng 512 chiều từ ảnh
-            emb = clip_model.encode(pil_img, normalize_embeddings=True)
+            with Image.open(abs_path) as raw_img:
+                pil_img = raw_img.convert("RGB")
             
             img_id = item.get("image_id", f"img_{item['place_id']}_{idx:02d}")
             caption = item.get("caption", f"Ảnh {item['place_name']}")
             
             ids.append(img_id)
-            embeddings.append(emb.tolist())
+            pil_batch.append(pil_img)
             metadatas.append({
                 "place_id": item["place_id"],
                 "place_name": item["place_name"],
@@ -128,15 +149,24 @@ def build_visual_vector_index():
             documents.append(caption)
             success_count += 1
             
-            if success_count % 25 == 0 or success_count == len(landmarks_meta):
+            if len(pil_batch) >= encode_batch_size:
+                batch_embs = clip_model.encode(pil_batch, batch_size=encode_batch_size, normalize_embeddings=True, show_progress_bar=False)
+                embeddings.extend(batch_embs.tolist())
+                pil_batch.clear()
                 print(f"   ⚡ Đã trích xuất đặc trưng {success_count}/{len(landmarks_meta)} ảnh ({time.time() - t0:.1f}s)...", flush=True)
         except Exception as e:
             print(f"   ❌ Lỗi trích xuất ảnh {rel_path}: {e}", flush=True)
 
+    if pil_batch:
+        batch_embs = clip_model.encode(pil_batch, batch_size=encode_batch_size, normalize_embeddings=True, show_progress_bar=False)
+        embeddings.extend(batch_embs.tolist())
+        pil_batch.clear()
+        print(f"   ⚡ Đã trích xuất đặc trưng {success_count}/{len(landmarks_meta)} ảnh ({time.time() - t0:.1f}s)...", flush=True)
+
     # 3. Lưu vào ChromaDB theo batch để tránh giới hạn tham số SQLite
     if ids:
         print(f"\n💾 Đang ghi {len(ids)} vector đặc trưng vào ChromaDB...", flush=True)
-        batch_size = 100
+        batch_size = 500
         for b_idx in range(0, len(ids), batch_size):
             b_end = min(b_idx + batch_size, len(ids))
             collection.add(

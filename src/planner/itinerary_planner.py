@@ -2,7 +2,7 @@
 """
 SPATIAL ITINERARY PLANNER (BỘ GỢI Ý LỊCH TRÌNH DU LỊCH DỰA TRÊN ĐỒ THỊ KHÔNG GIAN)
 Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu và Trí tuệ Nhân tạo (DS&AI K3 - HUET)
-Trường Kỹ thuật và Công nghệ - Đại học Huế
+Khoa Kỹ thuật và Công nghệ - Đại học Huế
 Đề tài: Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM
 -----------------------------------------------------------------------------------------------------
 Nhiệm vụ:
@@ -88,7 +88,7 @@ class SpatialItineraryPlanner:
                 "desc": "Lăng tẩm có kiến trúc thơ mộng và tinh tế nhất triều Nguyễn giữa rừng thông bạt ngàn."
             },
             "lang_khai_dinh": {
-                "node_id": "place_8881", # Hoặc alias lăng
+                "node_id": "place_8879",
                 "name": "Lăng Khải Định (Ứng Lăng)",
                 "cluster": "Bờ Nam (Lăng tẩm)",
                 "suggested_duration_hours": 1.5,
@@ -107,11 +107,27 @@ class SpatialItineraryPlanner:
             # Cụm Thư giãn & Cảnh quan ven sông
             "song_huong": {
                 "node_id": "place_8882",
-                "name": "Cầu Tràng Tiền & Bến thuyền Tòa Khâm (Sông Hương)",
+                "name": "Bến thuyền Tòa Khâm & Du thuyền Sông Hương",
                 "cluster": "Trung tâm Bờ Nam",
                 "suggested_duration_hours": 1.5,
                 "preferred_time": "evening",
-                "desc": "Biểu tượng thơ mộng của xứ Huế, dạo mát ngắm cầu Tràng Tiền lên đèn và nghe Ca Huế."
+                "desc": "Biểu tượng thơ mộng của xứ Huế, dạo mát ngắm sông Hương lên đèn và nghe Ca Huế."
+            },
+            "cau_trang_tien": {
+                "node_id": "place_8919",
+                "name": "Cầu Trường Tiền & Phố đi bộ Nguyễn Đình Chiểu",
+                "cluster": "Trung tâm Bờ Nam",
+                "suggested_duration_hours": 1.5,
+                "preferred_time": "evening",
+                "desc": "Dạo bộ dưới nhịp cầu 127 năm tuổi rực rỡ sắc màu và khám phá không gian văn hóa ven sông."
+            },
+            "cung_an_dinh": {
+                "node_id": "custom_local_31",
+                "name": "Cung An Định & Không gian Đêm Hoàng gia",
+                "cluster": "Trung tâm Bờ Nam",
+                "suggested_duration_hours": 1.5,
+                "preferred_time": "evening",
+                "desc": "Viên ngọc kiến trúc tân cổ điển bên dòng sông An Cựu lung linh về đêm."
             },
             "cau_ngoi_thanh_toan": {
                 "node_id": "place_8885",
@@ -139,9 +155,9 @@ class SpatialItineraryPlanner:
         if preferred_dish:
             serving_places = self.retriever.find_places_by_dish(preferred_dish, locality="Thành phố Huế", limit=10)
             origin_node = self.retriever.get_place(origin_place_id)
-            if origin_node and "latitude" in origin_node and "longitude" in origin_node:
-                o_lat, o_lon = origin_node["latitude"], origin_node["longitude"]
-                
+            o_lat = origin_node.get("latitude") if origin_node else None
+            o_lon = origin_node.get("longitude") if origin_node else None
+            if o_lat and o_lon:
                 # Tính khoảng cách từ điểm hiện tại tới các quán này
                 candidates_with_dist = []
                 for sp in serving_places:
@@ -149,8 +165,10 @@ class SpatialItineraryPlanner:
                     if pid in excluded_ids:
                         continue
                     sp_node = self.retriever.get_place(pid)
-                    if sp_node and "latitude" in sp_node and "longitude" in sp_node:
-                        dist = haversine_distance_km(o_lat, o_lon, sp_node["latitude"], sp_node["longitude"])
+                    s_lat = sp_node.get("latitude") if sp_node else None
+                    s_lon = sp_node.get("longitude") if sp_node else None
+                    if s_lat and s_lon:
+                        dist = haversine_distance_km(float(o_lat), float(o_lon), float(s_lat), float(s_lon))
                         if dist <= max_dist_km + 1.0: # Mở rộng bán kính nếu đúng món ngon
                             item = dict(sp_node)
                             item["distance_km"] = dist
@@ -185,7 +203,8 @@ class SpatialItineraryPlanner:
                        preferred_dishes: Optional[List[str]] = None,
                        trip_type: str = "Couples",
                        user_lat: Optional[float] = None,
-                       user_lng: Optional[float] = None) -> Dict[str, Any]:
+                       user_lng: Optional[float] = None,
+                       preferences: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Lập lịch trình tour du lịch thông minh (1 - 3 ngày tại Huế):
         Tự động ghép nối các chặng (Sáng - Trưa - Chiều - Tối) dựa trên Spatial KG,
@@ -218,7 +237,7 @@ class SpatialItineraryPlanner:
                 "theme": "Khám phá Quần thể Lăng tẩm Vương triều & Làng hương Cổ",
                 "morning_hub": "lang_tu_duc",
                 "afternoon_hub": "lang_khai_dinh",
-                "evening_hub": "song_huong",
+                "evening_hub": "cau_trang_tien",
                 "lunch_dish": dish_queue[2] if len(dish_queue) > 2 else "Cơm hến",
                 "dinner_dish": dish_queue[3] if len(dish_queue) > 3 else "Nem lụi"
             },
@@ -227,7 +246,7 @@ class SpatialItineraryPlanner:
                 "theme": "Trải nghiệm Cảnh quan Sinh thái & Làng quê Cố Đô",
                 "morning_hub": "lang_minh_mang",
                 "afternoon_hub": "cau_ngoi_thanh_toan",
-                "evening_hub": "song_huong",
+                "evening_hub": "cho_dong_ba",
                 "lunch_dish": dish_queue[4] if len(dish_queue) > 4 else "Bánh ép",
                 "dinner_dish": dish_queue[5] if len(dish_queue) > 5 else "Chè Huế"
             }
@@ -245,6 +264,8 @@ class SpatialItineraryPlanner:
             # -------------------------------------------------------------
             if day_idx == 0 and user_lat is not None and user_lng is not None:
                 day_slots.append({
+                    "node_id": "user_location",
+                    "place_id": "user_location",
                     "slot_time": "07:30 - 08:00",
                     "slot_name": "Điểm Xuất Phát",
                     "activity_type": "Khởi hành",
@@ -269,8 +290,10 @@ class SpatialItineraryPlanner:
             m_hub = self.core_hubs[m_hub_key]
             m_place = self.retriever.get_place(m_hub["node_id"])
             if m_place:
-                used_place_ids.add(m_place["node_id"])
-                lat, lon = m_place.get("latitude", 16.468), m_place.get("longitude", 107.578)
+                m_nid = str(m_place.get("node_id") or m_hub["node_id"])
+                used_place_ids.add(m_nid)
+                lat = float(m_place.get("latitude") or 16.468)
+                lon = float(m_place.get("longitude") or 107.578)
                 day_coords.append([lat, lon])
 
                 dist_from_prev = 0.0
@@ -283,6 +306,8 @@ class SpatialItineraryPlanner:
                 prev_point = (lat, lon)
 
                 day_slots.append({
+                    "node_id": m_nid,
+                    "place_id": m_nid,
                     "slot_time": "08:00 - 11:30",
                     "slot_name": "Buổi Sáng",
                     "activity_type": "Tham quan Di sản",
@@ -309,16 +334,20 @@ class SpatialItineraryPlanner:
             )
 
             if lunch_place:
-                used_place_ids.add(lunch_place["node_id"])
-                l_lat, l_lon = lunch_place.get("latitude", 16.469), lunch_place.get("longitude", 107.582)
+                l_nid = str(lunch_place.get("node_id") or "")
+                used_place_ids.add(l_nid)
+                l_lat = float(lunch_place.get("latitude") or 16.469)
+                l_lon = float(lunch_place.get("longitude") or 107.582)
                 day_coords.append([l_lat, l_lon])
                 
-                dist_lunch = lunch_place.get("distance_km") or haversine_distance_km(prev_point[0], prev_point[1], l_lat, l_lon)
+                dist_lunch = lunch_place.get("distance_km") or (haversine_distance_km(prev_point[0], prev_point[1], l_lat, l_lon) if prev_point else 0.5)
                 walk_min = lunch_place.get("walk_time_min") or round(dist_lunch / 4.5 * 60, 1)
                 total_dist_day += dist_lunch
                 prev_point = (l_lat, l_lon)
 
                 day_slots.append({
+                    "node_id": l_nid,
+                    "place_id": l_nid,
                     "slot_time": "11:30 - 13:30",
                     "slot_name": "Bữa Trưa",
                     "activity_type": "Thưởng thức Ẩm thực",
@@ -342,16 +371,20 @@ class SpatialItineraryPlanner:
             af_hub = self.core_hubs[af_hub_key]
             af_place = self.retriever.get_place(af_hub["node_id"])
             if af_place:
-                used_place_ids.add(af_place["node_id"])
-                af_lat, af_lon = af_place.get("latitude", 16.453), af_place.get("longitude", 107.544)
+                af_nid = str(af_place.get("node_id") or af_hub["node_id"])
+                used_place_ids.add(af_nid)
+                af_lat = float(af_place.get("latitude") or 16.453)
+                af_lon = float(af_place.get("longitude") or 107.544)
                 day_coords.append([af_lat, af_lon])
 
-                dist_af = haversine_distance_km(prev_point[0], prev_point[1], af_lat, af_lon)
+                dist_af = haversine_distance_km(prev_point[0], prev_point[1], af_lat, af_lon) if prev_point else 0.0
                 drive_min = round(dist_af / 25.0 * 60, 1) # Vận tốc di chuyển ô tô/xe máy ~25 km/h
                 total_dist_day += dist_af
                 prev_point = (af_lat, af_lon)
 
                 day_slots.append({
+                    "node_id": af_nid,
+                    "place_id": af_nid,
                     "slot_time": "14:00 - 17:30",
                     "slot_name": "Buổi Chiều",
                     "activity_type": "Tham quan Danh lam",
@@ -370,24 +403,32 @@ class SpatialItineraryPlanner:
             # -------------------------------------------------------------
             # CHẶNG 4: TỐI (18:30 - 21:30) - ĂN TỐI & DẠO PHỐ / NGẮM SÔNG HƯƠNG
             # -------------------------------------------------------------
-            # Tìm quán ăn tối món Huế gần trung tâm hoặc tiện đường về
+            ev_hub_key = tpl.get("evening_hub", "song_huong")
+            ev_hub = self.core_hubs.get(ev_hub_key, self.core_hubs["song_huong"])
+
+            # Tìm quán ăn tối món Huế gần trung tâm hoặc tiện đường về điểm dạo tối
             dinner_place = self._find_best_restaurant_nearby(
-                origin_place_id=self.core_hubs["song_huong"]["node_id"],
+                origin_place_id=ev_hub["node_id"],
                 preferred_dish=tpl["dinner_dish"],
                 excluded_ids=used_place_ids,
                 max_dist_km=2.5
             )
 
             if dinner_place:
-                used_place_ids.add(dinner_place["node_id"])
-                dn_lat, dn_lon = dinner_place.get("latitude", 16.467), dinner_place.get("longitude", 107.592)
+                dn_nid = str(dinner_place.get("node_id") or "")
+                used_place_ids.add(dn_nid)
+                dn_lat = float(dinner_place.get("latitude") or 16.467)
+                dn_lon = float(dinner_place.get("longitude") or 107.592)
                 day_coords.append([dn_lat, dn_lon])
 
-                dist_dn = haversine_distance_km(prev_point[0], prev_point[1], dn_lat, dn_lon)
+                dist_dn = haversine_distance_km(prev_point[0], prev_point[1], dn_lat, dn_lon) if prev_point else 0.0
                 drive_dn_min = round(dist_dn / 25.0 * 60, 1)
                 total_dist_day += dist_dn
+                prev_point = (dn_lat, dn_lon)
 
                 day_slots.append({
+                    "node_id": dn_nid,
+                    "place_id": dn_nid,
                     "slot_time": "18:30 - 20:00",
                     "slot_name": "Bữa Tối",
                     "activity_type": "Ẩm thực Tối & Thư giãn",
@@ -404,24 +445,36 @@ class SpatialItineraryPlanner:
                     "travel_time_min": drive_dn_min
                 })
 
-            # Hoạt động đêm: Dạo cầu Tràng Tiền / Phố đi bộ
-            ev_hub = self.core_hubs["song_huong"]
+            # Hoạt động đêm: Dạo phố / Cầu Trường Tiền / Chợ đêm theo từng ngày
             ev_place = self.retriever.get_place(ev_hub["node_id"])
             if ev_place:
+                ev_nid = str(ev_place.get("node_id") or ev_hub["node_id"])
+                used_place_ids.add(ev_nid)
+                ev_lat = float(ev_place.get("latitude") or 16.469)
+                ev_lon = float(ev_place.get("longitude") or 107.591)
+                day_coords.append([ev_lat, ev_lon])
+
+                dist_ev = haversine_distance_km(prev_point[0], prev_point[1], ev_lat, ev_lon) if prev_point else 0.5
+                walk_ev_min = round(dist_ev / 15.0 * 60, 1) if dist_ev > 1.2 else round(dist_ev / 4.5 * 60, 1)
+                total_dist_day += dist_ev
+                prev_point = (ev_lat, ev_lon)
+
                 day_slots.append({
+                    "node_id": ev_nid,
+                    "place_id": ev_nid,
                     "slot_time": "20:00 - 21:30",
                     "slot_name": "Buổi Đêm",
                     "activity_type": "Ngắm cảnh & Giải trí",
                     "place_name": ev_hub["name"],
                     "category": "Cảnh quan / Trải nghiệm",
-                    "address": "Bờ Nam Sông Hương, TP. Huế",
-                    "latitude": ev_place.get("latitude", 16.469),
-                    "longitude": ev_place.get("longitude", 107.591),
+                    "address": ev_place.get("street_address") or "Bờ Nam Sông Hương, TP. Huế",
+                    "latitude": ev_lat,
+                    "longitude": ev_lon,
                     "rating": ev_place.get("rating_value", 4.6),
                     "review_count": ev_place.get("review_count", 0),
                     "description": ev_hub["desc"],
-                    "distance_from_prev_km": 0.5,
-                    "travel_time_min": 5.0
+                    "distance_from_prev_km": dist_ev,
+                    "travel_time_min": walk_ev_min
                 })
 
             days_plan.append({
@@ -439,6 +492,9 @@ class SpatialItineraryPlanner:
             "total_places": sum(len(d["slots"]) for d in days_plan),
             "days": days_plan
         }
+
+    # Alias tương thích ngược cho các script đánh giá (benchmark_spatial_rag.py)
+    build_itinerary = plan_itinerary
 
     def format_itinerary_markdown(self, plan_data: Dict[str, Any]) -> str:
         """Định dạng kết quả lịch trình thành văn bản Markdown chuyên nghiệp cho người dùng/Chatbot."""

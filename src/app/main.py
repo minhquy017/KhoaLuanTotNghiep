@@ -2,7 +2,7 @@
 """
 HUẾ SMART TOURISM RESTFUL API BACKEND (MAIN ENTRYPOINT)
 Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu và Trí tuệ Nhân tạo (DS&AI K3 - HUET)
-Trường Kỹ thuật và Công nghệ - Đại học Huế
+Khoa Kỹ thuật và Công nghệ - Đại học Huế
 Sinh viên thực hiện: Lê Hoàng Minh Quý | GVHD: TS. Hồ Quốc Dũng
 -------------------------------------------------------------------------------------
 Kiến trúc Phân lớp Modular Backend:
@@ -112,7 +112,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
