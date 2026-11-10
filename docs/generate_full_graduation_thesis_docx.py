@@ -462,7 +462,7 @@ def build_thesis_docx():
 
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Nghiên cứu xây dựng Đồ thị Tri thức Không gian Du lịch Huế với 9.525 đỉnh thực thể và 90.948 cạnh ngữ nghĩa, kết nối 612 địa điểm du lịch tại Huế (29 điểm tham quan di tích cốt lõi, 104 khách sạn, 479 quán ăn). Thông qua thuật toán khai phá thực đơn ngầm từ kho ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế từ TripAdvisor, hệ thống bóc tách 4.337 quan hệ phục vụ món ăn đặc sản chuẩn xác. Hệ thống tích hợp phân hệ Thị giác Đa phương thức CLIP ViT-B/32 nhận diện ảnh thực địa di tích đạt Top-1 98,7% và Top-3 100,0% qua giao thức LOOCV không cần tái huấn luyện, cùng Khung lọc không gian 2 giai đoạn (Two-stage Spatial Filtering): lọc thô Haversine (d <= 1,5 km) trên đồ thị và tối ưu tinh mạng lưới đường bộ thực tế qua OSRM Contraction Hierarchies có tính đến hệ số uốn lượn đô thị và các cây cầu vượt sông Hương. Kết quả thực nghiệm đối sánh định lượng trên bộ Benchmark quy mô lớn gồm 100 kịch bản du lịch thực tế chứng minh Spatial GraphRAG triệt tiêu 100% hiện tượng ảo giác thực thể và vi phạm không gian (so với mức vi phạm 65,0% của Zero-shot LLM và 41,0% của Naive RAG), rút ngắn cự ly di chuyển trung bình từ 5,78 km (Zero-shot) và 3,62 km (Naive RAG) xuống 1,24 km, đồng thời nâng độ chính xác món ăn đặc sản lên 96,5% (so với 26,0% của Zero-shot và 63,0% của Naive RAG) với thời gian đáp ứng thời gian thực 2,80 giây.")
+    add_body_run(p, "Nghiên cứu xây dựng Đồ thị Tri thức Không gian Du lịch Huế với 9.582 đỉnh thực thể và 126.313 cạnh ngữ nghĩa, kết nối 612 địa điểm du lịch tại Huế (29 điểm tham quan di tích cốt lõi, 104 khách sạn, 479 quán ăn). Thông qua thuật toán khai phá thực đơn ngầm từ kho ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế từ TripAdvisor, hệ thống bóc tách 4.337 quan hệ phục vụ món ăn đặc sản chuẩn xác. Hệ thống tích hợp phân hệ Thị giác Đa phương thức CLIP ViT-B/32 nhận diện ảnh thực địa di tích đạt Top-1 98,7% và Top-3 100,0% qua giao thức LOOCV không cần tái huấn luyện, cùng Khung lọc không gian 2 giai đoạn (Two-stage Spatial Filtering): lọc thô Haversine (d <= 1,5 km) trên đồ thị và tối ưu tinh mạng lưới đường bộ thực tế qua OSRM Contraction Hierarchies có tính đến hệ số uốn lượn đô thị và các cây cầu vượt sông Hương. Kết quả thực nghiệm đối sánh định lượng trên bộ Benchmark quy mô lớn gồm 100 kịch bản du lịch thực tế chứng minh Spatial GraphRAG triệt tiêu 100% hiện tượng ảo giác thực thể và vi phạm không gian (so với mức vi phạm 39,1% của Zero-shot LLM và 39,1% của Naive RAG), rút ngắn cự ly di chuyển trung bình từ 22,2 km (Zero-shot) và 42,3 km (Naive RAG) xuống 1,2 km, đồng thời nâng độ chính xác món ăn đặc sản lên 62,5% (so với 56,9% của Zero-shot và 56,2% của Naive RAG) với thời gian đáp ứng ổn định 7,7 giây cho chuỗi suy luận tác tử đa bước.")
 
     p_kw = doc.add_paragraph()
     format_body_p(p_kw)
@@ -1252,12 +1252,12 @@ def build_thesis_docx():
     add_table_caption(doc, "Bảng 2.2: Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark 100 kịch bản du lịch Huế")
     tbl_results_data = [
         ["Chỉ số đánh giá định lượng", "Zero-shot LLM", "Naive RAG (Vector)", "Spatial GraphRAG (Đề xuất)"],
-        ["Grounding Rate (%) ↑", "42,0%", "76,0%", "100,0%"],
-        ["Hallucination Rate (%) ↓", "58,0%", "24,0%", "0,0%"],
-        ["Spatial Violation Rate (%) ↓", "65,0%", "41,0%", "0,0%"],
-        ["Cự ly trung bình đến Anchor (km) ↓", "5,78 km", "3,62 km", "1,24 km"],
-        ["Dish Alignment Rate (%) ↑", "26,0%", "63,0%", "96,5%"],
-        ["Thời gian đáp ứng (Latency) ↓", "3,20s", "4,10s", "2,80s"]
+        ["Grounding Rate (%) ↑", "85,8%", "76,0%", "100,0%"],
+        ["Hallucination Rate (%) ↓", "14,2%", "24,0%", "0,0%"],
+        ["Spatial Violation Rate (%) ↓", "39,1%", "39,1%", "0,0%"],
+        ["Cự ly trung bình đến Anchor (km) ↓", "22,2 km", "42,3 km", "1,2 km"],
+        ["Dish Alignment Rate (%) ↑", "56,9%", "56,2%", "62,5%"],
+        ["Thời gian đáp ứng (Latency) ↓", "2,0s", "1,6s", "7,7s"]
     ]
     tbl_res = doc.add_table(rows=len(tbl_results_data), cols=4)
     tbl_res.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -1283,7 +1283,7 @@ def build_thesis_docx():
 
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Từ kết quả thực nghiệm tại Bảng 2.2, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh (0,0% so với 58,0% của Zero-shot và 24,0% của Naive RAG), xóa bỏ 100% các vi phạm không gian (0,0% so với 65,0% của Zero-shot và 41,0% của Naive RAG), rút ngắn khoảng cách di chuyển trung bình từ 5,78 km (Zero-shot) và 3,62 km (Naive RAG) xuống chỉ còn 1,24 km (giảm gần 80%), đồng thời nâng độ chính xác món ăn đặc sản lên 96,5% (vượt xa mức 26,0% của Zero-shot và 63,0% của Naive RAG) với thời gian đáp ứng trung bình 2,80 giây.")
+    add_body_run(p, "Từ kết quả thực nghiệm tại Bảng 2.2, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh (0,0% so với 14,2% của Zero-shot và 24,0% của Naive RAG), xóa bỏ 100% các vi phạm không gian (0,0% so với 39,1% của cả Zero-shot và Naive RAG), rút ngắn khoảng cách di chuyển trung bình từ 22,2 km (Zero-shot) và 42,3 km (Naive RAG) xuống chỉ còn 1,2 km (giảm hơn 95%), đồng thời nâng độ chính xác món ăn đặc sản lên 62,5% (vượt mức 56,9% của Zero-shot và 56,2% của Naive RAG). Thời gian đáp ứng của Spatial GraphRAG đạt 7,7 giây, phản ánh chi phí tính toán thực tế cho toàn bộ chuỗi tác tử đa tầng (lọc không gian 2 bước, truy vấn đồ thị tri thức và sinh ngữ cảnh có cấu trúc), hoàn toàn phù hợp cho tương tác thực tế.")
 
     add_figure(doc, "benchmark_spatial_comparison.png", "Hình 2.2: Biểu đồ đối sánh định lượng các chỉ số hiệu năng giữa Zero-shot, Naive RAG và Spatial GraphRAG")
 

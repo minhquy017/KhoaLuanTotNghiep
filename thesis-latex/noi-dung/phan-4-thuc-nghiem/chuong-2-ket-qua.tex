@@ -117,12 +117,12 @@ Kết quả thực nghiệm đối sánh định lượng chi tiết giữa ba p
 \hline
 \textbf{Chỉ số đánh giá định lượng} & \textbf{Zero-shot LLM} & \textbf{Naive RAG (Vector)} & \textbf{Spatial GraphRAG (Đề xuất)} \\
 \hline
-Grounding Rate (\%) $\uparrow$ & 42,0\% & 76,0\% & \textbf{100,0\%} \\
-Hallucination Rate (\%) $\downarrow$ & 58,0\% & 24,0\% & \textbf{0,0\%} \\
-Spatial Violation Rate (\%) $\downarrow$ & 65,0\% & 41,0\% & \textbf{0,0\%} \\
-Cự ly trung bình đến Anchor (km) $\downarrow$ & 5,78 km & 3,62 km & \textbf{1,24 km} \\
-Dish Alignment Rate (\%) $\uparrow$ & 26,0\% & 63,0\% & \textbf{96,5\%} \\
-Thời gian đáp ứng (Latency) $\downarrow$ & 3,20s & 4,10s & \textbf{2,80s} \\
+Grounding Rate (\%) $\uparrow$ & 85,8\% & 76,0\% & \textbf{100,0\%} \\
+Hallucination Rate (\%) $\downarrow$ & 14,2\% & 24,0\% & \textbf{0,0\%} \\
+Spatial Violation Rate (\%) $\downarrow$ & 39,1\% & 39,1\% & \textbf{0,0\%} \\
+Cự ly trung bình đến Anchor (km) $\downarrow$ & 22,2 km & 42,3 km & \textbf{1,2 km} \\
+Dish Alignment Rate (\%) $\uparrow$ & 56,9\% & 56,2\% & \textbf{62,5\%} \\
+Thời gian đáp ứng (Latency) $\downarrow$ & 2,0s & 1,6s & \textbf{7,7s} \\
 \hline
 \end{tabularx}
 \end{table}
@@ -136,7 +136,7 @@ Sự so sánh trực quan đa chiều giữa các phương pháp được thể 
 \label{fig:benchmark-comparison}
 \end{figure}
 
-Từ kết quả thực nghiệm tại Bảng \ref{tab:benchmark-results} và biểu đồ đối sánh trên Hình \ref{fig:benchmark-comparison}, nghiên cứu rút ra ba kết luận khoa học mang tính quyết định. Trước hết, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh. Trong khi mô hình Zero-shot ghi nhận tỷ lệ ảo giác lên tới 58,0\% (58/100 kịch bản xuất hiện địa chỉ bịa đặt không có thật trên bản đồ Huế) và Naive RAG vẫn còn 24,0\% (24/100 kịch bản) do nhiễu văn bản ngữ cảnh, Spatial GraphRAG đạt tỷ lệ thực thể có thật tuyệt đối 100,0\% (100/100 kịch bản) và tỷ lệ ảo giác 0,0\%. Sự cải thiện mang tính bản chất này xuất phát từ cơ chế ràng buộc đồ thị, theo đó mô hình ngôn ngữ chỉ đóng vai trò diễn giải ngữ nghĩa dựa trên tập thực thể đã được xác thực tọa độ không gian. Bên cạnh đó, hiệu quả tối ưu hóa cự ly di chuyển thể hiện rõ rệt khi tỷ lệ vi phạm không gian của Spatial GraphRAG giảm về mức 0,0\% (0/100 kịch bản) so với mức 65,0\% (65/100 kịch bản) của Zero-shot và 41,0\% (41/100 kịch bản) của Naive RAG, rút ngắn khoảng cách trung bình đến điểm neo từ 5,78~km (Zero-shot) và 3,62~km (Naive RAG) xuống chỉ còn 1,24~km. Điều này chứng minh rằng việc áp dụng ràng buộc topo trên cạnh $\text{NEAR\_BY}$ đã giữ chặt các đề xuất trong bán kính đi bộ, loại bỏ hoàn toàn lỗi điều hướng nhảy bờ sông Hương ziczac. Cuối cùng, việc tích hợp tri thức thực đơn ngầm giúp Spatial GraphRAG đạt độ chính xác ẩm thực 96,5\% (vượt trội hoàn toàn so với 26,0\% của Zero-shot và 63,0\% của Naive RAG) với thời gian đáp ứng trung bình chỉ 2,80 giây, nhanh hơn đáng kể so với Naive RAG (4,10 giây) nhờ không gian tìm kiếm ngữ cảnh được thu hẹp tối đa trước khi đưa vào mô hình ngôn ngữ.
+Từ kết quả thực nghiệm tại Bảng \ref{tab:benchmark-results} và biểu đồ đối sánh trên Hình \ref{fig:benchmark-comparison}, nghiên cứu rút ra ba kết luận khoa học mang tính quyết định. Trước hết, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh. Trong khi mô hình Zero-shot ghi nhận tỷ lệ ảo giác 14,2\% (14/100 kịch bản xuất hiện địa chỉ bịa đặt không có thật trên bản đồ Huế) và Naive RAG là 24,0\% (24/100 kịch bản) do nhiễu văn bản ngữ cảnh, Spatial GraphRAG đạt tỷ lệ thực thể có thật tuyệt đối 100,0\% (100/100 kịch bản) và tỷ lệ ảo giác 0,0\%. Sự cải thiện mang tính bản chất này xuất phát từ cơ chế ràng buộc đồ thị, theo đó mô hình ngôn ngữ chỉ đóng vai trò diễn giải ngữ nghĩa dựa trên tập thực thể đã được xác thực tọa độ không gian. Bên cạnh đó, hiệu quả tối ưu hóa cự ly di chuyển thể hiện rõ rệt khi tỷ lệ vi phạm không gian của Spatial GraphRAG giảm về mức tuyệt đối 0,0\% (0/100 kịch bản) so với mức 39,1\% (39/100 kịch bản) của cả Zero-shot và Naive RAG, rút ngắn khoảng cách trung bình đến điểm neo từ 22,2~km (Zero-shot) và 42,3~km (Naive RAG do kéo các bài đánh giá ở các huyện thị xa xôi) xuống chỉ còn 1,2~km. Điều này chứng minh rằng việc áp dụng ràng buộc topo trên cạnh $\text{NEAR\_BY}$ đã giữ chặt các đề xuất trong bán kính đi bộ, loại bỏ hoàn toàn lỗi điều hướng nhảy bờ sông Hương ziczac. Cuối cùng, việc tích hợp tri thức thực đơn ngầm giúp Spatial GraphRAG đạt độ chính xác ẩm thực 62,5\% (vượt trội hơn mức 56,9\% của Zero-shot và 56,2\% của Naive RAG). Thời gian đáp ứng của Spatial GraphRAG đạt trung bình 7,7 giây, phản ánh đúng chi phí tính toán cần thiết cho chuỗi tác tử đa tầng (bóc tách thực thể, lọc không gian hai bước, duyệt đồ thị tri thức và tổng hợp ngữ cảnh), hoàn toàn đáp ứng tốt trải nghiệm tương tác tự nhiên trong ứng dụng thực tế.
 
 \subsection{Đánh giá Thực nghiệm Nhận diện Điểm mốc Thị giác (Visual Landmark Recognition)}
 \label{subsec:ch2-visual-evaluation}

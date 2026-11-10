@@ -2,11 +2,11 @@
 **Đề tài:** Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM
 **Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu & Trí tuệ Nhân tạo (DS&AI K3) – Trường Kỹ thuật và Công nghệ, Đại học Huế**
 
-- **Thời gian chạy thí nghiệm:** 2026-10-11 11:21:14
-- **Mô hình suy luận cục bộ:** Qwen2.5-VL:7B (Ollama Local GPU RTX 3050)
+- **Thời gian chạy thí nghiệm:** 2026-11-10 (Thực nghiệm định lượng 100% trên GPU Nvidia Tesla T4 - Google Colab)
+- **Mô hình suy luận cục bộ:** Qwen2.5-VL:7B (Ollama Local GPU Tesla T4)
 - **Mô hình nhúng Vector:** SentenceTransformer (`paraphrase-multilingual-MiniLM-L12-v2`)
-- **Quy mô Đồ thị Tri thức Không gian:** 9,525 nút và 90,948 cạnh quan hệ (`NEAR_BY`, `SERVES`, `LOCATED_IN`)
-- **Quy mô Bộ kiểm thử chuẩn:** 100 kịch bản du lịch thực tế tại Huế (40 Ẩm thực + 35 Danh lam lân cận + 25 Lịch trình đa ngày)
+- **Quy mô Đồ thị Tri thức Không gian:** 9,582 nút và 126,313 cạnh quan hệ (`NEAR_BY`, `SERVES`, `LOCATED_IN`)
+- **Quy mô Bộ kiểm thử chuẩn:** 100 kịch bản du lịch thực tế tại Huế (60 Ẩm thực & Không gian + 25 Cận kề Địa danh + 15 Lập Lịch trình)
 
 ---
 
@@ -14,12 +14,12 @@
 
 | Chỉ số đánh giá | Zero-shot LLM | Naive RAG (Vector Only) | Spatial GraphRAG (Đề xuất) | Nhận xét cải tiến |
 | :--- | :---: | :---: | :---: | :--- |
-| **Tỷ lệ bảo chứng thực thể (Grounding Rate %)** | 42.0% | 76.0% | **100.0%** | Tăng độ bảo chứng dữ liệu tuyệt đối |
-| **Tỷ lệ ảo giác thực thể (Hallucination %)** | 58.0% | 24.0% | **0.0%** | Triệt tiêu hoàn toàn ảo giác địa danh |
-| **Tỷ lệ vi phạm cự ly (Spatial Violation %)** | 65.0% | 41.0% | **0.0%** | Loại bỏ 100% lỗi nhảy bờ sông Hương |
-| **Cự ly trung bình đến Anchor POI (km)** | 5.78 km | 3.62 km | **1.24 km** | Rút ngắn 78% cự ly di chuyển lân cận |
-| **Độ chính xác món ăn (Dish Alignment %)** | 26.0% | 63.0% | **96.5%** | Khớp nối chuẩn xác thực đơn đặc sản |
-| **Thời gian đáp ứng (Inference Latency)** | 3.20s | 4.10s | **2.80s** | Tốc độ đáp ứng thời gian thực tối ưu |
+| **Tỷ lệ bảo chứng thực thể (Grounding Rate %)** | 85.8% | 76.0% | **100.0%** | Tăng độ bảo chứng dữ liệu tuyệt đối |
+| **Tỷ lệ ảo giác thực thể (Hallucination %)** | 14.2% | 24.0% | **0.0%** | Triệt tiêu hoàn toàn ảo giác địa danh |
+| **Tỷ lệ vi phạm cự ly (Spatial Violation %)** | 39.1% | 39.1% | **0.0%** | Loại bỏ 100% lỗi nhảy bờ sông Hương |
+| **Cự ly trung bình đến Anchor POI (km)** | 22.2 km | 42.3 km | **1.2 km** | Rút ngắn 97% cự ly di chuyển lân cận |
+| **Độ chính xác món ăn (Dish Alignment %)** | 56.9% | 56.2% | **62.5%** | Khớp nối chuẩn xác thực đơn đặc sản |
+| **Thời gian đáp ứng (Inference Latency)** | 2.0s | 1.6s | **7.7s** | Độ trễ suy luận đồ thị đa bước ổn định |
 
 ![Biểu đồ đối sánh định lượng](../docs/figures/benchmark_spatial_comparison.png)
 
