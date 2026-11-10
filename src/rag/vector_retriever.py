@@ -47,11 +47,31 @@ def get_ascii_safe_path(path: str) -> str:
 
 
 def load_sentence_transformer_fast(model_name: str, device: str) -> SentenceTransformer:
-    """Ưu tiên nạp SentenceTransformer từ bộ nhớ đệm cục bộ (local_files_only=True) để tránh độ trễ kiểm tra mạng HuggingFace; tự động tải mạng nếu chưa có cache."""
+    """Ưu tiên nạp SentenceTransformer từ bộ nhớ đệm cục bộ (local_files_only=True) để tránh độ trễ kiểm tra mạng HuggingFace; tự động tải mạng nếu chưa có cache hoặc tự phục hồi nếu cache bị hỏng header."""
     try:
         return SentenceTransformer(model_name, device=device, local_files_only=True)
-    except Exception:
-        return SentenceTransformer(model_name, device=device)
+    except Exception as e_local:
+        err_msg = str(e_local).lower()
+        if "deserializing header" in err_msg or "header too large" in err_msg:
+            import shutil
+            from pathlib import Path
+            for base_cache in [os.environ.get("HF_HOME", ""), str(Path.home() / ".cache" / "huggingface")]:
+                if base_cache and os.path.exists(base_cache):
+                    for p in Path(base_cache).rglob("*paraphrase-multilingual-MiniLM*"):
+                        if p.is_dir():
+                            shutil.rmtree(p, ignore_errors=True)
+                        elif p.is_file():
+                            try:
+                                p.unlink(missing_ok=True)
+                            except Exception:
+                                pass
+            return SentenceTransformer(model_name, device=device, force_download=True)
+        try:
+            return SentenceTransformer(model_name, device=device)
+        except Exception as e_remote:
+            if "deserializing header" in str(e_remote).lower() or "header too large" in str(e_remote).lower():
+                return SentenceTransformer(model_name, device=device, force_download=True)
+            raise e_remote
 
 
 def clean_incomplete_hnsw_segments(chroma_dir: str):

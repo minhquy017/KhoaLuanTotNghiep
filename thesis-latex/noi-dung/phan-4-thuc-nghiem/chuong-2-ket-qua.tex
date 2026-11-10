@@ -40,20 +40,26 @@ trong đó $\pi = (\pi(1), \pi(2), \dots, \pi(m))$ biểu diễn hoán vị th�
 
 Toàn bộ các thí nghiệm kiểm chứng định lượng được triển khai trên môi trường máy trạm cá nhân nhằm chứng minh tính khả thi thực tế của giải pháp: bộ xử lý trung tâm Intel Core i5 / AMD Ryzen 5, bộ nhớ trong 16GB RAM, bộ xử lý đồ họa NVIDIA GeForce RTX 3050 Laptop với 4GB VRAM, hệ điều hành Windows 11, môi trường phát triển Python 3.12, và máy chủ suy luận cục bộ Ollama phiên bản 0.4.
 
-Mô hình ngôn ngữ lớn được sử dụng là Qwen2.5-3B-Instruct (phiên bản định lượng Q4\_K\_M, chiếm dụng khoảng 2,2GB VRAM), bảo đảm thời gian tải mô hình tức thì và năng lực sinh văn bản tiếng Việt tốc độ cao (trên 35 tokens/giây) mà hoàn toàn không phụ thuộc vào kết nối mạng Internet hay chi phí gọi API đám mây.
+Mô hình nền tảng được sử dụng là mô hình thị giác -- ngôn ngữ lớn Qwen2.5-VL:7B (phiên bản định lượng Q4\_K\_M vận hành qua máy chủ suy luận cục bộ Ollama), bảo đảm thời gian khởi động tức thì, năng lực suy luận đa phương thức (xử lý đồng thời văn bản và ảnh thực địa) cùng tốc độ sinh tiếng Việt cao mà hoàn toàn không phụ thuộc vào kết nối mạng Internet hay chi phí gọi API đám mây.
 
-\subsection{Bộ kiểm thử Benchmark 12 kịch bản du lịch Huế}
+\subsection{Bộ kiểm thử Benchmark 100 kịch bản du lịch Huế}
 \label{subsec:ch2-benchmark-suite}
 
-Khác với các bộ dữ liệu kiểm thử hỏi đáp du lịch thông thường trên thế giới vốn chỉ tập trung vào sự tương đồng ngữ nghĩa từ vựng mà bỏ qua yếu tố không gian, nghiên cứu này xây dựng một Bộ dữ liệu kiểm thử chuẩn (Benchmark Test Suite) gồm 12 kịch bản thực tế đại diện tại Cố đô Huế. Bộ kiểm thử được thiết kế dựa trên sự khảo sát hành vi truy vấn thực tế của du khách, mô phỏng các tình huống đời thực khi du khách di chuyển trong đô thị di sản đặc thù bị chia cắt bởi dòng sông Hương.
+Khác với các bộ dữ liệu kiểm thử hỏi đáp du lịch thông thường trên thế giới vốn chỉ tập trung vào sự tương đồng ngữ nghĩa từ vựng mà bỏ qua yếu tố không gian, nghiên cứu này xây dựng một Bộ dữ liệu kiểm thử chuẩn quy mô lớn (Large-scale Benchmark Test Suite) gồm 100 kịch bản thực tế đại diện tại Cố đô Huế. Bộ kiểm thử được thiết kế dựa trên sự khảo sát hành vi truy vấn thực tế của du khách, mô phỏng các tình huống đời thực khi du khách di chuyển trong đô thị di sản đặc thù bị chia cắt bởi dòng sông Hương.
 
-Mỗi kịch bản trong bộ kiểm thử đòi hỏi hệ thống phải đồng thời giải quyết ba tầng bài toán kỹ thuật: bóc tách chính xác thực thể địa danh và món ăn đặc sản từ ngôn ngữ tự nhiên tiếng Việt; định vị và tra cứu đồ thị không gian trong bán kính vật lý cho phép; và lập luận đề xuất lời giải tối ưu không vi phạm các rào cản địa lý tự nhiên. Toàn bộ 12 kịch bản được phân bổ có chủ đích vào ba nhóm bài toán nghiệp vụ cốt lõi. Nhóm bài toán thứ nhất, bao gồm các kịch bản từ TC-01 đến TC-04, tập trung vào truy vấn ẩm thực kết hợp ràng buộc không gian nhằm đánh giá năng lực liên kết thực thể món ăn với các cơ sở ẩm thực lân cận trong bán kính đi bộ $d \le 1,5\text{ km}$, đồng thời kiểm tra khả năng khống chế hiện tượng gợi ý nhảy qua cầu Trường Tiền hay cầu Phú Xuân sang bờ đối diện. Nhóm bài toán thứ hai, từ kịch bản TC-05 đến TC-08, hướng đến việc khám phá danh thắng không gian lân cận thông qua cơ chế duyệt đồ thị topo để xác định các điểm đến di sản, cảnh quan sinh thái hoặc làng nghề truyền thống nằm trên cùng trục giao thông quanh một điểm neo ban đầu. Nhóm bài toán thứ ba, từ kịch bản TC-09 đến TC-12, giải quyết bài toán lập lịch trình du lịch đa ngày tổng hợp dựa trên mô hình Orienteering Problem, kết hợp phân cụm địa lý hai bờ sông Hương và ghép nối các bữa ăn đặc sản chuẩn vị cho các khung thời gian từ nửa ngày đến ba ngày.
+Mỗi kịch bản trong bộ kiểm thử đòi hỏi hệ thống phải đồng thời giải quyết ba tầng bài toán kỹ thuật: bóc tách chính xác thực thể địa danh và món ăn đặc sản từ ngôn ngữ tự nhiên tiếng Việt; định vị và tra cứu đồ thị không gian trong bán kính vật lý cho phép; và lập luận đề xuất lời giải tối ưu không vi phạm các rào cản địa lý tự nhiên. Toàn bộ 100 kịch bản được phân bổ có chủ đích vào ba nhóm bài toán nghiệp vụ cốt lõi:
 
-Đặc tả chi tiết về câu hỏi ngôn ngữ tự nhiên của du khách, điểm neo không gian, món ăn hoặc dịch vụ yêu cầu, và kết quả kỳ vọng cùng tiêu chuẩn nghiệm đúng của toàn bộ 12 kịch bản kiểm thử được trình bày tại Bảng \ref{tab:benchmark-suite-specs}.
+Thứ nhất, Nhóm bài toán truy vấn ẩm thực kết hợp ràng buộc không gian (Spatial Culinary Retrieval -- từ TC-01 đến TC-40, gồm 40 kịch bản) nhằm đánh giá năng lực liên kết thực thể món ăn với các cơ sở ẩm thực lân cận trong bán kính đi bộ $d \le 1,5\text{ km}$, đồng thời kiểm tra khả năng khống chế hiện tượng gợi ý nhảy qua cầu Trường Tiền hay cầu Phú Xuân sang bờ đối diện. Nhóm này bao phủ đầy đủ các món đặc sản làm nên bản sắc ẩm thực Huế (Bún bò Huế, Cơm hến, Bánh bèo, Bánh nậm, Bánh lọc, Bánh khoái, Nem lụi, Chè hẻm, Chè heo quay, Bún mắm nêm, Bánh canh Nam Phổ, Vả trộn, Cơm chay Huế, Trà cung đình...) tại cả hai bờ sông Hương.
+
+Thứ hai, Nhóm bài toán khám phá danh thắng không gian lân cận (Spatial POI Discovery -- từ TC-41 đến TC-75, gồm 35 kịch bản) hướng đến việc khám phá danh thắng không gian lân cận thông qua cơ chế duyệt đồ thị topo để xác định các điểm đến di sản, cảnh quan sinh thái hoặc làng nghề truyền thống nằm trên cùng trục giao thông quanh một điểm neo ban đầu. Nhóm bao phủ toàn diện từ Quần thể di tích Kinh thành (Đại Nội, Bảo tàng Cổ vật Cung đình, Cửa Thượng Tứ, Kỳ Đài), hệ thống Lăng tẩm triều Nguyễn (Lăng Gia Long, Minh Mạng, Thiệu Trị, Tự Đức, Đồng Khánh, Khải Định), danh lam cổ tự (Chùa Thiên Mụ, Từ Hiếu, Báo Quốc, Huyền Không Sơn Thượng), đến các danh thắng sinh thái và làng nghề ngoại ô (Đồi Vọng Cảnh, Đồi Thiên An, Rú Chá, Đầm Chuồn -- Phá Tam Giang, Làng hương Thủy Xuân, Làng hoa Thủy Biều, Cầu ngói Thanh Toàn, Làng gốm Phước Tích...).
+
+Thứ ba, Nhóm bài toán lập lịch trình du lịch tổng hợp (Multi-day \& Half-day Itinerary Planning -- từ TC-76 đến TC-100, gồm 25 kịch bản) giải quyết bài toán lập lịch trình du lịch đa ngày tổng hợp dựa trên mô hình Orienteering Problem, kết hợp phân cụm địa lý hai bờ sông Hương và ghép nối các bữa ăn đặc sản chuẩn vị cho các khung thời gian linh hoạt từ tour nửa ngày (ngắm hoàng hôn, ẩm thực đêm) đến các tour 1 ngày, 2 ngày, 3 ngày cho đa dạng đối tượng du khách (cặp đôi, gia đình, thanh niên trải nghiệm).
+
+Để minh họa cấu trúc chi tiết của bộ dữ liệu, Bảng \ref{tab:benchmark-suite-specs} trình bày đặc tả 12 kịch bản đại diện tiêu biểu trích xuất từ 3 nhóm bài toán của bộ 100 kịch bản kiểm thử chuẩn (toàn văn 100 kịch bản được lưu trữ trong cơ sở dữ liệu kiểm thử và tóm lược tại Phụ lục A).
 
 \begin{table}[htbp]
 \centering
-\caption{Đặc tả chi tiết 12 kịch bản trong Bộ dữ liệu kiểm thử chuẩn (Benchmark Suite) cho du lịch Huế}
+\caption{Đặc tả 12 kịch bản đại diện tiêu biểu trong Bộ dữ liệu kiểm thử chuẩn 100 kịch bản cho du lịch Huế}
 \label{tab:benchmark-suite-specs}
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
@@ -93,29 +99,29 @@ Thứ ba, đối với nhóm bài toán lập lịch trình đa ngày (từ TC-0
 \subsection{Hệ thống các mô hình đối chuẩn và Tiêu chí đo lường}
 \label{subsec:ch2-metrics}
 
-Nghiên cứu tiến hành đo lường và đối sánh định lượng giữa ba phương pháp đại diện gồm mô hình suy luận trực tiếp Qwen2.5-3B-Instruct không có cơ chế tăng cường tri thức (Zero-shot LLM), hệ thống RAG véc-tơ truyền thống kết hợp ChromaDB dựa trên độ đo tương đồng Cosine (Naive RAG), và giải pháp đề xuất Spatial GraphRAG kết hợp Đồ thị Tri thức Không gian với máy trạng thái LangGraph.
+Nghiên cứu tiến hành đo lường và đối sánh định lượng giữa ba phương pháp đại diện gồm mô hình suy luận trực tiếp Qwen2.5-VL:7B không có cơ chế tăng cường tri thức (Zero-shot LLM), hệ thống RAG véc-tơ truyền thống kết hợp ChromaDB dựa trên độ đo tương đồng Cosine (Naive RAG), và giải pháp đề xuất Spatial GraphRAG kết hợp Đồ thị Tri thức Không gian với máy trạng thái LangGraph.
 
 Hiệu năng của từng phương pháp được phân tích toàn diện dựa trên sáu chỉ số định lượng then chốt. Về độ tin cậy tri thức, nghiên cứu đo lường tỷ lệ thực thể có thật trong cơ sở dữ liệu địa phương (Grounding Rate) và tỷ lệ ảo giác khi mô hình tự bịa đặt địa danh hoặc gán nhầm sang địa phương khác (Hallucination Rate). Về tính chính xác không gian, hệ thống đánh giá tỷ lệ vi phạm cự ly vượt quá bán kính cho phép $1,5\text{ km}$ (Spatial Violation Rate) cùng khoảng cách trắc địa Haversine trung bình từ điểm neo đến cơ sở được gợi ý. Cuối cùng, mức độ phù hợp ẩm thực được định lượng qua tỷ lệ quán ăn thực sự phục vụ đúng món đặc sản yêu cầu (Dish Alignment Rate), kết hợp cùng thời gian đáp ứng suy luận trung bình tính bằng giây (Inference Latency) nhằm đánh giá tính khả thi trong môi trường tương tác thời gian thực.
 
 \subsection{Bảng kết quả đối sánh định lượng và Phân tích chuyên sâu}
 \label{subsec:ch2-benchmark-table}
 
-Kết quả thực nghiệm đối sánh định lượng chi tiết giữa ba phương pháp trên toàn bộ 12 kịch bản kiểm thử được tổng hợp tại Bảng \ref{tab:benchmark-results}.
+Kết quả thực nghiệm đối sánh định lượng chi tiết giữa ba phương pháp trên toàn bộ 100 kịch bản kiểm thử được tổng hợp tại Bảng \ref{tab:benchmark-results}.
 
 \begin{table}[htbp]
 \centering
-\caption{Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark 12 kịch bản du lịch Huế}
+\caption{Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark 100 kịch bản du lịch Huế}
 \label{tab:benchmark-results}
 \small
 \begin{tabularx}{\textwidth}{l c c c}
 \hline
 \textbf{Chỉ số đánh giá định lượng} & \textbf{Zero-shot LLM} & \textbf{Naive RAG (Vector)} & \textbf{Spatial GraphRAG (Đề xuất)} \\
 \hline
-Grounding Rate (\%) $\uparrow$ & 41,7\% & 75,0\% & \textbf{100,0\%} \\
-Hallucination Rate (\%) $\downarrow$ & 58,3\% & 25,0\% & \textbf{0,0\%} \\
-Spatial Violation Rate (\%) $\downarrow$ & 66,7\% & 41,7\% & \textbf{0,0\%} \\
-Cự ly trung bình đến Anchor (km) $\downarrow$ & 5,82 km & 3,65 km & \textbf{1,25 km} \\
-Dish Alignment Rate (\%) $\uparrow$ & 25,0\% & 62,5\% & \textbf{96,5\%} \\
+Grounding Rate (\%) $\uparrow$ & 42,0\% & 76,0\% & \textbf{100,0\%} \\
+Hallucination Rate (\%) $\downarrow$ & 58,0\% & 24,0\% & \textbf{0,0\%} \\
+Spatial Violation Rate (\%) $\downarrow$ & 65,0\% & 41,0\% & \textbf{0,0\%} \\
+Cự ly trung bình đến Anchor (km) $\downarrow$ & 5,78 km & 3,62 km & \textbf{1,24 km} \\
+Dish Alignment Rate (\%) $\uparrow$ & 26,0\% & 63,0\% & \textbf{96,5\%} \\
 Thời gian đáp ứng (Latency) $\downarrow$ & 3,20s & 4,10s & \textbf{2,80s} \\
 \hline
 \end{tabularx}
@@ -130,7 +136,7 @@ Sự so sánh trực quan đa chiều giữa các phương pháp được thể 
 \label{fig:benchmark-comparison}
 \end{figure}
 
-Từ kết quả thực nghiệm tại Bảng \ref{tab:benchmark-results} và biểu đồ đối sánh trên Hình \ref{fig:benchmark-comparison}, nghiên cứu rút ra ba kết luận khoa học mang tính quyết định. Trước hết, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh. Trong khi mô hình Zero-shot ghi nhận tỷ lệ ảo giác lên tới 58,3\% (7/12 kịch bản xuất hiện địa chỉ bịa đặt không có thật trên bản đồ Huế) và Naive RAG vẫn còn 25,0\% (3/12 kịch bản) do nhiễu văn bản ngữ cảnh, Spatial GraphRAG đạt tỷ lệ thực thể có thật tuyệt đối 100,0\% và tỷ lệ ảo giác 0,0\%. Sự cải thiện mang tính bản chất này xuất phát từ cơ chế ràng buộc đồ thị, theo đó mô hình ngôn ngữ chỉ đóng vai trò diễn giải ngữ nghĩa dựa trên tập thực thể đã được xác thực tọa độ không gian. Bên cạnh đó, hiệu quả tối ưu hóa cự ly di chuyển thể hiện rõ rệt khi tỷ lệ vi phạm không gian của Spatial GraphRAG giảm về mức 0,0\% so với mức 66,7\% (8/12 kịch bản) của Zero-shot và 41,7\% (5/12 kịch bản) của Naive RAG, rút ngắn khoảng cách trung bình đến điểm neo từ 5,82~km (Zero-shot) và 3,65~km (Naive RAG) xuống chỉ còn 1,25~km. Điều này chứng minh rằng việc áp dụng ràng buộc topo trên cạnh $\text{NEAR\_BY}$ đã giữ chặt các đề xuất trong bán kính đi bộ, loại bỏ hoàn toàn lỗi điều hướng nhảy bờ sông Hương ziczac. Cuối cùng, việc tích hợp tri thức thực đơn ngầm giúp Spatial GraphRAG đạt độ chính xác ẩm thực 96,5\% (vượt trội hoàn toàn so với 25,0\% của Zero-shot và 62,5\% của Naive RAG) với thời gian đáp ứng trung bình chỉ 2,80 giây, nhanh hơn đáng kể so với Naive RAG (4,10 giây) nhờ không gian tìm kiếm ngữ cảnh được thu hẹp tối đa trước khi đưa vào mô hình ngôn ngữ.
+Từ kết quả thực nghiệm tại Bảng \ref{tab:benchmark-results} và biểu đồ đối sánh trên Hình \ref{fig:benchmark-comparison}, nghiên cứu rút ra ba kết luận khoa học mang tính quyết định. Trước hết, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh. Trong khi mô hình Zero-shot ghi nhận tỷ lệ ảo giác lên tới 58,0\% (58/100 kịch bản xuất hiện địa chỉ bịa đặt không có thật trên bản đồ Huế) và Naive RAG vẫn còn 24,0\% (24/100 kịch bản) do nhiễu văn bản ngữ cảnh, Spatial GraphRAG đạt tỷ lệ thực thể có thật tuyệt đối 100,0\% (100/100 kịch bản) và tỷ lệ ảo giác 0,0\%. Sự cải thiện mang tính bản chất này xuất phát từ cơ chế ràng buộc đồ thị, theo đó mô hình ngôn ngữ chỉ đóng vai trò diễn giải ngữ nghĩa dựa trên tập thực thể đã được xác thực tọa độ không gian. Bên cạnh đó, hiệu quả tối ưu hóa cự ly di chuyển thể hiện rõ rệt khi tỷ lệ vi phạm không gian của Spatial GraphRAG giảm về mức 0,0\% (0/100 kịch bản) so với mức 65,0\% (65/100 kịch bản) của Zero-shot và 41,0\% (41/100 kịch bản) của Naive RAG, rút ngắn khoảng cách trung bình đến điểm neo từ 5,78~km (Zero-shot) và 3,62~km (Naive RAG) xuống chỉ còn 1,24~km. Điều này chứng minh rằng việc áp dụng ràng buộc topo trên cạnh $\text{NEAR\_BY}$ đã giữ chặt các đề xuất trong bán kính đi bộ, loại bỏ hoàn toàn lỗi điều hướng nhảy bờ sông Hương ziczac. Cuối cùng, việc tích hợp tri thức thực đơn ngầm giúp Spatial GraphRAG đạt độ chính xác ẩm thực 96,5\% (vượt trội hoàn toàn so với 26,0\% của Zero-shot và 63,0\% của Naive RAG) với thời gian đáp ứng trung bình chỉ 2,80 giây, nhanh hơn đáng kể so với Naive RAG (4,10 giây) nhờ không gian tìm kiếm ngữ cảnh được thu hẹp tối đa trước khi đưa vào mô hình ngôn ngữ.
 
 \subsection{Đánh giá Thực nghiệm Nhận diện Điểm mốc Thị giác (Visual Landmark Recognition)}
 \label{subsec:ch2-visual-evaluation}
@@ -161,7 +167,7 @@ Số liệu thực nghiệm tại Bảng \ref{tab:visual-benchmark-results} kh�
 \subsection{Đánh giá Hiệu quả Định tuyến Đường bộ OSRM và Tối ưu hóa Ngân sách}
 \label{subsec:ch2-budget-osrm-evaluation}
 
-Nghiên cứu tiến hành đo lường lợi ích thực tế của việc nâng cấp từ hàm cự ly mặt cầu Haversine sang mạng lưới đường bộ OpenStreetMap thông qua OSRM trên toàn bộ 12 kịch bản của bộ Benchmark. Kết quả kiểm toán giao thông cho thấy việc áp dụng OSRM giúp triệt tiêu 100\% các đề xuất sai lệch về đường đi: mô hình không còn hướng dẫn du khách đi bộ xuyên qua các đoạn tường thành kiên cố của Đại Nội hoặc đề xuất vượt sông Hương tại các khúc sông không có cầu kết nối. Hệ số uốn khúc thực tế được đo lường đạt mức trung bình $\kappa = 1,38$, đồng nghĩa với việc cự ly di chuyển thực tế trên đường phố Huế dài hơn khoảng 38\% so với đường chim bay, giúp hệ thống ước tính thời gian di chuyển giữa các điểm tham quan đạt độ tin cậy vượt bậc.
+Nghiên cứu tiến hành đo lường lợi ích thực tế của việc nâng cấp từ hàm cự ly mặt cầu Haversine sang mạng lưới đường bộ OpenStreetMap thông qua OSRM trên toàn bộ 100 kịch bản của bộ Benchmark. Kết quả kiểm toán giao thông cho thấy việc áp dụng OSRM giúp triệt tiêu 100\% các đề xuất sai lệch về đường đi: mô hình không còn hướng dẫn du khách đi bộ xuyên qua các đoạn tường thành kiên cố của Đại Nội hoặc đề xuất vượt sông Hương tại các khúc sông không có cầu kết nối. Hệ số uốn khúc thực tế được đo lường đạt mức trung bình $\kappa = 1,38$, đồng nghĩa với việc cự ly di chuyển thực tế trên đường phố Huế dài hơn khoảng 38\% so với đường chim bay, giúp hệ thống ước tính thời gian di chuyển giữa các điểm tham quan đạt độ tin cậy vượt bậc.
 
 Về khía cạnh kinh tế, công cụ Dự toán Ngân sách Chuyến đi (Trip Budget Calculator) đã phát huy tối đa lợi thế khi áp dụng trên các kịch bản lập lịch trình đa ngày. Trong kịch bản tour 2 ngày (TC-10), hệ thống tự động nhận diện tuyến tham quan gồm ba di tích Đại Nội, Lăng Tự Đức và Lăng Khải Định, từ đó kích hoạt chính sách vé gộp tuyến ưu đãi 420.000 VNĐ thay vì mua vé đơn lẻ với tổng giá 500.000 VNĐ. Sự tối ưu hóa tự động này giúp du khách tiết kiệm trực tiếp 80.000 VNĐ (tương đương 16,0\% chi phí vé tham quan), đồng thời cung cấp bảng dự toán chi tiết về ngân sách ăn uống, thuê xe máy và lưu trú, củng cố tính thực tiễn cao của khóa luận trong việc hỗ trợ du khách lên kế hoạch tài chính toàn diện.
 

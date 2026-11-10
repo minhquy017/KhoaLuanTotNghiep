@@ -50,15 +50,15 @@ Thế hệ thứ hai là GraphRAG, được tiên phong bởi Microsoft Research
 
 Thế hệ thứ ba là Agentic RAG, chuyển dịch từ luồng xử lý tuyến tính cố định sang mô hình tác tử tự chủ có khả năng tự suy ngẫm (Self-reflection), tự đánh giá chất lượng thông tin truy xuất (Confidence Grading), và định tuyến động (Dynamic Routing) giữa nhiều công cụ khác nhau~\cite{pan2024unifying}. Khi tri thức nội bộ từ đồ thị không đủ độ tin cậy để trả lời các sự kiện thời gian thực (như giá vé mới cập nhật hay lễ hội đột xuất), tác tử có khả năng tự động rẽ nhánh sang công cụ tìm kiếm mạng (Web Search Fallback) nhằm bổ sung thông tin kịp thời.
 
-\subsection*{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5}
+\subsection*{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5-VL:7B}
 \phantomsection
-\addcontentsline{toc}{subsection}{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5}
+\addcontentsline{toc}{subsection}{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5-VL:7B}
 
 Để hiện thực hóa kiến trúc Agentic RAG với khả năng kiểm soát luồng thực thi nghiêm ngặt, thư viện LangGraph được lựa chọn làm nền tảng điều phối~\cite{langgraph2024}. Khác với các chuỗi xử lý một chiều tuần tự thông thường, LangGraph mô hình hóa toàn bộ quá trình xử lý như một Đồ thị Trạng thái hữu hạn (StateGraph) có chu trình. Trạng thái của hệ thống được đóng gói trong một cấu trúc dữ liệu chung (GraphState) chứa đựng toàn bộ ngữ cảnh bao gồm câu hỏi của du khách, các thực thể đã nhận diện, các nút đồ thị đã truy xuất, điểm số tin cậy và phản hồi tạo sinh cuối cùng.
 
 Các nút xử lý trong đồ thị trạng thái thực hiện các chức năng phân lập: nút trích xuất thực thể, nút truy vấn đồ thị không gian, nút đánh giá độ tin cậy của ngữ cảnh, nút tìm kiếm bổ trợ và nút sinh câu trả lời. Sự chuyển tiếp giữa các nút được điều khiển bởi các Cạnh có điều kiện (Conditional Edges) dựa trên các ngưỡng xác suất toán học.
 
-Về mô hình suy luận ngôn ngữ, nghiên cứu tích hợp mô hình mã nguồn mở Qwen2.5-3B-Instruct do Alibaba Cloud phát triển~\cite{qwen2024team}, vận hành nội bộ thông qua môi trường thực thi Ollama trên máy trạm cá nhân. Qwen2.5-3B là mô hình ngôn ngữ thế hệ mới đạt năng lực vượt trội về khả năng hiểu tiếng Việt, tuân thủ chỉ dẫn định dạng có cấu trúc (JSON Schema) và khả năng suy luận logic trong phân khúc mô hình dưới 7 tỷ tham số. Việc vận hành mô hình hoàn toàn cục bộ trên GPU cá nhân (NVIDIA RTX 3050 với 4GB VRAM) bảo đảm ba ưu thế cốt tử: triệt tiêu 100\% chi phí cuộc gọi API thương mại (Zero API Cost), bảo mật tuyệt đối dữ liệu người dùng, và bảo đảm tính sẵn sàng hoạt động ngoại tuyến phục vụ các kịch bản triển khai tại địa phương.
+Về mô hình suy luận ngôn ngữ và thị giác, nghiên cứu tích hợp mô hình mã nguồn mở Qwen2.5-VL:7B do Alibaba Cloud phát triển~\cite{qwen2024team}, vận hành nội bộ thông qua môi trường thực thi Ollama trên máy trạm cá nhân. Qwen2.5-VL:7B là mô hình thị giác đa phương thức thế hệ mới đạt năng lực vượt trội về khả năng hiểu tiếng Việt, phân tích hình ảnh thực địa di tích, tuân thủ chỉ dẫn định dạng có cấu trúc (JSON Schema) và khả năng suy luận logic sâu sắc. Việc vận hành mô hình hoàn toàn cục bộ trên GPU cá nhân bảo đảm ba ưu thế cốt tử: triệt tiêu 100\% chi phí cuộc gọi API thương mại (Zero API Cost), bảo mật tuyệt đối dữ liệu người dùng, và bảo đảm tính sẵn sàng hoạt động ngoại tuyến phục vụ các kịch bản triển khai tại địa phương.
 
 \subsection*{1.4. Khai phá thực đơn ngầm từ Dữ liệu Nhận xét Du khách}
 \phantomsection

@@ -1,0 +1,902 @@
+[
+  {
+    "id": "Q01",
+    "category": "Spatial_Culinary",
+    "query": "Ăn bún bò ở đâu ngon và gần Đại Nội Huế nhất?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Đại Nội Huế",
+    "target_dish": "Bún bò Huế",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q02",
+    "category": "Spatial_Culinary",
+    "query": "Sau khi tham quan chùa Thiên Mụ, gần đó có quán bánh ướt thịt nướng nào ngon không?",
+    "anchor_node": "place_8876",
+    "anchor_name": "Chùa Thiên Mụ",
+    "target_dish": "Bánh ướt thịt nướng",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q03",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán cơm hến ngon và uy tín tại khu vực Cồn Hến",
+    "anchor_node": "place_8882",
+    "anchor_name": "Cồn Hến",
+    "target_dish": "Cơm hến",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q04",
+    "category": "Spatial_Culinary",
+    "query": "Gần lăng Tự Đức có quán bánh bèo, bánh nậm nào ngon chuẩn vị?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Lăng Tự Đức",
+    "target_dish": "Bánh bèo",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q05",
+    "category": "Spatial_Culinary",
+    "query": "Quán chè Hẻm nổi tiếng ở Huế nằm ở đâu và gần đó có gì ăn ngon?",
+    "anchor_node": "place_8883",
+    "anchor_name": "Chè Hẻm",
+    "target_dish": "Chè Huế",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q06",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán bánh khoái và nem lụi ngon ở khu vực phố Tây Chu Văn An",
+    "anchor_node": "place_8882",
+    "anchor_name": "Phố đi bộ Chu Văn An",
+    "target_dish": "Bánh khoái",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q07",
+    "category": "Spatial_Culinary",
+    "query": "Tôi đang ở Chợ Đông Ba, muốn ăn bún mắm nêm hoặc bún giấm nuốc gần đây",
+    "anchor_node": "place_8875",
+    "anchor_name": "Chợ Đông Ba",
+    "target_dish": "Bún mắm nêm",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q08",
+    "category": "Spatial_Culinary",
+    "query": "Gần chùa Từ Hiếu có quán cơm chay thanh tịnh nào ngon không?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Chùa Từ Hiếu",
+    "target_dish": "Cơm chay",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q09",
+    "category": "Spatial_Culinary",
+    "query": "Quán bánh canh Nam Phổ ngon gần khu vực Thành Nội bờ Bắc",
+    "anchor_node": "place_8875",
+    "anchor_name": "Thành Nội Huế",
+    "target_dish": "Bánh canh Nam Phổ",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q10",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán chè bột lọc bọc heo quay ngon gần Cửa Thượng Tứ",
+    "anchor_node": "place_8875",
+    "anchor_name": "Cửa Thượng Tứ",
+    "target_dish": "Chè heo quay",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q11",
+    "category": "Spatial_Culinary",
+    "query": "Quán vả trộn tôm thịt ngon phục vụ ẩm thực truyền thống gần Đàn Nam Giao",
+    "anchor_node": "place_8880",
+    "anchor_name": "Đàn Nam Giao",
+    "target_dish": "Vả trộn",
+    "max_valid_distance_km": 2.5
+  },
+  {
+    "id": "Q12",
+    "category": "Spatial_Culinary",
+    "query": "Gần Cung An Định có quán bánh bèo chén gia truyền nào không?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Cung An Định",
+    "target_dish": "Bánh bèo",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q13",
+    "category": "Spatial_Culinary",
+    "query": "Uống trà cung đình Huế ở đâu chuẩn vị gần đường Lê Lợi bờ Nam?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Đường Lê Lợi",
+    "target_dish": "Trà cung đình",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q14",
+    "category": "Spatial_Culinary",
+    "query": "Quán cơm niêu gia đình ngon gần Ga Huế bờ Nam",
+    "anchor_node": "place_8882",
+    "anchor_name": "Ga Huế",
+    "target_dish": "Cơm niêu",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q15",
+    "category": "Spatial_Culinary",
+    "query": "Quán bún bò Mụ Rơi đường Mai Thúc Loan có mở cửa trưa không?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Mai Thúc Loan",
+    "target_dish": "Bún bò Huế",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q16",
+    "category": "Spatial_Culinary",
+    "query": "Ăn vặt đêm ở công viên Thương Bạc bờ Bắc có những món gì ngon?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Công viên Thương Bạc",
+    "target_dish": "Ăn vặt Huế",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q17",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán bún cua, bánh canh cá lóc ngon ở đường Đinh Tiên Hoàng",
+    "anchor_node": "place_8875",
+    "anchor_name": "Đinh Tiên Hoàng",
+    "target_dish": "Bánh canh cá lóc",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q18",
+    "category": "Spatial_Culinary",
+    "query": "Quán cà phê muối đặc sản gần đường Đặng Thái Thân bờ Bắc",
+    "anchor_node": "place_8875",
+    "anchor_name": "Đặng Thái Thân",
+    "target_dish": "Cà phê muối",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q19",
+    "category": "Spatial_Culinary",
+    "query": "Quán bánh ép Huế ngon gần đường Nhật Lệ trong Thành Nội",
+    "anchor_node": "place_8875",
+    "anchor_name": "Đường Nhật Lệ",
+    "target_dish": "Bánh ép",
+    "max_valid_distance_km": 1.2
+  },
+  {
+    "id": "Q20",
+    "category": "Spatial_Culinary",
+    "query": "Ăn bánh nậm, bánh lọc bọc lá chuối ngon quanh chợ An Cựu",
+    "anchor_node": "place_8882",
+    "anchor_name": "Chợ An Cựu",
+    "target_dish": "Bánh nậm",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q21",
+    "category": "Spatial_Culinary",
+    "query": "Quán bún bò O Cương Chú Điệp đường Đống Đa nằm ở bờ nào?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Đường Đống Đa",
+    "target_dish": "Bún bò Huế",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q22",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán bánh ram ít và bánh quai vạc ngon gần ngã tư Hùng Vương",
+    "anchor_node": "place_8882",
+    "anchor_name": "Hùng Vương",
+    "target_dish": "Bánh ram ít",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q23",
+    "category": "Spatial_Culinary",
+    "query": "Quán bánh cuốn tôm chua thịt luộc ngon khu vực Gia Hội",
+    "anchor_node": "place_8875",
+    "anchor_name": "Phố cổ Gia Hội",
+    "target_dish": "Tôm chua thịt luộc",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q24",
+    "category": "Spatial_Culinary",
+    "query": "Gần Lăng Khải Định có quán ăn trưa nào đặc sản Thủy Bằng không?",
+    "anchor_node": "place_8879",
+    "anchor_name": "Lăng Khải Định",
+    "target_dish": "Bánh bèo",
+    "max_valid_distance_km": 3.0
+  },
+  {
+    "id": "Q25",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán nem lụi nướng sả thơm ngon gần Cửa Quảng Đức",
+    "anchor_node": "place_8875",
+    "anchor_name": "Cửa Quảng Đức",
+    "target_dish": "Nem lụi",
+    "max_valid_distance_km": 1.2
+  },
+  {
+    "id": "Q26",
+    "category": "Spatial_Culinary",
+    "query": "Quán chè mợ Tôn Đích có những loại chè đặc trưng nào?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Công viên Thương Bạc",
+    "target_dish": "Chè Huế",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q27",
+    "category": "Spatial_Culinary",
+    "query": "Quán bún mắm nêm Mệ Thẻ đường Bà Triệu có xa cầu Trường Tiền không?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Cầu Trường Tiền",
+    "target_dish": "Bún mắm nêm",
+    "max_valid_distance_km": 1.8
+  },
+  {
+    "id": "Q28",
+    "category": "Spatial_Culinary",
+    "query": "Ăn bánh mì bột lọc Tràng Tiền đêm ở bờ Nam đoạn nào ngon?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Chân cầu Trường Tiền",
+    "target_dish": "Bánh mì bột lọc",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q29",
+    "category": "Spatial_Culinary",
+    "query": "Quán cơm hến Hoa Đông ở thôn Vỹ Dạ có bán chè bắp không?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Thôn Vỹ Dạ",
+    "target_dish": "Cơm hến",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q30",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán bánh khoái Lạc Thiện lâu đời nhất ở Huế",
+    "anchor_node": "place_8875",
+    "anchor_name": "Cửa Thượng Tứ",
+    "target_dish": "Bánh khoái",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q31",
+    "category": "Spatial_Culinary",
+    "query": "Gần Đồi Vọng Cảnh có quán nước mía hoặc ẩm thực nhẹ nào không?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Đồi Vọng Cảnh",
+    "target_dish": "Ăn nhẹ",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q32",
+    "category": "Spatial_Culinary",
+    "query": "Quán bún bò Bà Tuyết ở đường Nguyễn Công Trứ có đông không?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Nguyễn Công Trứ",
+    "target_dish": "Bún bò Huế",
+    "max_valid_distance_km": 1.2
+  },
+  {
+    "id": "Q33",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán cơm chay ngon gần chùa Báo Quốc",
+    "anchor_node": "place_8882",
+    "anchor_name": "Chùa Báo Quốc",
+    "target_dish": "Cơm chay",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q34",
+    "category": "Spatial_Culinary",
+    "query": "Quán hải sản cá kình đầm chuồn ăn ở đâu ngon nhất?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Đầm Chuồn",
+    "target_dish": "Bánh khoái cá kình",
+    "max_valid_distance_km": 8.0
+  },
+  {
+    "id": "Q35",
+    "category": "Spatial_Culinary",
+    "query": "Quán bún giấm nuốc Huế mùa hè ăn ở đâu ngon nhất bờ Bắc?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Chợ Đông Ba",
+    "target_dish": "Bún giấm nuốc",
+    "max_valid_distance_km": 1.2
+  },
+  {
+    "id": "Q36",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán nem tré gia truyền Đông Ba làm quà biếu",
+    "anchor_node": "place_8875",
+    "anchor_name": "Đào Duy Từ",
+    "target_dish": "Tré Huế",
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q37",
+    "category": "Spatial_Culinary",
+    "query": "Quán ốc và đồ ăn vặt sinh viên bờ Nam đường Hồ Đắc Di",
+    "anchor_node": "place_8882",
+    "anchor_name": "Hồ Đắc Di",
+    "target_dish": "Ốc cay Huế",
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q38",
+    "category": "Spatial_Culinary",
+    "query": "Tìm quán bánh canh cua rời ngon gần chợ Tây Lộc",
+    "anchor_node": "place_8875",
+    "anchor_name": "Chợ Tây Lộc",
+    "target_dish": "Bánh canh cua",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q39",
+    "category": "Spatial_Culinary",
+    "query": "Quán bánh bèo Chi đường Lê Ngô Cát gần lăng Tự Đức",
+    "anchor_node": "place_8880",
+    "anchor_name": "Lê Ngô Cát",
+    "target_dish": "Bánh bèo",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q40",
+    "category": "Spatial_Culinary",
+    "query": "Quán bánh ướt thịt nướng Huyền Anh Kim Long có chỗ đỗ xe không?",
+    "anchor_node": "place_8876",
+    "anchor_name": "Kim Long",
+    "target_dish": "Bánh ướt thịt nướng",
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q41",
+    "category": "Spatial_Proximity",
+    "query": "Sau khi tham quan Đại Nội thì nên đi đâu tiếp gần đó trong bán kính 1km?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Đại Nội Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q42",
+    "category": "Spatial_Proximity",
+    "query": "Từ chùa Thiên Mụ có thể đi bộ sang Văn Thánh Huế được không?",
+    "anchor_node": "place_8876",
+    "anchor_name": "Chùa Thiên Mụ",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q43",
+    "category": "Spatial_Proximity",
+    "query": "Từ Đồi Vọng Cảnh nên ghé những điểm lăng tẩm nào tiện đường?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Đồi Vọng Cảnh",
+    "target_dish": null,
+    "max_valid_distance_km": 2.5
+  },
+  {
+    "id": "Q44",
+    "category": "Spatial_Proximity",
+    "query": "Các điểm di tích có thể đi bộ tham quan trong 15 phút từ Chợ Đông Ba",
+    "anchor_node": "place_8875",
+    "anchor_name": "Chợ Đông Ba",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q45",
+    "category": "Spatial_Proximity",
+    "query": "Từ Lăng Khải Định ghé điểm tham quan nào lân cận tiện đường về trung tâm?",
+    "anchor_node": "place_8879",
+    "anchor_name": "Lăng Khải Định",
+    "target_dish": null,
+    "max_valid_distance_km": 4.0
+  },
+  {
+    "id": "Q46",
+    "category": "Spatial_Proximity",
+    "query": "Làng hương Thủy Xuân nằm gần những di tích nào nhất?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Làng hương Thủy Xuân",
+    "target_dish": null,
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q47",
+    "category": "Spatial_Proximity",
+    "query": "Quanh Cung An Định có điểm tham quan kiến trúc nào đẹp?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Cung An Định",
+    "target_dish": null,
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q48",
+    "category": "Spatial_Proximity",
+    "query": "Từ Đồi Thiên An đi Lăng Khải Định mất bao xa và qua những đâu?",
+    "anchor_node": "place_8879",
+    "anchor_name": "Đồi Thiên An",
+    "target_dish": null,
+    "max_valid_distance_km": 3.5
+  },
+  {
+    "id": "Q49",
+    "category": "Spatial_Proximity",
+    "query": "Quanh khu vực Chùa Từ Hiếu có những ngôi cổ tự nào khác?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Chùa Từ Hiếu",
+    "target_dish": null,
+    "max_valid_distance_km": 2.5
+  },
+  {
+    "id": "Q50",
+    "category": "Spatial_Proximity",
+    "query": "Các di tích lịch sử nằm trên trục đường Bạch Đằng phố cổ Gia Hội",
+    "anchor_node": "place_8875",
+    "anchor_name": "Bạch Đằng Gia Hội",
+    "target_dish": null,
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q51",
+    "category": "Spatial_Proximity",
+    "query": "Điểm tham quan gần Bảo tàng Lịch sử Thừa Thiên Huế trong Thành Nội",
+    "anchor_node": "place_8875",
+    "anchor_name": "Bảo tàng Lịch sử",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q52",
+    "category": "Spatial_Proximity",
+    "query": "Nhà vườn An Hiên nằm gần điểm du lịch nào trên trục đường Kim Long?",
+    "anchor_node": "place_8876",
+    "anchor_name": "Nhà vườn An Hiên",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q53",
+    "category": "Spatial_Proximity",
+    "query": "Từ Lăng Minh Mạng sang Lăng Gia Long đi bằng đường nào thuận tiện?",
+    "anchor_node": "place_8879",
+    "anchor_name": "Lăng Minh Mạng",
+    "target_dish": null,
+    "max_valid_distance_km": 5.0
+  },
+  {
+    "id": "Q54",
+    "category": "Spatial_Proximity",
+    "query": "Dọc đường Lê Lợi bờ Nam có những công trình kiến trúc Pháp nào nổi bật?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Đường Lê Lợi",
+    "target_dish": null,
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q55",
+    "category": "Spatial_Proximity",
+    "query": "Đường lên Chùa Huyền Không Sơn Thượng đi qua những cảnh quan nào?",
+    "anchor_node": "place_8876",
+    "anchor_name": "Huyền Không Sơn Thượng",
+    "target_dish": null,
+    "max_valid_distance_km": 6.0
+  },
+  {
+    "id": "Q56",
+    "category": "Spatial_Proximity",
+    "query": "Cầu ngói Thanh Toàn cách trung tâm Huế bao xa và có gì tham quan?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Cầu ngói Thanh Toàn",
+    "target_dish": null,
+    "max_valid_distance_km": 6.5
+  },
+  {
+    "id": "Q57",
+    "category": "Spatial_Proximity",
+    "query": "Khám phá Làng chài Đầm Chuồn Tam Giang nên đi vào buổi nào?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Đầm Chuồn",
+    "target_dish": null,
+    "max_valid_distance_km": 10.0
+  },
+  {
+    "id": "Q58",
+    "category": "Spatial_Proximity",
+    "query": "Rừng ngập mặn Rú Chá nằm ở đâu và kết hợp đi cùng điểm nào?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Rú Chá",
+    "target_dish": null,
+    "max_valid_distance_km": 10.0
+  },
+  {
+    "id": "Q59",
+    "category": "Spatial_Proximity",
+    "query": "Làng cổ Phước Tích nằm ở hướng nào từ trung tâm Huế?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Làng cổ Phước Tích",
+    "target_dish": null,
+    "max_valid_distance_km": 35.0
+  },
+  {
+    "id": "Q60",
+    "category": "Spatial_Proximity",
+    "query": "Từ Lăng Tự Đức đi bộ sang Lăng Đồng Khánh mất bao lâu?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Lăng Tự Đức",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q61",
+    "category": "Spatial_Proximity",
+    "query": "Các cổng thành cổ đẹp nhất để chụp ảnh quanh Kinh thành Huế",
+    "anchor_node": "place_8875",
+    "anchor_name": "Cửa Thượng Tứ",
+    "target_dish": null,
+    "max_valid_distance_km": 2.5
+  },
+  {
+    "id": "Q62",
+    "category": "Spatial_Proximity",
+    "query": "Điểm ngắm hoàng hôn đẹp nhất ven sông Hương gần trung tâm",
+    "anchor_node": "place_8882",
+    "anchor_name": "Sông Hương",
+    "target_dish": null,
+    "max_valid_distance_km": 2.5
+  },
+  {
+    "id": "Q63",
+    "category": "Spatial_Proximity",
+    "query": "Hồ Tịnh Tâm nằm ở đâu trong Kinh thành và gần cổng thành nào?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Hồ Tịnh Tâm",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q64",
+    "category": "Spatial_Proximity",
+    "query": "Chùa Báo Quốc và Ga Huế cách nhau bao xa có tiện đi bộ không?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Chùa Báo Quốc",
+    "target_dish": null,
+    "max_valid_distance_km": 1.2
+  },
+  {
+    "id": "Q65",
+    "category": "Spatial_Proximity",
+    "query": "Tuyến đường đi bộ ven sông Hương đoạn từ cầu Phú Xuân đến cầu Trường Tiền",
+    "anchor_node": "place_8882",
+    "anchor_name": "Công viên bờ Nam",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q66",
+    "category": "Spatial_Proximity",
+    "query": "Bến thuyền Tòa Khâm nằm ở đâu và cách phố Tây bao xa?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Bến thuyền Tòa Khâm",
+    "target_dish": null,
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q67",
+    "category": "Spatial_Proximity",
+    "query": "Khu phố cổ Bao Vinh còn những ngôi nhà cổ nào?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Phố cổ Bao Vinh",
+    "target_dish": null,
+    "max_valid_distance_km": 3.5
+  },
+  {
+    "id": "Q68",
+    "category": "Spatial_Proximity",
+    "query": "Bãi biển Thuận An cách Đại Nội Huế bao nhiêu km đường bộ?",
+    "anchor_node": "place_8875",
+    "anchor_name": "Biển Thuận An",
+    "target_dish": null,
+    "max_valid_distance_km": 14.0
+  },
+  {
+    "id": "Q69",
+    "category": "Spatial_Proximity",
+    "query": "Khu du lịch Bạch Mã và Thiền viện Trúc Lâm cách Huế bao xa?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Bạch Mã",
+    "target_dish": null,
+    "max_valid_distance_km": 40.0
+  },
+  {
+    "id": "Q70",
+    "category": "Spatial_Proximity",
+    "query": "Trường Quốc Học Huế gần những điểm di tích nào ở bờ Nam?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Trường Quốc Học",
+    "target_dish": null,
+    "max_valid_distance_km": 1.5
+  },
+  {
+    "id": "Q71",
+    "category": "Spatial_Proximity",
+    "query": "Điện Hòn Chén nằm ở khúc sông nào và đi thuyền từ đâu?",
+    "anchor_node": "place_8876",
+    "anchor_name": "Điện Hòn Chén",
+    "target_dish": null,
+    "max_valid_distance_km": 5.0
+  },
+  {
+    "id": "Q72",
+    "category": "Spatial_Proximity",
+    "query": "Chùa Từ Đàm có ý nghĩa lịch sử gì và nằm gần điểm nào?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Chùa Từ Đàm",
+    "target_dish": null,
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q73",
+    "category": "Spatial_Proximity",
+    "query": "Khu di tích Chín Hầm nằm gần đồi nào phía Tây Nam?",
+    "anchor_node": "place_8880",
+    "anchor_name": "Khu di tích Chín Hầm",
+    "target_dish": null,
+    "max_valid_distance_km": 3.0
+  },
+  {
+    "id": "Q74",
+    "category": "Spatial_Proximity",
+    "query": "Làng hoa Thủy Biều có những trải nghiệm sinh thái nào?",
+    "anchor_node": "place_8876",
+    "anchor_name": "Thủy Biều",
+    "target_dish": null,
+    "max_valid_distance_km": 4.0
+  },
+  {
+    "id": "Q75",
+    "category": "Spatial_Proximity",
+    "query": "Phố đi bộ Nguyễn Đình Chiểu và chợ đêm cầu Trường Tiền mở lúc mấy giờ?",
+    "anchor_node": "place_8882",
+    "anchor_name": "Cầu Trường Tiền",
+    "target_dish": null,
+    "max_valid_distance_km": 1.0
+  },
+  {
+    "id": "Q76",
+    "category": "Itinerary",
+    "query": "Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi xuất phát bờ Nam",
+    "anchor_node": "place_8882",
+    "anchor_name": "Khách sạn bờ Nam",
+    "target_dish": null,
+    "max_valid_distance_km": 5.0
+  },
+  {
+    "id": "Q77",
+    "category": "Itinerary",
+    "query": "Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống",
+    "anchor_node": "place_8875",
+    "anchor_name": "Cố đô Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 6.0
+  },
+  {
+    "id": "Q78",
+    "category": "Itinerary",
+    "query": "Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái",
+    "anchor_node": "place_8875",
+    "anchor_name": "Huế và phụ cận",
+    "target_dish": null,
+    "max_valid_distance_km": 8.0
+  },
+  {
+    "id": "Q79",
+    "category": "Itinerary",
+    "query": "Lập tour nửa ngày chiều từ 14h đến 19h ngắm hoàng hôn Đồi Vọng Cảnh và ăn tối bánh Huế",
+    "anchor_node": "place_8880",
+    "anchor_name": "Thủy Xuân",
+    "target_dish": null,
+    "max_valid_distance_km": 4.0
+  },
+  {
+    "id": "Q80",
+    "category": "Itinerary",
+    "query": "Lịch trình 1 ngày tham quan toàn bộ di tích bờ Bắc sông Hương không qua cầu",
+    "anchor_node": "place_8875",
+    "anchor_name": "Thành Nội",
+    "target_dish": null,
+    "max_valid_distance_km": 3.0
+  },
+  {
+    "id": "Q81",
+    "category": "Itinerary",
+    "query": "Lịch trình 1 ngày bờ Nam tập trung hệ thống lăng tẩm và làng nghề truyền thống",
+    "anchor_node": "place_8880",
+    "anchor_name": "Lăng tẩm bờ Nam",
+    "target_dish": null,
+    "max_valid_distance_km": 6.0
+  },
+  {
+    "id": "Q82",
+    "category": "Itinerary",
+    "query": "Tour 2 ngày 1 đêm cho gia đình có người cao tuổi ưu tiên di chuyển nhẹ nhàng",
+    "anchor_node": "place_8882",
+    "anchor_name": "Trung tâm Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 5.0
+  },
+  {
+    "id": "Q83",
+    "category": "Itinerary",
+    "query": "Lịch trình 3 ngày 2 đêm Huế tiết kiệm cho nhóm sinh viên thích check-in",
+    "anchor_node": "place_8882",
+    "anchor_name": "Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 8.0
+  },
+  {
+    "id": "Q84",
+    "category": "Itinerary",
+    "query": "Tour buổi sáng 8h đến 12h tham quan Đại Nội và ăn trưa bún bò gần đó",
+    "anchor_node": "place_8875",
+    "anchor_name": "Đại Nội Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 2.0
+  },
+  {
+    "id": "Q85",
+    "category": "Itinerary",
+    "query": "Food tour ẩm thực Huế 24 giờ thưởng thức 8 món đặc sản nổi tiếng nhất",
+    "anchor_node": "place_8882",
+    "anchor_name": "Ẩm thực Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 4.0
+  },
+  {
+    "id": "Q86",
+    "category": "Itinerary",
+    "query": "Lịch trình 2 ngày phong cách chụp ảnh áo dài cổ phục tại các di tích cổ kính",
+    "anchor_node": "place_8875",
+    "anchor_name": "Di tích Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 5.0
+  },
+  {
+    "id": "Q87",
+    "category": "Itinerary",
+    "query": "Tour nửa ngày sáng Chùa Thiên Mụ kết hợp thăm nhà vườn An Hiên và uống trà",
+    "anchor_node": "place_8876",
+    "anchor_name": "Kim Long",
+    "target_dish": null,
+    "max_valid_distance_km": 3.0
+  },
+  {
+    "id": "Q88",
+    "category": "Itinerary",
+    "query": "Lịch trình 3 ngày khám phá Huế và trải nghiệm ngủ đêm đầm Chuồn Tam Giang",
+    "anchor_node": "place_8882",
+    "anchor_name": "Huế - Đầm Chuồn",
+    "target_dish": null,
+    "max_valid_distance_km": 12.0
+  },
+  {
+    "id": "Q89",
+    "category": "Itinerary",
+    "query": "Lịch trình 1 ngày chiêm bái các ngôi chùa cổ thanh tịnh nhất xứ Huế",
+    "anchor_node": "place_8882",
+    "anchor_name": "Cổ tự Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 6.0
+  },
+  {
+    "id": "Q90",
+    "category": "Itinerary",
+    "query": "Tour 1 ngày khám phá 3 lăng tẩm đẹp nhất: Tự Đức, Khải Định và Minh Mạng",
+    "anchor_node": "place_8879",
+    "anchor_name": "Cụm lăng tẩm",
+    "target_dish": null,
+    "max_valid_distance_km": 7.0
+  },
+  {
+    "id": "Q91",
+    "category": "Itinerary",
+    "query": "Lịch trình 2 ngày mùa mưa ở Huế: bảo tàng, nghe ca Huế sông Hương và ăn lẩu",
+    "anchor_node": "place_8882",
+    "anchor_name": "Huế mùa mưa",
+    "target_dish": null,
+    "max_valid_distance_km": 4.0
+  },
+  {
+    "id": "Q92",
+    "category": "Itinerary",
+    "query": "Tour sinh thái dã ngoại 1 ngày: Cầu ngói Thanh Toàn, Rú Chá và ngắm hoàng hôn Đầm Chuồn",
+    "anchor_node": "place_8882",
+    "anchor_name": "Ngoại ô Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 15.0
+  },
+  {
+    "id": "Q93",
+    "category": "Itinerary",
+    "query": "Lịch trình 3 ngày cho du khách quốc tế trải nghiệm lịch sử triều Nguyễn sâu sắc",
+    "anchor_node": "place_8875",
+    "anchor_name": "Di sản Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 8.0
+  },
+  {
+    "id": "Q94",
+    "category": "Itinerary",
+    "query": "Tour đêm Huế từ 18h đến 22h: đi thuyền rồng, dạo phố đi bộ và ăn chè hẻm",
+    "anchor_node": "place_8882",
+    "anchor_name": "Đêm Cố đô",
+    "target_dish": null,
+    "max_valid_distance_km": 3.0
+  },
+  {
+    "id": "Q95",
+    "category": "Itinerary",
+    "query": "Lịch trình 2 ngày kết hợp tham quan di sản và tắm suối khoáng nóng Thanh Tân",
+    "anchor_node": "place_8875",
+    "anchor_name": "Huế - Thanh Tân",
+    "target_dish": null,
+    "max_valid_distance_km": 25.0
+  },
+  {
+    "id": "Q96",
+    "category": "Itinerary",
+    "query": "Tour 1 ngày trải nghiệm các làng nghề: làng hương Thủy Xuân, làng hoa giấy Thanh Tiên",
+    "anchor_node": "place_8880",
+    "anchor_name": "Làng nghề Huế",
+    "target_dish": null,
+    "max_valid_distance_km": 8.0
+  },
+  {
+    "id": "Q97",
+    "category": "Itinerary",
+    "query": "Lịch trình 2 ngày đạp xe trải nghiệm đường làng Thủy Biều và ngắm sông Hương",
+    "anchor_node": "place_8876",
+    "anchor_name": "Thủy Biều",
+    "target_dish": null,
+    "max_valid_distance_km": 5.0
+  },
+  {
+    "id": "Q98",
+    "category": "Itinerary",
+    "query": "Lịch trình 3 ngày văn hóa ẩm thực từ món dân dã chợ Đông Ba đến tiệc cung đình",
+    "anchor_node": "place_8875",
+    "anchor_name": "Ẩm thực Cố đô",
+    "target_dish": null,
+    "max_valid_distance_km": 6.0
+  },
+  {
+    "id": "Q99",
+    "category": "Itinerary",
+    "query": "Tour 1 ngày tìm hiểu lịch sử kháng chiến và các di tích thời cận đại tại Huế",
+    "anchor_node": "place_8882",
+    "anchor_name": "Di tích lịch sử",
+    "target_dish": null,
+    "max_valid_distance_km": 6.0
+  },
+  {
+    "id": "Q100",
+    "category": "Itinerary",
+    "query": "Lịch trình 3 ngày 2 đêm tối ưu biểu giá vé gộp 4 điểm của Trung tâm Bảo tồn Di tích",
+    "anchor_node": "place_8875",
+    "anchor_name": "Tuyến vé gộp di tích",
+    "target_dish": null,
+    "max_valid_distance_km": 7.0
+  }
+]

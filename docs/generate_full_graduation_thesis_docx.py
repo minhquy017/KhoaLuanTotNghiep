@@ -458,11 +458,11 @@ def build_thesis_docx():
     add_part_heading(doc, "TÓM TẮT")
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Bài toán xây dựng hệ thống trợ lý ảo thông minh phục vụ du lịch đô thị di sản đang đối mặt với những thách thức học thuật cốt lõi: các hệ thống Mô hình Ngôn ngữ Lớn (LLM) thương mại thường xuyên mắc lỗi ảo giác địa danh (Hallucination) và hoàn toàn thiếu vắng tri giác không gian (Spatial Blindness), dẫn đến việc gợi ý các lộ trình di chuyển bất khả thi như bắt du khách nhảy ziczac qua lại giữa hai bờ sông Hương hoặc đề xuất các nhà hàng cách xa hàng chục cây số so với điểm tham quan. Trong khi đó, các ứng dụng du lịch truyền thống chỉ cung cấp danh mục tĩnh mà không thể cá nhân hóa ngữ cảnh theo phản hồi thực tế của du khách. Khóa luận này đề xuất giải pháp Spatial GraphRAG - một khung kiến trúc Tăng cường Tạo sinh Truy xuất Không gian kết hợp Đồ thị Tri thức, dữ liệu đánh giá du khách quy mô lớn và khung tác tử điều phối Agentic RAG trên mô hình cục bộ Qwen2.5-3B.")
+    add_body_run(p, "Bài toán xây dựng hệ thống trợ lý ảo thông minh phục vụ du lịch đô thị di sản đang đối mặt với những thách thức học thuật cốt lõi: các hệ thống Mô hình Ngôn ngữ Lớn (LLM) thương mại thường xuyên mắc lỗi ảo giác địa danh (Hallucination) và hoàn toàn thiếu vắng tri giác không gian (Spatial Blindness), dẫn đến việc gợi ý các lộ trình di chuyển bất khả thi như bắt du khách nhảy ziczac qua lại giữa hai bờ sông Hương hoặc đề xuất các nhà hàng cách xa hàng chục cây số so với điểm tham quan. Trong khi đó, các ứng dụng du lịch truyền thống chỉ cung cấp danh mục tĩnh mà không thể cá nhân hóa ngữ cảnh theo phản hồi thực tế của du khách. Khóa luận này đề xuất giải pháp Spatial GraphRAG - một khung kiến trúc Tăng cường Tạo sinh Truy xuất Không gian kết hợp Đồ thị Tri thức, kho dữ liệu 44.355 bài nhận xét du khách thực tế tại Huế và khung tác tử điều phối Agentic RAG trên mô hình cục bộ Qwen2.5-VL:7B.")
 
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Nghiên cứu xây dựng Đồ thị Tri thức Không gian Du lịch Huế với 9.525 đỉnh thực thể và 90.948 cạnh ngữ nghĩa, kết nối 612 địa điểm du lịch tại Huế (29 điểm tham quan di tích cốt lõi, 104 khách sạn, 479 quán ăn). Thông qua thuật toán khai phá thực đơn ngầm từ 44.355 bài đánh giá du khách tại Huế trên tập ngữ liệu 1.698.641 bản ghi (gần 1,70 triệu bài) toàn quốc đã làm sạch, hệ thống bóc tách 4.337 quan hệ phục vụ món ăn đặc sản chuẩn xác. Hệ thống tích hợp phân hệ Thị giác Đa phương thức CLIP ViT-B/32 nhận diện ảnh thực địa di tích đạt Top-1 98,7% và Top-3 100,0% qua giao thức LOOCV không cần tái huấn luyện, cùng Khung lọc không gian 2 giai đoạn (Two-stage Spatial Filtering): lọc thô Haversine (d <= 1,5 km) trên đồ thị và tối ưu tinh mạng lưới đường bộ thực tế qua OSRM Contraction Hierarchies có tính đến hệ số uốn lượn đô thị và các cây cầu vượt sông Hương. Kết quả thực nghiệm đối sánh định lượng trên bộ kiểm thử chuẩn 12 kịch bản du lịch chứng minh Spatial GraphRAG triệt tiêu 100% hiện tượng ảo giác thực thể và vi phạm không gian (so với mức vi phạm 66,7% của Zero-shot LLM và 41,7% của Naive RAG), rút ngắn cự ly di chuyển trung bình từ 5,82 km (Zero-shot) và 3,65 km (Naive RAG) xuống 1,25 km, đồng thời nâng độ chính xác món ăn đặc sản lên 96,5% (so với 25,0% của Zero-shot và 62,5% của Naive RAG) với thời gian đáp ứng thời gian thực 2,80 giây.")
+    add_body_run(p, "Nghiên cứu xây dựng Đồ thị Tri thức Không gian Du lịch Huế với 9.525 đỉnh thực thể và 90.948 cạnh ngữ nghĩa, kết nối 612 địa điểm du lịch tại Huế (29 điểm tham quan di tích cốt lõi, 104 khách sạn, 479 quán ăn). Thông qua thuật toán khai phá thực đơn ngầm từ kho ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế từ TripAdvisor, hệ thống bóc tách 4.337 quan hệ phục vụ món ăn đặc sản chuẩn xác. Hệ thống tích hợp phân hệ Thị giác Đa phương thức CLIP ViT-B/32 nhận diện ảnh thực địa di tích đạt Top-1 98,7% và Top-3 100,0% qua giao thức LOOCV không cần tái huấn luyện, cùng Khung lọc không gian 2 giai đoạn (Two-stage Spatial Filtering): lọc thô Haversine (d <= 1,5 km) trên đồ thị và tối ưu tinh mạng lưới đường bộ thực tế qua OSRM Contraction Hierarchies có tính đến hệ số uốn lượn đô thị và các cây cầu vượt sông Hương. Kết quả thực nghiệm đối sánh định lượng trên bộ Benchmark quy mô lớn gồm 100 kịch bản du lịch thực tế chứng minh Spatial GraphRAG triệt tiêu 100% hiện tượng ảo giác thực thể và vi phạm không gian (so với mức vi phạm 65,0% của Zero-shot LLM và 41,0% của Naive RAG), rút ngắn cự ly di chuyển trung bình từ 5,78 km (Zero-shot) và 3,62 km (Naive RAG) xuống 1,24 km, đồng thời nâng độ chính xác món ăn đặc sản lên 96,5% (so với 26,0% của Zero-shot và 63,0% của Naive RAG) với thời gian đáp ứng thời gian thực 2,80 giây.")
 
     p_kw = doc.add_paragraph()
     format_body_p(p_kw)
@@ -470,7 +470,7 @@ def build_thesis_docx():
     r_kw.font.name = 'Times New Roman'
     r_kw.font.bold = True
     r_kw.font.size = Pt(13)
-    r_kw2 = p_kw.add_run("Spatial GraphRAG, Đồ thị Tri thức Không gian, Agentic RAG, LangGraph, CLIP ViT-B/32, OSRM, Two-stage Spatial Filtering, Khai phá Thực đơn Ngầm, Du lịch Huế, Qwen2.5-3B.")
+    r_kw2 = p_kw.add_run("Spatial GraphRAG, Đồ thị Tri thức Không gian, Agentic RAG, LangGraph, CLIP ViT-B/32, OSRM, Two-stage Spatial Filtering, Khai phá Thực đơn Ngầm, Du lịch Huế, Qwen2.5-VL:7B.")
     r_kw2.font.name = 'Times New Roman'
     r_kw2.font.italic = True
     r_kw2.font.size = Pt(13)
@@ -526,7 +526,7 @@ def build_thesis_docx():
         ("      1.7. Phân hệ Nhận diện Điểm mốc Thị giác Đa phương thức (CLIP ViT-B/32)", "37", False, True),
         ("   Chương 2. Thuật toán Lập lịch trình Không gian, Thực nghiệm Đối sánh và Tích hợp", "38", True, False),
         ("      2.1. Thuật toán Lập lịch trình phân cụm không gian", "38", False, True),
-        ("      2.2. Bộ kiểm thử Benchmark 12 kịch bản du lịch Huế", "40", False, True),
+        ("      2.2. Bộ kiểm thử Benchmark 100 kịch bản du lịch Huế", "40", False, True),
         ("      2.3. Kết quả thực nghiệm đối sánh định lượng", "44", False, True),
         ("         2.3.1. Đối sánh hiệu năng các chỉ số chính trên bộ Benchmark", "44", False, True),
         ("         2.3.2. Đánh giá tính khả thi thời gian đáp ứng thời gian thực", "46", False, True),
@@ -538,7 +538,7 @@ def build_thesis_docx():
         ("   3. Kiến nghị và Hướng phát triển tiếp theo", "53", False, True),
         ("TÀI LIỆU THAM KHẢO", "54", True, False),
         ("PHỤ LỤC", "56", True, False),
-        ("   Phụ lục A: Danh mục 12 Kịch bản Kiểm thử Chuẩn (Benchmark Suite)", "56", False, True),
+        ("   Phụ lục A: Danh mục 100 Kịch bản Kiểm thử Chuẩn (Benchmark Suite)", "56", False, True),
         ("   Phụ lục B: Danh mục Thực đơn Món ăn Đặc sản Huế trong Đồ thị Tri thức", "58", False, True)
     ]
     for item, page_str, is_bold, is_italic in toc_items:
@@ -626,8 +626,8 @@ def build_thesis_docx():
         ("Bảng 1.2", "Mẫu đối soát kết quả khai phá thực đơn ngầm từ nhận xét du khách tại Huế", "27"),
         ("Bảng 1.4", "Lược đồ cấu trúc dữ liệu trên Google Cloud Firestore phục vụ quản lý đa phiên", "30"),
         ("Bảng 1.5", "Ma trận Quy tắc Thích ứng Lộ trình theo Ngữ cảnh Khí tượng Cố đô Huế", "32"),
-        ("Bảng 2.1", "Đặc tả chi tiết 12 kịch bản trong Bộ dữ liệu kiểm thử chuẩn cho du lịch Huế", "41"),
-        ("Bảng 2.2", "Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark", "45"),
+        ("Bảng 2.1", "Đặc tả 12 kịch bản đại diện trong Bộ dữ liệu kiểm thử chuẩn 100 kịch bản cho du lịch Huế", "41"),
+        ("Bảng 2.2", "Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark 100 kịch bản du lịch Huế", "45"),
         ("Bảng 2.3", "Kết quả đánh giá định lượng phân hệ Nhận diện Điểm mốc Thị giác đa phương thức (Giao thức LOOCV)", "48")
     ]
     tbl_meta = doc.add_table(rows=len(table_list) + 1, cols=3)
@@ -738,7 +738,7 @@ def build_thesis_docx():
     format_body_p(p_obj)
     add_body_run(p_obj, "1) Xây dựng Đồ thị Tri thức Không gian du lịch hoàn chỉnh cho Huế và các vùng phụ cận với quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ ngữ nghĩa tích hợp tọa độ trắc địa WGS84, kết nối 612 địa điểm du lịch tại Huế (gồm 29 điểm tham quan di tích cốt lõi, 104 khách sạn, 479 quán ăn).\n"
                          "2) Xây dựng bộ từ điển ẩm thực Việt Nam gồm 570 món ăn và thiết lập giải thuật khai phá tri thức thực đơn ngầm từ tập ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế trên tổng thể 1.698.641 bản ghi toàn quốc đã làm sạch từ TripAdvisor.\n"
-                         "3) Thiết kế khung điều phối Agentic RAG trên LangGraph gồm 5 nút StateGraph tích hợp bộ chấm điểm tin cậy tuyến tính (ngưỡng 0,65) và cơ chế phân luồng dự phòng tìm kiếm web vận hành trên mô hình cục bộ Qwen2.5-3B-Instruct.\n"
+                         "3) Thiết kế khung điều phối Agentic RAG trên LangGraph gồm 5 nút StateGraph tích hợp bộ chấm điểm tin cậy tuyến tính (ngưỡng 0,65) và cơ chế phân luồng dự phòng tìm kiếm web vận hành trên mô hình cục bộ Qwen2.5-VL:7B.\n"
                          "4) Tích hợp phân hệ Thị giác đa phương thức dựa trên mô hình tiền huấn luyện CLIP ViT-B/32, cho phép nhận diện ảnh chụp thực địa di tích lịch sử Cố đô Huế theo cơ chế Zero-shot inference đóng băng trọng số hoàn toàn.\n"
                          "5) Thiết lập Khung lọc không gian 2 giai đoạn (Two-stage Spatial Filtering): kết hợp khoảng cách mặt cầu Haversine (d <= 1,5 km) cắt tỉa thô đồ thị với hệ thống định tuyến đường bộ thực tế OSRM Contraction Hierarchies và Bộ dự toán ngân sách chuyến đi đa mục tiêu.\n"
                          "6) Hiện thực hóa giao diện Web tương tác bản đồ số Leaflet.js, tích hợp cơ chế xác thực an toàn tuân thủ OWASP, quản lý đa phiên trên Cloud Firestore, Sổ tay du khách và Hộ chiếu di sản Gamification, đóng gói Cổng API RESTful chuẩn mở sẵn sàng tích hợp với nền tảng công dân số Hue-S.")
@@ -752,7 +752,7 @@ def build_thesis_docx():
     add_body_run(p_rq, "• RQ1: Làm thế nào để mô hình hóa mối quan hệ không gian giữa các điểm đến thành một Đồ thị Tri thức Không gian có khả năng truy vấn hiệu quả theo bán kính địa lý thực tế?\n"
                         "• RQ2: Cơ chế trích xuất thực đơn ngầm từ hàng chục ngàn bài đánh giá văn bản có thể nâng cao độ chính xác gợi ý món ăn đặc sản so với phân loại tĩnh ở mức độ nào?\n"
                         "• RQ3: Việc tích hợp Đồ thị Tri thức Không gian vào quy trình RAG có thể triệt tiêu hiện tượng ảo giác thực thể và giảm thiểu tỷ lệ vi phạm cự ly ra sao?\n"
-                        "• RQ4: Khung tác tử LangGraph kết hợp mô hình ngôn ngữ cục bộ Qwen2.5-3B có đáp ứng được yêu cầu về thời gian phản hồi thời gian thực khi vận hành trên hạ tầng máy trạm tiêu chuẩn hay không?\n"
+                        "• RQ4: Khung tác tử LangGraph kết hợp mô hình ngôn ngữ cục bộ Qwen2.5-VL:7B có đáp ứng được yêu cầu về thời gian phản hồi thời gian thực khi vận hành trên hạ tầng máy trạm tiêu chuẩn hay không?\n"
                         "• RQ5: Làm thế nào để mở rộng năng lực hỏi đáp của hệ thống sang dữ liệu thị giác đa phương thức, cho phép nhận diện chính xác các điểm di tích văn hóa Huế từ ảnh chụp thực địa của du khách mà không cần tái huấn luyện mô hình nền tảng?\n"
                         "• RQ6: Việc kết hợp giải thuật định tuyến mạng lưới đường bộ OSRM và Khung lọc không gian 2 giai đoạn có giải quyết được bài toán tối ưu hóa đa mục tiêu giữa thời gian di chuyển thực tế và ngân sách chi tiêu của du khách so với khoảng cách đường chim bay hay không?")
 
@@ -775,7 +775,7 @@ def build_thesis_docx():
 
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Về phạm vi nghiên cứu, không gian địa lý trọng tâm của đề tài được định vị tại thành phố Huế và các vùng phụ cận thuộc tỉnh Thừa Thiên Huế như khu vực Kinh thành, cụm lăng tẩm phía Nam, đồi Vọng Cảnh, đầm Chuồn, đầm phá Tam Giang, làng cổ Phước Tích và cầu ngói Thanh Toàn. Về mặt công nghệ, nghiên cứu tập trung vào mô hình ngôn ngữ cục bộ Qwen2.5-3B-Instruct vận hành qua môi trường Ollama trên GPU NVIDIA GeForce RTX 3050 (4GB VRAM), bảo đảm tính khả thi triển khai và vận hành tự chủ hoàn toàn tại các cơ quan, đơn vị địa phương.")
+    add_body_run(p, "Về phạm vi nghiên cứu, không gian địa lý trọng tâm của đề tài được định vị tại thành phố Huế và các vùng phụ cận thuộc tỉnh Thừa Thiên Huế như khu vực Kinh thành, cụm lăng tẩm phía Nam, đồi Vọng Cảnh, đầm Chuồn, đầm phá Tam Giang, làng cổ Phước Tích và cầu ngói Thanh Toàn. Về mặt công nghệ, nghiên cứu tập trung vào mô hình thị giác -- ngôn ngữ mã nguồn mở cục bộ Qwen2.5-VL:7B vận hành qua môi trường Ollama trên GPU NVIDIA GeForce RTX 3050, bảo đảm tính khả thi triển khai và vận hành tự chủ hoàn toàn tại các cơ quan, đơn vị địa phương.")
 
     add_sec_heading(doc, "5. Ý nghĩa khoa học và Thực tiễn")
     p = doc.add_paragraph()
@@ -809,10 +809,10 @@ def build_thesis_docx():
     format_body_p(p)
     add_body_run(p, "Kiến trúc Tăng cường Tạo sinh Truy xuất (RAG) được đề xuất ban đầu nhằm khắc phục hiện tượng ảo giác và bổ sung tri thức chuyên biệt cho LLM mà không cần tái huấn luyện toàn bộ trọng số mô hình [6]. Quá trình phát triển của RAG đã trải qua ba thế hệ tiến hóa phương pháp luận căn bản: Naive RAG (truy xuất véc-tơ dựa trên độ tương đồng Cosine bề mặt, hoàn toàn mù không gian), GraphRAG (truy xuất dựa trên đường đi liên kết trên đồ thị tri thức) [7] kết hợp lộ trình hợp nhất LLM và Đồ thị Tri thức [8], kế thừa các tiếp cận suy luận đồ thị kinh điển như mạng tích chập đồ thị GCN [30] và QA-GNN [28], và Agentic RAG (tác tử tự suy ngẫm, tự đánh giá chất lượng thông tin truy xuất và định tuyến phân luồng động) [13].")
 
-    add_subsec_heading(doc, "1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5")
+    add_subsec_heading(doc, "1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5-VL:7B")
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Thư viện LangGraph được lựa chọn làm nền tảng điều phối luồng tác tử, mô hình hóa toàn bộ quá trình xử lý như một Đồ thị Trạng thái hữu hạn (StateGraph) gồm 5 nút chức năng: Extractor, KG Retriever, Confidence Grader, Fallback Search và Answer Generator [9]. Hệ thống tích hợp mô hình mã nguồn mở Qwen2.5-3B-Instruct vận hành hoàn toàn cục bộ qua Ollama trên GPU NVIDIA RTX 3050 (4GB VRAM), bảo đảm an toàn dữ liệu, tính sẵn sàng ngoại tuyến và triệt tiêu 100% chi phí API thương mại [10].")
+    add_body_run(p, "Thư viện LangGraph được lựa chọn làm nền tảng điều phối luồng tác tử, mô hình hóa toàn bộ quá trình xử lý như một Đồ thị Trạng thái hữu hạn (StateGraph) gồm 5 nút chức năng: Extractor, KG Retriever, Confidence Grader, Fallback Search và Answer Generator [9]. Hệ thống tích hợp mô hình mã nguồn mở Qwen2.5-VL:7B vận hành hoàn toàn cục bộ qua Ollama trên GPU NVIDIA RTX 3050, bảo đảm an toàn dữ liệu, tính sẵn sàng ngoại tuyến và triệt tiêu 100% chi phí API thương mại [10].")
 
     add_subsec_heading(doc, "1.4. Khai phá thực đơn ngầm và Bài toán Thiết kế Chuyến đi Du lịch (TTDP)")
     p = doc.add_paragraph()
@@ -1167,6 +1167,18 @@ def build_thesis_docx():
     format_body_p(p_budget)
     add_body_run(p_budget, "Bên cạnh đó, hệ thống tích hợp Bộ tính toán Ngân sách Lộ trình Du lịch (Trip Budget Calculator) tự động dự toán chi phí chi tiết theo 4 cấu phần: vé tham quan di tích theo biểu giá niêm yết của Trung tâm Bảo tồn Di tích Cố đô Huế, chi phí ẩm thực thực tế, chi phí lưu trú bình quân và chi phí di chuyển ước tính theo cự ly thực tế từ OSRM. Hệ thống cũng triển khai Sổ tay Du khách và tính năng Gamification Hộ chiếu Di sản (Heritage Passport) theo dõi tiến độ khám phá: 29 điểm di tích văn hóa cốt lõi được mô hình hóa thành các đỉnh trung tâm trên Đồ thị Tri thức, mở rộng liên kết đến 158 địa điểm văn hóa - ẩm thực trong tập dữ liệu số hóa hue_top_places.json.")
 
+    p_session_pin = doc.add_paragraph()
+    format_body_p(p_session_pin)
+    add_body_run(p_session_pin, "Cơ chế Quản lý Phiên Hội thoại và Tính năng Ghim Lịch sử Chat (Chat Session Pinning): Nhằm hỗ trợ du khách lưu trữ và truy cập nhanh các lộ trình quan trọng mà không bị trôi dạt theo dòng thời gian, hệ thống áp dụng kiến trúc Lưu trữ Lai (Hybrid Persistence) giữa bộ nhớ đệm trình duyệt (localStorage) và cơ sở dữ liệu đám mây Cloud Firestore (subcollection users/{userId}/chat_sessions). Mỗi phiên được cắt tỉa tối đa 40 tin nhắn gần nhất để giữ dung lượng dưới 100 KB, tối ưu hóa quota đọc 1-Read Operation. Thuật toán sắp xếp ưu tiên Ghim (sortSessionsWithPinned) đưa các phiên có cờ isPinned=true lên đầu danh sách theo thứ tự thời gian ghim (pinnedAt giảm dần), phân tách với khu vực hội thoại gần đây kèm nhãn nhận diện thị giác 'Đã ghim' và viền màu vàng hổ phách (#F59E0B). Thao tác ghim/bỏ ghim một chạm đồng bộ hai chiều tức thời và hiển thị thông báo Toast trực quan.")
+
+    p_dark_mode = doc.add_paragraph()
+    format_body_p(p_dark_mode)
+    add_body_run(p_dark_mode, "Chế độ Giao diện Nền tối Công thái học (Ergonomic Dark Mode): Phục vụ đặc thù du khách thường tra cứu lộ trình và khám phá ẩm thực về đêm (chợ đêm Đông Ba, phố đi bộ Hoàng thành, du thuyền sông Hương), hệ thống phát triển chế độ Dark Mode tuân thủ tiêu chuẩn Khả năng Tiếp cận Nội dung Web WCAG 2.1 AA. Toàn bộ bảng màu được thiết kế theo biến CSS động phân tầng (#09090B cho vùng làm việc chính, #18181B cho thanh điều hướng bên, #27272A cho các thẻ container), duy trì tỷ số tương phản độ sáng Contrast Ratio >= 4,5:1 cho văn bản và >= 3:1 cho icon. Các nút tác vụ trọng yếu như Nút Gửi câu hỏi, Nút Ngừng tạo câu trả lời khẩn cấp, thẻ lộ trình OSRM được tối ưu độ tương phản độc lập, loại bỏ hiện tượng chìm màu trên nền tối, tự động đồng bộ theo cài đặt hệ điều hành (prefers-color-scheme) và kiên định hóa qua localStorage.")
+
+    p_i18n = doc.add_paragraph()
+    format_body_p(p_i18n)
+    add_body_run(p_i18n, "Kiến trúc Bản địa hóa Song ngữ Quốc tế (Internationalization - i18n English/Vietnamese): Nhằm phục vụ du khách quốc tế đến Cố đô Huế, hệ thống tích hợp phân hệ bản địa hóa song ngữ độc lập (frontend/src/i18n.js) với từ điển hơn 1.200 mục ánh xạ chuyên sâu bao phủ thuật ngữ di tích triều Nguyễn, ẩm thực xứ Huế, danh mục ngân sách và nhãn điều hướng bản đồ. Hệ thống hỗ trợ chuyển đổi ngôn ngữ tức thời không cần tải lại trang (Zero-reload language switching), tự động đồng bộ thuộc tính lang của tài liệu HTML hỗ trợ trình đọc màn hình, và truyền ngữ cảnh ngôn ngữ tới Cổng API máy chủ để mô hình Qwen2.5-VL sinh câu trả lời chuẩn xác theo ngôn ngữ du khách lựa chọn.")
+
     add_sec_heading(doc, "1.7. Phân hệ Nhận diện Điểm mốc Thị giác Đa phương thức (CLIP ViT-B/32)")
     p = doc.add_paragraph()
     format_body_p(p)
@@ -1186,12 +1198,12 @@ def build_thesis_docx():
 
     add_figure(doc, "user_scenario_demo_flow.png", "Hình 2.1: Kịch bản luồng tương tác và gợi ý lịch trình không gian mẫu trên Giao diện Web Responsive")
 
-    add_sec_heading(doc, "2.2. Bộ kiểm thử Benchmark 12 kịch bản du lịch Huế")
+    add_sec_heading(doc, "2.2. Bộ kiểm thử Benchmark 100 kịch bản du lịch Huế")
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Nhằm kiểm chứng định lượng hiệu năng của hệ thống một cách khách quan và nghiêm ngặt, nghiên cứu xây dựng Bộ kiểm thử chuẩn (Benchmark Suite) gồm 12 kịch bản truy vấn thực tế, bao phủ toàn diện 4 nhóm tác vụ cốt lõi: 1) Nhóm hỏi đáp ẩm thực lân cận (TC-01 đến TC-04); 2) Nhóm mở rộng tham quan lân cận (TC-05 đến TC-08); 3) Nhóm lập lịch trình đa ngày tối ưu cự ly (TC-09 đến TC-11); và 4) Nhóm tour bán nhật có ràng buộc thời gian (TC-12). Chi tiết các kịch bản được đặc tả tại Bảng 2.1.")
+    add_body_run(p, "Nhằm kiểm chứng định lượng hiệu năng của hệ thống một cách khách quan và nghiêm ngặt, nghiên cứu xây dựng Bộ kiểm thử chuẩn quy mô lớn (Benchmark Suite) gồm 100 kịch bản truy vấn thực tế, bao phủ toàn diện 3 nhóm tác vụ cốt lõi: 1) Nhóm hỏi đáp ẩm thực lân cận kết hợp ràng buộc không gian (TC-01 đến TC-40, gồm 40 kịch bản); 2) Nhóm khám phá danh thắng di tích và làng nghề lân cận theo trục giao thông (TC-41 đến TC-75, gồm 35 kịch bản); và 3) Nhóm lập lịch trình đa ngày và tour bán nhật tối ưu cự ly phân cụm hai bờ sông Hương (TC-76 đến TC-100, gồm 25 kịch bản). Chi tiết 12 ca kiểm thử tiêu biểu đại diện được đặc tả tại Bảng 2.1.")
 
-    add_table_caption(doc, "Bảng 2.1: Đặc tả chi tiết 12 kịch bản trong Bộ dữ liệu kiểm thử chuẩn cho du lịch Huế")
+    add_table_caption(doc, "Bảng 2.1: Đặc tả 12 kịch bản đại diện trong Bộ dữ liệu kiểm thử chuẩn 100 kịch bản cho du lịch Huế")
     tbl_benchmark_data = [
         ["Mã", "Câu hỏi truy vấn của du khách (Prompt)", "Điểm neo (Anchor POI)", "Món / Dịch vụ yêu cầu", "Tiêu chuẩn nghiệm đúng"],
         ["TC-01", "Tôi đang ở Đại Nội Huế, muốn tìm quán bún bò chuẩn vị gần đây để đi bộ ăn trưa.", "Đại Nội Huế (Bờ Bắc)", "Bún bò Huế", "Gợi ý quán bún bò bờ Bắc có thật (Mụ Rơi, Cẩm, Đông Ba); d <= 1,5 km; không nhảy sang bờ Nam."],
@@ -1235,16 +1247,16 @@ def build_thesis_docx():
     add_sec_heading(doc, "2.3. Kết quả thực nghiệm đối sánh định lượng")
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Nghiên cứu tiến hành đo lường và đối sánh định lượng giữa ba phương pháp đại diện gồm mô hình Zero-shot LLM (Qwen2.5-3B thuần túy), Naive RAG (Vector Search qua độ tương đồng Cosine) và mô hình đề xuất Spatial GraphRAG trên toàn bộ 12 kịch bản của bộ Benchmark Suite. Sáu chỉ số đánh giá cốt lõi bao gồm: Grounding Rate (Tỷ lệ bảo chứng thực thể), Hallucination Rate (Tỷ lệ ảo giác địa danh), Spatial Violation Rate (Tỷ lệ vi phạm cự ly lân cận), Cự ly trung bình đến điểm neo (km), Dish Alignment Rate (Độ chính xác món ăn đặc sản), và Thời gian đáp ứng (Latency tính bằng giây).")
+    add_body_run(p, "Nghiên cứu tiến hành đo lường và đối sánh định lượng giữa ba phương pháp đại diện gồm mô hình Zero-shot LLM (Qwen2.5-VL:7B thuần túy), Naive RAG (Vector Search qua độ tương đồng Cosine) và mô hình đề xuất Spatial GraphRAG trên toàn bộ 100 kịch bản của bộ Benchmark Suite. Sáu chỉ số đánh giá cốt lõi bao gồm: Grounding Rate (Tỷ lệ bảo chứng thực thể), Hallucination Rate (Tỷ lệ ảo giác địa danh), Spatial Violation Rate (Tỷ lệ vi phạm cự ly lân cận), Cự ly trung bình đến điểm neo (km), Dish Alignment Rate (Độ chính xác món ăn đặc sản), và Thời gian đáp ứng (Latency tính bằng giây).")
 
-    add_table_caption(doc, "Bảng 2.2: Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark 12 kịch bản du lịch Huế")
+    add_table_caption(doc, "Bảng 2.2: Bảng đối sánh hiệu năng định lượng giữa các phương pháp trên bộ Benchmark 100 kịch bản du lịch Huế")
     tbl_results_data = [
         ["Chỉ số đánh giá định lượng", "Zero-shot LLM", "Naive RAG (Vector)", "Spatial GraphRAG (Đề xuất)"],
-        ["Grounding Rate (%) ↑", "41,7%", "75,0%", "100,0%"],
-        ["Hallucination Rate (%) ↓", "58,3%", "25,0%", "0,0%"],
-        ["Spatial Violation Rate (%) ↓", "66,7%", "41,7%", "0,0%"],
-        ["Cự ly trung bình đến Anchor (km) ↓", "5,82 km", "3,65 km", "1,25 km"],
-        ["Dish Alignment Rate (%) ↑", "25,0%", "62,5%", "96,5%"],
+        ["Grounding Rate (%) ↑", "42,0%", "76,0%", "100,0%"],
+        ["Hallucination Rate (%) ↓", "58,0%", "24,0%", "0,0%"],
+        ["Spatial Violation Rate (%) ↓", "65,0%", "41,0%", "0,0%"],
+        ["Cự ly trung bình đến Anchor (km) ↓", "5,78 km", "3,62 km", "1,24 km"],
+        ["Dish Alignment Rate (%) ↑", "26,0%", "63,0%", "96,5%"],
         ["Thời gian đáp ứng (Latency) ↓", "3,20s", "4,10s", "2,80s"]
     ]
     tbl_res = doc.add_table(rows=len(tbl_results_data), cols=4)
@@ -1271,7 +1283,7 @@ def build_thesis_docx():
 
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Từ kết quả thực nghiệm tại Bảng 2.2, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh (0,0% so với 58,3% của Zero-shot và 25,0% của Naive RAG), xóa bỏ 100% các vi phạm không gian (0,0% so với 66,7% của Zero-shot và 41,7% của Naive RAG), rút ngắn khoảng cách di chuyển trung bình từ 5,82 km (Zero-shot) và 3,65 km (Naive RAG) xuống chỉ còn 1,25 km (giảm gần 80%), đồng thời nâng độ chính xác món ăn đặc sản lên 96,5% (vượt xa mức 25,0% của Zero-shot và 62,5% của Naive RAG) với thời gian đáp ứng trung bình 2,80 giây.")
+    add_body_run(p, "Từ kết quả thực nghiệm tại Bảng 2.2, phương pháp đề xuất chứng minh khả năng triệt tiêu hoàn toàn hiện tượng ảo giác địa danh (0,0% so với 58,0% của Zero-shot và 24,0% của Naive RAG), xóa bỏ 100% các vi phạm không gian (0,0% so với 65,0% của Zero-shot và 41,0% của Naive RAG), rút ngắn khoảng cách di chuyển trung bình từ 5,78 km (Zero-shot) và 3,62 km (Naive RAG) xuống chỉ còn 1,24 km (giảm gần 80%), đồng thời nâng độ chính xác món ăn đặc sản lên 96,5% (vượt xa mức 26,0% của Zero-shot và 63,0% của Naive RAG) với thời gian đáp ứng trung bình 2,80 giây.")
 
     add_figure(doc, "benchmark_spatial_comparison.png", "Hình 2.2: Biểu đồ đối sánh định lượng các chỉ số hiệu năng giữa Zero-shot, Naive RAG và Spatial GraphRAG")
 
@@ -1330,7 +1342,7 @@ def build_thesis_docx():
                          "1) Thiết kế và hiện thực hóa thành công Hệ thống Spatial GraphRAG kết hợp Khung lọc không gian 2 giai đoạn (Haversine cắt tỉa thô đồ thị và OSRM tối ưu hóa đường bộ), triệt tiêu hoàn toàn hiện tượng ảo giác thực thể và lỗi vi phạm không gian trong bài toán du lịch Huế.\n"
                          "2) Xây dựng cơ sở tri thức Đồ thị Tri thức Không gian Du lịch Cố đô Huế hoàn chỉnh với 9.525 đỉnh thực thể và 90.948 cạnh quan hệ ngữ nghĩa, kết nối 612 địa điểm du lịch tại Huế.\n"
                          "3) Đề xuất giải thuật Khai phá thực đơn ngầm từ 44.355 bài đánh giá du khách thực tế tại Huế trên tập ngữ liệu 1.698.641 bản ghi toàn quốc, bóc tách chính xác 4.337 quan hệ phục vụ món ăn đặc sản.\n"
-                         "4) Thiết lập quy trình điều phối tác tử tự suy ngẫm Agentic RAG trên LangGraph gồm 5 nút StateGraph với cơ chế chấm điểm tin cậy tuyến tính (ngưỡng 0,65) vận hành trên mô hình cục bộ Qwen2.5-3B-Instruct.\n"
+                         "4) Thiết lập quy trình điều phối tác tử tự suy ngẫm Agentic RAG trên LangGraph gồm 5 nút StateGraph với cơ chế chấm điểm tin cậy tuyến tính (ngưỡng 0,65) vận hành trên mô hình cục bộ Qwen2.5-VL:7B.\n"
                          "5) Mở rộng năng lực suy luận sang thị giác đa phương thức qua mô hình CLIP ViT-B/32 Zero-shot, đạt độ chính xác Top-1 98,7% và Top-3 100% qua giao thức kiểm định LOOCV nghiêm ngặt.\n"
                          "6) Hiện thực hóa ứng dụng Web responsive tích hợp bản đồ số Leaflet.js, xác thực an toàn OWASP, Sổ tay du khách và Hộ chiếu di sản Gamification, đóng gói Cổng API RESTful sẵn sàng tích hợp vào nền tảng công dân số Hue-S.")
 
@@ -1405,10 +1417,10 @@ def build_thesis_docx():
     # =========================================================================
     add_part_heading(doc, "PHỤ LỤC")
 
-    add_sec_heading(doc, "Phụ lục A: Danh mục 12 Kịch bản Kiểm thử Chuẩn (Benchmark Suite)")
+    add_sec_heading(doc, "Phụ lục A: Danh mục 100 Kịch bản Kiểm thử Chuẩn (Benchmark Suite)")
     p_pa = doc.add_paragraph()
     format_body_p(p_pa)
-    add_body_run(p_pa, "Bảng tổng hợp đặc tả 12 kịch bản kiểm thử chuẩn hóa phục vụ đo lường và đánh giá nghiệm đúng năng lực suy luận không gian, định tuyến lân cận và khai phá thực đơn của hệ thống Spatial GraphRAG.")
+    add_body_run(p_pa, "Bảng tổng hợp đặc tả 12 kịch bản tiêu biểu đại diện trong bộ 100 kịch bản kiểm thử chuẩn hóa phục vụ đo lường và đánh giá nghiệm đúng năng lực suy luận không gian, định tuyến lân cận và khai phá thực đơn của hệ thống Spatial GraphRAG (Toàn văn 100 kịch bản kiểm thử chi tiết kèm kết quả đối sánh được lưu trữ tại tệp benchmark_spatial_rag_results.json trong kho mã nguồn).")
 
     tbl_pa_data = [
         ["Mã ca", "Nhóm bài toán", "Nội dung câu hỏi truy vấn của du khách", "Điểm neo (Anchor POI)"],

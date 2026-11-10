@@ -58,119 +58,25 @@ from src.rag.agent_graph import get_tourism_agent, TourismAgentState
 
 
 # =============================================================================
-# 1. BỘ CÂU HỎI KIỂM THỬ ĐẶC TRƯNG (BENCHMARK TEST SUITE - 12 QUERIES)
+# 1. BỘ CÂU HỎI KIỂM THỬ ĐẶC TRƯNG (BENCHMARK TEST SUITE - 100 QUERIES)
 # =============================================================================
-BENCHMARK_QUERIES = [
-    {
-        "id": "Q01",
-        "category": "Spatial_Culinary",
-        "query": "Ăn bún bò ở đâu ngon và gần Đại Nội Huế nhất?",
-        "anchor_node": "place_8875",  # Đại Nội Huế [16.468, 107.578]
-        "anchor_name": "Đại Nội Huế",
-        "target_dish": "Bún bò Huế",
-        "max_valid_distance_km": 2.5
-    },
-    {
-        "id": "Q02",
-        "category": "Spatial_Culinary",
-        "query": "Sau khi tham quan chùa Thiên Mụ, gần đó có quán ăn đặc sản nào ngon không?",
-        "anchor_node": "place_8876",  # Chùa Thiên Mụ [16.453, 107.544]
-        "anchor_name": "Chùa Thiên Mụ",
-        "target_dish": None,
-        "max_valid_distance_km": 2.5
-    },
-    {
-        "id": "Q03",
-        "category": "Spatial_Culinary",
-        "query": "Tìm quán cơm hến ngon và uy tín gần cầu Tràng Tiền",
-        "anchor_node": "place_8882",  # Cầu Tràng Tiền [16.469, 107.591]
-        "anchor_name": "Cầu Tràng Tiền",
-        "target_dish": "Cơm hến",
-        "max_valid_distance_km": 2.5
-    },
-    {
-        "id": "Q04",
-        "category": "Spatial_Culinary",
-        "query": "Gần lăng Tự Đức có quán bánh bèo, bánh nậm nào ngon không?",
-        "anchor_node": "place_8880",  # Lăng Tự Đức [16.433, 107.565]
-        "anchor_name": "Lăng Tự Đức",
-        "target_dish": "Bánh bèo",
-        "max_valid_distance_km": 2.5
-    },
-    {
-        "id": "Q05",
-        "category": "Spatial_Proximity",
-        "query": "Sau khi tham quan Đại Nội thì nên đi đâu tiếp gần đó trong bán kính 1km?",
-        "anchor_node": "place_8875",
-        "anchor_name": "Đại Nội Huế",
-        "target_dish": None,
-        "max_valid_distance_km": 1.5
-    },
-    {
-        "id": "Q06",
-        "category": "Spatial_Proximity",
-        "query": "Từ lăng Khải Định nên ghé những điểm tham quan nào lân cận tiện đường?",
-        "anchor_node": "place_8879",  # Lăng Khải Định [16.3989, 107.5903]
-        "anchor_name": "Lăng Khải Định",
-        "target_dish": None,
-        "max_valid_distance_km": 4.0
-    },
-    {
-        "id": "Q07",
-        "category": "Spatial_Culinary",
-        "query": "Quán chè Hẻm nổi tiếng ở Huế nằm ở đâu và gần đó có gì ăn chơi?",
-        "anchor_node": "place_8883",  # Chè Hẻm Hùng Vương [16.466, 107.594]
-        "anchor_name": "Chè Hẻm",
-        "target_dish": "Chè Huế",
-        "max_valid_distance_km": 2.0
-    },
-    {
-        "id": "Q08",
-        "category": "Spatial_Culinary",
-        "query": "Tìm quán bánh khoái ngon ở khu vực bờ Nam sông Hương",
-        "anchor_node": "place_8882",
-        "anchor_name": "Bờ Nam Sông Hương",
-        "target_dish": "Bánh khoái",
-        "max_valid_distance_km": 3.0
-    },
-    {
-        "id": "Q09",
-        "category": "Itinerary",
-        "query": "Gợi ý lịch trình du lịch Huế 1 ngày tối ưu đường đi cho cặp đôi",
-        "anchor_node": "place_8875",
-        "anchor_name": "Đại Nội Huế",
-        "target_dish": "Bún bò Huế",
-        "max_valid_distance_km": 5.0
-    },
-    {
-        "id": "Q10",
-        "category": "Itinerary",
-        "query": "Lập lịch trình 2 ngày khám phá di sản và ẩm thực Huế không bị đi vòng",
-        "anchor_node": "place_8875",
-        "anchor_name": "Thành phố Huế",
-        "target_dish": None,
-        "max_valid_distance_km": 6.0
-    },
-    {
-        "id": "Q11",
-        "category": "Spatial_Proximity",
-        "query": "Từ Đại Nội Huế đi chùa Thiên Mụ có xa không và trên đường đi có gì?",
-        "anchor_node": "place_8875",
-        "anchor_name": "Đại Nội Huế",
-        "target_dish": None,
-        "max_valid_distance_km": 5.5
-    },
-    {
-        "id": "Q12",
-        "category": "Itinerary",
-        "query": "Lịch trình 3 ngày trải nghiệm trọn vẹn văn hóa, lăng tẩm và ẩm thực Cố đô Huế",
-        "anchor_node": "place_8875",
-        "anchor_name": "Thành phố Huế",
-        "target_dish": None,
-        "max_valid_distance_km": 8.0
-    }
-]
-
+BENCHMARK_FILE = BASE_DIR / "benchmark_100_queries.json"
+if BENCHMARK_FILE.exists():
+    with open(BENCHMARK_FILE, "r", encoding="utf-8") as f:
+        BENCHMARK_QUERIES = json.load(f)
+    print(f">>> Đã nạp thành công {len(BENCHMARK_QUERIES)} kịch bản kiểm thử từ {BENCHMARK_FILE.name}")
+else:
+    BENCHMARK_QUERIES = [
+        {
+            "id": "Q01",
+            "category": "Spatial_Culinary",
+            "query": "Ăn bún bò ở đâu ngon và gần Đại Nội Huế nhất?",
+            "anchor_node": "place_8875",
+            "anchor_name": "Đại Nội Huế",
+            "target_dish": "Bún bò Huế",
+            "max_valid_distance_km": 2.5
+        }
+    ]
 
 # =============================================================================
 # 2. KHỞI TẠO CÁC MÔ HÌNH VÀ BỘ TRUY XUẤT
@@ -181,8 +87,9 @@ vector_retriever = get_vector_retriever()
 agent = get_tourism_agent()
 planner = get_itinerary_planner()
 
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5vl:7b")
 llm = ChatOllama(
-    model="qwen2.5:3b",
+    model=OLLAMA_MODEL,
     temperature=0.3,
     num_ctx=4096
 )
@@ -417,7 +324,7 @@ def extract_and_evaluate_places(text: str, q_meta: Dict[str, Any]) -> Dict[str, 
 # =============================================================================
 def run_benchmark():
     print("=" * 85)
-    print("🚀 BẮT ĐẦU CHẠY THÍ NGHIỆM BENCHMARK SPATIAL GRAPHRAG (12 TEST CASES)")
+    print(f"🚀 BẮT ĐẦU CHẠY THÍ NGHIỆM BENCHMARK SPATIAL GRAPHRAG ({len(BENCHMARK_QUERIES)} TEST CASES)")
     print("   Đối sánh: Zero-shot LLM  vs  Naive RAG  vs  Spatial GraphRAG")
     print("=" * 85)
 
@@ -428,7 +335,7 @@ def run_benchmark():
         q_text = q_meta["query"]
         is_itin = (q_meta["category"] == "Itinerary")
 
-        print(f"\n[{idx}/12] Đang đánh giá câu hỏi {q_id}: \"{q_text}\"")
+        print(f"\n[{idx}/{len(BENCHMARK_QUERIES)}] Đang đánh giá câu hỏi {q_id}: \"{q_text}\"")
 
         # 1. Chạy Zero-shot
         print("   -> Đang chạy Method 1: Zero-shot LLM...")
@@ -603,9 +510,9 @@ def run_benchmark():
         f.write("**Đề tài:** Hệ thống Hỏi đáp và Gợi ý Lịch trình Du lịch Thông minh dựa trên Đồ thị Tri thức Không gian và LLM\n")
         f.write("**Khóa luận Tốt nghiệp ngành Khoa học Dữ liệu & Trí tuệ Nhân tạo (DS&AI K3) – Khoa Kỹ thuật và Công nghệ, Đại học Huế**\n\n")
         f.write(f"- **Thời gian chạy thí nghiệm:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f"- **Mô hình suy luận cục bộ:** Qwen2.5-3B-Instruct (Ollama Local GPU RTX 3050)\n")
+        f.write(f"- **Mô hình suy luận cục bộ:** Qwen2.5-VL:7B (Ollama Local GPU)\n")
         f.write(f"- **Mô hình nhúng Vector:** SentenceTransformer (`paraphrase-multilingual-MiniLM-L12-v2`)\n")
-        f.write(f"- **Quy mô Đồ thị Tri thức Không gian:** 9,525 nút và 90,948 cạnh quan hệ (`NEAR_BY`, `SERVES`, `LOCATED_IN`)\n\n")
+        f.write(f"- **Quy mô Đồ thị Tri thức Không gian:** 9,582 nút và 126,313 cạnh quan hệ (`NEAR_BY`, `SERVES`, `LOCATED_IN`)\n\n")
         f.write("---\n\n")
         f.write("## 1. TỔNG QUAN KẾT QUẢ ĐỐI SÁNH HIỆU NĂNG\n\n")
         f.write("| Chỉ số đánh giá | Zero-shot LLM | Naive RAG (Vector Only) | Spatial GraphRAG (Đề xuất) | Nhận xét cải tiến |\n")
@@ -623,8 +530,8 @@ def run_benchmark():
         f.write("- **Zero-shot LLM:** Do không có cơ chế tra cứu thực tế, mô hình thường xuyên tự bịa ra tên các quán ăn nghe có vẻ giống tiếng Việt (ví dụ: 'Quán Bún Bò Cố Đô', 'Nhà hàng Hoàng Cung 123') hoặc gợi ý địa điểm ở cách xa hàng chục cây số, thậm chí nhầm lẫn địa danh giữa các tỉnh thành.\n")
         f.write("- **Naive RAG (Vector Only):** Mặc dù truy xuất được các đoạn review thực tế từ ChromaDB, tuy nhiên cơ chế Cosine Similarity thuần túy chỉ so khớp ngữ nghĩa chữ viết (semantic text) mà **hoàn toàn mù về tọa độ không gian (Space-agnostic)**. Hệ quả là khi du khách hỏi quán ăn *'gần Đại Nội'*, Naive RAG vẫn có thể gợi ý một quán bún bò rất nổi tiếng nhưng nằm tận... Đầm Lập An hoặc bờ Nam xa xôi.\n")
         f.write("- **Spatial GraphRAG (Phương pháp đề xuất):** Nhờ cơ chế lọc không gian theo bán kính bán kính thực tế (cạnh `NEAR_BY` < 1.5km) kết hợp quan hệ món ăn `SERVES`, hệ thống bảo đảm 100% các địa điểm gợi ý là có thật và nằm trong bán kính cho phép, loại bỏ hoàn toàn hiện tượng đi vòng vô lý.\n\n")
-        f.write("### 2.2. Khả năng tích hợp sản phẩm và tính ứng dụng thực tế\n")
-        f.write("- Kết quả từ bộ thí nghiệm 12 trường hợp kiểm thử chứng minh Spatial GraphRAG đạt độ hoàn thiện cao, vừa phục vụ trực quan trên Web Demo Client (Streamlit), vừa sẵn sàng triển khai thành cổng API chuẩn RESTful cho ứng dụng công dân số di động như Hue-S.\n")
+        f.write(f"### 2.2. Khả năng tích hợp sản phẩm và tính ứng dụng thực tế\n")
+        f.write(f"- Kết quả từ bộ thí nghiệm {len(BENCHMARK_QUERIES)} trường hợp kiểm thử chứng minh Spatial GraphRAG đạt độ hoàn thiện cao, vừa phục vụ trực quan trên Web Demo Client, vừa sẵn sàng triển khai thành cổng API chuẩn RESTful cho ứng dụng công dân số di động như Hue-S.\n")
 
     print(f"[OK] Đã xuất báo cáo học thuật hoàn chỉnh tại: {report_md_path}")
 if __name__ == "__main__":

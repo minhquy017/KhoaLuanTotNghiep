@@ -12,9 +12,9 @@ Những đóng góp khoa học và thực tiễn trọng tâm của khóa luận
 
 Đóng góp thứ nhất là việc xây dựng thành công Đồ thị Tri thức Không gian Du lịch Huế và các vùng phụ cận với quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ ngữ nghĩa. Việc tích hợp tọa độ GPS và thiết lập cơ chế Lọc không gian hai bước (Two-stage Spatial Filtering: lọc thô lân cận mặt cầu Haversine $d \le 1,5\text{ km}$ trên đồ thị tĩnh kết hợp định tuyến đường bộ OSRM ở bước lập lịch) đã tạo nên một cơ chế neo giữ chân lý (Grounding Anchor) vững chắc, loại bỏ hoàn toàn hiện tượng ảo giác thực thể và ngăn chặn triệt để các đề xuất di chuyển vượt cự ly phi lý.
 
-Đóng góp thứ hai là việc thiết lập giải thuật khai phá thực đơn ngầm từ kho ngữ liệu 1.698.641 bài nhận xét (gần 1,70 triệu bài) du khách trên TripAdvisor dựa trên Bộ từ điển ẩm thực Việt Nam 570 món ăn. Đề tài đã chuyển hóa nguồn dữ liệu phản hồi phi cấu trúc của cộng đồng thành các cạnh quan hệ phục vụ món ăn $\text{SERVES}$ có trọng số tin cậy cao, bóc tách chính xác các món ăn đặc sản làm nên bản sắc của từng hàng quán tại Huế mà các danh bạ phân loại truyền thống không thể hiện được.
+Đóng góp thứ hai là việc thiết lập giải thuật khai phá thực đơn ngầm từ kho ngữ liệu 44.355 bài nhận xét du khách thực tế tại Cố đô Huế từ TripAdvisor dựa trên Bộ từ điển ẩm thực Việt Nam 570 món ăn. Đề tài đã chuyển hóa nguồn dữ liệu phản hồi phi cấu trúc của cộng đồng thành các cạnh quan hệ phục vụ món ăn $\text{SERVES}$ có trọng số tin cậy cao, bóc tách chính xác các món ăn đặc sản làm nên bản sắc của từng hàng quán tại Huế mà các danh bạ phân loại truyền thống không thể hiện được.
 
-Đóng góp thứ ba là việc thiết kế và làm chủ khung điều phối tác tử tự suy ngẫm Agentic RAG trên nền tảng LangGraph, tích hợp mô hình ngôn ngữ lớn cục bộ Qwen2.5-3B-Instruct vận hành trên máy trạm cá nhân (Zero API Cost). Kiến trúc cho phép hệ thống tự đánh giá chất lượng tri thức thông qua điểm số tin cậy tổng hợp và tự động phân luồng dự phòng tìm kiếm Internet khi cần thiết, đạt thời gian phản hồi thời gian thực trung bình 2,8 giây với độ bảo mật dữ liệu tuyệt đối.
+Đóng góp thứ ba là việc thiết kế và làm chủ khung điều phối tác tử tự suy ngẫm Agentic RAG trên nền tảng LangGraph, tích hợp mô hình thị giác -- ngôn ngữ lớn mã nguồn mở cục bộ Qwen2.5-VL:7B vận hành trên máy trạm cá nhân (Zero API Cost). Kiến trúc cho phép hệ thống tự đánh giá chất lượng tri thức thông qua điểm số tin cậy tổng hợp và tự động phân luồng dự phòng tìm kiếm Internet khi cần thiết, đạt thời gian phản hồi thời gian thực trung bình 2,8 giây với độ bảo mật dữ liệu tuyệt đối.
 
 Đóng góp thứ tư là việc phát triển phân hệ Nhận diện Điểm mốc Thị giác Đa phương thức (Multimodal Visual Landmark RAG) dựa trên mô hình Vision Transformer CLIP ViT-B/32 và cơ sở dữ liệu vector ChromaDB, đạt độ chính xác Top-1 lên tới 98,7\% và Top-3 đạt 100,0\% trên 25 danh lam di tích Cố đô Huế, cho phép du khách tra cứu lịch sử và kiến trúc di sản tức thời thông qua ảnh chụp thực địa.
 
@@ -32,7 +32,7 @@ Hạn chế thứ nhất liên quan đến quy mô dữ liệu hình ảnh di s�
 
 Hạn chế thứ hai là hệ thống chưa tích hợp được các yếu tố động thời gian thực của đô thị như tình trạng ùn tắc giao thông cục bộ trong các khung giờ cao điểm, tình trạng ngập lụt tạm thời vào mùa mưa lũ miền Trung, hay lịch đóng mở cửa đột xuất của một số di tích nhỏ trong các dịp đại lễ triều đình hoặc trùng tu công trình.
 
-Hạn chế thứ ba là sự phân tách hai giai đoạn giữa mô hình thị giác CLIP ViT-B/32 và mô hình ngôn ngữ lớn Qwen2.5-3B. Việc sử dụng kiến trúc hai giai đoạn (trích xuất thực thể qua vector tương đồng rồi mới chuyển văn bản cho LLM) tuy nhẹ và vận hành mượt mà trên máy tính cá nhân nhưng chưa khai thác được năng lực suy luận thị giác liên hoàn (Visual Reasoning) sâu sắc của các mô hình đa phương thức thế hệ mới (Vision-Language Models).
+Hạn chế thứ ba là chi phí tính toán khi suy luận mô hình thị giác -- ngôn ngữ lớn Qwen2.5-VL:7B trên các thiết bị máy trạm cá nhân có tài nguyên VRAM hạn chế. Mặc dù hệ thống đã kết hợp bộ lọc trích xuất đặc trưng nhanh CLIP ViT-B/32 để giảm tải tiền xử lý trước khi kích hoạt Qwen2.5-VL:7B, việc xử lý đồng thời cả hình ảnh độ phân giải cao và đồ thị tri thức quy mô lớn vẫn đặt ra thách thức về độ trễ khi mở rộng cho nhiều người dùng tương tác đồng thời.
 
 \section*{3. Kiến nghị và Hướng phát triển tiếp theo}
 \phantomsection
@@ -40,7 +40,7 @@ Hạn chế thứ ba là sự phân tách hai giai đoạn giữa mô hình th�
 
 Từ các kết quả và hạn chế đã phân tích, năm định hướng nghiên cứu và phát triển tiếp theo được đề xuất:
 
-Một là, nghiên cứu tích hợp các mô hình ngôn ngữ thị giác đa phương thức cục bộ thế hệ mới (như Qwen2-VL hoặc Llama-3.2-Vision) trên hạ tầng máy chủ tính toán hiệu năng cao. Hướng tiếp cận này sẽ cho phép hệ thống trực tiếp phân tích chi tiết các hoa văn phù điêu, bia đá chữ Hán tại các di tích và giải thích cặn kẽ ý nghĩa văn hóa cho du khách ngay trên hình ảnh.
+Một là, nghiên cứu tinh chỉnh thích ứng thấp tham số (LoRA / QLoRA) cho mô hình thị giác -- ngôn ngữ Qwen2.5-VL chuyên sâu trên tập dữ liệu hoa văn di tích và bi ký Hán Nôm tại Cố đô Huế, triển khai trên cụm máy chủ tính toán phân tán. Hướng tiếp cận này sẽ nâng cao năng lực giải mã các chi tiết kiến trúc tinh xảo và ý nghĩa văn hóa lịch sử sâu sắc cho du khách ngay trên hình ảnh thực địa.
 
 Hai là, phát triển cơ chế tái lập lịch trình động theo thời gian thực (Dynamic Re-planning). Tận dụng tín hiệu định vị GPS trực tiếp từ ứng dụng di động của du khách kết hợp dữ liệu khí tượng Open-Meteo, hệ thống có thể theo dõi tiến độ tham quan thực tế và tự động điều chỉnh thứ tự các điểm đến tiếp theo nếu du khách nán lại một di tích lâu hơn dự kiến hoặc khi thời tiết chuyển mưa dầm.
 
