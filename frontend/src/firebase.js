@@ -157,7 +157,7 @@ export async function loginWithGoogle() {
 
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
-  
+
   try {
     const result = await signInWithPopup(firebaseAuth, provider);
     const user = result.user;
@@ -334,7 +334,7 @@ export async function saveItinerary(userId, itineraryData) {
   // Phát tín hiệu toàn cục để các modal UI tự động cập nhật
   try {
     window.dispatchEvent(new CustomEvent('tour-saved', { detail: cleanPayload }));
-  } catch {}
+  } catch { }
 
   return cleanPayload;
 }
@@ -357,7 +357,7 @@ export async function getUserItineraries(userId) {
       try {
         const generic = localStorage.getItem(LOCAL_ITINERARIES_KEY);
         if (generic) localItems = JSON.parse(generic);
-      } catch {}
+      } catch { }
     }
   }
 
@@ -531,30 +531,56 @@ function sanitizeMessageForStorage(msg) {
       confidence_score: rawRes.confidence_score ?? rawRes.retrieval_confidence ?? null,
       matched_places: Array.isArray(rawRes.matched_places)
         ? rawRes.matched_places.slice(0, 8).map(p => ({
-            name: p.name || '',
-            category: p.category || '',
-            node_id: p.node_id || p.place_id || p.id || '',
-            place_id: p.place_id || p.node_id || p.id || '',
-            address: p.address || '',
-            rating: p.rating ?? p.rating_value ?? 4.5,
-            latitude: p.latitude ?? p.lat ?? null,
-            longitude: p.longitude ?? p.lng ?? null
-          }))
+          name: p.name || '',
+          category: p.category || '',
+          node_id: p.node_id || p.place_id || p.id || '',
+          place_id: p.place_id || p.node_id || p.id || '',
+          address: p.address || '',
+          rating: p.rating ?? p.rating_value ?? 4.5,
+          latitude: p.latitude ?? p.lat ?? null,
+          longitude: p.longitude ?? p.lng ?? null
+        }))
         : [],
       navigation: rawRes.navigation
         ? {
-            is_navigation: Boolean(rawRes.navigation.is_navigation),
-            origin: rawRes.navigation.origin,
-            destination: rawRes.navigation.destination,
-            profile: rawRes.navigation.profile,
-            distance_km: rawRes.navigation.distance_km ?? null,
-            duration_min: rawRes.navigation.duration_min ?? null
-          }
+          is_navigation: Boolean(rawRes.navigation.is_navigation),
+          origin: rawRes.navigation.origin,
+          destination: rawRes.navigation.destination,
+          profile: rawRes.navigation.profile,
+          distance_km: rawRes.navigation.distance_km ?? null,
+          duration_min: rawRes.navigation.duration_min ?? null
+        }
         : null
     };
   }
 
   return clean;
+}
+
+/**
+ * Sắp xếp danh sách phiên chat:
+ * 1. Các phiên chat được ghim (isPinned: true) luôn nằm ở ĐẦU danh sách
+ * 2. Giữa các phiên được ghim, xếp theo pinnedAt giảm dần (mới ghim nhất lên đầu)
+ * 3. Các phiên còn lại xếp theo thời gian cập nhật mới nhất (updatedAt desc)
+ */
+export function sortSessionsWithPinned(sessionsList) {
+  if (!Array.isArray(sessionsList)) return [];
+  return [...sessionsList].sort((a, b) => {
+    const aPinned = Boolean(a.isPinned);
+    const bPinned = Boolean(b.isPinned);
+    if (aPinned && !bPinned) return -1;
+    if (!aPinned && bPinned) return 1;
+
+    if (aPinned && bPinned) {
+      const timeA = new Date(a.pinnedAt || a.updatedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.pinnedAt || b.updatedAt || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    }
+
+    const timeA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+    const timeB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+    return timeB - timeA;
+  });
 }
 
 /**
@@ -566,18 +592,32 @@ export async function saveChatSession(userId, sessionData) {
   if (!sessionData || !sessionData.id) return null;
 
   const effectiveUserId = userId || 'guest';
-  
+
   // Tinh gọn và giới hạn 40 tin nhắn mới nhất
   const rawMessages = Array.isArray(sessionData.messages) ? sessionData.messages : [];
   const trimmedMessages = rawMessages.slice(-40).map(sanitizeMessageForStorage);
 
+  // Giữ nguyên trạng thái ghim cũ nếu không được chỉ định lại
+  const currentSessions = getLocalChatSessions(effectiveUserId);
+  const existingIdx = currentSessions.findIndex(s => s.id === sessionData.id);
+  const existingSession = existingIdx >= 0 ? currentSessions[existingIdx] : null;
+
+  const isPinned = sessionData.isPinned !== undefined
+    ? Boolean(sessionData.isPinned)
+    : Boolean(existingSession?.isPinned);
+  const pinnedAt = isPinned
+    ? (sessionData.pinnedAt || existingSession?.pinnedAt || new Date().toISOString())
+    : null;
+
   const payload = {
     id: sessionData.id,
-    title: sessionData.title || 'Cuộc trò chuyện mới',
+    title: sessionData.title || existingSession?.title || 'Cuộc trò chuyện mới',
     messages: trimmedMessages,
-    session_context: sessionData.session_context || null,
+    session_context: sessionData.session_context || existingSession?.session_context || null,
     messageCount: rawMessages.length,
-    createdAt: sessionData.createdAt || new Date().toISOString(),
+    isPinned,
+    pinnedAt,
+    createdAt: sessionData.createdAt || existingSession?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
 
@@ -595,16 +635,53 @@ export async function saveChatSession(userId, sessionData) {
   }
 
   // 2. Lưu bộ nhớ đệm LocalStorage (đảm bảo phản hồi nhanh & offline)
-  const sessions = getLocalChatSessions(effectiveUserId);
-  const existingIdx = sessions.findIndex(s => s.id === sessionData.id);
+  const sessions = currentSessions;
   if (existingIdx >= 0) {
     sessions[existingIdx] = { ...sessions[existingIdx], ...payload };
   } else {
     sessions.unshift(payload);
   }
-  localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(sessions));
+  const sortedSessions = sortSessionsWithPinned(sessions);
+  localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(sortedSessions));
 
   return payload;
+}
+
+/**
+ * Ghim hoặc bỏ ghim một phiên chat
+ */
+export async function togglePinChatSession(userId, sessionId) {
+  if (!sessionId) return false;
+  const effectiveUserId = userId || 'guest';
+  const sessions = getLocalChatSessions(effectiveUserId);
+  const idx = sessions.findIndex(s => s.id === sessionId);
+  if (idx < 0) return false;
+
+  const nowPinned = !Boolean(sessions[idx].isPinned);
+  const pinnedAt = nowPinned ? new Date().toISOString() : null;
+
+  sessions[idx].isPinned = nowPinned;
+  sessions[idx].pinnedAt = pinnedAt;
+  sessions[idx].updatedAt = new Date().toISOString();
+
+  // 1. Cập nhật Firestore nếu đã đăng nhập
+  if (firestoreDb && effectiveUserId !== 'guest' && !effectiveUserId.startsWith('demo_')) {
+    try {
+      const docRef = doc(firestoreDb, 'users', effectiveUserId, 'chat_sessions', sessionId);
+      await setDoc(docRef, {
+        isPinned: nowPinned,
+        pinnedAt: pinnedAt,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.warn('Lỗi cập nhật trạng thái ghim trên Firestore:', e);
+    }
+  }
+
+  // 2. Cập nhật LocalStorage
+  const sorted = sortSessionsWithPinned(sessions);
+  localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(sorted));
+  return nowPinned;
 }
 
 /**
@@ -633,17 +710,18 @@ export async function getUserChatSessions(userId) {
             formattedUpdatedAt = data.updatedAt;
           }
         }
-        cloudSessions.push({ 
-          id: docSnap.id, 
+        cloudSessions.push({
+          id: docSnap.id,
           ...data,
           updatedAt: formattedUpdatedAt
         });
       });
 
       if (cloudSessions.length > 0) {
+        const sortedCloud = sortSessionsWithPinned(cloudSessions);
         // Cập nhật lại cache local
-        localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(cloudSessions));
-        return cloudSessions;
+        localStorage.setItem(`${LOCAL_CHAT_SESSIONS_KEY}_${effectiveUserId}`, JSON.stringify(sortedCloud));
+        return sortedCloud;
       }
     } catch (e) {
       console.warn('Lỗi đọc Chat Sessions từ Firestore, dùng cache LocalStorage:', e);
@@ -677,7 +755,8 @@ export async function deleteChatSession(userId, sessionId) {
 export function getLocalChatSessions(userId) {
   try {
     const raw = localStorage.getItem(`${LOCAL_CHAT_SESSIONS_KEY}_${userId || 'guest'}`);
-    return raw ? JSON.parse(raw) : [];
+    const list = raw ? JSON.parse(raw) : [];
+    return sortSessionsWithPinned(list);
   } catch {
     return [];
   }
@@ -698,7 +777,7 @@ export async function submitAiFeedback(feedbackData) {
 
   const currentUser = getCurrentUser();
   const feedbackId = feedbackData.id || `fb_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-  
+
   const payload = {
     id: feedbackId,
     messageId: feedbackData.messageId || `msg_${Date.now()}`,

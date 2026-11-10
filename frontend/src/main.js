@@ -13,6 +13,7 @@ import {
   saveChatSession,
   getUserChatSessions,
   deleteChatSession,
+  togglePinChatSession,
   submitAiFeedback,
   onAuthChange,
   logoutUser,
@@ -632,6 +633,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   let activeSessionTitle = (typeof i18n !== 'undefined' && i18n.getLanguage() === 'en') ? 'New Chat' : 'Cuộc trò chuyện mới';
   let activeSessionMessages = [];
   let activeSessionContext = null;
+  let activeSessionIsPinned = false;
+  let activeSessionPinnedAt = null;
   let isRestoringSession = false;
   let lastUserPrompt = '';
 
@@ -1862,7 +1865,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         id: activeSessionId,
         title: activeSessionTitle || i18n.t('newChat', 'Cuộc trò chuyện mới'),
         messages: activeSessionMessages,
-        session_context: latestContext
+        session_context: latestContext,
+        isPinned: activeSessionIsPinned,
+        pinnedAt: activeSessionPinnedAt
       });
       refreshChatHistoryList(false);
     } catch (e) {
@@ -1905,12 +1910,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     chatSessionsList.innerHTML = '';
-    sessions.forEach(sess => {
+
+    function createSessionItemElement(sess) {
       const item = document.createElement('div');
-      item.className = `chat-session-item ${sess.id === activeSessionId ? 'active' : ''}`;
+      const isPinned = Boolean(sess.isPinned);
+      item.className = `chat-session-item ${sess.id === activeSessionId ? 'active' : ''} ${isPinned ? 'is-pinned' : ''}`;
       item.dataset.sessionId = sess.id;
       const safeSessionTitle = escapeHtml(sess.title || i18n.t('sessionDefaultTitle', 'Cuộc trò chuyện'));
       const msgCountText = isEn ? `${(sess.messages || []).length} msgs` : `${(sess.messages || []).length} tin`;
+
+      const pinTagHtml = isPinned
+        ? `<span class="pin-tag" title="${i18n.t('pinned', 'Đã ghim')}"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path><line x1="12" y1="17" x2="12" y2="22" stroke="currentColor" stroke-width="2"></line></svg> ${i18n.t('pinned', 'Đã ghim')} · </span>`
+        : '';
+
+      const pinTooltip = isPinned ? i18n.t('unpinSessionTooltip', 'Bỏ ghim cuộc trò chuyện') : i18n.t('pinSessionTooltip', 'Ghim cuộc trò chuyện lên đầu');
+      const pinAria = isPinned ? i18n.t('unpinSessionTooltip', 'Bỏ ghim') : i18n.t('pinSessionTooltip', 'Ghim');
+
       item.innerHTML = `
         <div class="session-main">
           <div class="session-icon">
@@ -1920,20 +1935,43 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
           <div class="session-meta">
             <span class="session-title" title="${safeSessionTitle}">${safeSessionTitle}</span>
-            <span class="session-date">${formatRelativeTime(sess.updatedAt || sess.createdAt)} · ${msgCountText}</span>
+            <span class="session-date">${pinTagHtml}${formatRelativeTime(sess.updatedAt || sess.createdAt)} · ${msgCountText}</span>
           </div>
         </div>
-        <button type="button" class="btn-delete-session" title="${i18n.t('deleteSessionTooltip', 'Xóa cuộc trò chuyện này')}" aria-label="${i18n.t('delete', 'Xóa')}">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 6 5 6 21 6" />
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-          </svg>
-        </button>
+        <div class="session-actions">
+          <button type="button" class="btn-pin-session ${isPinned ? 'is-pinned' : ''}" title="${pinTooltip}" aria-label="${pinAria}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="17" x2="12" y2="22"></line>
+              <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+            </svg>
+          </button>
+          <button type="button" class="btn-delete-session" title="${i18n.t('deleteSessionTooltip', 'Xóa cuộc trò chuyện này')}" aria-label="${i18n.t('delete', 'Xóa')}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            </svg>
+          </button>
+        </div>
       `;
 
       item.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-delete-session')) return;
+        if (e.target.closest('.btn-delete-session') || e.target.closest('.btn-pin-session')) return;
         restoreChatSession(sess);
+      });
+
+      const btnPin = item.querySelector('.btn-pin-session');
+      btnPin?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const nowPinned = await togglePinChatSession(uid, sess.id);
+        sess.isPinned = nowPinned;
+        if (activeSessionId === sess.id) {
+          activeSessionIsPinned = nowPinned;
+        }
+        const toastMsg = nowPinned
+          ? (typeof i18n !== 'undefined' ? i18n.t('pinnedToast', 'Đã ghim cuộc trò chuyện lên đầu danh sách!') : 'Đã ghim cuộc trò chuyện lên đầu danh sách!')
+          : (typeof i18n !== 'undefined' ? i18n.t('unpinnedToast', 'Đã bỏ ghim cuộc trò chuyện.') : 'Đã bỏ ghim cuộc trò chuyện.');
+        authController?.showToast?.(toastMsg);
+        await refreshChatHistoryList();
       });
 
       const btnDel = item.querySelector('.btn-delete-session');
@@ -1950,8 +1988,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
 
-      chatSessionsList.appendChild(item);
-    });
+      return item;
+    }
+
+    const pinnedList = sessions.filter(s => Boolean(s.isPinned));
+    const unpinnedList = sessions.filter(s => !Boolean(s.isPinned));
+
+    if (pinnedList.length > 0) {
+      const pinHeader = document.createElement('div');
+      pinHeader.className = 'session-group-header';
+      pinHeader.innerHTML = `
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path>
+          <line x1="12" y1="17" x2="12" y2="22" stroke="currentColor" stroke-width="2"></line>
+        </svg>
+        <span>${i18n.t('pinned', 'Đã ghim')} (${pinnedList.length})</span>
+      `;
+      chatSessionsList.appendChild(pinHeader);
+      pinnedList.forEach(sess => {
+        chatSessionsList.appendChild(createSessionItemElement(sess));
+      });
+
+      if (unpinnedList.length > 0) {
+        const recentHeader = document.createElement('div');
+        recentHeader.className = 'session-group-header';
+        recentHeader.innerHTML = `<span>${i18n.t('recent', 'Gần đây')}</span>`;
+        chatSessionsList.appendChild(recentHeader);
+        unpinnedList.forEach(sess => {
+          chatSessionsList.appendChild(createSessionItemElement(sess));
+        });
+      }
+    } else {
+      sessions.forEach(sess => {
+        chatSessionsList.appendChild(createSessionItemElement(sess));
+      });
+    }
 
     if (openAfterRefresh) {
       toggleChatHistoryDrawer(true);
@@ -1965,6 +2036,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSessionTitle = session.title;
     activeSessionMessages = session.messages || [];
     activeSessionContext = session.session_context || null;
+    activeSessionIsPinned = Boolean(session.isPinned);
+    activeSessionPinnedAt = session.pinnedAt || null;
 
     // Quét ngược tìm context hoặc fallback từ matched_places nếu session_context gốc bị thiếu
     if (!activeSessionContext && activeSessionMessages.length > 0) {
@@ -2031,6 +2104,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSessionTitle = (typeof i18n !== 'undefined' && i18n.getLanguage() === 'en') ? 'New Chat' : 'Cuộc trò chuyện mới';
     activeSessionMessages = [];
     activeSessionContext = null;
+    activeSessionIsPinned = false;
+    activeSessionPinnedAt = null;
     renderWelcomeHero();
     if (window.innerWidth <= 1024) {
       toggleSidebar(false);

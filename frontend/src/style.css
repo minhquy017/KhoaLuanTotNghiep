@@ -8631,6 +8631,76 @@ textarea {
   color: #A1A1AA;
 }
 
+.session-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.btn-pin-session {
+  opacity: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #71717A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--duration-fast);
+  flex-shrink: 0;
+}
+
+.chat-session-item:hover .btn-pin-session {
+  opacity: 1;
+}
+
+.btn-pin-session:hover {
+  color: #D97706;
+  background: #FEF3C7;
+}
+
+.btn-pin-session.is-pinned {
+  opacity: 1 !important;
+  color: #D97706;
+}
+
+.btn-pin-session.is-pinned:hover {
+  color: #B45309;
+  background: #FDE68A;
+}
+
+.chat-session-item.is-pinned {
+  border-left: 3px solid #F59E0B;
+}
+
+.session-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.5rem 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #71717A;
+}
+
+.session-group-header svg {
+  color: #D97706;
+}
+
+.pin-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #D97706;
+  font-weight: 600;
+}
+
 .btn-delete-session {
   opacity: 0;
   width: 24px;
@@ -11751,6 +11821,44 @@ body[data-theme="dark"] {
 [data-theme="dark"] .btn-delete-session:hover {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #EF4444 !important;
+}
+
+[data-theme="dark"] .chat-session-item.is-pinned {
+  border-left: 3px solid #FBBF24 !important;
+}
+
+[data-theme="dark"] .chat-session-item.active.is-pinned {
+  border-left: 3px solid #FBBF24 !important;
+}
+
+[data-theme="dark"] .session-group-header {
+  color: #A1A1AA !important;
+}
+
+[data-theme="dark"] .session-group-header svg {
+  color: #FBBF24 !important;
+}
+
+[data-theme="dark"] .pin-tag {
+  color: #FBBF24 !important;
+}
+
+[data-theme="dark"] .btn-pin-session {
+  color: #71717A !important;
+}
+
+[data-theme="dark"] .btn-pin-session:hover {
+  color: #FBBF24 !important;
+  background: rgba(251, 191, 36, 0.15) !important;
+}
+
+[data-theme="dark"] .btn-pin-session.is-pinned {
+  color: #FBBF24 !important;
+}
+
+[data-theme="dark"] .btn-pin-session.is-pinned:hover {
+  color: #FDE68A !important;
+  background: rgba(251, 191, 36, 0.25) !important;
 }
 
 [data-theme="dark"] .sidebar-user-chip {
