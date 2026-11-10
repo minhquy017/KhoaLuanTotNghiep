@@ -112,7 +112,11 @@ class VectorRetriever:
         try:
             clean_incomplete_hnsw_segments(self.chroma_dir)
             self.chroma_client = chromadb.PersistentClient(path=self.chroma_dir)
-            self.collection = self.chroma_client.get_collection(name="vietnam_reviews")
+            try:
+                self.collection = self.chroma_client.get_collection(name="hue_reviews")
+                print("✅ [VectorRetriever] Đã kết nối ChromaDB chuyên biệt Huế (hue_reviews)!")
+            except Exception:
+                self.collection = self.chroma_client.get_collection(name="vietnam_reviews")
             try:
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
