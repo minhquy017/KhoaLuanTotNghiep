@@ -5,7 +5,8 @@
 
 import { i18n } from './i18n.js';
 
-// Bảng giá vé di tích chính thức từ Trung tâm Bảo tồn Di tích Cố đô Huế
+// Bảng giá vé di tích chính thức theo Nghị quyết số 22/2022/NQ-HĐND của HĐND Tỉnh Thừa Thiên Huế
+// Quy định mức thu, chế độ thu, nộp, quản lý và sử dụng phí tham quan di tích lịch sử văn hóa Huế
 export const HUE_MONUMENT_TICKETS = [
   {
     id: 'dai_noi',
@@ -53,7 +54,7 @@ export const HUE_MONUMENT_TICKETS = [
     name: 'Lăng Vua Gia Long (Thiên Thọ Lăng)',
     nameEn: 'Gia Long Tomb (Thien Tho Lang)',
     priceAdult: 150000,
-    priceChild: 30000,
+    priceChild: 0,
     comboEligible3: false,
     comboEligible4: false
   },
@@ -62,7 +63,7 @@ export const HUE_MONUMENT_TICKETS = [
     aliases: ['đồng khánh', 'tư lăng', 'dong khanh'],
     name: 'Lăng Vua Đồng Khánh (Tư Lăng)',
     nameEn: 'Dong Khanh Tomb (Tu Lang)',
-    priceAdult: 50000,
+    priceAdult: 100000,
     priceChild: 0,
     comboEligible3: false,
     comboEligible4: false
@@ -102,6 +103,16 @@ export const HUE_MONUMENT_TICKETS = [
     aliases: ['cổ vật', 'điện long an', 'bảo tàng cổ vật'],
     name: 'Bảo tàng Cổ vật Cung đình Huế (Điện Long An)',
     nameEn: 'Museum of Royal Antiquities (Long An Palace)',
+    priceAdult: 50000,
+    priceChild: 0,
+    comboEligible3: false,
+    comboEligible4: false
+  },
+  {
+    id: 'dan_nam_giao',
+    aliases: ['nam giao', 'đàn nam giao'],
+    name: 'Đàn Nam Giao',
+    nameEn: 'Nam Giao Esplanade',
     priceAdult: 50000,
     priceChild: 0,
     comboEligible3: false,
@@ -255,6 +266,7 @@ function getTierDesc(tierObj) {
   if (!tierObj) return '';
   return (i18n.currentLang === 'en' && tierObj.descEn) ? tierObj.descEn : tierObj.desc;
 }
+const getDesc = getTierDesc;
 
 export class HueBudgetEstimator {
   constructor() {
@@ -770,7 +782,7 @@ export class HueBudgetEstimator {
               ${Object.values(TRANSPORT_TIERS).map(t => `
                 <button type="button" class="budget-pill-btn ${this.currentOptions.transportType === t.id ? 'active' : ''}" data-type="transport" data-value="${t.id}">
                   <span class="pill-name">${getTierName(t)}</span>
-                  <span class="pill-desc">${getDesc(t)}</span>
+                  <span class="pill-desc">${getTierDesc(t)}</span>
                 </button>
               `).join('')}
             </div>
@@ -786,7 +798,7 @@ export class HueBudgetEstimator {
                     <span class="pill-name">${getTierName(d)}</span>
                     <span class="pill-rate">${this.formatVnd(d.ratePerDay)}${perDaySuffix}</span>
                   </div>
-                  <span class="pill-desc">${getDesc(d)}</span>
+                  <span class="pill-desc">${getTierDesc(d)}</span>
                 </button>
               `).join('')}
             </div>
@@ -805,7 +817,7 @@ export class HueBudgetEstimator {
                     <span class="pill-name">${getTierName(h)}</span>
                     ${h.ratePerNight > 0 ? `<span class="pill-rate">${this.formatVnd(h.ratePerNight)}${perNightSuffix}</span>` : ''}
                   </div>
-                  <span class="pill-desc">${getDesc(h)}</span>
+                  <span class="pill-desc">${getTierDesc(h)}</span>
                 </button>
               `).join('')}
             </div>

@@ -30,6 +30,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+  /**
+   * Khử triệt để ký tự chữ Hán / tiếng Trung và dấu câu full-width trong câu trả lời từ model
+   */
+  const sanitizeChineseText = (str) => {
+    if (!str) return '';
+    let text = String(str);
+    const cjkPunctMap = {
+      '，': ', ', '。': '. ', '、': ', ', '；': '; ', '：': ': ',
+      '？': '? ', '！': '! ', '（': ' (', '）': ') ', '【': ' [',
+      '】': '] ', '《': ' "', '》': '" ', '“': '"', '”': '"',
+      '‘': "'", '’': "'", '—': ' - ', '…': '...', '·': ' · ',
+      '「': '"', '」': '"', '『': '"', '』': '"', '〈': '<', '〉': '>'
+    };
+    for (const [cjk, std] of Object.entries(cjkPunctMap)) {
+      text = text.replaceAll(cjk, std);
+    }
+    // Loại bỏ chữ Hán / CJK ideographs & radicals
+    text = text.replace(/[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff]+/g, '');
+    // Xóa bỏ ngoặc rỗng sót lại
+    text = text.replace(/\(\s*\)/g, '');
+    text = text.replace(/\[\s*\]/g, '');
+    text = text.replace(/""\s*/g, '');
+    // Chuẩn hóa khoảng trắng và dấu câu
+    text = text.replace(/[ \t]+/g, ' ');
+    text = text.replace(/\s+([,.:;!?])/g, '$1');
+    text = text.replace(/([,;:])\1+/g, '$1');
+    text = text.replace(/\.{4,}/g, '...');
+    return text.trim();
+  };
+
   const inferContextFromPlace = (place) => {
     const cat = String(place?.category || '').toLowerCase();
     const isFood = cat.includes('restaurant') || cat.includes('cafe') || cat.includes('ẩm thực') || cat.includes('quán');
@@ -561,16 +591,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnGenItinerary.disabled = true;
     }
 
+    const abortController = new AbortController();
+    setGeneratingState(true, abortController, loadingId);
+
     try {
       const userPrefs = userStore.getPreferences ? userStore.getPreferences() : null;
-      const res = await TourismApiClient.generateItinerary(days, preferredDishes, tripType, userLat, userLng, userPrefs);
+      const res = await TourismApiClient.generateItinerary(days, preferredDishes, tripType, userLat, userLng, userPrefs, abortController.signal);
       removeLoadingMessage(loadingId);
       appendItineraryDeckMessage(res, days, tripType, preferredDishes, userLocName);
     } catch (err) {
       removeLoadingMessage(loadingId);
-      const errMsg = isEn ? `Could not create itinerary: ${err.message}. Please try again.` : `Không thể tạo lịch trình: ${err.message}. Vui lòng thử lại.`;
-      appendAssistantError(errMsg);
+      if (err.name === 'AbortError' || abortController.signal.aborted) {
+        if (currentLoadingId === loadingId) {
+          appendAssistantStoppedMessage();
+        }
+      } else {
+        const errMsg = isEn ? `Could not create itinerary: ${err.message}. Please try again.` : `Không thể tạo lịch trình: ${err.message}. Vui lòng thử lại.`;
+        appendAssistantError(errMsg);
+      }
     } finally {
+      setGeneratingState(false);
       if (btnGenItinerary) {
         btnGenItinerary.classList.remove('loading');
         btnGenItinerary.disabled = false;
@@ -599,6 +639,54 @@ document.addEventListener('DOMContentLoaded', async () => {
   // THU THẬP PHẢN HỒI AI (AI FEEDBACK SYSTEM: LIKE / DISLIKE / COPY)
   // Ghi nhận phản hồi người dùng phục vụ đánh giá thực nghiệm & RLHF
   // =============================================================================
+
+  /**
+   * Sao chép văn bản vào bộ nhớ tạm an toàn & tương thích 100%
+   * Hỗ trợ tự động fallback khi chạy trên HTTP / localhost / Webview / iframe
+   */
+  async function copyTextToClipboard(text) {
+    if (!text || typeof text !== 'string') return false;
+
+    // 1. Thử Async Clipboard API chuẩn W3C nếu khả dụng
+    if (navigator?.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.warn('navigator.clipboard.writeText bị chặn hoặc không khả dụng, chuyển sang fallback execCommand:', err);
+      }
+    }
+
+    // 2. Fallback bằng phần tử textarea ẩn (hoạt động bền bỉ trên mọi trình duyệt & origin HTTP/HTTPS)
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.top = '0';
+      textArea.style.left = '0';
+      textArea.style.width = '2em';
+      textArea.style.height = '2em';
+      textArea.style.padding = '0';
+      textArea.style.border = 'none';
+      textArea.style.outline = 'none';
+      textArea.style.boxShadow = 'none';
+      textArea.style.background = 'transparent';
+      textArea.setAttribute('readonly', '');
+      document.body.appendChild(textArea);
+
+      textArea.focus();
+      textArea.select();
+      textArea.setSelectionRange(0, text.length);
+
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return successful;
+    } catch (err) {
+      console.error('Lỗi khi thực hiện fallback copy:', err);
+      return false;
+    }
+  }
+
   function createFeedbackBarHtml(messageId, existingRating = null) {
     const hintText = typeof i18n !== 'undefined' ? i18n.t('feedbackHint', 'Đánh giá câu trả lời:') : 'Đánh giá câu trả lời:';
     const copyText = typeof i18n !== 'undefined' ? i18n.t('feedbackCopy', 'Sao chép') : 'Sao chép';
@@ -620,9 +708,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="feedback-actions">
           <span class="feedback-hint">${hintText}</span>
           <button type="button" class="btn-msg-feedback btn-copy-msg" title="${copyText}" aria-label="${copyText}">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="icon-copy" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <svg class="icon-copied hidden" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
             <span class="copy-label">${copyText}</span>
           </button>
@@ -702,17 +793,71 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     copyBtn?.addEventListener('click', async () => {
       try {
-        const textToCopy = meta.plainText || container.querySelector('.answer-content')?.innerText || container.innerText || '';
-        await navigator.clipboard.writeText(textToCopy);
+        let textToCopy = meta.plainText || '';
+        if (meta.isItinerary && container.querySelector('.chat-itinerary-deck')) {
+          const deckTitle = container.querySelector('.deck-title')?.innerText?.trim() || '';
+          const deckSubtitle = container.querySelector('.deck-subtitle')?.innerText?.trim() || '';
+          const dayElements = container.querySelectorAll('.deck-day-content');
+          const daysText = [];
+          dayElements.forEach(dayEl => {
+            const theme = dayEl.querySelector('.deck-day-theme')?.innerText?.trim() || '';
+            const steps = [];
+            dayEl.querySelectorAll('.timeline-step').forEach(step => {
+              const time = step.querySelector('.step-time')?.innerText?.trim() || '';
+              const name = step.querySelector('.step-name')?.innerText?.trim() || '';
+              const desc = step.querySelector('.step-desc')?.innerText?.trim() || '';
+              steps.push(`  • ${time ? time + ': ' : ''}${name}${desc ? ' (' + desc + ')' : ''}`);
+            });
+            daysText.push(`${theme}\n${steps.join('\n')}`);
+          });
+          if (daysText.length > 0) {
+            textToCopy = `${deckTitle}${deckSubtitle ? ' - ' + deckSubtitle : ''}\n\n${daysText.join('\n\n')}`;
+          }
+        }
+
+        if (!textToCopy) {
+          const ansElem = container.querySelector('.answer-content');
+          textToCopy = (ansElem ? ansElem.innerText : container.innerText) || '';
+        }
+
+        textToCopy = textToCopy.trim();
+        if (!textToCopy) return;
+
+        const success = await copyTextToClipboard(textToCopy);
+        if (!success) {
+          console.warn('Không thể sao chép văn bản vào bộ nhớ tạm');
+          return;
+        }
+
+        const iconCopy = copyBtn.querySelector('.icon-copy');
+        const iconCopied = copyBtn.querySelector('.icon-copied');
         const copyLabel = copyBtn.querySelector('.copy-label');
-        if (copyLabel) copyLabel.textContent = typeof i18n !== 'undefined' ? i18n.t('feedbackCopied', 'Đã chép!') : 'Đã chép!';
+        const copiedTitle = typeof i18n !== 'undefined' ? i18n.t('feedbackCopied', 'Đã chép!') : 'Đã chép!';
+        const originalTitle = typeof i18n !== 'undefined' ? i18n.t('feedbackCopy', 'Sao chép') : 'Sao chép';
+
+        if (iconCopy && iconCopied) {
+          iconCopy.classList.add('hidden');
+          iconCopied.classList.remove('hidden');
+        }
+        if (copyLabel) copyLabel.textContent = copiedTitle;
+        copyBtn.setAttribute('title', copiedTitle);
+        copyBtn.setAttribute('aria-label', copiedTitle);
         copyBtn.classList.add('copied');
+
+        authController?.showToast?.(typeof i18n !== 'undefined' ? i18n.t('copiedToast', 'Đã sao chép vào bộ nhớ tạm!') : 'Đã sao chép vào bộ nhớ tạm!');
+
         setTimeout(() => {
-          if (copyLabel) copyLabel.textContent = typeof i18n !== 'undefined' ? i18n.t('feedbackCopy', 'Sao chép') : 'Sao chép';
+          if (iconCopy && iconCopied) {
+            iconCopy.classList.remove('hidden');
+            iconCopied.classList.add('hidden');
+          }
+          if (copyLabel) copyLabel.textContent = originalTitle;
+          copyBtn.setAttribute('title', originalTitle);
+          copyBtn.setAttribute('aria-label', originalTitle);
           copyBtn.classList.remove('copied');
         }, 2000);
       } catch (e) {
-        console.warn('Không thể sao chép văn bản:', e);
+        console.warn('Lỗi khi sao chép:', e);
       }
     });
 
@@ -1367,6 +1512,99 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (previewImageElem) previewImageElem.src = '';
     btnUploadImage?.classList.remove('has-image');
   }
+
+  // =============================================================================
+  // QUẢN LÝ TIẾN TRÌNH & DỪNG TẠO CÂU TRẢ LỜI (STOP GENERATING CONTROLLER)
+  // =============================================================================
+  let isGenerating = false;
+  let currentChatAbortController = null;
+  let currentLoadingId = null;
+
+  function setGeneratingState(generating, abortController = null, loadingId = null) {
+    isGenerating = generating;
+    currentChatAbortController = abortController;
+    currentLoadingId = loadingId;
+
+    if (!chatSendBtn) return;
+    const sendIcon = chatSendBtn.querySelector('.send-icon');
+    const stopIcon = chatSendBtn.querySelector('.stop-icon');
+
+    if (generating) {
+      chatSendBtn.classList.add('is-generating');
+      chatSendBtn.disabled = false;
+      chatSendBtn.type = 'button';
+      const stopTitle = typeof i18n !== 'undefined' ? i18n.t('stopBtn', 'Ngừng tạo câu trả lời') : 'Ngừng tạo câu trả lời';
+      chatSendBtn.setAttribute('title', stopTitle);
+      chatSendBtn.setAttribute('aria-label', stopTitle);
+      if (sendIcon) sendIcon.classList.add('hidden');
+      if (stopIcon) stopIcon.classList.remove('hidden');
+    } else {
+      chatSendBtn.classList.remove('is-generating');
+      chatSendBtn.disabled = false;
+      chatSendBtn.type = 'submit';
+      const sendTitle = typeof i18n !== 'undefined' ? i18n.t('sendBtn', 'Gửi') : 'Gửi';
+      chatSendBtn.setAttribute('title', sendTitle);
+      chatSendBtn.setAttribute('aria-label', sendTitle);
+      if (sendIcon) sendIcon.classList.remove('hidden');
+      if (stopIcon) stopIcon.classList.add('hidden');
+    }
+  }
+
+  function appendAssistantStoppedMessage() {
+    const isEn = typeof i18n !== 'undefined' && i18n.getLanguage() === 'en';
+    const msg = document.createElement('div');
+    msg.className = 'chat-message assistant is-stopped';
+    const stoppedText = isEn ? 'Response generation was stopped.' : 'Đã ngừng tạo câu trả lời.';
+    msg.innerHTML = `
+      <div class="message-avatar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 13h6v8H9z"/></svg>
+      </div>
+      <div class="message-bubble">
+        <div class="message-author">${i18n.t('assistantName', 'Trợ lý Cố đô')}</div>
+        <div class="stopped-note">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2.5"></rect></svg>
+          <span>${stoppedText}</span>
+        </div>
+      </div>
+    `;
+    chatThread.appendChild(msg);
+    chatThread.scrollTop = chatThread.scrollHeight;
+  }
+
+  function stopGenerating() {
+    if (!isGenerating) return;
+    if (currentChatAbortController) {
+      currentChatAbortController.abort();
+      currentChatAbortController = null;
+    }
+    if (currentLoadingId) {
+      removeLoadingMessage(currentLoadingId);
+      currentLoadingId = null;
+    }
+    appendAssistantStoppedMessage();
+    const isEn = typeof i18n !== 'undefined' && i18n.getLanguage() === 'en';
+    authController?.showToast?.(
+      typeof i18n !== 'undefined' ? i18n.t('stoppedGeneratingToast', 'Đã ngừng tạo câu trả lời.') : 'Đã ngừng tạo câu trả lời.'
+    );
+    setGeneratingState(false);
+  }
+
+  chatSendBtn?.addEventListener('click', (e) => {
+    if (isGenerating) {
+      e.preventDefault();
+      e.stopPropagation();
+      stopGenerating();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isGenerating) {
+      const activeModal = document.querySelector('.trip-budget-modal.active, .notebook-modal.active, .image-lightbox.open');
+      if (!activeModal) {
+        stopGenerating();
+      }
+    }
+  });
 
   // Kích thước ảnh:
   // - Bản gửi AI Vision + hiển thị trong khung chat: cạnh dài tối đa 1600px (đủ nét để nhận diện
@@ -2383,13 +2621,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       clearAttachedImage();
       if (chatInput) chatInput.value = '';
     }
-    if (chatSendBtn) chatSendBtn.disabled = true;
-
     // Hiển thị loading placeholder
     const loadingText = activeImage
       ? (isEn ? 'Identifying & analyzing photo...' : 'Đang nhận diện & phân tích ...')
       : (isEn ? 'Analyzing query...' : 'Đang phân tích ...');
     const loadingId = appendAssistantLoading(loadingText);
+
+    const abortController = new AbortController();
+    setGeneratingState(true, abortController, loadingId);
 
     try {
       // Truyền tọa độ GPS người dùng nếu đã có định vị & hồ sơ gu du lịch cá nhân hóa
@@ -2398,21 +2637,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       const userPrefs = userStore.getPreferences();
 
       const res = await TourismApiClient.askAssistant(
-        trimmedQuery, isEn ? 'Hue City' : 'Thành phố Huế', userLat, userLng, userPrefs, activeImage, conversationMemory
+        trimmedQuery, isEn ? 'Hue City' : 'Thành phố Huế', userLat, userLng, userPrefs, activeImage, conversationMemory, abortController.signal
       );
       removeLoadingMessage(loadingId);
       appendAssistantResponse(res, true, displayPrompt, { image: activeImage, storageThumb: activeStorageImage });
     } catch (err) {
       removeLoadingMessage(loadingId);
-      appendAssistantError(err.message);
+      if (err.name === 'AbortError' || abortController.signal.aborted) {
+        if (currentLoadingId === loadingId) {
+          appendAssistantStoppedMessage();
+        }
+      } else {
+        appendAssistantError(err.message);
+      }
     } finally {
-      if (chatSendBtn) chatSendBtn.disabled = false;
+      setGeneratingState(false);
       if (chatInput) chatInput.focus();
     }
   }
 
   chatForm?.addEventListener('submit', (e) => {
     e.preventDefault();
+    if (isGenerating) {
+      stopGenerating();
+      return;
+    }
     const query = chatInput?.value?.trim() || '';
     sendChatQuery(query);
   });
@@ -2616,7 +2865,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const savedRating = res.feedbackRating || null;
     const finalPrompt = promptText || res.prompt || lastUserPrompt || '';
 
-    const rawAnswer = res.answer || res.text || res.content || '';
+    const rawAnswer = sanitizeChineseText(res.answer || res.text || res.content || '');
+    res.answer = rawAnswer;
     const formattedAnswer = rawAnswer
       ? escapeHtml(rawAnswer)
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')

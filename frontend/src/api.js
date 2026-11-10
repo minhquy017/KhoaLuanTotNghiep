@@ -41,10 +41,16 @@ export class TourismApiClient {
    * Gọi API Lập Lịch Trình Du Lịch Tối Ưu (Spatial Itinerary Planner)
    * Có cơ chế tự phục hồi thông minh (Offline Fallback)
    */
-  static async generateItinerary(numDays = 2, preferredDishes = [], tripType = 'Couples', userLat = null, userLng = null, preferences = null) {
+  static async generateItinerary(numDays = 2, preferredDishes = [], tripType = 'Couples', userLat = null, userLng = null, preferences = null, externalSignal = null) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 45000);
+      if (externalSignal) {
+        if (externalSignal.aborted) {
+          throw new DOMException('User stopped generation', 'AbortError');
+        }
+        externalSignal.addEventListener('abort', () => controller.abort(), { once: true });
+      }
 
       const payload = {
         num_days: parseInt(numDays, 10),
@@ -75,7 +81,14 @@ export class TourismApiClient {
         return await res.json();
       }
     } catch (err) {
+      if (externalSignal?.aborted || err.name === 'AbortError') {
+        throw new DOMException('User stopped generation', 'AbortError');
+      }
       console.info('Backend unavailable, using rich curated spatial planner fallback:', err);
+    }
+
+    if (externalSignal?.aborted) {
+      throw new DOMException('User stopped generation', 'AbortError');
     }
 
     // Client-side Fallback Plan
@@ -85,10 +98,16 @@ export class TourismApiClient {
   /**
    * Gửi câu hỏi đến Trợ lý Du lịch Thông minh (Spatial Agentic RAG)
    */
-  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null) {
+  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null, externalSignal = null) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000);
+      if (externalSignal) {
+        if (externalSignal.aborted) {
+          throw new DOMException('User stopped generation', 'AbortError');
+        }
+        externalSignal.addEventListener('abort', () => controller.abort(), { once: true });
+      }
 
       const payload = { query: query || '', locality };
       if (userLat !== null && userLng !== null) {
@@ -124,7 +143,14 @@ export class TourismApiClient {
         return await res.json();
       }
     } catch (err) {
+      if (externalSignal?.aborted || err.name === 'AbortError') {
+        throw new DOMException('User stopped generation', 'AbortError');
+      }
       console.info('Backend unavailable or timed out, using spatial conversational fallback:', err);
+    }
+
+    if (externalSignal?.aborted) {
+      throw new DOMException('User stopped generation', 'AbortError');
     }
 
     // Client-side Fallback Chat

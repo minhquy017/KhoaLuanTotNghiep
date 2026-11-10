@@ -31,6 +31,7 @@ Kiến trúc State Graph:
 
 import os
 import sys
+import re
 import unicodedata
 from typing import TypedDict, List, Dict, Any, Optional, Literal
 
@@ -60,6 +61,55 @@ from src.rag.session_memory import (
     format_history_for_prompt,
     infer_context_from_history,
 )
+
+
+# =============================================================================
+# 0. CHUẨN HÓA VÀ LỌC BỎ KÝ TỰ / TIẾNG TRUNG TRONG PHẢN HỒI (CJK SANITIZER)
+# =============================================================================
+CJK_PUNCTUATION_MAP = {
+    '，': ', ', '。': '. ', '、': ', ', '；': '; ', '：': ': ',
+    '？': '? ', '！': '! ', '（': ' (', '）': ') ', '【': ' [',
+    '】': '] ', '《': ' "', '》': '" ', '“': '"', '”': '"',
+    '‘': "'", '’': "'", '—': ' - ', '…': '...', '·': ' · ',
+    '「': '"', '」': '"', '『': '"', '』': '"', '〈': '<', '〉': '>',
+}
+
+# Regex nhận diện ký tự chữ Hán / CJK ideographs & radicals
+CJK_CHAR_REGEX = re.compile(r'[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff]+')
+
+
+def sanitize_vietnamese_response(text: str) -> str:
+    """
+    Chuẩn hóa văn bản đầu ra từ LLM:
+    - Loại bỏ triệt để chữ Hán / tiếng Trung sót lại từ pre-training data của model
+    - Thay thế dấu câu tiếng Trung (full-width) sang dấu câu chuẩn tiếng Việt
+    - Dọn dẹp dấu ngoặc rỗng (), [] và khoảng trắng thừa sau khi xóa chữ Hán
+    """
+    if not text:
+        return ""
+
+    # 1. Chuyển đổi dấu câu tiếng Trung sang dấu chuẩn
+    for cjk_char, std_punct in CJK_PUNCTUATION_MAP.items():
+        text = text.replace(cjk_char, std_punct)
+
+    # 2. Xóa bỏ ký tự chữ Hán
+    text = CJK_CHAR_REGEX.sub('', text)
+
+    # 3. Dọn dẹp các ngoặc rỗng còn sót lại (ví dụ sau khi xóa '(顺化)' còn lại '()')
+    text = re.sub(r'\(\s*\)', '', text)
+    text = re.sub(r'\[\s*\]', '', text)
+    text = re.sub(r'\"\"\s*', '', text)
+
+    # 4. Chuẩn hóa khoảng trắng và dấu câu
+    text = re.sub(r'[ \t]+', ' ', text)
+    text = re.sub(r'\s+([,.:;!?])', r'\1', text)
+    text = re.sub(r'([,;:])\1+', r'\1', text)
+    # Rút gọn các dấu chấm lặp vô lý (trừ dấu 3 chấm ...)
+    text = re.sub(r'\.{4,}', '...', text)
+
+    # Chuẩn hóa khoảng trắng đầu dòng sau xuống dòng
+    lines = [line.strip() for line in text.splitlines()]
+    return "\n".join(lines).strip()
 
 
 # =============================================================================
@@ -132,6 +182,7 @@ def recognize_image_entity(image_base64: str, user_query: str = "") -> Dict[str,
         "Hãy quan sát kỹ bức ảnh này và cho biết đây là địa danh, di tích lịch sử, cảnh quan hay món ăn đặc sản nào tại Huế (hoặc Việt Nam).\n"
         "Đặc biệt chú ý nhận diện các điểm du lịch nổi tiếng: Đại Nội Huế, Ngọ Môn, Kỳ Đài, Chùa Thiên Mụ, Lăng Khải Định, Lăng Tự Đức, Lăng Minh Mạng, Cầu Trường Tiền, Chợ Đông Ba, Đồi Vọng Cảnh, Trường Quốc Học, Nhà thờ Phủ Cam, Chùa Từ Hiếu...\n"
         "hoặc các món đặc sản: Bún bò Huế, Cơm hến, Bún hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Chè heo quay, Bánh khoái, Bánh ép, Nem lụi...\n\n"
+        "YÊU CẦU BẮT BUỘC: Trả lời 100% bằng tiếng Việt thuần túy, tuyệt đối KHÔNG dùng chữ Hán hoặc tiếng Trung.\n"
         "Trả lời đúng theo định dạng 3 dòng sau (không thêm lời dẫn khác):\n"
         "TEN_DOI_TUONG: [Tên chính xác của địa danh hoặc món ăn, ví dụ: Chùa Thiên Mụ hoặc Bún bò Huế]\n"
         "LOAI: [DI_TICH / THANG_CANH / AM_THUC / KHAC]\n"
@@ -163,6 +214,9 @@ def recognize_image_entity(image_base64: str, user_query: str = "") -> Dict[str,
         if not result["name"] and len(raw_text) > 0:
             first_line = raw_text.splitlines()[0]
             result["name"] = first_line.replace("**", "").replace("*", "").strip()[:50]
+        
+        result["name"] = sanitize_vietnamese_response(result["name"])
+        result["description"] = sanitize_vietnamese_response(result["description"])
         return result
     except Exception as e:
         print(f"[Vision Recognition Error]: {e}")
@@ -1265,6 +1319,7 @@ Nguyên tắc trả lời bắt buộc:
    - Mở đầu nhẹ nhàng, lịch thiệp ("Dạ chào bạn...", "Dạ, em xin gợi ý với bạn...", "Chào bạn...").
    - Tuyệt đối KHÔNG dùng các câu cứng nhắc, máy móc như: "Dựa trên dữ liệu Đồ thị Tri thức...", "Hệ thống đã xác định thành công...".
    - Diễn đạt 100% bằng tiếng Việt trong sáng, gần gũi như một người bạn đồng hành bản địa tại Huế.
+   - TUYỆT ĐỐI KHÔNG DÙNG TIẾNG TRUNG: Nghiêm cấm chèn bất kỳ chữ Hán, chữ Trung Quốc (giản thể hoặc phồn thể như 例如, 顺化, 等等, 以及...), từ ngữ tiếng Trung hoặc dấu câu tiếng Trung (như ，、。). Mọi tên di tích lịch sử và triều Nguyễn PHẢI viết bằng chữ Quốc ngữ tiếng Việt thuần túy (ví dụ: viết "Ngọ Môn", "Điện Thái Hòa", "Vua Tự Đức", KHÔNG viết chữ Hán).
 
 2. NẾU DU KHÁCH HỎI CÁC ĐIỂM QUANH / GẦN MỘT ĐỊA DANH (VÍ DỤ "QUANH CHÙA THIÊN MỤ", "GẦN ĐẠI NỘI"):
    - Tuyệt đối KHÔNG giới thiệu lại chính địa danh mốc đó làm điểm tham quan lân cận (không gợi ý Chùa Thiên Mụ khi người ta đang hỏi quanh Chùa Thiên Mụ).
@@ -1435,6 +1490,9 @@ Nguyên tắc trả lời bắt buộc:
         "model": OLLAMA_MODEL,
         "status": "done"
     })
+
+    # Khử triệt để ký tự chữ Hán / tiếng Trung và chuẩn hóa dấu câu trước khi xuất xưởng
+    answer_text = sanitize_vietnamese_response(answer_text)
 
     return {
         "formatted_context": full_context,

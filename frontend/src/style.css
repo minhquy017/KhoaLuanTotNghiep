@@ -11393,16 +11393,61 @@ body[data-theme="dark"] {
 }
 
 /* Nút gửi xám khi ô nhập trống và chưa đính kèm ảnh */
-.chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn,
-.chat-send-btn:disabled {
+.chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn:not(.is-generating),
+.chat-send-btn:disabled:not(.is-generating) {
   background-color: #DCDCE2;
   color: #FFFFFF;
   cursor: default;
 }
 
-.chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn svg,
-.chat-send-btn:disabled svg {
+.chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn:not(.is-generating) svg,
+.chat-send-btn:disabled:not(.is-generating) svg {
   color: #FFFFFF;
+}
+
+/* Trạng thái AI đang tạo câu trả lời (Nút dừng phát sinh / Stop Generating) */
+.chat-input-wrapper .chat-send-btn.is-generating,
+.chat-send-btn.is-generating {
+  background-color: #18181B !important;
+  color: #FFFFFF !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.2s ease;
+}
+
+.chat-input-wrapper .chat-send-btn.is-generating:hover,
+.chat-send-btn.is-generating:hover {
+  background-color: #000000 !important;
+  transform: scale(1.08) !important;
+}
+
+.chat-send-btn svg.stop-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.chat-send-btn.is-generating svg.stop-icon {
+  fill: #FFFFFF !important;
+  color: #FFFFFF !important;
+  stroke: none !important;
+  display: block !important;
+}
+
+.chat-send-btn.is-generating svg.send-icon {
+  display: none !important;
+}
+
+/* Thông báo đã ngừng câu trả lời */
+.chat-message.assistant.is-stopped .stopped-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--chat-muted);
+  font-style: italic;
+  font-size: 0.88rem;
 }
 
 .chat-input-hints {
@@ -11830,20 +11875,86 @@ body[data-theme="dark"] {
   color: #F4F4F5 !important;
 }
 
-[data-theme="dark"] .chat-send-btn {
+/* Nút gửi tin nhắn trong Dark Mode: Khi active nền trắng, mũi tên đen tuyền nổi bật */
+[data-theme="dark"] .chat-send-btn,
+html[data-theme="dark"] .chat-send-btn {
   background-color: #F4F4F5 !important;
   color: #09090B !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer !important;
 }
 
-[data-theme="dark"] .chat-send-btn:disabled,
-[data-theme="dark"] .chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn {
+[data-theme="dark"] .chat-send-btn svg,
+html[data-theme="dark"] .chat-send-btn svg {
+  color: #09090B !important;
+  stroke: #09090B !important;
+}
+
+[data-theme="dark"] .chat-send-btn:hover,
+html[data-theme="dark"] .chat-send-btn:hover {
+  background-color: #FFFFFF !important;
+  transform: scale(1.06) !important;
+}
+
+[data-theme="dark"] .chat-send-btn:hover svg,
+html[data-theme="dark"] .chat-send-btn:hover svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+/* Nút gửi xám mờ khi ô nhập rỗng & chưa có ảnh */
+[data-theme="dark"] .chat-send-btn:disabled:not(.is-generating),
+[data-theme="dark"] .chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn:not(.is-generating),
+html[data-theme="dark"] .chat-send-btn:disabled:not(.is-generating),
+html[data-theme="dark"] .chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn:not(.is-generating) {
   background-color: #27272A !important;
   color: #71717A !important;
+  box-shadow: none !important;
+  cursor: default !important;
+  transform: none !important;
 }
 
-[data-theme="dark"] .chat-send-btn:disabled svg,
-[data-theme="dark"] .chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn svg {
+[data-theme="dark"] .chat-send-btn:disabled:not(.is-generating) svg,
+[data-theme="dark"] .chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn:not(.is-generating) svg,
+html[data-theme="dark"] .chat-send-btn:disabled:not(.is-generating) svg,
+html[data-theme="dark"] .chat-input-wrapper:has(.chat-input:placeholder-shown):not(:has(.chat-tool-btn.has-image)) .chat-send-btn:not(.is-generating) svg {
   color: #71717A !important;
+  stroke: #71717A !important;
+}
+
+/* Stop button trong Dark Mode: Nổi bật với nền tròn trắng sứ và khối vuông dừng đen sắc nét */
+[data-theme="dark"] .chat-input-wrapper .chat-send-btn.is-generating,
+[data-theme="dark"] .chat-send-btn.is-generating,
+html[data-theme="dark"] .chat-input-wrapper .chat-send-btn.is-generating,
+html[data-theme="dark"] .chat-send-btn.is-generating {
+  background-color: #FFFFFF !important;
+  color: #09090B !important;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.25) !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+[data-theme="dark"] .chat-input-wrapper .chat-send-btn.is-generating:hover,
+[data-theme="dark"] .chat-send-btn.is-generating:hover,
+html[data-theme="dark"] .chat-input-wrapper .chat-send-btn.is-generating:hover,
+html[data-theme="dark"] .chat-send-btn.is-generating:hover {
+  background-color: #FFFFFF !important;
+  transform: scale(1.08) !important;
+  box-shadow: 0 3px 14px rgba(255, 255, 255, 0.35) !important;
+}
+
+[data-theme="dark"] .chat-send-btn.is-generating svg.stop-icon,
+html[data-theme="dark"] .chat-send-btn.is-generating svg.stop-icon {
+  fill: #09090B !important;
+  color: #09090B !important;
+  stroke: none !important;
+  display: block !important;
+}
+
+[data-theme="dark"] .chat-send-btn.is-generating svg.send-icon,
+html[data-theme="dark"] .chat-send-btn.is-generating svg.send-icon {
+  display: none !important;
 }
 
 [data-theme="dark"] .chat-input-hints {
@@ -14709,6 +14820,13 @@ html[data-theme="dark"] .btn-msg-feedback {
 html[data-theme="dark"] .btn-msg-feedback:hover {
   background: #3F3F46 !important;
   color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .btn-msg-feedback.copied,
+html[data-theme="dark"] .btn-msg-feedback.copied {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: #166534 !important;
+  color: #4ADE80 !important;
 }
 
 

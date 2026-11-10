@@ -4,7 +4,7 @@ ROUTER: TRỢ LÝ HỎI ĐÁP DU LỊCH (CHAT ROUTE)
 """
 from fastapi import APIRouter, HTTPException
 from src.app.schemas.chat_schema import ChatRequest, ChatResponse
-from src.rag.agent_graph import get_tourism_agent, next_session_context, OLLAMA_MODEL
+from src.rag.agent_graph import get_tourism_agent, next_session_context, OLLAMA_MODEL, sanitize_vietnamese_response
 
 router = APIRouter(prefix="/api/v1", tags=["Trợ lý Hỏi đáp (Chatbot)"])
 agent = get_tourism_agent()
@@ -63,7 +63,8 @@ def chat_assistant(req: ChatRequest):
         import re
         from src.graph.graph_retriever import get_graph_retriever
         
-        answer_text = res.get("final_answer", "")
+        answer_text = sanitize_vietnamese_response(res.get("final_answer", ""))
+        res["final_answer"] = answer_text
         graph_retriever = get_graph_retriever()
         bold_entities = re.findall(r'\*\*(.*?)\*\*', answer_text)
         STOP_HEADINGS = {
@@ -272,7 +273,7 @@ def chat_assistant(req: ChatRequest):
         return ChatResponse(
             status="success",
             query=req.query or res.get("query", "Phân tích hình ảnh"),
-            answer=res.get("final_answer", ""),
+            answer=answer_text,
             route_taken=res.get("route_taken", "local_knowledge"),
             confidence_score=conf,
             matched_places=clean_places,
