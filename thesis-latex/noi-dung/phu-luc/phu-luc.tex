@@ -1,57 +1,164 @@
 \phan{PHỤ LỤC}
 \label{phan:phu-luc}
 
-\section*{Phụ lục A: Danh mục 100 Kịch bản Kiểm thử Chuẩn (Benchmark Suite)}
+\section*{Phụ lục A: Danh mục 100 Kịch bản Kiểm thử Chuẩn (Benchmark Test Suite)}
 \phantomsection
-\addcontentsline{toc}{section}{Phụ lục A: Danh mục 100 Kịch bản Kiểm thử Chuẩn (Benchmark Suite)}
+\addcontentsline{toc}{section}{Phụ lục A: Danh mục 100 Kịch bản Kiểm thử Chuẩn (Benchmark Test Suite)}
 
 Bộ dữ liệu kiểm thử chuẩn (Benchmark Test Suite) gồm 100 kịch bản được phân bổ toàn diện theo 3 nhóm bài toán cốt lõi: Nhóm 1 (TC-01 đến TC-40, gồm 40 kịch bản) về truy vấn ẩm thực gắn liền tọa độ không gian; Nhóm 2 (TC-41 đến TC-75, gồm 35 kịch bản) về khám phá danh lam di tích và làng nghề lân cận theo trục giao thông; và Nhóm 3 (TC-76 đến TC-100, gồm 25 kịch bản) về lập lịch trình đa ngày và tour bán nhật tối ưu theo phân cụm hai bờ sông Hương.
 
-Bảng dưới đây trình bày danh mục 12 ca kiểm thử tiêu biểu đại diện cho cấu trúc của bộ 100 kịch bản kiểm thử:
+Dưới đây là danh mục toàn bộ 100 kịch bản kiểm thử được thiết lập và đối sánh thực nghiệm:
 
-\noindent
-\begin{tabularx}{\textwidth}{c l >{\raggedright\arraybackslash}X p{3.2cm}}
+\begingroup
+\footnotesize
+\setstretch{1.15}
+\setlength{\tabcolsep}{3.5pt}
+\begin{longtable}{|>{\centering\arraybackslash\bfseries}p{1.1cm}|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{6.6cm}|>{\raggedright\arraybackslash}p{4.3cm}|}
 \hline
-\textbf{Mã ca} & \textbf{Nhóm bài toán} & \textbf{Nội dung câu hỏi truy vấn của du khách} & \textbf{Điểm neo (Anchor POI)} \\
+\textbf{Mã ca} & \textbf{Nhóm kịch bản} & \textbf{Nội dung câu hỏi truy vấn của du khách} & \textbf{Điểm neo \& Ràng buộc} \\
 \hline
-TC-01 & Không gian + Ẩm thực & Tôi đang ở Đại Nội Huế, muốn tìm quán bún bò chuẩn vị gần đây để đi bộ ăn trưa. & Đại Nội Huế (bờ Bắc) \\
-TC-02 & Không gian + Ẩm thực & Sau khi tham quan Lăng Tự Đức, tôi muốn ăn bánh bèo hoặc bánh nậm gần đó thì ghé quán nào? & Lăng Tự Đức (Thủy Xuân) \\
-TC-03 & Không gian + Ẩm thực & Tôi đang ở khu vực Cồn Hến, muốn thưởng thức cơm hến và chè bắp đúng gốc Huế. & Cồn Hến (Phường Vĩ Dạ) \\
-TC-04 & Không gian + Ẩm thực & Gợi ý quán bánh khoái và nem lụi ngon ở bờ Nam gần khu phố Tây Chu Văn An. & Phố đi bộ Chu Văn An \\
-TC-05 & Khám phá lân cận & Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không? & Chùa Thiên Mụ (bờ Bắc) \\
-TC-06 & Khám phá lân cận & Từ Đồi Vọng Cảnh, có những di tích lăng tẩm hoặc làng nghề nào nằm gần trên cùng trục đường? & Đồi Vọng Cảnh (Thủy Xuân) \\
-TC-07 & Khám phá lân cận & Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút. & Chợ Đông Ba (bờ Bắc) \\
-TC-08 & Khám phá lân cận & Khám phá danh thắng thiên nhiên và sinh thái đầm phá ở ngoại ô phía Đông Nam thành phố Huế. & Đầm Chuồn (Phú Vang) \\
-TC-09 & Lịch trình tổng hợp & Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam. & Khách sạn bờ Nam TP. Huế \\
-TC-10 & Lịch trình tổng hợp & Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống. & Không gian Cố đô Huế \\
-TC-11 & Lịch trình tổng hợp & Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái. & Cố đô Huế và đầm phá \\
-TC-12 & Lịch trình tổng hợp & Lập tour nửa ngày (chiều từ 14h đến 19h) ngắm hoàng hôn và thưởng thức ẩm thực đêm xứ Huế. & Trục đồi Thủy Xuân \\
-\hline
-\end{tabularx}
+\endfirsthead
 
-\vspace{0.3cm}
-\noindent\textit{Ghi chú: Toàn bộ 100 kịch bản chi tiết (từ TC-01 đến TC-100) kèm kết quả kiểm thử đối sánh ba phương pháp được lưu trữ đầy đủ trong tệp dữ liệu kiểm thử thực nghiệm \texttt{benchmark\_spatial\_rag\_results.json} tại kho mã nguồn của đề tài.}
+\multicolumn{4}{c}{{\bfseries Phụ lục A: Danh mục 100 Kịch bản Kiểm thử Chuẩn (Tiếp theo)}} \\
+\hline
+\textbf{Mã ca} & \textbf{Nhóm kịch bản} & \textbf{Nội dung câu hỏi truy vấn của du khách} & \textbf{Điểm neo \& Ràng buộc} \\
+\hline
+\endhead
 
-\vspace{1cm}
+\hline
+\endfoot
+
+\hline
+\endlastfoot
+
+TC-01 & Ẩm thực không gian & Ăn bún bò ở đâu ngon và gần Đại Nội Huế nhất? & Đại Nội Huế (Món: Bún bò Huế) [$d \le 2.0\text{ km}$] \\ \hline
+TC-02 & Ẩm thực không gian & Sau khi tham quan chùa Thiên Mụ, gần đó có quán bánh ướt thịt nướng nào ngon không? & Chùa Thiên Mụ (Món: Bánh ướt thịt nướng) [$d \le 2.0\text{ km}$] \\ \hline
+TC-03 & Ẩm thực không gian & Tìm quán cơm hến ngon và uy tín tại khu vực Cồn Hến & Cồn Hến (Món: Cơm hến) [$d \le 1.0\text{ km}$] \\ \hline
+TC-04 & Ẩm thực không gian & Gần lăng Tự Đức có quán bánh bèo, bánh nậm nào ngon chuẩn vị? & Lăng Tự Đức (Món: Bánh bèo) [$d \le 2.0\text{ km}$] \\ \hline
+TC-05 & Ẩm thực không gian & Quán chè Hẻm nổi tiếng ở Huế nằm ở đâu và gần đó có gì ăn ngon? & Chè Hẻm (Món: Chè Huế) [$d \le 1.5\text{ km}$] \\ \hline
+TC-06 & Ẩm thực không gian & Tìm quán bánh khoái và nem lụi ngon ở khu vực phố Tây Chu Văn An & Phố đi bộ Chu Văn An (Món: Bánh khoái) [$d \le 1.5\text{ km}$] \\ \hline
+TC-07 & Ẩm thực không gian & Tôi đang ở Chợ Đông Ba, muốn ăn bún mắm nêm hoặc bún giấm nuốc gần đây & Chợ Đông Ba (Món: Bún mắm nêm) [$d \le 1.0\text{ km}$] \\ \hline
+TC-08 & Ẩm thực không gian & Gần chùa Từ Hiếu có quán cơm chay thanh tịnh nào ngon không? & Chùa Từ Hiếu (Món: Cơm chay) [$d \le 2.0\text{ km}$] \\ \hline
+TC-09 & Ẩm thực không gian & Quán bánh canh Nam Phổ ngon gần khu vực Thành Nội bờ Bắc & Thành Nội Huế (Món: Bánh canh Nam Phổ) [$d \le 2.0\text{ km}$] \\ \hline
+TC-10 & Ẩm thực không gian & Tìm quán chè bột lọc bọc heo quay ngon gần Cửa Thượng Tứ & Cửa Thượng Tứ (Món: Chè heo quay) [$d \le 1.5\text{ km}$] \\ \hline
+TC-11 & Ẩm thực không gian & Quán vả trộn tôm thịt ngon phục vụ ẩm thực truyền thống gần Đàn Nam Giao & Đàn Nam Giao (Món: Vả trộn) [$d \le 2.5\text{ km}$] \\ \hline
+TC-12 & Ẩm thực không gian & Gần Cung An Định có quán bánh bèo chén gia truyền nào không? & Cung An Định (Món: Bánh bèo) [$d \le 1.5\text{ km}$] \\ \hline
+TC-13 & Ẩm thực không gian & Uống trà cung đình Huế ở đâu chuẩn vị gần đường Lê Lợi bờ Nam? & Đường Lê Lợi (Món: Trà cung đình) [$d \le 1.5\text{ km}$] \\ \hline
+TC-14 & Ẩm thực không gian & Quán cơm niêu gia đình ngon gần Ga Huế bờ Nam & Ga Huế (Món: Cơm niêu) [$d \le 1.5\text{ km}$] \\ \hline
+TC-15 & Ẩm thực không gian & Quán bún bò Mụ Rơi đường Mai Thúc Loan có mở cửa trưa không? & Mai Thúc Loan (Món: Bún bò Huế) [$d \le 1.0\text{ km}$] \\ \hline
+TC-16 & Ẩm thực không gian & Ăn vặt đêm ở công viên Thương Bạc bờ Bắc có những món gì ngon? & Công viên Thương Bạc (Món: Ăn vặt Huế) [$d \le 1.0\text{ km}$] \\ \hline
+TC-17 & Ẩm thực không gian & Tìm quán bún cua, bánh canh cá lóc ngon ở đường Đinh Tiên Hoàng & Đinh Tiên Hoàng (Món: Bánh canh cá lóc) [$d \le 1.5\text{ km}$] \\ \hline
+TC-18 & Ẩm thực không gian & Quán cà phê muối đặc sản gần đường Đặng Thái Thân bờ Bắc & Đặng Thái Thân (Món: Cà phê muối) [$d \le 1.0\text{ km}$] \\ \hline
+TC-19 & Ẩm thực không gian & Quán bánh ép Huế ngon gần đường Nhật Lệ trong Thành Nội & Đường Nhật Lệ (Món: Bánh ép) [$d \le 1.2\text{ km}$] \\ \hline
+TC-20 & Ẩm thực không gian & Ăn bánh nậm, bánh lọc bọc lá chuối ngon quanh chợ An Cựu & Chợ An Cựu (Món: Bánh nậm) [$d \le 1.5\text{ km}$] \\ \hline
+TC-21 & Ẩm thực không gian & Quán bún bò O Cương Chú Điệp đường Đống Đa nằm ở bờ nào? & Đường Đống Đa (Món: Bún bò Huế) [$d \le 1.5\text{ km}$] \\ \hline
+TC-22 & Ẩm thực không gian & Tìm quán bánh ram ít và bánh quai vạc ngon gần ngã tư Hùng Vương & Hùng Vương (Món: Bánh ram ít) [$d \le 1.5\text{ km}$] \\ \hline
+TC-23 & Ẩm thực không gian & Quán bánh cuốn tôm chua thịt luộc ngon khu vực Gia Hội & Phố cổ Gia Hội (Món: Tôm chua thịt luộc) [$d \le 2.0\text{ km}$] \\ \hline
+TC-24 & Ẩm thực không gian & Gần Lăng Khải Định có quán ăn trưa nào đặc sản Thủy Bằng không? & Lăng Khải Định (Món: Bánh bèo) [$d \le 3.0\text{ km}$] \\ \hline
+TC-25 & Ẩm thực không gian & Tìm quán nem lụi nướng sả thơm ngon gần Cửa Quảng Đức & Cửa Quảng Đức (Món: Nem lụi) [$d \le 1.2\text{ km}$] \\ \hline
+TC-26 & Ẩm thực không gian & Quán chè mợ Tôn Đích có những loại chè đặc trưng nào? & Công viên Thương Bạc (Món: Chè Huế) [$d \le 1.0\text{ km}$] \\ \hline
+TC-27 & Ẩm thực không gian & Quán bún mắm nêm Mệ Thẻ đường Bà Triệu có xa cầu Trường Tiền không? & Cầu Trường Tiền (Món: Bún mắm nêm) [$d \le 1.8\text{ km}$] \\ \hline
+TC-28 & Ẩm thực không gian & Ăn bánh mì bột lọc Tràng Tiền đêm ở bờ Nam đoạn nào ngon? & Chân cầu Trường Tiền (Món: Bánh mì bột lọc) [$d \le 1.0\text{ km}$] \\ \hline
+TC-29 & Ẩm thực không gian & Quán cơm hến Hoa Đông ở thôn Vỹ Dạ có bán chè bắp không? & Thôn Vỹ Dạ (Món: Cơm hến) [$d \le 1.0\text{ km}$] \\ \hline
+TC-30 & Ẩm thực không gian & Tìm quán bánh khoái Lạc Thiện lâu đời nhất ở Huế & Cửa Thượng Tứ (Món: Bánh khoái) [$d \le 1.0\text{ km}$] \\ \hline
+TC-31 & Ẩm thực không gian & Gần Đồi Vọng Cảnh có quán nước mía hoặc ẩm thực nhẹ nào không? & Đồi Vọng Cảnh (Món: Ăn nhẹ) [$d \le 2.0\text{ km}$] \\ \hline
+TC-32 & Ẩm thực không gian & Quán bún bò Bà Tuyết ở đường Nguyễn Công Trứ có đông không? & Nguyễn Công Trứ (Món: Bún bò Huế) [$d \le 1.2\text{ km}$] \\ \hline
+TC-33 & Ẩm thực không gian & Tìm quán cơm chay ngon gần chùa Báo Quốc & Chùa Báo Quốc (Món: Cơm chay) [$d \le 1.5\text{ km}$] \\ \hline
+TC-34 & Ẩm thực không gian & Quán hải sản cá kình đầm chuồn ăn ở đâu ngon nhất? & Đầm Chuồn (Món: Bánh khoái cá kình) [$d \le 8.0\text{ km}$] \\ \hline
+TC-35 & Ẩm thực không gian & Quán bún giấm nuốc Huế mùa hè ăn ở đâu ngon nhất bờ Bắc? & Chợ Đông Ba (Món: Bún giấm nuốc) [$d \le 1.2\text{ km}$] \\ \hline
+TC-36 & Ẩm thực không gian & Tìm quán nem tré gia truyền Đông Ba làm quà biếu & Đào Duy Từ (Món: Tré Huế) [$d \le 1.0\text{ km}$] \\ \hline
+TC-37 & Ẩm thực không gian & Quán ốc và đồ ăn vặt sinh viên bờ Nam đường Hồ Đắc Di & Hồ Đắc Di (Món: Ốc cay Huế) [$d \le 2.0\text{ km}$] \\ \hline
+TC-38 & Ẩm thực không gian & Tìm quán bánh canh cua rời ngon gần chợ Tây Lộc & Chợ Tây Lộc (Món: Bánh canh cua) [$d \le 1.5\text{ km}$] \\ \hline
+TC-39 & Ẩm thực không gian & Quán bánh bèo Chi đường Lê Ngô Cát gần lăng Tự Đức & Lê Ngô Cát (Món: Bánh bèo) [$d \le 1.5\text{ km}$] \\ \hline
+TC-40 & Ẩm thực không gian & Quán bánh ướt thịt nướng Huyền Anh Kim Long có chỗ đỗ xe không? & Kim Long (Món: Bánh ướt thịt nướng) [$d \le 1.5\text{ km}$] \\ \hline
+TC-41 & Khám phá lân cận & Sau khi tham quan Đại Nội thì nên đi đâu tiếp gần đó trong bán kính 1km? & Đại Nội Huế [$d \le 1.5\text{ km}$] \\ \hline
+TC-42 & Khám phá lân cận & Từ chùa Thiên Mụ có thể đi bộ sang Văn Thánh Huế được không? & Chùa Thiên Mụ [$d \le 1.5\text{ km}$] \\ \hline
+TC-43 & Khám phá lân cận & Từ Đồi Vọng Cảnh nên ghé những điểm lăng tẩm nào tiện đường? & Đồi Vọng Cảnh [$d \le 2.5\text{ km}$] \\ \hline
+TC-44 & Khám phá lân cận & Các điểm di tích có thể đi bộ tham quan trong 15 phút từ Chợ Đông Ba & Chợ Đông Ba [$d \le 1.5\text{ km}$] \\ \hline
+TC-45 & Khám phá lân cận & Từ Lăng Khải Định ghé điểm tham quan nào lân cận tiện đường về trung tâm? & Lăng Khải Định [$d \le 4.0\text{ km}$] \\ \hline
+TC-46 & Khám phá lân cận & Làng hương Thủy Xuân nằm gần những di tích nào nhất? & Làng hương Thủy Xuân [$d \le 2.0\text{ km}$] \\ \hline
+TC-47 & Khám phá lân cận & Quanh Cung An Định có điểm tham quan kiến trúc nào đẹp? & Cung An Định [$d \le 2.0\text{ km}$] \\ \hline
+TC-48 & Khám phá lân cận & Từ Đồi Thiên An đi Lăng Khải Định mất bao xa và qua những đâu? & Đồi Thiên An [$d \le 3.5\text{ km}$] \\ \hline
+TC-49 & Khám phá lân cận & Quanh khu vực Chùa Từ Hiếu có những ngôi cổ tự nào khác? & Chùa Từ Hiếu [$d \le 2.5\text{ km}$] \\ \hline
+TC-50 & Khám phá lân cận & Các di tích lịch sử nằm trên trục đường Bạch Đằng phố cổ Gia Hội & Bạch Đằng Gia Hội [$d \le 2.0\text{ km}$] \\ \hline
+TC-51 & Khám phá lân cận & Điểm tham quan gần Bảo tàng Lịch sử Thừa Thiên Huế trong Thành Nội & Bảo tàng Lịch sử [$d \le 1.5\text{ km}$] \\ \hline
+TC-52 & Khám phá lân cận & Nhà vườn An Hiên nằm gần điểm du lịch nào trên trục đường Kim Long? & Nhà vườn An Hiên [$d \le 1.5\text{ km}$] \\ \hline
+TC-53 & Khám phá lân cận & Từ Lăng Minh Mạng sang Lăng Gia Long đi bằng đường nào thuận tiện? & Lăng Minh Mạng [$d \le 5.0\text{ km}$] \\ \hline
+TC-54 & Khám phá lân cận & Dọc đường Lê Lợi bờ Nam có những công trình kiến trúc Pháp nào nổi bật? & Đường Lê Lợi [$d \le 2.0\text{ km}$] \\ \hline
+TC-55 & Khám phá lân cận & Đường lên Chùa Huyền Không Sơn Thượng đi qua những cảnh quan nào? & Huyền Không Sơn Thượng [$d \le 6.0\text{ km}$] \\ \hline
+TC-56 & Khám phá lân cận & Cầu ngói Thanh Toàn cách trung tâm Huế bao xa và có gì tham quan? & Cầu ngói Thanh Toàn [$d \le 6.5\text{ km}$] \\ \hline
+TC-57 & Khám phá lân cận & Khám phá Làng chài Đầm Chuồn Tam Giang nên đi vào buổi nào? & Đầm Chuồn [$d \le 10.0\text{ km}$] \\ \hline
+TC-58 & Khám phá lân cận & Rừng ngập mặn Rú Chá nằm ở đâu và kết hợp đi cùng điểm nào? & Rú Chá [$d \le 10.0\text{ km}$] \\ \hline
+TC-59 & Khám phá lân cận & Làng cổ Phước Tích nằm ở hướng nào từ trung tâm Huế? & Làng cổ Phước Tích [$d \le 35.0\text{ km}$] \\ \hline
+TC-60 & Khám phá lân cận & Từ Lăng Tự Đức đi bộ sang Lăng Đồng Khánh mất bao lâu? & Lăng Tự Đức [$d \le 1.5\text{ km}$] \\ \hline
+TC-61 & Khám phá lân cận & Các cổng thành cổ đẹp nhất để chụp ảnh quanh Kinh thành Huế & Cửa Thượng Tứ [$d \le 2.5\text{ km}$] \\ \hline
+TC-62 & Khám phá lân cận & Điểm ngắm hoàng hôn đẹp nhất ven sông Hương gần trung tâm & Sông Hương [$d \le 2.5\text{ km}$] \\ \hline
+TC-63 & Khám phá lân cận & Hồ Tịnh Tâm nằm ở đâu trong Kinh thành và gần cổng thành nào? & Hồ Tịnh Tâm [$d \le 1.5\text{ km}$] \\ \hline
+TC-64 & Khám phá lân cận & Chùa Báo Quốc và Ga Huế cách nhau bao xa có tiện đi bộ không? & Chùa Báo Quốc [$d \le 1.2\text{ km}$] \\ \hline
+TC-65 & Khám phá lân cận & Tuyến đường đi bộ ven sông Hương đoạn từ cầu Phú Xuân đến cầu Trường Tiền & Công viên bờ Nam [$d \le 1.5\text{ km}$] \\ \hline
+TC-66 & Khám phá lân cận & Bến thuyền Tòa Khâm nằm ở đâu và cách phố Tây bao xa? & Bến thuyền Tòa Khâm [$d \le 1.0\text{ km}$] \\ \hline
+TC-67 & Khám phá lân cận & Khu phố cổ Bao Vinh còn những ngôi nhà cổ nào? & Phố cổ Bao Vinh [$d \le 3.5\text{ km}$] \\ \hline
+TC-68 & Khám phá lân cận & Bãi biển Thuận An cách Đại Nội Huế bao nhiêu km đường bộ? & Biển Thuận An [$d \le 14.0\text{ km}$] \\ \hline
+TC-69 & Khám phá lân cận & Khu du lịch Bạch Mã và Thiền viện Trúc Lâm cách Huế bao xa? & Bạch Mã [$d \le 40.0\text{ km}$] \\ \hline
+TC-70 & Khám phá lân cận & Trường Quốc Học Huế gần những điểm di tích nào ở bờ Nam? & Trường Quốc Học [$d \le 1.5\text{ km}$] \\ \hline
+TC-71 & Khám phá lân cận & Điện Hòn Chén nằm ở khúc sông nào và đi thuyền từ đâu? & Điện Hòn Chén [$d \le 5.0\text{ km}$] \\ \hline
+TC-72 & Khám phá lân cận & Chùa Từ Đàm có ý nghĩa lịch sử gì và nằm gần điểm nào? & Chùa Từ Đàm [$d \le 2.0\text{ km}$] \\ \hline
+TC-73 & Khám phá lân cận & Khu di tích Chín Hầm nằm gần đồi nào phía Tây Nam? & Khu di tích Chín Hầm [$d \le 3.0\text{ km}$] \\ \hline
+TC-74 & Khám phá lân cận & Làng hoa Thủy Biều có những trải nghiệm sinh thái nào? & Thủy Biều [$d \le 4.0\text{ km}$] \\ \hline
+TC-75 & Khám phá lân cận & Phố đi bộ Nguyễn Đình Chiểu và chợ đêm cầu Trường Tiền mở lúc mấy giờ? & Cầu Trường Tiền [$d \le 1.0\text{ km}$] \\ \hline
+TC-76 & Lập lịch trình & Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi xuất phát bờ Nam & Khách sạn bờ Nam [$d \le 5.0\text{ km}$] \\ \hline
+TC-77 & Lập lịch trình & Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống & Cố đô Huế [$d \le 6.0\text{ km}$] \\ \hline
+TC-78 & Lập lịch trình & Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái & Huế và phụ cận [$d \le 8.0\text{ km}$] \\ \hline
+TC-79 & Lập lịch trình & Lập tour nửa ngày chiều từ 14h đến 19h ngắm hoàng hôn Đồi Vọng Cảnh và ăn tối bánh Huế & Thủy Xuân [$d \le 4.0\text{ km}$] \\ \hline
+TC-80 & Lập lịch trình & Lịch trình 1 ngày tham quan toàn bộ di tích bờ Bắc sông Hương không qua cầu & Thành Nội [$d \le 3.0\text{ km}$] \\ \hline
+TC-81 & Lập lịch trình & Lịch trình 1 ngày bờ Nam tập trung hệ thống lăng tẩm và làng nghề truyền thống & Lăng tẩm bờ Nam [$d \le 6.0\text{ km}$] \\ \hline
+TC-82 & Lập lịch trình & Tour 2 ngày 1 đêm cho gia đình có người cao tuổi ưu tiên di chuyển nhẹ nhàng & Trung tâm Huế [$d \le 5.0\text{ km}$] \\ \hline
+TC-83 & Lập lịch trình & Lịch trình 3 ngày 2 đêm Huế tiết kiệm cho nhóm sinh viên thích check-in & Huế [$d \le 8.0\text{ km}$] \\ \hline
+TC-84 & Lập lịch trình & Tour buổi sáng 8h đến 12h tham quan Đại Nội và ăn trưa bún bò gần đó & Đại Nội Huế [$d \le 2.0\text{ km}$] \\ \hline
+TC-85 & Lập lịch trình & Food tour ẩm thực Huế 24 giờ thưởng thức 8 món đặc sản nổi tiếng nhất & Ẩm thực Huế [$d \le 4.0\text{ km}$] \\ \hline
+TC-86 & Lập lịch trình & Lịch trình 2 ngày phong cách chụp ảnh áo dài cổ phục tại các di tích cổ kính & Di tích Huế [$d \le 5.0\text{ km}$] \\ \hline
+TC-87 & Lập lịch trình & Tour nửa ngày sáng Chùa Thiên Mụ kết hợp thăm nhà vườn An Hiên và uống trà & Kim Long [$d \le 3.0\text{ km}$] \\ \hline
+TC-88 & Lập lịch trình & Lịch trình 3 ngày khám phá Huế và trải nghiệm ngủ đêm đầm Chuồn Tam Giang & Huế - Đầm Chuồn [$d \le 12.0\text{ km}$] \\ \hline
+TC-89 & Lập lịch trình & Lịch trình 1 ngày chiêm bái các ngôi chùa cổ thanh tịnh nhất xứ Huế & Cổ tự Huế [$d \le 6.0\text{ km}$] \\ \hline
+TC-90 & Lập lịch trình & Tour 1 ngày khám phá 3 lăng tẩm đẹp nhất: Tự Đức, Khải Định và Minh Mạng & Cụm lăng tẩm [$d \le 7.0\text{ km}$] \\ \hline
+TC-91 & Lập lịch trình & Lịch trình 2 ngày mùa mưa ở Huế: bảo tàng, nghe ca Huế sông Hương và ăn lẩu & Huế mùa mưa [$d \le 4.0\text{ km}$] \\ \hline
+TC-92 & Lập lịch trình & Tour sinh thái dã ngoại 1 ngày: Cầu ngói Thanh Toàn, Rú Chá và ngắm hoàng hôn Đầm Chuồn & Ngoại ô Huế [$d \le 15.0\text{ km}$] \\ \hline
+TC-93 & Lập lịch trình & Lịch trình 3 ngày cho du khách quốc tế trải nghiệm lịch sử triều Nguyễn sâu sắc & Di sản Huế [$d \le 8.0\text{ km}$] \\ \hline
+TC-94 & Lập lịch trình & Tour đêm Huế từ 18h đến 22h: đi thuyền rồng, dạo phố đi bộ và ăn chè hẻm & Đêm Cố đô [$d \le 3.0\text{ km}$] \\ \hline
+TC-95 & Lập lịch trình & Lịch trình 2 ngày kết hợp tham quan di sản và tắm suối khoáng nóng Thanh Tân & Huế - Thanh Tân [$d \le 25.0\text{ km}$] \\ \hline
+TC-96 & Lập lịch trình & Tour 1 ngày trải nghiệm các làng nghề: làng hương Thủy Xuân, làng hoa giấy Thanh Tiên & Làng nghề Huế [$d \le 8.0\text{ km}$] \\ \hline
+TC-97 & Lập lịch trình & Lịch trình 2 ngày đạp xe trải nghiệm đường làng Thủy Biều và ngắm sông Hương & Thủy Biều [$d \le 5.0\text{ km}$] \\ \hline
+TC-98 & Lập lịch trình & Lịch trình 3 ngày văn hóa ẩm thực từ món dân dã chợ Đông Ba đến tiệc cung đình & Ẩm thực Cố đô [$d \le 6.0\text{ km}$] \\ \hline
+TC-99 & Lập lịch trình & Tour 1 ngày tìm hiểu lịch sử kháng chiến và các di tích thời cận đại tại Huế & Di tích lịch sử [$d \le 6.0\text{ km}$] \\ \hline
+TC-100 & Lập lịch trình & Lịch trình 3 ngày 2 đêm tối ưu biểu giá vé gộp 4 điểm của Trung tâm Bảo tồn Di tích & Tuyến vé gộp di tích [$d \le 7.0\text{ km}$] \\ \hline
+\end{longtable}
+\endgroup
+
+\vspace{0.8cm}
 
 \section*{Phụ lục B: Danh mục Thực đơn Món ăn Đặc sản Huế trong Đồ thị Tri thức}
 \phantomsection
 \addcontentsline{toc}{section}{Phụ lục B: Danh mục Thực đơn Món ăn Đặc sản Huế trong Đồ thị Tri thức}
 
+\begingroup
+\small
+\setstretch{1.2}
+\setlength{\tabcolsep}{4pt}
 \noindent
-\begin{tabularx}{\textwidth}{l l >{\raggedright\arraybackslash}X l}
+\begin{tabularx}{\textwidth}{|l|l|>{\raggedright\arraybackslash}X|l|}
 \hline
 \textbf{Mã món} & \textbf{Tên món đặc sản} & \textbf{Đặc trưng hương vị và nguyên liệu} & \textbf{Khu vực tập trung} \\
 \hline
-HUE\_01 & Bún bò Huế & Nước dùng xương bò, ruốc sả, chả cua, giò heo & Phường Phú Hội, Phú Nhuận \\
-HUE\_02 & Cơm hến & Hến xào cồn Hến, tóp mỡ, bắp chuối, mắm ruốc & Cồn Hến, Vỹ Dạ \\
-HUE\_03 & Bánh bèo chén & Bánh bột gạo hấp chén nhỏ, tôm chấy, da heo chiên & Phường Tây Lộc, Vỹ Dạ \\
-HUE\_04 & Bánh nậm & Bột gạo bọc lá chuối, nhân tôm thịt băm nhuyễn & Phường Thuận Lộc, Kim Long \\
-HUE\_05 & Bánh bột lọc & Bột lọc trong suốt, nhân tôm thịt rim đậm đà & Toàn thành phố Huế \\
-HUE\_06 & Bánh khoái & Vỏ bột giòn rụm, nhân tôm, thịt, giá, chấm nước lèo & Khu vực Đông Ba, Gia Hội \\
-HUE\_07 & Nem lụi & Thịt heo quết nướng than hoa trên que sả & Đường Nguyễn Huệ, Đinh Tiên Hoàng \\
-HUE\_08 & Chè heo quay & Viên bột lọc bọc thịt heo quay trong nước đường & Hẻm Hùng Vương, Bến Ngự \\
-HUE\_09 & Vả trộn & Quả vả luộc thái mỏng trộn tôm thịt, mè rang & Nhà hàng ẩm thực cung đình \\
+HUE\_01 & Bún bò Huế & Nước dùng xương bò, ruốc sả, chả cua, giò heo & Phường Phú Hội, Phú Nhuận \\ \hline
+HUE\_02 & Cơm hến & Hến xào cồn Hến, tóp mỡ, bắp chuối, mắm ruốc & Cồn Hến, Vỹ Dạ \\ \hline
+HUE\_03 & Bánh bèo chén & Bánh bột gạo hấp chén nhỏ, tôm chấy, da heo chiên & Phường Tây Lộc, Vỹ Dạ \\ \hline
+HUE\_04 & Bánh nậm & Bột gạo bọc lá chuối, nhân tôm thịt băm nhuyễn & Phường Thuận Lộc, Kim Long \\ \hline
+HUE\_05 & Bánh bột lọc & Bột lọc trong suốt, nhân tôm thịt rim đậm đà & Toàn thành phố Huế \\ \hline
+HUE\_06 & Bánh khoái & Vỏ bột giòn rụm, nhân tôm, thịt, giá, chấm nước lèo & Khu vực Đông Ba, Gia Hội \\ \hline
+HUE\_07 & Nem lụi & Thịt heo quết nướng than hoa trên que sả & Đường Nguyễn Huệ, Đinh Tiên Hoàng \\ \hline
+HUE\_08 & Chè heo quay & Viên bột lọc bọc thịt heo quay trong nước đường & Hẻm Hùng Vương, Bến Ngự \\ \hline
+HUE\_09 & Vả trộn & Quả vả luộc thái mỏng trộn tôm thịt, mè rang & Nhà hàng ẩm thực cung đình \\ \hline
 HUE\_10 & Bún mắm nêm & Bún tươi thịt luộc, tai mui heo, mắm nêm cá cơm & Chợ Đông Ba, Bến Ngự \\
 \hline
 \end{tabularx}
+\endgroup

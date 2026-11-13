@@ -25,6 +25,7 @@ data/processed/*.db-shm
 data/processed/*.sqlite
 data/processed/*.sqlite3
 data/processed/chroma_db/
+data/processed/visual_database/images/
 scratch/
 
 # Crawler scraped JSON and backups (tránh lỗi vượt quá 100MB trên GitHub)

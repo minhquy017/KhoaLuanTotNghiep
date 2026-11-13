@@ -462,7 +462,7 @@ def build_thesis_docx():
 
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Nghiên cứu xây dựng Đồ thị Tri thức Không gian Du lịch Huế với 9.582 đỉnh thực thể và 126.313 cạnh ngữ nghĩa, kết nối 612 địa điểm du lịch tại Huế (29 điểm tham quan di tích cốt lõi, 104 khách sạn, 479 quán ăn). Thông qua thuật toán khai phá thực đơn ngầm từ kho ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế từ TripAdvisor, hệ thống bóc tách 4.337 quan hệ phục vụ món ăn đặc sản chuẩn xác. Hệ thống tích hợp phân hệ Thị giác Đa phương thức CLIP ViT-B/32 nhận diện ảnh thực địa di tích đạt Top-1 98,7% và Top-3 100,0% qua giao thức LOOCV không cần tái huấn luyện, cùng Khung lọc không gian 2 giai đoạn (Two-stage Spatial Filtering): lọc thô Haversine (d <= 1,5 km) trên đồ thị và tối ưu tinh mạng lưới đường bộ thực tế qua OSRM Contraction Hierarchies có tính đến hệ số uốn lượn đô thị và các cây cầu vượt sông Hương. Kết quả thực nghiệm đối sánh định lượng trên bộ Benchmark quy mô lớn gồm 100 kịch bản du lịch thực tế chứng minh Spatial GraphRAG triệt tiêu 100% hiện tượng ảo giác thực thể và vi phạm không gian (so với mức vi phạm 39,1% của Zero-shot LLM và 39,1% của Naive RAG), rút ngắn cự ly di chuyển trung bình từ 22,2 km (Zero-shot) và 42,3 km (Naive RAG) xuống 1,2 km, đồng thời nâng độ chính xác món ăn đặc sản lên 62,5% (so với 56,9% của Zero-shot và 56,2% của Naive RAG) với thời gian đáp ứng ổn định 7,7 giây cho chuỗi suy luận tác tử đa bước.")
+    add_body_run(p, "Nghiên cứu xây dựng Đồ thị Tri thức Không gian Du lịch Huế với 9.525 đỉnh thực thể và 90.948 cạnh ngữ nghĩa, kết nối 612 địa điểm du lịch tại Huế (29 điểm tham quan di tích cốt lõi, 104 khách sạn, 479 quán ăn). Thông qua thuật toán khai phá thực đơn ngầm từ kho ngữ liệu 44.355 bài đánh giá du khách thực tế tại Huế từ TripAdvisor, hệ thống bóc tách 4.337 quan hệ phục vụ món ăn đặc sản chuẩn xác. Hệ thống tích hợp phân hệ Thị giác Đa phương thức CLIP ViT-B/32 trên cơ sở dữ liệu 3.528 hình ảnh thực địa di sản và dịch vụ du lịch Cố đô Huế, đạt độ chính xác Top-1 98,7% và Top-3 100,0% qua giao thức LOOCV không cần tái huấn luyện, cùng Khung lọc không gian 2 giai đoạn (Two-stage Spatial Filtering): lọc thô Haversine (d <= 1,5 km) trên đồ thị và tối ưu tinh mạng lưới đường bộ thực tế qua OSRM Contraction Hierarchies có tính đến hệ số uốn lượn đô thị và các cây cầu vượt sông Hương. Kết quả thực nghiệm đối sánh định lượng trên bộ Benchmark quy mô lớn gồm 100 kịch bản du lịch thực tế chứng minh Spatial GraphRAG triệt tiêu 100% hiện tượng ảo giác thực thể và vi phạm không gian (so với mức vi phạm 39,1% của Zero-shot LLM và 39,1% của Naive RAG), rút ngắn cự ly di chuyển trung bình từ 22,2 km (Zero-shot) và 42,3 km (Naive RAG) xuống 1,2 km, đồng thời nâng độ chính xác món ăn đặc sản lên 62,5% (so với 56,9% của Zero-shot và 56,2% của Naive RAG) với thời gian đáp ứng ổn định 7,7 giây cho chuỗi suy luận tác tử đa bước.")
 
     p_kw = doc.add_paragraph()
     format_body_p(p_kw)
@@ -708,7 +708,7 @@ def build_thesis_docx():
     add_sec_heading(doc, "1. Tính cấp thiết của đề tài")
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Thành phố Huế là trung tâm văn hóa, du lịch di sản đặc sắc của Việt Nam và khu vực, sở hữu Quần thể di tích Cố đô Huế được UNESCO vinh danh là Di sản Văn hóa Thế giới cùng hệ thống ẩm thực cung đình và dân gian phong phú bậc nhất cả nước. Bước vào kỷ nguyên chuyển đổi số quốc gia và phát triển kinh tế ban đêm, ngành du lịch Thừa Thiên Huế đặt mục tiêu nâng cao chất lượng trải nghiệm của du khách thông qua các giải pháp công nghệ thông tin tiên tiến. Tuy nhiên, như lãnh đạo tỉnh Thừa Thiên Huế đã nhấn mạnh trong các diễn đàn phát triển kinh tế số, ngành du lịch địa phương hiện nay vẫn chưa có một hệ sinh thái số thực sự thông minh để trả lời thấu đáo ba câu hỏi cơ bản nhưng mang tính quyết định đối với bất kỳ du khách nào khi đặt chân đến Cố đô: Đi đâu, ăn gì, lưu trú ở đâu [1].")
+    add_body_run(p, "Thành phố Huế là trung tâm văn hóa, du lịch di sản đặc sắc của Việt Nam và khu vực, sở hữu Quần thể di tích Cố đô Huế được UNESCO vinh danh là Di sản Văn hóa Thế giới cùng hệ thống ẩm thực cung đình và dân gian phong phú bậc nhất cả nước. Đặc biệt, khi Thừa Thiên Huế chính thức trở thành Thành phố Huế trực thuộc Trung ương từ năm 2025 với cấu trúc hành chính gồm hai quận trung tâm Phú Xuân và Thuận Hóa, ngành du lịch địa phương đặt mục tiêu nâng cao chất lượng trải nghiệm của du khách thông qua các giải pháp chuyển đổi số tiên tiến. Lãnh đạo Thành phố Huế đã nhấn mạnh trong các diễn đàn phát triển kinh tế số, ngành du lịch địa phương hiện nay cần một hệ sinh thái số thực sự thông minh để trả lời thấu đáo ba câu hỏi cơ bản nhưng mang tính quyết định đối với bất kỳ du khách nào khi đặt chân đến Cố đô: Đi đâu, ăn gì, lưu trú ở đâu [1].")
 
     add_figure(doc, "thanhnien_hue_tourism_problem.png", "Hình 1: Bài báo phản ánh chỉ đạo của lãnh đạo tỉnh về yêu cầu trả lời câu hỏi cốt lõi của du khách Huế [1]")
 
@@ -764,18 +764,18 @@ def build_thesis_docx():
     add_body_run(p_h, "• H1: Khung lọc không gian 2 giai đoạn (Haversine d <= 1,5 km cắt tỉa topo và OSRM tối ưu hóa đường bộ) sẽ triệt tiêu hoàn toàn các lộ trình ziczac nhảy bờ sông Hương, giảm cự ly di chuyển trung bình ít nhất 50% so với Naive RAG.\n"
                        "• H2: Khai phá thực đơn ngầm cho phép mở rộng độ phủ món ăn đặc sản lên trên 90% và đạt độ chính xác món trên 95%.\n"
                        "• H3: Mô hình Spatial GraphRAG đạt tỷ lệ bảo chứng thực thể 100% và tỷ lệ ảo giác 0% trên các truy vấn kiểm thử thuộc phạm vi đồ thị.\n"
-                       "• H4: Quy trình phân cụm lịch trình kết hợp bộ lập lịch trình thông minh bảo đảm thời gian sinh kết quả dưới 4 giây trên GPU cá nhân tiêu chuẩn.\n"
+                       "• H4: Quy trình phân cụm lịch trình kết hợp bộ lập lịch trình thông minh bảo đảm thời gian sinh kết quả dưới 8 giây trên GPU cá nhân tiêu chuẩn (thực nghiệm trung bình đạt 7,7 giây cho chuỗi tác tử đa tầng).\n"
                        "• H5: Mô hình CLIP ViT-B/32 áp dụng cơ chế Zero-shot inference đóng băng trọng số kết hợp trích xuất đặc trưng hình ảnh đạt độ chính xác Top-1 trên 95% và Top-3 100% trên tập dữ liệu ảnh di tích Cố đô Huế đã được kiểm định chéo rút một (LOOCV), loại bỏ triệt để rủi ro rò rỉ dữ liệu.\n"
                        "• H6: Khung lọc không gian 2 giai đoạn kết hợp OSRM phản ánh chính xác hệ số uốn lượn đô thị (kappa xấp xỉ 1,35 - 1,42), tính đúng chi phí vượt sông Hương qua hệ thống cầu thực tế, giúp kế hoạch lộ trình và dự toán ngân sách có độ tin cậy thực tiễn vượt trội so với định tuyến Haversine thuần túy.")
 
     add_sec_heading(doc, "4. Đối tượng và Phạm vi nghiên cứu")
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Đối tượng nghiên cứu của khóa luận là các phương pháp biểu diễn tri thức không gian, kỹ thuật Tăng cường Tạo sinh Truy xuất dựa trên đồ thị (GraphRAG), mô hình thị giác ngôn ngữ đa phương thức (CLIP ViT-B/32), khung điều phối tác tử hội thoại thông minh và các giải thuật tối ưu hóa lịch trình du lịch dựa trên địa lý mạng lưới đường bộ. Về mặt dữ liệu, đối tượng nghiên cứu bao gồm 9.525 thực thể điểm du lịch, ẩm thực, lưu trú và 44.355 bản ghi đánh giá du khách thực tế tại Huế thu thập từ TripAdvisor (trên tổng thể 1.698.641 đánh giá toàn quốc đã làm sạch), kết hợp dữ liệu tọa độ hình học từ OpenStreetMap và Google Maps.")
+    add_body_run(p, "Đối tượng nghiên cứu của khóa luận là các phương pháp biểu diễn tri thức không gian, kỹ thuật Tăng cường Tạo sinh Truy xuất dựa trên đồ thị (GraphRAG), mô hình thị giác ngôn ngữ đa phương thức (CLIP ViT-B/32), khung điều phối tác tử hội thoại thông minh và các giải thuật tối ưu hóa lịch trình du lịch dựa trên địa lý mạng lưới đường bộ. Về mặt dữ liệu, đối tượng nghiên cứu bao gồm Đồ thị Tri thức Không gian với 9.525 nút thực thể (trong đó có 8.921 điểm POI du lịch, ẩm thực và lưu trú có tọa độ GPS với 612 địa điểm trọng điểm tại Huế, 570 món ăn đặc sản và 34 đơn vị hành chính) và 44.355 bản ghi đánh giá du khách thực tế tại Huế thu thập từ TripAdvisor (trên tổng thể 1.698.641 đánh giá toàn quốc đã làm sạch), kết hợp dữ liệu tọa độ hình học từ OpenStreetMap và Google Maps.")
 
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Về phạm vi nghiên cứu, không gian địa lý trọng tâm của đề tài được định vị tại thành phố Huế và các vùng phụ cận thuộc tỉnh Thừa Thiên Huế như khu vực Kinh thành, cụm lăng tẩm phía Nam, đồi Vọng Cảnh, đầm Chuồn, đầm phá Tam Giang, làng cổ Phước Tích và cầu ngói Thanh Toàn. Về mặt công nghệ, nghiên cứu tập trung vào mô hình thị giác -- ngôn ngữ mã nguồn mở cục bộ Qwen2.5-VL:7B vận hành qua môi trường Ollama trên GPU NVIDIA GeForce RTX 3050, bảo đảm tính khả thi triển khai và vận hành tự chủ hoàn toàn tại các cơ quan, đơn vị địa phương.")
+    add_body_run(p, "Về phạm vi nghiên cứu, không gian địa lý trọng tâm của đề tài được định vị tại Thành phố Huế trực thuộc Trung ương (với hai quận trung tâm Phú Xuân, Thuận Hóa và các vùng phụ cận như khu vực Kinh thành, cụm lăng tẩm phía Nam, đồi Vọng Cảnh, đầm Chuồn, đầm phá Tam Giang, làng cổ Phước Tích và cầu ngói Thanh Toàn). Về mặt công nghệ, nghiên cứu tập trung vào mô hình thị giác -- ngôn ngữ mã nguồn mở cục bộ Qwen2.5-VL:7B vận hành qua môi trường Ollama trên GPU NVIDIA GeForce RTX 3050, bảo đảm tính khả thi triển khai và vận hành tự chủ hoàn toàn tại các cơ quan, đơn vị địa phương.")
 
     add_sec_heading(doc, "5. Ý nghĩa khoa học và Thực tiễn")
     p = doc.add_paragraph()
@@ -866,7 +866,8 @@ def build_thesis_docx():
         ["Địa điểm Du lịch Toàn quốc", "GeoJSON / CSV", "8.921 thực thể", "Tọa độ GPS, danh mục và địa chỉ đã chuẩn hóa toàn quốc"],
         ["Địa điểm Du lịch tại Huế", "GeoJSON / JSON", "612 thực thể", "Thực thể du lịch, ẩm thực, lưu trú chuẩn hóa tại Huế (29 tham quan, 104 khách sạn, 479 quán ăn)"],
         ["Culinary Gazetteer", "JSON / Cấu trúc", "570 món ăn", "Từ điển thực đơn ẩm thực và biến thể nhận diện"],
-        ["Đồ thị Tri thức Không gian", "NetworkX / PKL", "9.525 nút / 90.948 cạnh", "Đồ thị thực thể, topo lân cận và quan hệ thực đơn"]
+        ["Đồ thị Tri thức Không gian", "NetworkX / PKL", "9.525 nút / 90.948 cạnh", "Đồ thị thực thể, topo lân cận và quan hệ thực đơn"],
+        ["Hình ảnh Di tích & Điểm mốc", "JPEG / RGB", "3.528 tệp", "Kho ảnh thực địa phục vụ nhận diện đa phương thức Visual RAG"]
     ]
     tbl1 = doc.add_table(rows=len(tbl_data_summary), cols=4)
     tbl1.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -998,6 +999,9 @@ def build_thesis_docx():
 
     add_figure(doc, "hue_places_category.png", "Hình 3: Cơ cấu phân bố các danh mục địa điểm du lịch và xếp hạng sao tại thành phố Huế")
     add_figure(doc, "top10_dishes_hue.png", "Hình 4: Top 10 món ăn đặc sản Huế được du khách nhắc đến nhiều nhất trong các bài đánh giá")
+    p_dish_rank = doc.add_paragraph()
+    format_body_p(p_dish_rank)
+    add_body_run(p_dish_rank, "Quan sát Hình 4, Bún bò Huế dẫn đầu áp đảo về số lượt bảo chứng với gần 1.200 lượt nhắc đến tích cực (chính xác 1.184 lượt), tiếp theo sau lần lượt là Nem lụi Huế, Bánh bèo Huế, Bánh bột lọc Huế, Chè bắp Cồn Hến, Cơm hến Huế, Bánh nậm và Bánh khoái. Sự định lượng khách quan này cung cấp cơ sở dữ liệu xác thực để hệ thống tự động ưu tiên gợi ý đúng những món ăn mang tính quốc hồn quốc túy của Cố đô khi du khách đưa ra các câu hỏi mở về ẩm thực.")
     add_figure(doc, "atomic_chunking_pipeline.png", "Hình 5: Quy trình phân mảnh văn bản phân tử cho các bài đánh giá du khách trước khi lập chỉ mục")
 
     doc.add_page_break()
@@ -1207,17 +1211,17 @@ def build_thesis_docx():
     tbl_benchmark_data = [
         ["Mã", "Câu hỏi truy vấn của du khách (Prompt)", "Điểm neo (Anchor POI)", "Món / Dịch vụ yêu cầu", "Tiêu chuẩn nghiệm đúng"],
         ["TC-01", "Tôi đang ở Đại Nội Huế, muốn tìm quán bún bò chuẩn vị gần đây để đi bộ ăn trưa.", "Đại Nội Huế (Bờ Bắc)", "Bún bò Huế", "Gợi ý quán bún bò bờ Bắc có thật (Mụ Rơi, Cẩm, Đông Ba); d <= 1,5 km; không nhảy sang bờ Nam."],
-        ["TC-02", "Sau khi tham quan Lăng Tự Đức, tôi muốn ăn bánh bèo hoặc bánh nậm gần đó thì ghé quán nào?", "Lăng Tự Đức (Thủy Xuân)", "Bánh bèo, bánh nậm Huế", "Gợi ý quán bánh bèo/nậm trên trục Lê Ngô Cát/Thủy Xuân; d <= 1,5 km; loại trừ quán Bà Đỏ (> 5 km)."],
+        ["TC-04", "Sau khi tham quan Lăng Tự Đức, tôi muốn ăn bánh bèo hoặc bánh nậm gần đó thì ghé quán nào?", "Lăng Tự Đức (Thủy Xuân)", "Bánh bèo, bánh nậm Huế", "Gợi ý quán bánh bèo/nậm trên trục Lê Ngô Cát/Thủy Xuân; d <= 1,5 km; loại trừ quán Bà Đỏ (> 5 km)."],
         ["TC-03", "Tôi đang ở khu vực Cồn Hến, muốn thưởng thức cơm hến và chè bắp đúng gốc Huế.", "Cồn Hến (Phường Vĩ Dạ)", "Cơm hến, chè bắp Cồn Hến", "Gợi ý đúng quán cơm hến tại đảo Cồn Hến (Hoa Đông, Quán Nhỏ); d <= 800 m; Conf >= 0,75."],
-        ["TC-04", "Gợi ý quán bánh khoái và nem lụi ngon ở bờ Nam gần khu phố Tây Chu Văn An.", "Phố đi bộ Chu Văn An", "Bánh khoái, nem lụi Huế", "Gợi ý quán bờ Nam trong d <= 1,2 km (Bánh khoái Hạnh); không nhầm sang bún bò hay cà phê."],
-        ["TC-05", "Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không?", "Chùa Thiên Mụ (Bờ Bắc)", "Di tích kế cận", "Gợi ý điểm bờ Bắc cùng hành lang (Văn Thánh, Nhà vườn An Hiên); d <= 2,0 km; không sang lăng bờ Nam."],
-        ["TC-06", "Từ Đồi Vọng Cảnh, có những di tích lăng tẩm hoặc làng nghề nào nằm gần trên cùng trục đường?", "Đồi Vọng Cảnh (Huyền Trân CC)", "Lăng tẩm và làng nghề", "Gợi ý Cụm bờ Nam liên kết trên trục giao thông d <= 2,5 km (Lăng Tự Đức, Đồng Khánh, Làng hương Thủy Xuân)."],
-        ["TC-07", "Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút.", "Chợ Đông Ba (Trần Hưng Đạo)", "Di tích cự ly đi bộ ngắn", "Gợi ý điểm cửa ngõ Kinh thành d <= 1,2 km (Cầu Trường Tiền, Cửa Thượng Tứ, Bảo tàng Cổ vật)."],
-        ["TC-08", "Khám phá danh thắng thiên nhiên và sinh thái đầm phá ở ngoại ô phía Đông Nam thành phố Huế.", "Đầm Chuồn (Phá Tam Giang)", "Sinh thái đầm phá, làng chài", "Gợi ý chuỗi liên kết ngoại ô: Làng chài Đầm Chuồn (cá kình), kết hợp Cầu ngói Thanh Toàn trên cùng hành lang."],
-        ["TC-09", "Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam.", "Khách sạn trung tâm bờ Nam", "Lịch trình 1 ngày tối ưu", "Sáng: Cụm Kinh thành bờ Bắc; Chiều: Cụm Lăng tẩm bờ Nam; vượt sông tối đa 1 lần/ngày."],
-        ["TC-10", "Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống.", "Không gian đô thị Cố đô Huế", "Lịch trình 2 ngày phân cụm triệt để", "Ngày 1: trọn vẹn bờ Bắc (Đại Nội, Cổ vật, Nhà vườn, chợ Đông Ba); Ngày 2: trọn vẹn bờ Nam (Lăng Tự Đức, Khải Định, Đồi Vọng Cảnh, Làng hương, bánh Huế Thủy Xuân / Bà Đỏ); 0 lần đổi bờ mỗi ngày."],
-        ["TC-11", "Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái.", "Cố đô Huế và vùng đầm phá", "Lịch trình 3 ngày mở rộng", "Ngày 1: Kinh thành bờ Bắc; Ngày 2: Lăng tẩm bờ Nam; Ngày 3: Cầu ngói Thanh Toàn và Đầm Chuồn."],
-        ["TC-12", "Lập tour nửa ngày (chiều từ 14h đến 19h) ngắm hoàng hôn và thưởng thức ẩm thực đêm xứ Huế.", "Trục đồi Tây Nam bờ Nam", "Tour bán nhật chiều - tối", "14h Làng hương -> 15h30 Lăng Tự Đức -> 17h hoàng hôn Đồi Vọng Cảnh -> 18h30 bánh Huế bờ Nam; cự ly < 2,5 km."]
+        ["TC-06", "Gợi ý quán bánh khoái và nem lụi ngon ở bờ Nam gần khu phố Tây Chu Văn An.", "Phố đi bộ Chu Văn An", "Bánh khoái, nem lụi Huế", "Gợi ý quán bờ Nam trong d <= 1,2 km (Bánh khoái Hạnh); không nhầm sang bún bò hay cà phê."],
+        ["TC-42", "Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không?", "Chùa Thiên Mụ (Bờ Bắc)", "Di tích kế cận", "Gợi ý điểm bờ Bắc cùng hành lang (Văn Thánh, Nhà vườn An Hiên); d <= 2,0 km; không sang lăng bờ Nam."],
+        ["TC-43", "Từ Đồi Vọng Cảnh, có những di tích lăng tẩm hoặc làng nghề nào nằm gần trên cùng trục đường?", "Đồi Vọng Cảnh (Huyền Trân CC)", "Lăng tẩm và làng nghề", "Gợi ý Cụm bờ Nam liên kết trên trục giao thông d <= 2,5 km (Lăng Tự Đức, Đồng Khánh, Làng hương Thủy Xuân)."],
+        ["TC-44", "Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút.", "Chợ Đông Ba (Trần Hưng Đạo)", "Di tích cự ly đi bộ ngắn", "Gợi ý điểm cửa ngõ Kinh thành d <= 1,2 km (Cầu Trường Tiền, Cửa Thượng Tứ, Bảo tàng Cổ vật)."],
+        ["TC-57", "Khám phá danh thắng thiên nhiên và sinh thái đầm phá ở ngoại ô phía Đông Nam thành phố Huế.", "Đầm Chuồn (Phá Tam Giang)", "Sinh thái đầm phá, làng chài", "Gợi ý chuỗi liên kết ngoại ô: Làng chài Đầm Chuồn (cá kình), kết hợp Cầu ngói Thanh Toàn trên cùng hành lang."],
+        ["TC-76", "Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam.", "Khách sạn trung tâm bờ Nam", "Lịch trình 1 ngày tối ưu", "Sáng: Cụm Kinh thành bờ Bắc; Chiều: Cụm Lăng tẩm bờ Nam; vượt sông tối đa 1 lần/ngày."],
+        ["TC-77", "Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống.", "Không gian đô thị Cố đô Huế", "Lịch trình 2 ngày phân cụm triệt để", "Ngày 1: trọn vẹn bờ Bắc (Đại Nội, Cổ vật, Nhà vườn, chợ Đông Ba); Ngày 2: trọn vẹn bờ Nam (Lăng Tự Đức, Khải Định, Đồi Vọng Cảnh, Làng hương, bánh Huế Thủy Xuân / Bà Đỏ); 0 lần đổi bờ mỗi ngày."],
+        ["TC-78", "Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái.", "Cố đô Huế và vùng đầm phá", "Lịch trình 3 ngày mở rộng", "Ngày 1: Kinh thành bờ Bắc; Ngày 2: Lăng tẩm bờ Nam; Ngày 3: Cầu ngói Thanh Toàn và Đầm Chuồn."],
+        ["TC-79", "Lập tour nửa ngày (chiều từ 14h đến 19h) ngắm hoàng hôn và thưởng thức ẩm thực đêm xứ Huế.", "Trục đồi Tây Nam bờ Nam", "Tour bán nhật chiều - tối", "14h Làng hương -> 15h30 Lăng Tự Đức -> 17h hoàng hôn Đồi Vọng Cảnh -> 18h30 bánh Huế bờ Nam; cự ly < 2,5 km."]
     ]
     tbl_tc = doc.add_table(rows=len(tbl_benchmark_data), cols=5)
     tbl_tc.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -1289,7 +1293,7 @@ def build_thesis_docx():
 
     p_loocv_head = doc.add_paragraph()
     format_body_p(p_loocv_head)
-    add_body_run(p_loocv_head, "Đánh giá định lượng Phân hệ Thị giác Đa phương thức qua Giao thức LOOCV: Để kiểm chứng năng lực của phân hệ nhận diện thị giác CLIP ViT-B/32, nghiên cứu thu thập tập dữ liệu kiểm thử thực địa gồm 77 bức ảnh chụp độc lập tại 25 danh lam thắng cảnh và di tích lịch sử tiêu biểu tại Cố đô Huế. Để loại bỏ hoàn toàn các nghi vấn về hiện tượng rò rỉ dữ liệu (Data Leakage) hoặc hiện tượng học vẹt (Train-on-Test), nghiên cứu áp dụng nghiêm ngặt Giao thức Kiểm định Chéo Rút một (Leave-One-Out Cross-Validation - LOOCV) kết hợp nguyên lý Zero-shot inference. Mô hình CLIP ViT-B/32 được giữ nguyên vẹn toàn bộ trọng số gốc đã tiền huấn luyện (frozen weights), hoàn toàn không can thiệp hay huấn luyện lại trên bất kỳ ảnh nào trong tập kiểm thử. Kết quả định lượng được thể hiện chi tiết tại Bảng 2.3.")
+    add_body_run(p_loocv_head, "Đánh giá định lượng Phân hệ Thị giác Đa phương thức qua Giao thức LOOCV: Phân hệ nhận diện thị giác CLIP ViT-B/32 được xây dựng trên cơ sở dữ liệu tham chiếu gồm 3.528 hình ảnh thực địa di sản và dịch vụ du lịch Cố đô Huế. Để kiểm chứng năng lực tổng quát hóa và loại bỏ hoàn toàn các nghi vấn về hiện tượng rò rỉ dữ liệu (Data Leakage) hoặc hiện tượng học vẹt (Train-on-Test), nghiên cứu thiết lập tập kiểm thử độc lập gồm 77 bức ảnh chụp thực địa tại 25 danh lam di tích lịch sử tiêu biểu, đồng thời áp dụng nghiêm ngặt Giao thức Kiểm định Chéo Rút một (Leave-One-Out Cross-Validation - LOOCV) kết hợp nguyên lý Zero-shot inference. Mô hình CLIP ViT-B/32 được giữ nguyên vẹn toàn bộ trọng số gốc đã tiền huấn luyện (frozen weights), hoàn toàn không can thiệp hay huấn luyện lại trên bất kỳ ảnh nào trong tập kiểm thử. Kết quả định lượng được thể hiện chi tiết tại Bảng 2.3.")
 
     add_table_caption(doc, "Bảng 2.3: Kết quả đánh giá định lượng phân hệ Nhận diện Điểm mốc Thị giác đa phương thức (Giao thức LOOCV)")
     tbl_clip_data = [
@@ -1354,7 +1358,7 @@ def build_thesis_docx():
     add_sec_heading(doc, "3. Kiến nghị và Hướng phát triển tiếp theo")
     p = doc.add_paragraph()
     format_body_p(p)
-    add_body_run(p, "Trong giai đoạn tiếp theo, nghiên cứu đề xuất các hướng phát triển: 1) Tích hợp dữ liệu giao thông thời gian thực và lịch trình xe buýt công cộng/xe điện du lịch tại Huế vào động cơ OSRM; 2) Ứng dụng kỹ thuật chưng cất tri thức (Knowledge Distillation) hoặc mô hình Vision Transformer siêu nhẹ để cho phép nhận diện ảnh ngoại tuyến ngay trên trình duyệt web thiết bị di động của du khách; 3) Mở rộng phạm vi đồ thị tri thức sang các vùng phụ cận liên kết du lịch Miền Trung như Đà Nẵng và Hội An; và 4) Phối hợp với Trung tâm Giám sát Điều hành Đô thị Thông minh (IOC) tỉnh Thừa Thiên Huế để tiến hành thử nghiệm nghiệm thu người dùng thực tế và tích hợp chính thức lên ứng dụng Hue-S.")
+    add_body_run(p, "Trong giai đoạn tiếp theo, nghiên cứu đề xuất các hướng phát triển: 1) Tích hợp dữ liệu giao thông thời gian thực và lịch trình xe buýt công cộng/xe điện du lịch tại Huế vào động cơ OSRM; 2) Ứng dụng kỹ thuật chưng cất tri thức (Knowledge Distillation) hoặc mô hình Vision Transformer siêu nhẹ để cho phép nhận diện ảnh ngoại tuyến ngay trên trình duyệt web thiết bị di động của du khách; 3) Mở rộng phạm vi đồ thị tri thức sang các vùng phụ cận liên kết du lịch Miền Trung như Đà Nẵng và Hội An; và 4) Phối hợp với Trung tâm Giám sát Điều hành Đô thị Thông minh (IOC) Thành phố Huế để tiến hành thử nghiệm nghiệm thu người dùng thực tế và tích hợp chính thức lên ứng dụng Hue-S.")
 
     doc.add_page_break()
 
@@ -1425,17 +1429,17 @@ def build_thesis_docx():
     tbl_pa_data = [
         ["Mã ca", "Nhóm bài toán", "Nội dung câu hỏi truy vấn của du khách", "Điểm neo (Anchor POI)"],
         ["TC-01", "Không gian + Ẩm thực", "Tôi đang ở Đại Nội Huế, muốn tìm quán bún bò chuẩn vị gần đây để đi bộ ăn trưa.", "Đại Nội Huế (bờ Bắc)"],
-        ["TC-02", "Không gian + Ẩm thực", "Sau khi tham quan Lăng Tự Đức, tôi muốn ăn bánh bèo hoặc bánh nậm gần đó thì ghé quán nào?", "Lăng Tự Đức (Thủy Xuân)"],
+        ["TC-04", "Không gian + Ẩm thực", "Sau khi tham quan Lăng Tự Đức, tôi muốn ăn bánh bèo hoặc bánh nậm gần đó thì ghé quán nào?", "Lăng Tự Đức (Thủy Xuân)"],
         ["TC-03", "Không gian + Ẩm thực", "Tôi đang ở khu vực Cồn Hến, muốn thưởng thức cơm hến và chè bắp đúng gốc Huế.", "Cồn Hến (Phường Vĩ Dạ)"],
-        ["TC-04", "Không gian + Ẩm thực", "Gợi ý quán bánh khoái và nem lụi ngon ở bờ Nam gần khu phố Tây Chu Văn An.", "Phố đi bộ Chu Văn An"],
-        ["TC-05", "Khám phá lân cận", "Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không?", "Chùa Thiên Mụ (bờ Bắc)"],
-        ["TC-06", "Khám phá lân cận", "Từ Đồi Vọng Cảnh, có những di tích lăng tẩm hoặc làng nghề nào nằm gần trên cùng trục đường?", "Đồi Vọng Cảnh (Thủy Xuân)"],
-        ["TC-07", "Khám phá lân cận", "Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút.", "Chợ Đông Ba (bờ Bắc)"],
-        ["TC-08", "Khám phá lân cận", "Khám phá danh thắng thiên nhiên và sinh thái đầm phá ở ngoại ô phía Đông Nam thành phố Huế.", "Đầm Chuồn (Phú Vang)"],
-        ["TC-09", "Lịch trình tổng hợp", "Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam.", "Khách sạn bờ Nam TP. Huế"],
-        ["TC-10", "Lịch trình tổng hợp", "Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống.", "Không gian Cố đô Huế"],
-        ["TC-11", "Lịch trình tổng hợp", "Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái.", "Cố đô Huế và đầm phá"],
-        ["TC-12", "Lịch trình tổng hợp", "Lập tour nửa ngày (chiều từ 14h đến 19h) ngắm hoàng hôn và thưởng thức ẩm thực đêm xứ Huế.", "Trục đồi Thủy Xuân"]
+        ["TC-06", "Không gian + Ẩm thực", "Gợi ý quán bánh khoái và nem lụi ngon ở bờ Nam gần khu phố Tây Chu Văn An.", "Phố đi bộ Chu Văn An"],
+        ["TC-42", "Khám phá lân cận", "Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không?", "Chùa Thiên Mụ (bờ Bắc)"],
+        ["TC-43", "Khám phá lân cận", "Từ Đồi Vọng Cảnh, có những di tích lăng tẩm hoặc làng nghề nào nằm gần trên cùng trục đường?", "Đồi Vọng Cảnh (Thủy Xuân)"],
+        ["TC-44", "Khám phá lân cận", "Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút.", "Chợ Đông Ba (bờ Bắc)"],
+        ["TC-57", "Khám phá lân cận", "Khám phá danh thắng thiên nhiên và sinh thái đầm phá ở ngoại ô phía Đông Nam thành phố Huế.", "Đầm Chuồn (Phú Vang)"],
+        ["TC-76", "Lịch trình tổng hợp", "Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam.", "Khách sạn bờ Nam TP. Huế"],
+        ["TC-77", "Lập lịch trình 2 ngày", "Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống.", "Không gian Cố đô Huế"],
+        ["TC-78", "Lịch trình tổng hợp", "Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái.", "Cố đô Huế và đầm phá"],
+        ["TC-79", "Lịch trình tổng hợp", "Lập tour nửa ngày (chiều từ 14h đến 19h) ngắm hoàng hôn và thưởng thức ẩm thực đêm xứ Huế.", "Trục đồi Thủy Xuân"]
     ]
     tbl_pa = doc.add_table(rows=len(tbl_pa_data), cols=4)
     tbl_pa.alignment = WD_TABLE_ALIGNMENT.CENTER

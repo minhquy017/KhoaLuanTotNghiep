@@ -11,15 +11,15 @@
 
 Nghiên cứu được thiết lập dựa trên một cơ sở dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp chặt chẽ giữa thông tin tọa độ không gian chính xác, kho ngữ liệu nhận xét trải nghiệm thực tế từ cộng đồng du khách và hệ thống từ điển ẩm thực chuẩn hóa. Toàn bộ cơ sở dữ liệu được cấu thành từ năm nguồn dữ liệu thành phần:
 
-Nguồn dữ liệu thứ nhất là tập dữ liệu vị trí địa lý thu thập từ OpenStreetMap~\cite{openstreetmap2024} và Google Maps, cung cấp thông tin định danh, tên gọi chính thức, danh mục dịch vụ và cặp tọa độ địa lý WGS84 cho 9.525 thực thể du lịch trên phạm vi toàn quốc, trong đó trọng tâm khảo sát đặc biệt chuyên sâu là 612 địa điểm du lịch, ẩm thực và lưu trú phân bổ trên địa bàn thành phố Huế và các vùng di sản phụ cận thuộc tỉnh Thừa Thiên Huế.
+Nguồn dữ liệu thứ nhất là tập dữ liệu vị trí địa lý thu thập từ OpenStreetMap~\cite{openstreetmap2024} và Google Maps, cung cấp thông tin định danh, tên gọi chính thức, danh mục dịch vụ và cặp tọa độ địa lý WGS84 cho 8.921 thực thể điểm đến POI trên phạm vi toàn quốc (gồm 2.036 điểm tham quan, 4.462 cơ sở ẩm thực và 2.423 cơ sở lưu trú), trong đó trọng tâm khảo sát đặc biệt chuyên sâu là 612 địa điểm du lịch, ẩm thực và lưu trú phân bổ trên địa bàn Thành phố Huế trực thuộc Trung ương (bao gồm quận Phú Xuân, quận Thuận Hóa và các vùng di sản phụ cận).
 
 Nguồn dữ liệu thứ hai là kho ngữ liệu nhận xét du khách khổng lồ được trích xuất từ nền tảng du lịch trực tuyến TripAdvisor~\cite{tripadvisor2024}, bao gồm 1.698.641 bài đánh giá bằng văn bản của du khách trong và ngoài nước trong giai đoạn từ năm 2015 đến năm 2026. Nhằm phục vụ trực tiếp cho bài toán thực tiễn tại Cố đô Huế, một tập dữ liệu chuyên sâu gồm 44.355 bài nhận xét thực tế đã được bóc tách toàn diện từ 500 địa điểm dịch vụ du lịch trọng điểm trên địa bàn thành phố Huế.
 
 Nguồn dữ liệu thứ ba là Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer) do nghiên cứu tự xây dựng và chuẩn hóa, bao gồm 570 món ăn đặc sản tiêu biểu của cả ba miền đất nước, với sự tập trung sâu sắc vào hơn 60 món ăn truyền thống đặc trưng của xứ Huế như Bún bò Huế, Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Bánh khoái, Chè bột lọc heo quay, Nem lụi, Vả trộn, Tré Huế và Bún mắm nêm.
 
-Nguồn dữ liệu thứ tư là cấu trúc Đồ thị Tri thức Không gian (Spatial Knowledge Graph -- SKG) được mô hình hóa và liên kết tự động bằng thư viện NetworkX, đạt quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ ngữ nghĩa và không gian hình học.
+Nguồn dữ liệu thứ tư là cấu trúc Đồ thị Tri thức Không gian (Spatial Knowledge Graph -- SKG) được mô hình hóa và liên kết tự động bằng thư viện NetworkX, đạt quy mô 9.525 nút thực thể (cấu thành từ 8.921 điểm POI có tọa độ GPS, 570 món ăn đặc sản và 34 đơn vị hành chính) cùng 90.948 cạnh quan hệ ngữ nghĩa và không gian hình học.
 
-Nguồn dữ liệu thứ năm là Bộ ngữ liệu hình ảnh di sản Cố đô Huế (Hue Visual Heritage Dataset) gồm 77 hình ảnh chất lượng cao được thu thập, gán nhãn chuẩn hóa và xác minh thực địa từ Wikimedia Commons và các nguồn tư liệu di sản mở, bao phủ 25 danh lam thắng cảnh, di tích lịch sử và công trình kiến trúc đặc trưng nhất của thành phố Huế (tiêu biểu như Cổng Ngọ Môn, Chùa Thiên Mụ, Lăng Khải Định, Lăng Tự Đức, Lăng Minh Mạng, Cung An Định, Cầu Trường Tiền, Chợ Đông Ba, Đồi Vọng Cảnh, Nhà vườn An Hiên). Toàn bộ hình ảnh được chuẩn hóa kích thước, loại bỏ nhiễu và gán nhãn ánh xạ tương thích 100\% với trường định danh \textit{place\_id} trên Đồ thị Tri thức Không gian nhằm phục vụ cơ chế nhận diện điểm mốc thị giác đa phương thức (Multimodal Visual RAG).
+Nguồn dữ liệu thứ năm là Bộ cơ sở dữ liệu thị giác di sản và dịch vụ du lịch Cố đô Huế (Hue Visual Heritage Dataset) gồm 3.528 hình ảnh thực địa nguyên bản thu thập từ Wikimedia Commons, TripAdvisor và các nguồn tư liệu di sản mở, bao phủ toàn diện các danh mục di tích lịch sử, danh lam thắng cảnh, làng nghề truyền thống và các cơ sở ẩm thực Cố đô. Toàn bộ hình ảnh được chuẩn hóa kích thước, loại bỏ nhiễu và gán nhãn ánh xạ tương thích 100\% với trường định danh \textit{place\_id} trên Đồ thị Tri thức Không gian nhằm phục vụ cơ chế nhận diện điểm mốc thị giác đa phương thức (Multimodal Visual RAG). Bên cạnh đó, nghiên cứu duy trì một tập kiểm chuẩn độc lập (Benchmark Test Set) gồm 77 ảnh thực địa chụp tại 25 di tích cốt lõi nhằm phục vụ giao thức kiểm định chéo Leave-One-Out (LOOCV), bảo đảm tuyệt đối không rò rỉ dữ liệu (Train-on-Test).
 
 Các thông số tổng hợp về quy mô lưu trữ, số lượng bản ghi và định dạng cấu trúc của các nguồn dữ liệu thành phần được thống kê chi tiết tại Bảng \ref{tab:dataset-summary}.
 
@@ -38,7 +38,7 @@ TripAdvisor Huế & JSON / Danh sách & 44.355 bài & Đánh giá thực tế b�
 Địa điểm Du lịch tại Huế & GeoJSON / JSON & 612 thực thể & Thực thể du lịch, ẩm thực, lưu trú chuẩn hóa tại Huế \\
 Culinary Gazetteer & JSON / Cấu trúc & 570 món ăn & Từ điển thực đơn ẩm thực và biến thể nhận diện \\
 Đồ thị Tri thức Không gian & NetworkX / PKL & 9.525 nút / 90.948 cạnh & Đồ thị thực thể, topo lân cận và quan hệ thực đơn \\
-Hình ảnh Di tích Huế & JPEG / RGB & 77 tệp / 25 di tích & Ngữ liệu ảnh di sản phục vụ nhận diện đa phương thức Visual RAG \\
+Hình ảnh Di tích \& Điểm mốc & JPEG / RGB & 3.528 tệp & Kho ảnh thực địa phục vụ nhận diện đa phương thức Visual RAG \\
 \hline
 \end{tabularx}
 \end{table}
@@ -149,7 +149,7 @@ Từ Hình \ref{fig:hue-places-category}, sự áp đảo của phân khúc ẩm
 \label{fig:top10-dishes-hue}
 \end{figure}
 
-Quan sát Hình \ref{fig:top10-dishes-hue}, Bún bò Huế dẫn đầu áp đảo về số lượt bảo chứng với hàng chục ngàn lượt nhắc đến tích cực, tiếp theo sau là Cơm hến, Bánh bèo, Bánh nậm, Bánh bột lọc, Bánh khoái, Nem lụi và Chè bột lọc heo quay. Sự định lượng khách quan này cung cấp cơ sở dữ liệu xác thực để hệ thống tự động ưu tiên gợi ý đúng những món ăn mang tính quốc hồn quốc túy của Cố đô khi du khách đưa ra các câu hỏi mở về ẩm thực.
+Quan sát Hình \ref{fig:top10-dishes-hue}, Bún bò Huế dẫn đầu áp đảo về số lượt bảo chứng với gần 1.200 lượt nhắc đến tích cực (chính xác 1.184 lượt), tiếp theo sau lần lượt là Nem lụi Huế, Bánh bèo Huế, Bánh bột lọc Huế, Chè bắp Cồn Hến, Cơm hến Huế, Bánh nậm và Bánh khoái. Sự định lượng khách quan này cung cấp cơ sở dữ liệu xác thực để hệ thống tự động ưu tiên gợi ý đúng những món ăn mang tính quốc hồn quốc túy của Cố đô khi du khách đưa ra các câu hỏi mở về ẩm thực.
 
 \subsection*{1.4. Bộ từ điển Ẩm thực Việt Nam và Đặc sản Cố đô Huế}
 \phantomsection
@@ -204,7 +204,7 @@ Sau khi hoàn tất quá trình thu thập, toàn bộ dữ liệu thô được
 
 Bước 1 -- Kiểm toán tỷ lệ khuyết thiếu (Missing Value Audit): Kiểm tra tính toàn vẹn của các trường bắt buộc. Toàn bộ 612 địa điểm du lịch tại Huế đạt tỷ lệ có đầy đủ tên gọi, danh mục và tọa độ GPS là 100,0\%. Đối với các bài nhận xét, 100\% các bản ghi thu thập đều có đầy đủ trường nội dung văn bản và điểm số xếp hạng sao; trường kiểu hình chuyến đi bị khuyết (chiếm 37,24\%) được gán nhãn chuẩn hóa là Chưa phân loại.
 
-Bước 2 -- Kiểm toán tính hợp lệ của tọa độ trắc địa (Bounding Box Validation): Để loại trừ hoàn toàn các sai lệch về tọa độ (như hiện tượng đảo ngược vĩ độ/kinh độ hoặc sai lệch vị trí sang tỉnh thành khác), giải thuật áp dụng bộ lọc Hộp giới hạn địa lý hình chữ nhật bao quanh tỉnh Thừa Thiên Huế:
+Bước 2 -- Kiểm toán tính hợp lệ của tọa độ trắc địa (Bounding Box Validation): Để loại trừ hoàn toàn các sai lệch về tọa độ (như hiện tượng đảo ngược vĩ độ/kinh độ hoặc sai lệch vị trí sang tỉnh thành khác), giải thuật áp dụng bộ lọc Hộp giới hạn địa lý hình chữ nhật bao quanh địa giới hành chính Thành phố Huế:
 \begin{equation}
     (\phi_v, \lambda_v) \text{ hợp lệ} \iff \begin{cases}
         16,00^{\circ}\text{N} \le \phi_v \le 16,85^{\circ}\text{N} \\
@@ -243,7 +243,7 @@ Giai đoạn 1 (Thu thập và Kiểm toán dữ liệu): Tiến hành thu thậ
 
 Giai đoạn 2 (Xây dựng Đồ thị Tri thức Không gian): Áp dụng công thức khoảng cách mặt cầu Haversine để tính toán ma trận cự ly giữa toàn bộ các cặp thực thể; thiết lập các cạnh liên kết lân cận $\text{NEAR\_BY}$ với ngưỡng $d \le 1,5\text{ km}$; xây dựng các quan hệ phân cấp địa giới $\text{LOCATED\_IN}$ kết nối điểm đến với các phường xã và quận huyện tại thành phố Huế, tạo thành cấu trúc đồ thị gồm 9.525 nút và 90.948 cạnh lưu trữ bằng thư viện NetworkX.
 
-Giai đoạn 3 (Khai phá Thực đơn ngầm và Nhúng đa phương thức Ngữ nghĩa -- Thị giác): Ứng dụng Bộ từ điển ẩm thực 570 món ăn để quét qua toàn bộ 44.355 bài nhận xét du khách tại Huế; tính toán điểm số tin cậy theo công thức (\ref{eq:dish-confidence}) để gán các cạnh quan hệ $\text{SERVES}$ giữa nhà hàng và món đặc sản; đồng thời thực hiện quy trình Atomic Chunking tạo chỉ mục văn bản trên ChromaDB bằng mô hình \texttt{paraphrase-multilingual-MiniLM-L12-v2}. Đặc biệt, nghiên cứu tích hợp mô hình thị giác \texttt{clip-ViT-B-32}~\cite{radford2021clip} trích xuất véc-tơ đặc trưng 512 chiều từ bộ tư liệu 77 ảnh di tích, xây dựng bộ chỉ mục thị giác chuyên biệt \texttt{hue\_landmarks\_visual} trên ChromaDB hỗ trợ nhận diện danh lam Cố đô tức thời từ ảnh chụp của du khách.
+Giai đoạn 3 (Khai phá Thực đơn ngầm và Nhúng đa phương thức Ngữ nghĩa -- Thị giác): Ứng dụng Bộ từ điển ẩm thực 570 món ăn để quét qua toàn bộ 44.355 bài nhận xét du khách tại Huế; tính toán điểm số tin cậy theo công thức (\ref{eq:dish-confidence}) để gán các cạnh quan hệ $\text{SERVES}$ giữa nhà hàng và món đặc sản; đồng thời thực hiện quy trình Atomic Chunking tạo chỉ mục văn bản trên ChromaDB bằng mô hình \texttt{paraphrase-multilingual-MiniLM-L12-v2}. Đặc biệt, nghiên cứu tích hợp mô hình thị giác \texttt{clip-ViT-B-32}~\cite{radford2021clip} trích xuất véc-tơ đặc trưng 512 chiều từ bộ cơ sở dữ liệu 3.528 hình ảnh thực địa Cố đô Huế, xây dựng bộ chỉ mục thị giác chuyên biệt \texttt{hue\_landmarks\_visual} trên ChromaDB hỗ trợ nhận diện danh lam Cố đô tức thời từ ảnh chụp của du khách (đồng thời duy trì bộ ngữ liệu 77 ảnh thực địa độc lập của 25 di tích làm tập kiểm thử chuẩn theo giao thức LOOCV).
 
 Giai đoạn 4 (Thiết kế Khung tác tử Agentic RAG và Mô hình hóa Gu Du lịch): Xây dựng máy trạng thái hữu hạn trên LangGraph với năm nút chức năng chính; tích hợp bộ chấm điểm tin cậy để đánh giá mức độ tương thích giữa câu hỏi và tri thức đồ thị; thiết lập nhánh rẽ phân luồng dự phòng tìm kiếm Internet khi thông tin nội bộ không đủ tin cậy; mô hình hóa 4 trường phái du khách (Traveler Personas) gồm Di sản Lịch sử, Ẩm thực Cố đô, Sinh thái Đầm phá và Nghỉ dưỡng Tâm linh; và kết nối mô hình thị giác -- ngôn ngữ lớn Qwen2.5-VL:7B chạy nội bộ qua Ollama trên GPU cá nhân (Zero API Cost).
 

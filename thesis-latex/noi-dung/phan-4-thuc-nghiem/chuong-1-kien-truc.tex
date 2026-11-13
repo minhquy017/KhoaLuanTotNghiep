@@ -15,13 +15,13 @@
 
 Từ sơ đồ tại Hình \ref{fig:system-architecture}, quy trình xử lý luồng dữ liệu và suy luận được vận hành tuần tự qua bốn tầng kiến trúc:
 
-Tầng thứ nhất là Tầng Dữ liệu và Lưu trữ (Data and Storage Layer), chịu trách nhiệm quản lý toàn bộ các nguồn dữ liệu gốc và dữ liệu bán cấu trúc. Tầng này bao gồm cơ sở dữ liệu quan hệ SQLite lưu trữ kho dữ liệu địa danh và 44.355 bài nhận xét chuyên sâu tại Cố đô Huế; cơ sở dữ liệu vector ChromaDB lưu trữ các véc-tơ nhúng ngữ nghĩa của các phân mảnh nhận xét phân tử cùng bộ chỉ mục thị giác đa phương thức \texttt{hue\_landmarks\_visual} lưu trữ các véc-tơ đặc trưng hình ảnh 512 chiều của 25 danh lam di tích Cố đô; và cấu trúc Đồ thị Tri thức Không gian được biểu diễn và tối ưu hóa trong bộ nhớ thông qua thư viện NetworkX.
+Tầng thứ nhất là Tầng Dữ liệu và Lưu trữ (Data and Storage Layer), chịu trách nhiệm quản lý toàn bộ các nguồn dữ liệu gốc và dữ liệu bán cấu trúc. Tầng này bao gồm cơ sở dữ liệu quan hệ SQLite lưu trữ kho dữ liệu địa danh và 44.355 bài nhận xét chuyên sâu tại Cố đô Huế; cơ sở dữ liệu vector ChromaDB lưu trữ các véc-tơ nhúng ngữ nghĩa của các phân mảnh nhận xét phân tử cùng bộ chỉ mục thị giác đa phương thức \texttt{hue\_landmarks\_visual} lưu trữ 3.528 véc-tơ đặc trưng hình ảnh 512 chiều của các di sản và cơ sở dịch vụ du lịch Cố đô Huế (kết hợp tập kiểm chuẩn độc lập 77 ảnh của 25 di tích phục vụ đánh giá LOOCV); và cấu trúc Đồ thị Tri thức Không gian được biểu diễn và tối ưu hóa trong bộ nhớ thông qua thư viện NetworkX.
 
 Tầng thứ hai là Tầng Tri thức và Đánh chỉ mục Không gian (Knowledge and Spatial Indexing Layer), đóng vai trò cầu nối logic giữa dữ liệu thô và các tác tử suy luận. Tầng này cung cấp bốn cơ chế chỉ mục cốt lõi: chỉ mục cự ly không gian dựa trên công thức mặt cầu Haversine và mạng lưới đường bộ OpenStreetMap phục vụ truy vấn lân cận nhanh với bán kính $\tau_{\text{spatial}} = 1,5\text{ km}$; chỉ mục quan hệ thực đơn ẩm thực $\text{SERVES}$ liên kết các nhà hàng với danh mục 570 món ăn trong từ điển ẩm thực; bộ mô hình nhúng ngữ nghĩa văn bản \texttt{paraphrase-multilingual-MiniLM-L12-v2} chuyển đổi câu hỏi của du khách thành véc-tơ đặc trưng 384 chiều; và mô hình thị giác \texttt{clip-ViT-B-32} nhúng ảnh chụp di tích thành véc-tơ không gian đa phương thức.
 
 Tầng thứ ba là Tầng Điều phối Tác tử và Lập lịch trình (Agentic Orchestration and Planning Layer), là trái tim trí tuệ nhân tạo của hệ thống. Tầng này tích hợp máy trạng thái hữu hạn LangGraph để kiểm soát luồng hội thoại; bộ chấm điểm tin cậy (Confidence Grading Module) đánh giá mức độ bao phủ của tri thức đồ thị; nhánh rẽ dự phòng tìm kiếm Internet (Web Search Fallback) khi cần bổ sung thông tin sự kiện thời gian thực; bộ phân loại gu du lịch (Traveler Persona Classifier); công cụ dự toán chi phí chuyến đi thực tế (Trip Budget Calculator) dựa trên biểu giá bảo tồn di tích; mô hình thị giác -- ngôn ngữ lớn cục bộ Qwen2.5-VL:7B thực thi suy luận ngữ cảnh; và bộ thuật toán Lập lịch trình phân cụm không gian (Spatial Itinerary Planner) tối ưu hóa lộ trình di chuyển.
 
-Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp hai phương thức tương tác người dùng: Cổng API RESTful chuẩn mở được xây dựng trên nền tảng FastAPI với tài liệu Swagger UI tự động, trả về dữ liệu định dạng JSON chuẩn hóa kèm mảng tọa độ GPS để sẵn sàng tích hợp trực tiếp vào ứng dụng công dân số di động Hue-S của tỉnh Thừa Thiên Huế; và giao diện Web tương tác trực quan thích ứng đa nền tảng (Adaptive Responsive Web Client) hỗ trợ du khách trải nghiệm mượt mà trên cả máy tính để bàn lẫn điện thoại di động thông minh khi tham quan thực địa tại Cố đô.
+Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp hai phương thức tương tác người dùng: Cổng API RESTful chuẩn mở được xây dựng trên nền tảng FastAPI với tài liệu Swagger UI tự động, trả về dữ liệu định dạng JSON chuẩn hóa kèm mảng tọa độ GPS để sẵn sàng tích hợp trực tiếp vào ứng dụng công dân số di động Hue-S của Thành phố Huế; và giao diện Web tương tác trực quan thích ứng đa nền tảng (Adaptive Responsive Web Client) hỗ trợ du khách trải nghiệm mượt mà trên cả máy tính để bàn lẫn điện thoại di động thông minh khi tham quan thực địa tại Cố đô.
 
 \section{Thiết kế Đồ thị Tri thức Không gian Du lịch Huế}
 \label{sec:ch1-skg-design}
@@ -136,13 +136,13 @@ Bên cạnh năng lực sinh câu trả lời tự nhiên, khung tác tử tích
 \subsection{Cấu trúc Lược đồ Dữ liệu Phân tán trên Cloud Firestore}
 \label{subsec:ch1-firestore-schema}
 
-Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận cục bộ, toàn bộ dữ liệu trạng thái phiên và hành trình du lịch được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán thành ba bộ sưu tập độc lập:
+Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận cục bộ, toàn bộ dữ liệu trạng thái phiên và hành trình du lịch được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán theo mô hình phân vùng người dùng an toàn gồm ba bộ sưu tập:
 
-Bộ sưu tập thứ nhất là \texttt{chat\_sessions}, đóng vai trò lưu trữ toàn diện lịch sử các cuộc trò chuyện của từng du khách. Mỗi tài liệu trong bộ sưu tập đại diện cho một phiên hội thoại duy nhất với định danh khóa chính là \texttt{sessionId}. Tài liệu lưu trữ các trường dữ liệu tổng quan bao gồm mã định danh du khách (\texttt{userId}), tiêu đề tóm tắt phiên (\texttt{title}) được tự động trích xuất từ câu hỏi đầu tiên, mốc thời gian khởi tạo (\texttt{createdAt}) và thời điểm cập nhật gần nhất (\texttt{updatedAt}). Đáng chú ý, toàn bộ diễn biến cuộc đối thoại được kiên định hóa bên trong mảng cấu trúc \texttt{messages}: mỗi phần tử trong mảng lưu trữ vai trò người phát ngôn (\texttt{role}: người dùng hoặc trợ lý), nội dung phản hồi văn bản (\texttt{text}), câu hỏi truy vấn gốc (\texttt{prompt}), mã định danh thông điệp duy nhất (\texttt{id}), chỉ số phản hồi của du khách (\texttt{feedbackRating}: thích hoặc chưa tốt), và đối tượng dữ liệu phân tích chi tiết (\texttt{resData}) bao gồm danh sách các thực thể POI đề xuất, thẻ hành trình điều hướng và các thông số suy luận không gian.
+Bộ sưu tập thứ nhất là \texttt{chat\_sessions} (tổ chức dưới dạng bộ sưu tập phân cấp người dùng tại đường dẫn \texttt{users/\{userId\}/chat\_sessions}), đóng vai trò lưu trữ toàn diện lịch sử các cuộc trò chuyện của từng du khách. Mỗi tài liệu trong bộ sưu tập đại diện cho một phiên hội thoại duy nhất với định danh khóa chính là \texttt{sessionId}. Tài liệu lưu trữ các trường dữ liệu tổng quan bao gồm mã định danh du khách (\texttt{userId}), tiêu đề tóm tắt phiên (\texttt{title}) được tự động trích xuất từ câu hỏi đầu tiên, mốc thời gian khởi tạo (\texttt{createdAt}) và thời điểm cập nhật gần nhất (\texttt{updatedAt}). Đáng chú ý, toàn bộ diễn biến cuộc đối thoại được kiên định hóa bên trong mảng cấu trúc \texttt{messages}: mỗi phần tử trong mảng lưu trữ vai trò người phát ngôn (\texttt{role}: người dùng hoặc trợ lý), nội dung phản hồi văn bản (\texttt{text}), câu hỏi truy vấn gốc (\texttt{prompt}), mã định danh thông điệp duy nhất (\texttt{id}), chỉ số phản hồi của du khách (\texttt{feedbackRating}: thích hoặc chưa tốt), và đối tượng dữ liệu phân tích chi tiết (\texttt{resData}) bao gồm danh sách các thực thể POI đề xuất, thẻ hành trình điều hướng và các thông số suy luận không gian.
 
-Bộ sưu tập thứ hai là \texttt{saved\_itineraries}, chịu trách nhiệm lưu trữ các tour du lịch đa chặng đã được thuật toán tối ưu hóa và được du khách đánh dấu lưu lại. Mỗi tài liệu hành trình lưu trữ tiêu đề chuyến đi, số ngày trải nghiệm, kiểu hình du lịch, danh mục các điểm dừng theo từng chặng (Legs), khoảng cách di chuyển dự kiến, thời gian tham quan ước tính tại mỗi di tích, danh sách món ăn đặc sản được bảo chứng tại các quán ăn lân cận, và mảng tọa độ GPS đầy đủ phục vụ việc tái hiện trực quan tuyến đường trên bản đồ số.
+Bộ sưu tập thứ hai là \texttt{itineraries} (tại đường dẫn \texttt{users/\{userId\}/itineraries}), chịu trách nhiệm lưu trữ các tour du lịch đa chặng đã được thuật toán tối ưu hóa và được du khách đánh dấu lưu lại. Mỗi tài liệu hành trình lưu trữ tiêu đề chuyến đi, số ngày trải nghiệm, kiểu hình du lịch, danh mục các điểm dừng theo từng chặng (Legs), khoảng cách di chuyển dự kiến, thời gian tham quan ước tính tại mỗi di tích, danh sách món ăn đặc sản được bảo chứng tại các quán ăn lân cận, và mảng tọa độ GPS đầy đủ phục vụ việc tái hiện trực quan tuyến đường trên bản đồ số.
 
-Bộ sưu tập thứ ba là \texttt{ai\_feedbacks}, ghi nhận toàn bộ các phản hồi đánh giá của du khách đối với từng câu trả lời cụ thể của tác tử RAG. Dữ liệu này bao gồm mã thông điệp (\texttt{messageId}), câu truy vấn gốc (\texttt{prompt}), nội dung phản hồi của mô hình, nhãn đánh giá nhị phân (\texttt{rating} mang giá trị $+1$ cho phản hồi hữu ích và $-1$ cho phản hồi chưa chính xác), cùng nhãn thời gian và ngữ cảnh không gian lúc đánh giá. Đây là tập ngữ liệu quý giá phục vụ chu trình kiểm thử và tinh chỉnh mô hình ngôn ngữ theo phản hồi con người (RLHF) trong các giai đoạn phát triển tiếp theo.
+Bộ sưu tập thứ ba là \texttt{ai\_feedbacks} (bộ sưu tập gốc cấp hệ thống), ghi nhận toàn bộ các phản hồi đánh giá của du khách đối với từng câu trả lời cụ thể của tác tử RAG. Dữ liệu này bao gồm mã thông điệp (\texttt{messageId}), câu truy vấn gốc (\texttt{prompt}), nội dung phản hồi của mô hình, nhãn đánh giá nhị phân (\texttt{rating} mang giá trị $+1$ cho phản hồi hữu ích và $-1$ cho phản hồi chưa chính xác), cùng nhãn thời gian và ngữ cảnh không gian lúc đánh giá. Đây là tập ngữ liệu quý giá phục vụ chu trình kiểm thử và tinh chỉnh mô hình ngôn ngữ theo phản hồi con người (RLHF) trong các giai đoạn phát triển tiếp theo.
 
 Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đồ các bộ sưu tập dữ liệu trên Cloud Firestore.
 
@@ -156,13 +156,13 @@ Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đ
 \textbf{Bộ sưu tập} & \textbf{Tên trường} & \textbf{Kiểu dữ liệu} & \textbf{Mô tả chức năng nghiệp vụ} \\
 \hline
 \texttt{chat\_sessions} & \texttt{sessionId} & String (Khóa) & Định danh duy nhất của phiên hội thoại \\
-& \texttt{userId} & String & Mã định danh người dùng sở hữu phiên \\
+(\texttt{users/\{uid\}/...}) & \texttt{userId} & String & Mã định danh người dùng sở hữu phiên \\
 & \texttt{title} & String & Tiêu đề phiên trích xuất từ câu hỏi đầu \\
 & \texttt{createdAt, updatedAt} & Timestamp & Mốc thời gian tạo và cập nhật phiên \\
 & \texttt{messages} & Array[Object] & Mảng thông điệp, mốc ngữ cảnh \texttt{session\_context} và kết quả RAG \\
 \hline
-\texttt{saved\_itineraries} & \texttt{itineraryId} & String (Khóa) & Mã định danh lộ trình du lịch đã lưu \\
-& \texttt{userId} & String & Mã người dùng sở hữu lịch trình \\
+\texttt{itineraries} & \texttt{itineraryId} & String (Khóa) & Mã định danh lộ trình du lịch đã lưu \\
+(\texttt{users/\{uid\}/...}) & \texttt{userId} & String & Mã người dùng sở hữu lịch trình \\
 & \texttt{title, days, tripType} & String, Number & Thông tin tổng quát cấu hình chuyến đi \\
 & \texttt{legs, coordinates} & Array[Object] & Danh sách các chặng dừng và mảng tọa độ GPS \\
 & \texttt{savedAt} & Timestamp & Thời điểm lưu trữ lịch trình \\
@@ -201,7 +201,7 @@ Trong các hệ thống Hỏi đáp du lịch dựa trên Retrieval-Augmented Ge
 \label{eq:session-context}
 \mathcal{S}_t = \big\langle \text{sid}, \mathcal{T}_t, a_{\text{place}}, a_{\text{dish}}, \tau \big\rangle
 \end{equation}
-trong đó $\text{sid}$ biểu diễn định danh duy nhất của phiên hội thoại; $\mathcal{T}_t \in \{\text{heritage}, \text{culinary}, \text{leisure}, \text{lodging}, \text{route\_navigation}\}$ là miền chủ đề hội thoại tự động suy diễn dựa trên loại hình thực thể được truy xuất; $a_{\text{place}} \in \mathcal{V}$ là đỉnh địa danh mốc (Anchor POI) đã được kiểm chứng tồn tại thực tế trên đồ thị $\mathcal{G}$; $a_{\text{dish}}$ là tên món ăn đặc sản trọng tâm; và $\tau \in \mathbb{N}$ là bộ đếm số lượt trao đổi tích lũy trong phiên.
+trong đó $\text{sid}$ biểu diễn định danh duy nhất của phiên hội thoại; $\mathcal{T}_t \in \{\text{heritage}, \allowbreak \text{culinary}, \allowbreak \text{leisure}, \allowbreak \text{lodging}, \allowbreak \text{route\_navigation}\}$ là miền chủ đề hội thoại tự động suy diễn dựa trên loại hình thực thể được truy xuất; $a_{\text{place}} \in \mathcal{V}$ là đỉnh địa danh mốc (Anchor POI) đã được kiểm chứng tồn tại thực tế trên đồ thị $\mathcal{G}$; $a_{\text{dish}}$ là tên món ăn đặc sản trọng tâm; và $\tau \in \mathbb{N}$ là bộ đếm số lượt trao đổi tích lũy trong phiên.
 
 Khi du khách gửi câu hỏi $q_t$ tại lượt tương tác thứ $t$, hệ thống kích hoạt hàm biến đổi câu hỏi ngữ cảnh $f_{\text{resolve}}: (q_t, \mathcal{S}_{t-1}) \to q'_t$ trước khi luồng dữ liệu tiến vào Node 1 của LangGraph. Quá trình giải quyết đồng tham chiếu vận hành dựa trên cơ chế phân tích văn bản kết hợp với cấu trúc phân loại thực thể đồ thị:
 \begin{equation}
@@ -218,7 +218,7 @@ với $\mathcal{P}_{\text{place}}$ là tập hợp các biểu thức đại t�
 
 Hàm chuyển đổi $f_{\text{resolve}}$ sở hữu độ phức tạp thời gian tuyến tính $\mathcal{O}(|q_t|)$ theo độ dài chuỗi ký tự, cho phép thời gian thực thi duy trì dưới 1 mili-giây. Giải pháp này triệt tiêu hoàn toàn độ trễ phát sinh so với phương pháp sử dụng một lượt suy luận mô hình ngôn ngữ lớn phụ (LLM Query Rewriting), vốn tiêu tốn từ 1.5 đến 3.0 giây trên phần cứng biên. Đồng thời, thuật toán tích hợp các bộ lọc phủ định nghiêm ngặt nhằm tránh các hiện tượng giải sai: hệ thống phân biệt tường minh giữa đại từ chỉ mốc quá khứ (``\textit{ở đó}'') và đại từ trỏ vào tọa độ GPS thời gian thực của thiết bị du khách (``\textit{ở đây}'', ``\textit{gần đây}''); loại trừ các cụm từ ngữ nghĩa thời gian (``\textit{từ đó đến nay}''); và ngăn chặn việc phân rã nhầm các tên riêng đặc thù như cơ sở ẩm thực ``\textit{Bánh bèo Bà Đỏ}''.
 
-Nhằm bảo đảm an toàn thông tin và tính toàn vẹn dữ liệu, hàm tiền xử lý $\texttt{sanitize\_session\_context}$ áp dụng chính sách Zero-Trust đối với các tham số ngữ cảnh do phía máy khách chuyển giao. Định danh $a_{\text{place}}$ bắt buộc phải truy xuất thành công bản ghi node tương ứng trong đồ thị NetworkX, đồng thời nhãn hiển thị $\text{Label}(a_{\text{place}})$ luôn được trích xuất trực tiếp từ thuộc tính định danh của nút trên máy chủ, ngăn chặn triệt để nguy cơ tấn công chèn lệnh độc hại (Prompt Injection) qua dữ liệu trạng thái client.
+Nhằm bảo đảm an toàn thông tin và tính toàn vẹn dữ liệu, hàm tiền xử lý an ninh \texttt{sanitize\_\allowbreak session\_\allowbreak context} áp dụng chính sách Zero-Trust đối với các tham số ngữ cảnh do phía máy khách chuyển giao. Định danh $a_{\text{place}}$ bắt buộc phải truy xuất thành công bản ghi node tương ứng trong đồ thị NetworkX, đồng thời nhãn hiển thị $\text{Label}(a_{\text{place}})$ luôn được trích xuất trực tiếp từ thuộc tính định danh của nút trên máy chủ, ngăn chặn triệt để nguy cơ tấn công chèn lệnh độc hại (Prompt Injection) qua dữ liệu trạng thái client.
 
 Về phương diện hiển thị và giải thích minh bạch (Explainable AI), kết quả chuyển đổi ngữ cảnh được liên kết trực tiếp vào chuỗi vết suy luận $\texttt{graph\_trace}$ thông qua bước định tuyến $\text{context\_carryover}$. Du khách và chuyên gia kiểm thử có thể trực quan hóa minh bạch từng mắt xích suy luận (ví dụ: ``\textit{'từ đó' $\to$ Chùa Thiên Mụ}'') ngay bên dưới khung đàm thoại trên cả giao diện máy tính lẫn thiết bị di động. Hiệu năng của phân hệ Trí nhớ Ngữ cảnh đã được kiểm chứng toàn diện qua bộ 27 kịch bản kiểm thử tích hợp chuyên biệt (\texttt{test\_session\_memory.py}), ghi nhận tỷ lệ thành công tuyệt đối ($100\%$ test cases passed), xác nhận tính sẵn sàng cao cho môi trường ứng dụng thực địa.
 
@@ -309,11 +309,11 @@ Trong môi trường du lịch số tương tác cao, chất lượng trải ngh
 
 Thứ nhất, Cơ chế Quản lý và Ghim Lịch sử Phiên Hội thoại Đa tầng (Multi-tier Chat Session Lifecycle and Pinning): Hệ thống áp dụng mô hình lưu trữ lai (Hybrid Session Persistence) giữa bộ nhớ đệm cục bộ của trình duyệt (\texttt{localStorage}) và cơ sở dữ liệu đám mây Cloud Firestore (bộ sưu tập con \texttt{users/\{userId\}/chat\_sessions}). Để bảo đảm hiệu năng truy xuất và triệt tiêu nguy cơ vi phạm giới hạn kích thước tài liệu $1\text{ MB}$ của Firestore, mỗi phiên hội thoại được tự động tinh giản (Message Sanitization), chỉ lưu trữ tối đa 40 lượt trao đổi văn bản gần nhất và loại bỏ các payload thô cồng kềnh, giữ dung lượng phiên luôn dưới $100\text{ KB}$. Nhằm hỗ trợ du khách dễ dàng lưu giữ và truy cập nhanh các hành trình quan trọng mà không bị trôi dạt theo dòng thời gian, hệ thống thiết lập giải thuật Sắp xếp Ưu tiên Ghim (\texttt{sortSessionsWithPinned}):
 \begin{equation}
-    \text{Rank}(S_i) = \begin{cases}
-        (1, \text{Timestamp}_{\text{pinned}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{true} \\
-        (0, \text{Timestamp}_{\text{updated}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{false}
-    \end{cases}
-    \label{eq:pin-ranking}
+\label{eq:pin-ranking}
+\text{Rank}(S_i) = \begin{cases} 
+(1, \text{Timestamp}_{\text{pinned}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{true} \\ 
+(0, \text{Timestamp}_{\text{updated}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{false} 
+\end{cases}
 \end{equation}
 Theo giải thuật này, các phiên hội thoại được người dùng ghim chủ động (\texttt{isPinned = true}) luôn được ưu tiên xếp ở nhóm đầu danh sách theo thứ tự thời gian ghim giảm dần, phân tách rõ ràng với nhóm hội thoại gần đây thông qua dải phân cách ngữ cảnh và viền định danh màu vàng hổ phách (\texttt{\#F59E0B}). Thao tác ghim hoặc bỏ ghim được xử lý tức thời qua nút thao tác một chạm, cung cấp thông báo phản hồi động (Toast Notification) và tự động đồng bộ hóa trạng thái hai chiều giữa thiết bị cục bộ và máy chủ đám mây.
 
@@ -334,7 +334,7 @@ Mô hình hoạt động dựa trên cơ chế hai bộ mã hóa song song (Dual
 \subsection{Cơ chế Truy xuất Không gian Đa phương thức và Neo giữ Đồ thị}
 \label{subsec:ch1-visual-retrieval}
 
-Bộ chỉ mục thị giác \texttt{hue\_landmarks\_visual} được thiết lập trong cơ sở dữ liệu vector ChromaDB, lưu trữ các véc-tơ đặc trưng của 77 hình ảnh chuẩn hóa đại diện cho 25 danh lam thắng cảnh và di tích Cố đô Huế. Khi du khách tải lên một ảnh chụp thực địa, hệ thống tính toán véc-tơ truy vấn $\mathbf{z}_{\text{query}}$ và đo lường độ tương đồng Cosine đối với từng véc-tơ mẫu $\mathbf{z}_k$ trong cơ sở dữ liệu:
+Bộ chỉ mục thị giác \texttt{hue\_landmarks\_visual} được thiết lập trong cơ sở dữ liệu vector ChromaDB, lưu trữ 3.528 véc-tơ đặc trưng hình ảnh chuẩn hóa bao phủ toàn diện các danh mục di tích lịch sử, thắng cảnh, làng nghề truyền thống và các cơ sở ẩm thực Cố đô Huế (đáp ứng trọn vẹn các điều kiện chiếu sáng, thời tiết thực tế và góc chụp đa dạng của du khách). Khi du khách tải lên một ảnh chụp thực địa, hệ thống tính toán véc-tơ truy vấn $\mathbf{z}_{\text{query}}$ và đo lường độ tương đồng Cosine đối với từng véc-tơ mẫu $\mathbf{z}_k$ trong cơ sở dữ liệu:
 \begin{equation}
     \text{Sim}(\mathbf{z}_{\text{query}}, \mathbf{z}_k) = \mathbf{z}_{\text{query}}^\top \mathbf{z}_k = \sum_{j=1}^{512} z_{\text{query}, j} \cdot z_{k, j}
     \label{eq:cosine-visual}
@@ -378,8 +378,9 @@ Trong đó, chi phí vé tham quan $C_{\text{tickets}}$ được tính toán chu
 \centering
 \caption{Biểu giá vé tham quan di tích lịch sử văn hóa thuộc Quần thể Di tích Cố đô Huế}
 \label{tab:hmdc-ticket-pricing}
-\small
-\begin{tabularx}{\textwidth}{l r X}
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{5.8cm} >{\centering\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X}
 \hline
 \textbf{Địa điểm di tích tham quan} & \textbf{Mức giá vé (VNĐ/người)} & \textbf{Chính sách áp dụng và lưu ý} \\
 \hline

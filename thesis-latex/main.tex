@@ -12,6 +12,7 @@
 \makeatother
 \usepackage{graphicx}
 \usepackage{tabularx}
+\usepackage{longtable}
 \usepackage{multirow}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -25,6 +26,7 @@
 \usepackage[unicode,hypertexnames=false]{hyperref}
 \usepackage{cite}
 \usepackage{tikz}
+\usepackage{chngcntr}
 
 % Nạp thông tin đồ án tập trung (tên đề tài, tác giả, chuyên ngành, năm,...)
 \input{thong-tin}
@@ -140,6 +142,14 @@
 \pagenumbering{arabic}
 \setcounter{page}{1}
 \renewcommand{\theequation}{\arabic{equation}}
+
+% Thiết lập đánh số Bảng và Hình liên tục xuyên suốt khóa luận (Hình 1..10, Bảng 1..13)
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\thetable}{\arabic{table}}
+\setcounter{table}{0}
+\setcounter{figure}{0}
 
 \include{noi-dung/phan-1-mo-dau/mo-dau}
 \include{noi-dung/phan-2-tong-quan/tong-quan}

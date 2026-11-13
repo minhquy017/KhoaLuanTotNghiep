@@ -4,14 +4,32 @@
 
 \begin{center}
 {\fontsize{16pt}{20pt}\selectfont \bfseries DANH MỤC CÁC CHỮ VIẾT TẮT VÀ KÝ HIỆU\par}
-\vspace{0.8cm}
+\vspace{0.4cm}
 \end{center}
 
-\noindent
-\begin{tabularx}{\textwidth}{l l X}
+\begingroup
+\setstretch{1.15}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{>{\bfseries}p{1.8cm} >{\raggedright\arraybackslash}p{7.0cm} >{\raggedright\arraybackslash}p{6.4cm}}
 \hline
 \textbf{Ký hiệu} & \textbf{Tiếng Anh} & \textbf{Ý nghĩa tiếng Việt} \\
 \hline
+\endfirsthead
+
+\multicolumn{3}{c}%
+{{\bfseries DANH MỤC CÁC CHỮ VIẾT TẮT VÀ KÝ HIỆU (Tiếp theo)}} \\
+\hline
+\textbf{Ký hiệu} & \textbf{Tiếng Anh} & \textbf{Ý nghĩa tiếng Việt} \\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+\hline
+\endlastfoot
+
 AI & Artificial Intelligence & Trí tuệ nhân tạo \\
 API & Application Programming Interface & Giao diện lập trình ứng dụng \\
 CLIP & Contrastive Language-Image Pretraining & Tiền huấn luyện tương phản Ngôn ngữ -- Hình ảnh \\
@@ -41,5 +59,5 @@ ViT & Vision Transformer & Mô hình mạng biến đổi thị giác \\
 VRAM & Video Random Access Memory & Bộ nhớ truy cập ngẫu nhiên của bộ xử lý đồ họa \\
 WMO & World Meteorological Organization & Tổ chức Khí tượng Thế giới \\
 XAI & Explainable Artificial Intelligence & Trí tuệ nhân tạo có thể giải thích được \\
-\hline
-\end{tabularx}
+\end{longtable}
+\endgroup
