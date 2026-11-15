@@ -38,6 +38,146 @@ def strip_accents(text: str) -> str:
     return unicodedata.normalize('NFC', text).lower().strip()
 
 
+# =============================================================================
+# BẢNG TRA CỨU ĐỊA CHỈ & GIÁ VÉ CHÍNH THỨC CÁC DI TÍCH / DANH THẮNG CỐ ĐÔ HUẾ
+# (Chuẩn hóa ghi đè dữ liệu thô từ TripAdvisor / Biểu giá HMDC ban hành)
+# =============================================================================
+OFFICIAL_HUE_LANDMARKS_META = {
+    "place_8875": {
+        "name": "Đại Nội Huế (Hoàng Thành & Ngọ Môn)",
+        "street_address": "Đường 23/8, Phường Thuận Hòa, TP. Huế",
+        "ticket_price": "200.000 VNĐ/người (Người lớn, đã bao gồm Bảo tàng Cổ vật Cung đình Huế)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "place_8876": {
+        "name": "Chùa Thiên Mụ (Linh Mụ)",
+        "street_address": "Đồi Hà Khê, Đường Nguyễn Phúc Nguyên, Phường Kim Long, TP. Huế",
+        "ticket_price": "Miễn phí vé tham quan",
+        "opening_hours": "07:00 - 18:00"
+    },
+    "place_8878": {
+        "name": "Lăng Minh Mạng (Hiếu Lăng)",
+        "street_address": "Quốc lộ 49, Xã Hương Thọ, TP. Huế",
+        "ticket_price": "150.000 VNĐ/người (Người lớn)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "place_8879": {
+        "name": "Lăng Khải Định (Ứng Lăng)",
+        "street_address": "Xã Thủy Bằng, TP. Huế",
+        "ticket_price": "150.000 VNĐ/người (Người lớn)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "place_8880": {
+        "name": "Lăng Tự Đức (Khiêm Lăng)",
+        "street_address": "Thôn Thượng Ba, Phường Thủy Xuân, TP. Huế",
+        "ticket_price": "150.000 VNĐ/người (Người lớn)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "place_8884": {
+        "name": "Hoàng Cung Huế (Tử Cấm Thành)",
+        "street_address": "Khu vực Đại Nội, Phường Thuận Thành, TP. Huế",
+        "ticket_price": "Đã bao gồm trong vé tham quan Đại Nội (200.000 VNĐ)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "place_8881": {
+        "name": "Lăng Đồng Khánh (Tư Lăng)",
+        "street_address": "Thôn Thượng Hai, Phường Thủy Xuân, TP. Huế",
+        "ticket_price": "100.000 VNĐ/người (Người lớn)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "place_8885": {
+        "name": "Cầu ngói Thanh Toàn",
+        "street_address": "Làng Thanh Toàn, Xã Thủy Thanh, TX. Hương Thủy, Thừa Thiên Huế",
+        "ticket_price": "Miễn phí vé tham quan",
+        "opening_hours": "Mở cửa tự do cả ngày"
+    },
+    "place_8920": {
+        "name": "Chợ Đông Ba",
+        "street_address": "Số 2 Trần Hưng Đạo, Phường Phú Hòa, TP. Huế",
+        "ticket_price": "Vào cửa tự do",
+        "opening_hours": "05:00 - 19:00"
+    },
+    "place_8886": {
+        "name": "Chùa Từ Hiếu",
+        "street_address": "Thôn Dương Xuân Thượng III, Phường Thủy Xuân, TP. Huế",
+        "ticket_price": "Miễn phí vé tham quan",
+        "opening_hours": "07:00 - 18:00"
+    },
+    "place_8919": {
+        "name": "Cầu Trường Tiền",
+        "street_address": "Bắc qua sông Hương, nối đường Trần Hưng Đạo và Lê Lợi, TP. Huế",
+        "ticket_price": "Miễn phí",
+        "opening_hours": "Mở cửa tự do cả ngày"
+    },
+    "place_8882": {
+        "name": "Sông Hương (Bến thuyền Tòa Khâm)",
+        "street_address": "49 Lê Lợi, Phường Phú Hội, TP. Huế",
+        "ticket_price": "Thuyền rồng ca Huế: ~100.000 VNĐ/khách",
+        "opening_hours": "07:00 - 22:00"
+    },
+    "place_8877": {
+        "name": "Vườn Quốc gia Bạch Mã",
+        "street_address": "Huyện Phú Lộc, Thừa Thiên Huế",
+        "ticket_price": "60.000 VNĐ/người (Người lớn)",
+        "opening_hours": "07:00 - 17:00"
+    },
+    "place_8917": {
+        "name": "Vịnh & Bãi biển Lăng Cô",
+        "street_address": "Thị trấn Lăng Cô, Huyện Phú Lộc, Thừa Thiên Huế",
+        "ticket_price": "Miễn phí tắm biển",
+        "opening_hours": "Mở cửa tự do"
+    },
+    "place_8918": {
+        "name": "Phá Tam Giang (Đầm Chuồn)",
+        "street_address": "Đầm Chuồn, Xã Phú An, Huyện Phú Vang, Thừa Thiên Huế",
+        "ticket_price": "Miễn phí ngắm cảnh",
+        "opening_hours": "Mở cửa tự do cả ngày"
+    },
+    "place_8895": {
+        "name": "Đèo Hải Vân (Hải Vân Quan)",
+        "street_address": "Quốc lộ 1A, Huyện Phú Lộc, Thừa Thiên Huế",
+        "ticket_price": "Miễn phí tham quan",
+        "opening_hours": "Mở cửa tự do cả ngày"
+    },
+    "custom_local_31": {
+        "name": "Cung An Định",
+        "street_address": "179 Phan Đình Phùng, Phường Phú Nhuận, TP. Huế",
+        "ticket_price": "50.000 VNĐ/người (Người lớn)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "custom_attr_01": {
+        "name": "Lăng Gia Long (Thiên Thọ Lăng)",
+        "street_address": "Xã Hương Thọ, TP. Huế",
+        "ticket_price": "50.000 VNĐ/người (Người lớn)",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "custom_attr_02": {
+        "name": "Đồi Vọng Cảnh",
+        "street_address": "Đường Huyền Trân Công Chúa, Phường Thủy Xuân, TP. Huế",
+        "ticket_price": "Miễn phí tham quan",
+        "opening_hours": "Mở cửa tự do (hoàng hôn đẹp nhất 16h30 - 18h00)"
+    },
+    "custom_attr_03": {
+        "name": "Làng hương Thủy Xuân",
+        "street_address": "Đường Huyền Trân Công Chúa, Phường Thủy Xuân, TP. Huế",
+        "ticket_price": "Miễn phí tham quan và chụp ảnh",
+        "opening_hours": "07:00 - 19:00"
+    },
+    "custom_attr_04": {
+        "name": "Điện Hòn Chén",
+        "street_address": "Núi Ngọc Trản, Xã Hương Thọ, TP. Huế",
+        "ticket_price": "50.000 VNĐ/người",
+        "opening_hours": "07:00 - 17:30"
+    },
+    "custom_attr_05": {
+        "name": "Chùa Huyền Không Sơn Thượng",
+        "street_address": "Thôn Chầm, Xã Hương Hồ, Thị xã Hương Trà, Thừa Thiên Huế",
+        "ticket_price": "Miễn phí",
+        "opening_hours": "07:00 - 18:00"
+    }
+}
+
+
 class SpatialGraphRetriever:
     _instance = None
 
@@ -294,12 +434,25 @@ class SpatialGraphRetriever:
             if alias not in self._place_name_index and pid in self.G:
                 self._place_name_index[alias] = pid
 
+    def _apply_official_landmark_meta(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Tự động chuẩn hóa địa chỉ, giá vé và giờ mở cửa chính thức cho di tích Cố đô Huế."""
+        if not data:
+            return data
+        node_id = data.get("node_id") or f"place_{data.get('place_id')}"
+        if node_id in OFFICIAL_HUE_LANDMARKS_META:
+            meta = OFFICIAL_HUE_LANDMARKS_META[node_id]
+            data["street_address"] = meta["street_address"]
+            data["price_range"] = meta["ticket_price"]
+            data["ticket_price"] = meta["ticket_price"]
+            data["opening_hours"] = meta.get("opening_hours", "")
+        return data
+
     def get_place(self, place_id_or_name: str) -> Optional[Dict[str, Any]]:
         """Lấy thông tin chi tiết một địa điểm qua ID hoặc Tên."""
         if place_id_or_name in self.G:
             data = dict(self.G.nodes[place_id_or_name])
             data["node_id"] = place_id_or_name
-            return data
+            return self._apply_official_landmark_meta(data)
         
         norm = strip_accents(str(place_id_or_name).strip(" :.,;!?-"))
         if norm in self._place_alias_index:
@@ -307,20 +460,20 @@ class SpatialGraphRetriever:
             if node_id in self.G:
                 data = dict(self.G.nodes[node_id])
                 data["node_id"] = node_id
-                return data
+                return self._apply_official_landmark_meta(data)
 
         if norm in self._place_name_index:
             node_id = self._place_name_index[norm]
             data = dict(self.G.nodes[node_id])
             data["node_id"] = node_id
-            return data
+            return self._apply_official_landmark_meta(data)
         
         # Thử tìm gần đúng (chỉ áp dụng khi độ dài chuỗi đủ lớn)
         for p_name_norm, node_id in self._place_name_index.items():
             if (len(norm) >= 5 and norm in p_name_norm) or (len(p_name_norm) >= 6 and p_name_norm in norm):
                 data = dict(self.G.nodes[node_id])
                 data["node_id"] = node_id
-                return data
+                return self._apply_official_landmark_meta(data)
         return None
 
     def search_places(self, query: str, locality: Optional[str] = None, 
@@ -563,14 +716,24 @@ class SpatialGraphRetriever:
 
         lines = ["### [TRI THỨC XÁC THỰC TỪ ĐỒ THỊ KHÔNG GIAN (KNOWLEDGE GRAPH)]"]
         for idx, p in enumerate(retrieved_places, 1):
-            p_name = p.get("name", "N/A")
+            p_node_id = p.get("node_id") or f"place_{p.get('place_id')}"
+            meta = OFFICIAL_HUE_LANDMARKS_META.get(p_node_id)
+            if meta:
+                p_name = meta.get("name", p.get("name", "N/A"))
+                addr = meta["street_address"]
+                price = meta["ticket_price"]
+                open_str = f" | Giờ mở cửa: {meta['opening_hours']}"
+            else:
+                p_name = p.get("name", "N/A")
+                addr = p.get("street_address") or p.get("locality") or "Huế"
+                price = p.get("price_range") or "Bình dân"
+                open_str = f" | Giờ mở cửa: {p.get('opening_hours')}" if p.get("opening_hours") else ""
+
             cat = p.get("category", "").capitalize()
             rating = p.get("rating_value", 0.0)
             rev_cnt = p.get("review_count", 0)
-            addr = p.get("street_address") or p.get("locality") or "Huế"
-            price = p.get("price_range") or "Bình dân"
 
-            header = f"{idx}. **{p_name}** ({cat}) — ⭐ {rating}/5 ({rev_cnt:,} đánh giá) | Địa chỉ: {addr} | Giá: {price}"
+            header = f"{idx}. **{p_name}** ({cat}) — ⭐ {rating}/5 ({rev_cnt:,} đánh giá) | Địa chỉ: {addr} | Giá vé/Chi phí: {price}{open_str}"
             lines.append(header)
 
             # Món đặc sản nếu có

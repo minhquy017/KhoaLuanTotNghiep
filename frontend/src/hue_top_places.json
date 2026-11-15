@@ -6,10 +6,12 @@
     "lng": 107.57835,
     "cat": "Attraction",
     "desc": "Kinh thành Huế · Hoàng cung triều Nguyễn di sản thế giới UNESCO · Ngọ Môn & Kỳ Đài",
-    "address": "1/14/105 Le Ngo Cat Hue Hue Imperial Citadel",
+    "address": "Đường 23/8, Phường Thuận Hòa, TP. Huế",
     "rating_value": 4.3,
     "review_count": 11417,
-    "tags": "dai noi hue (hoang thanh & ngo mon), ngo mon, cong ngo mon, ngo mon hue, meridian gate, ky dai, cot co, hoang thanh, kinh thanh, hue imperial city (the citadel), di tich, thang canh"
+    "tags": "dai noi hue (hoang thanh & ngo mon), ngo mon, cong ngo mon, ngo mon hue, meridian gate, ky dai, cot co, hoang thanh, kinh thanh, hue imperial city (the citadel), di tich, thang canh",
+    "price_range": "200.000 VNĐ/người (Đã gồm Bảo tàng Cổ vật Cung đình)",
+    "opening_hours": "07:00 - 17:30"
   },
   {
     "place_id": "place_8876",
@@ -18,10 +20,12 @@
     "lng": 107.54485,
     "cat": "Attraction",
     "desc": "Đồi Hà Khê, Kim Long · Đệ nhất cổ tự hơn 400 năm bên bờ sông Hương",
-    "address": "Thành phố Huế",
+    "address": "Đồi Hà Khê, Đường Nguyễn Phúc Nguyên, Phường Kim Long, TP. Huế",
     "rating_value": 4.2,
     "review_count": 3922,
-    "tags": "chua thien mu, thien mu pagoda, , di tich, thang canh"
+    "tags": "chua thien mu, thien mu pagoda, , di tich, thang canh",
+    "price_range": "Miễn phí vé tham quan",
+    "opening_hours": "07:00 - 18:00"
   },
   {
     "place_id": "place_8878",
@@ -30,10 +34,12 @@
     "lng": 107.56918,
     "cat": "Attraction",
     "desc": "Hương Thọ, TP Huế · Quần thể lăng đăng đối uy nghiêm bên dòng Tả Trạch",
-    "address": "Hương Trà District",
+    "address": "Quốc lộ 49, Xã Hương Thọ, TP. Huế",
     "rating_value": 4.5,
     "review_count": 2657,
-    "tags": "lang minh mang (hieu lang), mausoleum of emperor minh mang, huong tra district, di tich, thang canh"
+    "tags": "lang minh mang (hieu lang), mausoleum of emperor minh mang, huong tra district, di tich, thang canh",
+    "price_range": "150.000 VNĐ/người",
+    "opening_hours": "07:00 - 17:30"
   },
   {
     "place_id": "place_8882",
@@ -42,10 +48,12 @@
     "lng": 107.592,
     "cat": "Attraction",
     "desc": "49 Lê Lợi, TP Huế · Dòng sông di sản thơ mộng và bến thuyền rồng ca Huế",
-    "address": "49 Lê Lợi, P. Phú Hội, TP Huế",
+    "address": "49 Lê Lợi, Phường Phú Hội, TP. Huế",
     "rating_value": 4.5,
     "review_count": 2277,
-    "tags": "song huong (ben thuyen toa kham), perfume river, toa kham, di tich, thang canh"
+    "tags": "song huong (ben thuyen toa kham), perfume river, toa kham, di tich, thang canh",
+    "price_range": "Thuyền rồng ca Huế: ~100.000 VNĐ/khách",
+    "opening_hours": "07:00 - 22:00"
   },
   {
     "place_id": "place_8880",
@@ -54,10 +62,12 @@
     "lng": 107.56644,
     "cat": "Attraction",
     "desc": "Thủy Xuân, TP Huế · Quần thể lăng tẩm thơ mộng bậc nhất triều Nguyễn",
-    "address": "Tay Nhat Hamlet, An Cuu Village",
+    "address": "Thôn Thượng Ba, Phường Thủy Xuân, TP. Huế",
     "rating_value": 4.2,
     "review_count": 2137,
-    "tags": "lang tu duc (khiem lang), tomb of tu duc, tay nhat hamlet, an cuu village, di tich, thang canh"
+    "tags": "lang tu duc (khiem lang), tomb of tu duc, tay nhat hamlet, an cuu village, di tich, thang canh",
+    "price_range": "150.000 VNĐ/người",
+    "opening_hours": "07:00 - 17:30"
   },
   {
     "place_id": "place_8884",
@@ -66,10 +76,12 @@
     "lng": 107.57792,
     "cat": "Attraction",
     "desc": "Thuận Thành, TP Huế · Nơi sinh hoạt của hoàng gia và các hoàng đế triều Nguyễn",
-    "address": "Thuan Thanh",
+    "address": "Khu vực Đại Nội, Phường Thuận Thành, TP. Huế",
     "rating_value": 4.2,
     "review_count": 996,
-    "tags": "hoang cung hue (tu cam thanh), hue royal palace, thuan thanh, di tich, thang canh"
+    "tags": "hoang cung hue (tu cam thanh), hue royal palace, thuan thanh, di tich, thang canh",
+    "price_range": "Đã bao gồm trong vé Đại Nội (200.000 VNĐ)",
+    "opening_hours": "07:00 - 17:30"
   },
   {
     "place_id": "place_8879",
@@ -78,10 +90,12 @@
     "lng": 107.59028,
     "cat": "Attraction",
     "desc": "Châu Chữ, Thủy Bằng · Kiệt tác khảm sành sứ giao thoa kiến trúc Đông - Tây",
-    "address": "Perfume River ",
+    "address": "Xã Thủy Bằng, TP. Huế",
     "rating_value": 4.5,
     "review_count": 974,
-    "tags": "lang khai dinh (ung lang), royal tombs, perfume river, di tich, thang canh"
+    "tags": "lang khai dinh (ung lang), royal tombs, perfume river, di tich, thang canh",
+    "price_range": "150.000 VNĐ/người",
+    "opening_hours": "07:00 - 17:30"
   },
   {
     "place_id": "place_8895",
@@ -90,10 +104,12 @@
     "lng": 108.13334,
     "cat": "Attraction",
     "desc": "Phú Lộc, Thừa Thiên Huế · Thiên hạ đệ nhất hùng quan nối Huế và Đà Nẵng",
-    "address": "Thành phố Huế",
+    "address": "Quốc lộ 1A, Huyện Phú Lộc, Thừa Thiên Huế",
     "rating_value": 4.3,
     "review_count": 643,
-    "tags": "deo hai van (hai van quan), hai van pass, , di tich, thang canh"
+    "tags": "deo hai van (hai van quan), hai van pass, , di tich, thang canh",
+    "price_range": "Miễn phí tham quan",
+    "opening_hours": "Mở cửa tự do cả ngày"
   },
   {
     "place_id": "place_8919",
@@ -102,10 +118,12 @@
     "lng": 107.590004,
     "cat": "Attraction",
     "desc": "Sông Hương, TP Huế · Biểu tượng lịch sử 6 vài 12 nhịp bắc qua sông Hương",
-    "address": "Thành phố Huế",
+    "address": "Bắc qua sông Hương, nối đường Trần Hưng Đạo và Lê Lợi, TP. Huế",
     "rating_value": 3.9,
     "review_count": 628,
-    "tags": "cau truong tien, cau trang tien, truong tien bridge, trang tien bridge, di tich, thang canh"
+    "tags": "cau truong tien, cau trang tien, truong tien bridge, trang tien bridge, di tich, thang canh",
+    "price_range": "Miễn phí",
+    "opening_hours": "Mở cửa tự do cả ngày"
   },
   {
     "place_id": "place_8881",
@@ -114,10 +132,12 @@
     "lng": 107.57,
     "cat": "Attraction",
     "desc": "Thượng Hai, Thủy Xuân · Công trình kiến trúc cung đình tinh xảo chuyển tiếp thời kỳ",
-    "address": "Doan Nhu Hai",
+    "address": "Thôn Thượng Hai, Phường Thủy Xuân, TP. Huế",
     "rating_value": 4.5,
     "review_count": 585,
-    "tags": "lang dong khanh, imperial tomb of dong khanh, doan nhu hai, di tich, thang canh"
+    "tags": "lang dong khanh, imperial tomb of dong khanh, doan nhu hai, di tich, thang canh",
+    "price_range": "100.000 VNĐ/người",
+    "opening_hours": "07:00 - 17:30"
   },
   {
     "place_id": "place_8885",
@@ -126,22 +146,26 @@
     "lng": 107.64267,
     "cat": "Attraction",
     "desc": "Thủy Thanh, Hương Thủy · Cây cầu ngói cổ kính độc đáo bên dòng sông Như Ý",
-    "address": "Thanh Toan",
+    "address": "Làng Thanh Toàn, Xã Thủy Thanh, TX. Hương Thủy, Thừa Thiên Huế",
     "rating_value": 4.4,
     "review_count": 429,
-    "tags": "cau ngoi thanh toan, thanh toan bridge, thanh toan, di tich, thang canh"
+    "tags": "cau ngoi thanh toan, thanh toan bridge, thanh toan, di tich, thang canh",
+    "price_range": "Miễn phí vé tham quan",
+    "opening_hours": "Mở cửa tự do cả ngày"
   },
   {
     "place_id": "place_8920",
     "name": "Chợ Đông Ba",
     "lat": 16.47262,
-    "lng": 107.58850,
+    "lng": 107.5885,
     "cat": "Attraction",
     "desc": "Số 2 Trần Hưng Đạo, TP Huế · Trung tâm giao thương và ẩm thực truyền thống lớn nhất Cố đô",
-    "address": "Số 2 Trần Hưng Đạo, P. Phú Hòa, TP Huế",
+    "address": "Số 2 Trần Hưng Đạo, Phường Phú Hòa, TP. Huế",
     "rating_value": 4.2,
     "review_count": 400,
-    "tags": "cho dong ba, dong ba market, tran hung dao st., di tich, thang canh, am thuc"
+    "tags": "cho dong ba, dong ba market, tran hung dao st., di tich, thang canh, am thuc",
+    "price_range": "Vào cửa tự do",
+    "opening_hours": "05:00 - 19:00"
   },
   {
     "place_id": "place_8877",
@@ -150,10 +174,12 @@
     "lng": 107.893715,
     "cat": "Attraction",
     "desc": "Phú Lộc, Thừa Thiên Huế · Khu bảo tồn thiên nhiên đỉnh Bạch Mã cao 1.450m quanh năm mát lạnh",
-    "address": "Thành phố Huế",
+    "address": "Huyện Phú Lộc, Thừa Thiên Huế",
     "rating_value": 4.5,
     "review_count": 346,
-    "tags": "vuon quoc gia bach ma, bach ma national park, , di tich, thang canh"
+    "tags": "vuon quoc gia bach ma, bach ma national park, , di tich, thang canh",
+    "price_range": "60.000 VNĐ/người",
+    "opening_hours": "07:00 - 17:00"
   },
   {
     "place_id": "place_8917",
@@ -162,22 +188,26 @@
     "lng": 108.0659,
     "cat": "Attraction",
     "desc": "Lăng Cô, Phú Lộc · Vịnh biển tuyệt đẹp trong câu lạc bộ các vịnh biển đẹp nhất thế giới",
-    "address": "Thành phố Huế",
+    "address": "Thị trấn Lăng Cô, Huyện Phú Lộc, Thừa Thiên Huế",
     "rating_value": 3.9,
     "review_count": 100,
-    "tags": "bai bien lang co, lang co beach, , di tich, thang canh"
+    "tags": "bai bien lang co, lang co beach, , di tich, thang canh",
+    "price_range": "Miễn phí tắm biển",
+    "opening_hours": "Mở cửa tự do"
   },
   {
     "place_id": "place_8918",
     "name": "Phá Tam Giang (Đầm Chuồn)",
-    "lat": 16.5050,
-    "lng": 107.6480,
+    "lat": 16.505,
+    "lng": 107.648,
     "cat": "Attraction",
     "desc": "Quảng Điền & Phú Vang · Đầm phá nước lợ lớn nhất Đông Nam Á, ngắm hoàng hôn tuyệt đỉnh",
-    "address": "Đầm Chuồn, Xã Phú An, H. Phú Vang, Thừa Thiên Huế",
+    "address": "Đầm Chuồn, Xã Phú An, Huyện Phú Vang, Thừa Thiên Huế",
     "rating_value": 4.4,
     "review_count": 97,
-    "tags": "pha tam giang (dam chuon), tam giang lagoon, , di tich, thang canh"
+    "tags": "pha tam giang (dam chuon), tam giang lagoon, , di tich, thang canh",
+    "price_range": "Miễn phí ngắm cảnh",
+    "opening_hours": "Mở cửa tự do cả ngày"
   },
   {
     "place_id": "place_8915",
@@ -210,10 +240,12 @@
     "lng": 107.58186,
     "cat": "Attraction",
     "desc": "Thủy Xuân, TP Huế · Cổ tự thanh tịnh gắn liền Thiền sư Thích Nhất Hạnh và nghĩa trang Thái giám",
-    "address": "Thành phố Huế",
+    "address": "Thôn Dương Xuân Thượng III, Phường Thủy Xuân, TP. Huế",
     "rating_value": 4.6,
     "review_count": 53,
-    "tags": "chua tu hieu, tu hieu pagoda, , di tich, thang canh"
+    "tags": "chua tu hieu, tu hieu pagoda, , di tich, thang canh",
+    "price_range": "Miễn phí vé tham quan",
+    "opening_hours": "07:00 - 18:00"
   },
   {
     "place_id": "place_8910",
@@ -2085,7 +2117,7 @@
   {
     "place_id": "custom_local_04",
     "name": "T Roaster",
-    "lat": 16.4760,
+    "lat": 16.476,
     "lng": 107.5952,
     "cat": "Cafe",
     "desc": "Hồ Xuân Hương, Gia Hội · Không gian specialty coffee rang xay thủ công trẻ trung và tinh tế",
@@ -2142,7 +2174,7 @@
     "place_id": "custom_local_06",
     "name": "Hội Quán Quảng Đông (Chùa Bà Thiên Hậu)",
     "lat": 16.4755,
-    "lng": 107.5940,
+    "lng": 107.594,
     "cat": "Attraction",
     "desc": "162 Chi Lăng, Gia Hội · Nơi thờ Thiên Hậu Thánh Mẫu với nghệ thuật khảm sành sứ đặc sắc",
     "address": "162 Chi Lăng, P. Gia Hội, TP Huế",
@@ -2163,7 +2195,7 @@
     "place_id": "custom_local_07",
     "name": "Chùa Diệu Đế",
     "lat": 16.4735,
-    "lng": 107.5920,
+    "lng": 107.592,
     "cat": "Attraction",
     "desc": "110 Bạch Đằng, Gia Hội · Đệ tam Quốc tự thời Nguyễn nổi tiếng với bức bích họa Long Vân Khế Hội",
     "address": "110 Bạch Đằng, P. Gia Hội, TP Huế",
@@ -2211,7 +2243,7 @@
   {
     "place_id": "custom_local_09",
     "name": "Cơm Hến Bà Cam",
-    "lat": 16.4660,
+    "lat": 16.466,
     "lng": 107.5955,
     "cat": "Restaurant",
     "desc": "49 Trương Định, Vĩnh Ninh · Tô cơm hến 10k huyền thoại gắn liền với bao thế hệ học sinh sinh viên",
@@ -2254,7 +2286,7 @@
     "place_id": "custom_local_11",
     "name": "Bún Bò O Cương Điệp",
     "lat": 16.4595,
-    "lng": 107.5910,
+    "lng": 107.591,
     "cat": "Restaurant",
     "desc": "06 Trần Thúc Nhẫn, Vĩnh Ninh · Bún bò sợi to truyền thống với giò heo mềm rục và chả cua thơm ngậy",
     "address": "06 Trần Thúc Nhẫn, P. Vĩnh Ninh, TP Huế",
@@ -2324,7 +2356,7 @@
     "place_id": "custom_local_14",
     "name": "Chè Mộc Cố Đô",
     "lat": 16.4695,
-    "lng": 107.5880,
+    "lng": 107.588,
     "cat": "Restaurant",
     "desc": "100 Trần Hưng Đạo, Phú Hòa · Không gian mộc mạc lưu giữ 24 vị chè cung đình và dân gian thanh mát",
     "address": "100 Trần Hưng Đạo, P. Phú Hòa, TP Huế",
@@ -2470,8 +2502,8 @@
   {
     "place_id": "custom_local_20",
     "name": "Nhà Thờ Dòng Chúa Cứu Thế Huế",
-    "lat": 16.4560,
-    "lng": 107.5950,
+    "lat": 16.456,
+    "lng": 107.595,
     "cat": "Attraction",
     "desc": "142 Nguyễn Huệ, Phú Nhuận · Tuyệt tác kiến trúc Gothic giao thoa mái đình Việt Nam tráng lệ",
     "address": "142 Nguyễn Huệ, P. Phú Nhuận, TP Huế",
@@ -2491,8 +2523,8 @@
   {
     "place_id": "custom_local_21",
     "name": "Công Viên Hồ Thủy Tiên (Tượng Rồng)",
-    "lat": 16.4150,
-    "lng": 107.5740,
+    "lat": 16.415,
+    "lng": 107.574,
     "cat": "Attraction",
     "desc": "Đồi Thiên An, Thủy Bằng · Công viên nước hoang sơ với kiến trúc đầu rồng khổng lồ kỳ bí nổi tiếng thế giới",
     "address": "Đồi Thiên An, X. Thủy Bằng, TP Huế",
@@ -2540,8 +2572,8 @@
   {
     "place_id": "custom_local_23",
     "name": "Root Cafe (Cà phê Rễ)",
-    "lat": 16.4380,
-    "lng": 107.5760,
+    "lat": 16.438,
+    "lng": 107.576,
     "cat": "Cafe",
     "desc": "Lê Ngô Cát, Thủy Xuân · Quán cà phê ẩn mình giữa vườn thông xanh mát trên đường lên lăng tẩm",
     "address": "Đường Lê Ngô Cát, P. Thủy Xuân, TP Huế",
@@ -2561,7 +2593,7 @@
   {
     "place_id": "custom_local_24",
     "name": "Cơm Niêu Chị Tẹo",
-    "lat": 16.4670,
+    "lat": 16.467,
     "lng": 107.5965,
     "cat": "Restaurant",
     "desc": "59 Hai Bà Trưng, Vĩnh Ninh · Mâm cơm gia đình xứ Huế với cá bống thố kho tộ, canh chua cá lóc đậm đà",
@@ -2778,8 +2810,8 @@
   {
     "place_id": "custom_local_32",
     "name": "Đầm Lập An & Làng Chài Lăng Cô",
-    "lat": 16.2350,
-    "lng": 108.0820,
+    "lat": 16.235,
+    "lng": 108.082,
     "cat": "Attraction",
     "desc": "Thị trấn Lăng Cô, Phú Lộc · Tuyệt cảnh đầm nước lợ chân đèo Hải Vân với con đường rẽ sóng và bè hàu thơ mộng",
     "address": "Đường Nguyễn Văn, TT. Lăng Cô, H. Phú Lộc, Thừa Thiên Huế",
