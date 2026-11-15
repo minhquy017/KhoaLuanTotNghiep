@@ -136,13 +136,15 @@ Bên cạnh năng lực sinh câu trả lời tự nhiên, khung tác tử tích
 \subsection{Cấu trúc Lược đồ Dữ liệu Phân tán trên Cloud Firestore}
 \label{subsec:ch1-firestore-schema}
 
-Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận cục bộ, toàn bộ dữ liệu trạng thái phiên và hành trình du lịch được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán theo mô hình phân vùng người dùng an toàn gồm ba bộ sưu tập:
+Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận cục bộ, toàn bộ dữ liệu trạng thái phiên, hành trình du lịch và dữ liệu đánh giá thực địa được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán theo mô hình phân vùng an toàn gồm bốn bộ sưu tập cốt lõi:
 
 Bộ sưu tập thứ nhất là \texttt{chat\_sessions} (tổ chức dưới dạng bộ sưu tập phân cấp người dùng tại đường dẫn \texttt{users/\{userId\}/chat\_sessions}), đóng vai trò lưu trữ toàn diện lịch sử các cuộc trò chuyện của từng du khách. Mỗi tài liệu trong bộ sưu tập đại diện cho một phiên hội thoại duy nhất với định danh khóa chính là \texttt{sessionId}. Tài liệu lưu trữ các trường dữ liệu tổng quan bao gồm mã định danh du khách (\texttt{userId}), tiêu đề tóm tắt phiên (\texttt{title}) được tự động trích xuất từ câu hỏi đầu tiên, mốc thời gian khởi tạo (\texttt{createdAt}) và thời điểm cập nhật gần nhất (\texttt{updatedAt}). Đáng chú ý, toàn bộ diễn biến cuộc đối thoại được kiên định hóa bên trong mảng cấu trúc \texttt{messages}: mỗi phần tử trong mảng lưu trữ vai trò người phát ngôn (\texttt{role}: người dùng hoặc trợ lý), nội dung phản hồi văn bản (\texttt{text}), câu hỏi truy vấn gốc (\texttt{prompt}), mã định danh thông điệp duy nhất (\texttt{id}), chỉ số phản hồi của du khách (\texttt{feedbackRating}: thích hoặc chưa tốt), và đối tượng dữ liệu phân tích chi tiết (\texttt{resData}) bao gồm danh sách các thực thể POI đề xuất, thẻ hành trình điều hướng và các thông số suy luận không gian.
 
 Bộ sưu tập thứ hai là \texttt{itineraries} (tại đường dẫn \texttt{users/\{userId\}/itineraries}), chịu trách nhiệm lưu trữ các tour du lịch đa chặng đã được thuật toán tối ưu hóa và được du khách đánh dấu lưu lại. Mỗi tài liệu hành trình lưu trữ tiêu đề chuyến đi, số ngày trải nghiệm, kiểu hình du lịch, danh mục các điểm dừng theo từng chặng (Legs), khoảng cách di chuyển dự kiến, thời gian tham quan ước tính tại mỗi di tích, danh sách món ăn đặc sản được bảo chứng tại các quán ăn lân cận, và mảng tọa độ GPS đầy đủ phục vụ việc tái hiện trực quan tuyến đường trên bản đồ số.
 
 Bộ sưu tập thứ ba là \texttt{ai\_feedbacks} (bộ sưu tập gốc cấp hệ thống), ghi nhận toàn bộ các phản hồi đánh giá của du khách đối với từng câu trả lời cụ thể của tác tử RAG. Dữ liệu này bao gồm mã thông điệp (\texttt{messageId}), câu truy vấn gốc (\texttt{prompt}), nội dung phản hồi của mô hình, nhãn đánh giá nhị phân (\texttt{rating} mang giá trị $+1$ cho phản hồi hữu ích và $-1$ cho phản hồi chưa chính xác), cùng nhãn thời gian và ngữ cảnh không gian lúc đánh giá. Đây là tập ngữ liệu quý giá phục vụ chu trình kiểm thử và tinh chỉnh mô hình ngôn ngữ theo phản hồi con người (RLHF) trong các giai đoạn phát triển tiếp theo.
+
+Bộ sưu tập thứ tư là \texttt{places} (bao gồm bộ sưu tập con đánh giá thực địa \texttt{places/\{placeKey\}/user\_reviews} và đường dẫn theo dõi cá nhân \texttt{users/\{userId\}/my\_reviews}), chịu trách nhiệm quản lý nguồn dữ liệu đánh giá thực địa do cộng đồng du khách đóng góp trực tiếp tại hiện trường. Mỗi tài liệu lưu trữ định danh địa danh, khóa chuẩn hóa \texttt{placeKey}, thông tin định danh tác giả (\texttt{author}, \texttt{author\_uid}), điểm xếp hạng (1 đến 5 sao), trường phái chuyến đi (\texttt{trip\_type}), tiêu đề tóm tắt, nội dung trải nghiệm chi tiết (tối đa 1.000 ký tự), mảng nhãn ấn tượng cảm quan (\texttt{tags}), số lượt bình chọn hữu ích (\texttt{upvotes}), huy hiệu du khách thực tế (\texttt{verified}) và mốc thời gian ghi nhận thực tế.
 
 Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đồ các bộ sưu tập dữ liệu trên Cloud Firestore.
 
@@ -172,6 +174,14 @@ Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đ
 & \texttt{rating} & String & Nhãn đánh giá (\texttt{like} hoặc \texttt{dislike}) \\
 & \texttt{prompt, response} & String & Cặp câu hỏi và câu trả lời được đánh giá \\
 & \texttt{timestamp} & Timestamp & Thời điểm ghi nhận phản hồi \\
+\hline
+\texttt{places} & \texttt{reviewId} & String (Khóa) & Mã định danh duy nhất của bản ghi nhận xét \\
+(\texttt{places/\{key\}/...}) & \texttt{place\_id, place\_key} & String & Mã định danh và khóa chuẩn hóa điểm đến \\
+& \texttt{author, author\_uid} & String & Thông tin định danh du khách thực hiện đánh giá \\
+& \texttt{rating, trip\_type} & Number, String & Điểm số (1--5 sao) và trường phái đồng hành \\
+& \texttt{title, comment, tags} & String, Array & Tiêu đề, nội dung nhận xét và nhãn ấn tượng \\
+& \texttt{upvotes, verified} & Number, Boolean & Số lượt hữu ích và huy hiệu du khách thực tế \\
+& \texttt{createdAt, visit\_date} & Timestamp, String & Mốc thời gian ghi nhận và thời điểm tham quan \\
 \hline
 \end{tabularx}
 \end{table}
@@ -221,6 +231,48 @@ Hàm chuyển đổi $f_{\text{resolve}}$ sở hữu độ phức tạp thời g
 Nhằm bảo đảm an toàn thông tin và tính toàn vẹn dữ liệu, hàm tiền xử lý an ninh \texttt{sanitize\_\allowbreak session\_\allowbreak context} áp dụng chính sách Zero-Trust đối với các tham số ngữ cảnh do phía máy khách chuyển giao. Định danh $a_{\text{place}}$ bắt buộc phải truy xuất thành công bản ghi node tương ứng trong đồ thị NetworkX, đồng thời nhãn hiển thị $\text{Label}(a_{\text{place}})$ luôn được trích xuất trực tiếp từ thuộc tính định danh của nút trên máy chủ, ngăn chặn triệt để nguy cơ tấn công chèn lệnh độc hại (Prompt Injection) qua dữ liệu trạng thái client.
 
 Về phương diện hiển thị và giải thích minh bạch (Explainable AI), kết quả chuyển đổi ngữ cảnh được liên kết trực tiếp vào chuỗi vết suy luận $\texttt{graph\_trace}$ thông qua bước định tuyến $\text{context\_carryover}$. Du khách và chuyên gia kiểm thử có thể trực quan hóa minh bạch từng mắt xích suy luận (ví dụ: ``\textit{'từ đó' $\to$ Chùa Thiên Mụ}'') ngay bên dưới khung đàm thoại trên cả giao diện máy tính lẫn thiết bị di động. Hiệu năng của phân hệ Trí nhớ Ngữ cảnh đã được kiểm chứng toàn diện qua bộ 27 kịch bản kiểm thử tích hợp chuyên biệt (\texttt{test\_session\_memory.py}), ghi nhận tỷ lệ thành công tuyệt đối ($100\%$ test cases passed), xác nhận tính sẵn sàng cao cho môi trường ứng dụng thực địa.
+
+\subsection{Phân hệ Thu nhận và Tổng hợp Đánh giá Thực địa Cộng đồng (Crowdsourced POI Reviews)}
+\label{subsec:ch1-crowdsourced-reviews}
+
+Trong các nền tảng thông tin du lịch truyền thống tại Cố đô Huế (tiêu biểu như ứng dụng công dân số Hue-S), thông tin điểm đến phần lớn được biên tập tĩnh, thiếu hụt dữ liệu đánh giá thực tế cập nhật từ du khách (Cold-start Review Gap), dẫn đến hiện tượng suy giảm mức độ tin cậy và không phản ánh kịp thời sự biến động về chất lượng dịch vụ thực tế tại hiện trường. Nhằm giải quyết triệt để rào cản này, hệ thống thiết kế và tích hợp Phân hệ Thu nhận và Tổng hợp Đánh giá Thực địa Cộng đồng (Crowdsourced POI Reviews and Ratings Subsystem) vận hành dựa trên nguyên lý Thông tin Địa lý Tình nguyện (Volunteered Geographic Information -- VGI)~\cite{goodchild2007citizens}. Phân hệ này cho phép du khách đóng vai trò như các cảm biến xã hội sống (Social Sensors), trực tiếp chia sẻ nhận xét, chấm điểm và gán nhãn trải nghiệm ngay tại điểm di tích hoặc cơ sở ẩm thực, hình thành dòng tri thức động liên tục bổ sung và làm giàu cho kho dữ liệu 44.355 bài đánh giá lịch sử từ TripAdvisor.
+
+Về mặt kiến trúc kỹ thuật, phân hệ vận hành theo nguyên lý Lưu trữ Lai Hai tầng Ưu tiên Ngoại tuyến (Offline-First Hybrid Persistence Architecture) nhằm triệt tiêu hoàn toàn độ trễ giao diện khi người dùng thao tác trên điện thoại di động trong điều kiện mạng viễn thông chập chờn tại các di tích lăng tẩm ngoại thành. Tầng đệm tức thời cục bộ được kiểm soát thông qua bộ nhớ \texttt{localStorage} với khóa phân vùng không gian dạng \texttt{hue\_place\_reviews\_\{placeKey\}}, trong đó khóa \texttt{placeKey} được chuẩn hóa tất định thông qua hàm rút gọn ký tự $\text{normalizePlaceKey}(\text{placeId})$. Nhờ tầng đệm này, thao tác hiển thị danh sách nhận xét và gửi đánh giá mới được xử lý với độ trễ tiệm cận $0\text{ ms}$ (Optimistic UI Update). Ngay sau đó, tiến trình đồng bộ bất đồng bộ sẽ đẩy bản ghi lên cây tài liệu NoSQL phân tán trên Cloud Firestore tại đường dẫn \texttt{places/\{placeKey\}/user\_reviews/\{reviewId\}}. Nếu du khách đã xác thực tài khoản, bản ghi đánh giá đồng thời được liên kết vào bộ sưu tập con \texttt{users/\{userId\}/my\_reviews} phục vụ công tác theo dõi hồ sơ cá nhân và quản trị nội dung.
+
+Để giải quyết bài toán biến động và thiên lệch điểm số khi số lượng đánh giá thực tế ban đầu còn khiêm tốn ($M$ nhỏ), hệ thống xây dựng Mô hình Làm mịn Điểm số Bayes Thực nghiệm (Empirical Bayesian Rating Smoothing) để dung hòa giữa dữ liệu lịch sử từ TripAdvisor và dữ liệu đóng góp cộng đồng thời gian thực:
+\begin{equation}
+\label{eq:bayesian-rating}
+\bar{R}_{\text{fused}} = \frac{C \cdot R_{\text{prior}} + \sum_{j=1}^{M} r_j}{C + M}
+\end{equation}
+trong đó $R_{\text{prior}} \in [1, 5]$ là điểm xếp hạng cơ sở lịch sử từ TripAdvisor; $r_j \in \{1, 2, 3, 4, 5\}$ là điểm số do du khách thực tế thứ $j$ đánh giá; $M \in \mathbb{N}$ là tổng số lượt nhận xét mới thu nhận từ cộng đồng; và $C$ biểu diễn trọng số tin cậy tiên nghiệm (Prior Confidence Weight, được thiết lập chuẩn $C = 10$). Khi địa điểm chưa có đánh giá thực địa ($M = 0$), điểm hiển thị bảo lưu chuẩn xác điểm gốc $\bar{R}_{\text{fused}} = R_{\text{prior}}$. Khi số lượng đánh giá cộng đồng gia tăng ($M \to \infty$), trọng số dần dịch chuyển ưu tiên về trải nghiệm đương đại của người dùng thực tế. Đồng thời, cấu trúc phân bổ mức độ hài lòng của du khách được hình thức hóa thành Véc-tơ Tỷ lệ Phân bố Sao $\mathbf{p} = [p_1, p_2, p_3, p_4, p_5]^\top$ với:
+\begin{equation}
+\label{eq:star-distribution}
+p_k = \frac{\sum_{j=1}^{M_{\text{total}}} \mathbb{I}(r_j = k)}{M_{\text{total}}} \times 100\% \quad (k \in \{1, 2, 3, 4, 5\})
+\end{equation}
+trong đó $\mathbb{I}(\cdot)$ là hàm chỉ thị và $M_{\text{total}}$ là tổng số lượng bài đánh giá hợp nhất. Véc-tơ $\mathbf{p}$ được kết xuất động thành năm thanh tỷ lệ phần trăm trực quan ngay trên đầu bảng thông tin chi tiết của điểm đến, giúp du khách nắm bắt nhanh chóng mức độ đồng thuận chất lượng của cộng đồng.
+
+Bên cạnh thang đo định lượng sao, phân hệ thiết lập cấu trúc thu nhận dữ liệu đa chiều phản ánh bản sắc du lịch thực địa xứ Huế qua hai không gian ngữ nghĩa: Không gian trường phái đồng hành $T_{\text{companion}} \in \{\text{Gia đình}, \text{Cặp đôi}, \text{Bạn bè}, \text{Độc hành}, \text{Công tác}\}$ cung cấp cơ sở để hệ thống lọc thứ bậc gợi ý tương thích với hồ sơ du khách; và Tập nhãn ấn tượng cảm quan $\mathcal{K}_{\text{impress}} = \{\text{Cảnh quan đẹp}, \text{Không gian yên tĩnh}, \text{Kiến trúc độc đáo}, \text{Ẩm thực đặc trưng}, \text{Giá cả hợp lý}, \text{Dịch vụ chu đáo}, \text{Khuôn viên rộng rãi}\}$ giúp trích xuất tức thời các đặc tính nổi trội của điểm đến. Nội dung nhận xét định tính (hỗ trợ tối đa 1.000 ký tự) cung cấp nguồn ngữ liệu dồi dào phục vụ các tác vụ phân tích cảm xúc và mở rộng đồ thị tri thức không gian.
+
+Nhằm bảo đảm an toàn dữ liệu và khuyến khích sự tương tác văn minh, phân hệ tích hợp cơ chế Bình chọn Hữu ích (Upvote Helpfulness Voting) hỗ trợ trạng thái đảo ngược (Toggle) với tập khóa ghi nhận cục bộ \texttt{LOCAL\_UPVOTED\_REVIEWS\_KEY} nhằm triệt tiêu hoàn toàn hiện tượng thao túng bình chọn trùng lặp. Về phương diện an toàn ứng dụng, toàn bộ dữ liệu văn bản người dùng nhập liệu bắt buộc phải trải qua khâu khử khuẩn ký tự đặc biệt (\texttt{escapeHtml}) trước khi hiển thị lên giao diện DOM, vô hiệu hóa triệt để các nguy cơ tấn công chèn mã độc Cross-Site Scripting (XSS). Khi một đánh giá mới được gửi thành công, hệ thống kích hoạt cơ chế hướng sự kiện phản ứng nhanh (Event-Driven Reactive State) thông qua việc phát sự kiện tùy biến \texttt{CustomEvent('place-review-added')}, cho phép bản đồ số, ngăn kéo thông tin di tích và các thẻ liên quan tự động cập nhật đồng bộ mà không cần tải lại toàn bộ trang web. Kiến trúc giao diện trực quan và hộp thoại đóng góp đánh giá thực địa cộng đồng được minh họa chi tiết trên Hình \ref{fig:poi-review-system}.
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/poi_review_drawer.jpg}
+    \caption{Ngăn kéo hiển thị điểm số và nhận xét cộng đồng}
+    \label{subfig:poi-review-drawer}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/poi_review_modal.jpg}
+    \caption{Hộp thoại đóng góp đánh giá đa chiều thực tế}
+    \label{subfig:poi-review-modal}
+\end{subfigure}
+\caption{Kiến trúc giao diện và luồng thu nhận đánh giá thực địa cộng đồng cho điểm đến du lịch Cố đô}
+\label{fig:poi-review-system}
+\end{figure}
 
 \section{Thiết kế Giao diện Khách Web Tương tác Không gian (Gemini-Style Client)}
 \label{sec:ch1-frontend-design}
@@ -289,7 +341,7 @@ Thứ hai, cấu trúc phân chia hai cột (Split View giữa Chatbot và Bản
 
 Thứ ba, hệ thống loại bỏ các phần tử gây xao nhãng và tối ưu hóa diện tích hiển thị trên thanh công cụ di động. Các nhãn trạng thái kỹ thuật không cần thiết (như viên thuốc báo trạng thái kết nối trực tuyến hoặc ngoại tuyến) được lược bỏ hoàn toàn, thanh tiêu đề công việc (Workbench Header) được chuyển đổi thành thanh cuộn ngang dạng viên thuốc không gây va chạm nút bấm, và cỡ chữ tối thiểu của khung nhập liệu được thiết lập chuẩn 16 pixel nhằm ngăn chặn triệt để hành vi tự động phóng to màn hình phiền toái của hệ điều hành iOS khi người dùng chạm vào ô văn bản.
 
-Thứ tư, các thẻ thông tin chi tiết về di tích lịch sử và thực đơn món ăn được hiển thị dưới dạng Bảng điều khiển đáy trượt (Bottom Sheet Modal) với góc bo tròn hiện đại và lớp phủ nền mờ (Backdrop Blur), hỗ trợ thao tác vuốt chạm tự nhiên bằng một tay, mang lại trải nghiệm tiện nghi và trực quan cho du khách trong suốt quá trình khám phá Cố đô.
+Thứ tư, các thẻ thông tin chi tiết về di tích lịch sử và cơ sở ẩm thực được hiển thị dưới dạng Ngăn kéo Chi tiết Điểm đến (POI Detail Drawer) trên máy tính và Bảng điều khiển đáy trượt (Bottom Sheet Modal) trên di động với góc bo tròn hiện đại và lớp phủ nền mờ (Backdrop Blur). Giao diện này tích hợp đầy đủ thẻ điểm xếp hạng trực quan, các thanh phân bổ tỷ lệ sao theo mô hình Bayes, các thẻ lọc nhận xét động (``Tất cả'', ``5 sao'', ``Mới nhất'', ``Du khách thực tế'') cùng nút kích hoạt hộp thoại đóng góp đánh giá thực địa một chạm, hỗ trợ thao tác vuốt chạm tự nhiên bằng một tay và mang lại trải nghiệm tiện nghi cho du khách trong suốt hành trình khám phá Cố đô.
 
 \subsection{Sổ tay Du khách và Hộ chiếu Khám phá Di sản (Traveler Notebook and Heritage Check-in Passport)}
 \label{subsec:ch1-travel-notebook}
