@@ -536,27 +536,27 @@ export class AuthController {
             <h4 class="saved-tour-title">${safeTitle}</h4>
           </div>
           <button type="button" class="btn-delete-saved-tour" title="${i18n.t('savedTourDeleteConfirm', 'Xóa lịch trình này')}" data-id="${safeId}">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
             </svg>
           </button>
         </div>
         <div class="saved-tour-meta">
-          <span>👥 ${i18n.t('savedTourParty', 'Đối tượng')}: ${safeTripType}</span>
-          <span>📍 ${i18n.t('savedTourOrigin', 'Xuất phát')}: ${safeUserLocation}</span>
-          <span>🏛️ ${i18n.t('savedTourStops', 'Số điểm')}: ${safeStops} ${i18n.t('itineraryStopsCount', 'điểm đến')}</span>
-          <span>⏱️ ${i18n.t('savedTourDate', 'Lưu ngày')}: ${dateStr}</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> ${i18n.t('savedTourParty', 'Đối tượng')}: ${safeTripType}</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> ${i18n.t('savedTourOrigin', 'Xuất phát')}: ${safeUserLocation}</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="21" x2="21" y2="21"></line><line x1="3" y1="10" x2="21" y2="10"></line><polyline points="5 10 5 21"></polyline><polyline points="19 10 19 21"></polyline><polyline points="9 10 9 21"></polyline><polyline points="15 10 15 21"></polyline><polygon points="12 2 2 10 22 10 12 2"></polygon></svg> ${i18n.t('savedTourStops', 'Số điểm')}: ${safeStops} ${i18n.t('itineraryStopsCount', 'điểm đến')}</span>
+          <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ${i18n.t('savedTourDate', 'Lưu ngày')}: ${dateStr}</span>
         </div>
         <div class="saved-tour-actions">
           <button type="button" class="btn-load-saved-tour" data-id="${safeId}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="5 3 19 12 5 21 5 3"></polygon>
             </svg>
             <span>${i18n.t('savedTourRestoreBtn', 'Mở lại trên Bản đồ & Chat')}</span>
           </button>
           <button type="button" class="btn-budget-saved-tour" data-id="${safeId}" title="${i18n.t('savedTourBudgetBtn', 'Dự toán ngân sách cho lịch trình này')}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="2" y="4" width="20" height="16" rx="2"></rect>
               <line x1="2" y1="10" x2="22" y2="10"></line>
             </svg>
