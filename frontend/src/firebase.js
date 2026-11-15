@@ -852,3 +852,210 @@ export function getLocalFeedbacks() {
   }
 }
 
+// =============================================================================
+// QUẢN LÝ ĐÁNH GIÁ & NHẬN XÉT ĐỊA ĐIỂM (CROWDSOURCED POI REVIEWS & RATINGS)
+// Offline-First & Cloud-Synced: Hỗ trợ người dùng đóng góp nhận xét cho từng điểm đến
+// =============================================================================
+
+const LOCAL_REVIEWS_PREFIX = 'hue_place_reviews_';
+const LOCAL_UPVOTED_REVIEWS_KEY = 'hue_upvoted_reviews_set';
+
+function normalizePlaceKey(placeId) {
+  if (!placeId) return 'unknown_place';
+  return String(placeId).trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+}
+
+/**
+ * Lấy danh sách đánh giá của một địa điểm (Hợp nhất LocalStorage Cache & Cloud Firestore)
+ */
+export async function getPlaceReviews(placeId) {
+  if (!placeId) return [];
+  const key = normalizePlaceKey(placeId);
+  const storageKey = `${LOCAL_REVIEWS_PREFIX}${key}`;
+
+  // 1. Đọc nhanh từ LocalStorage (Zero latency)
+  let localReviews = [];
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (raw) localReviews = JSON.parse(raw);
+  } catch (err) {
+    console.warn(`Lỗi đọc review local [${key}]:`, err);
+  }
+
+  // 2. Đồng bộ ngầm từ Firestore nếu có kết nối
+  if (firestoreDb) {
+    try {
+      const colRef = collection(firestoreDb, 'places', key, 'user_reviews');
+      const q = query(colRef, orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      const remoteReviews = [];
+      snap.forEach(d => {
+        remoteReviews.push({ id: d.id, ...d.data() });
+      });
+
+      if (remoteReviews.length > 0) {
+        // Hợp nhất dữ liệu, loại bỏ trùng ID
+        const map = new Map();
+        localReviews.forEach(r => map.set(r.id, r));
+        remoteReviews.forEach(r => map.set(r.id, { ...map.get(r.id), ...r }));
+        localReviews = Array.from(map.values()).sort((a, b) => {
+          const tA = new Date(a.createdAt || a.created_at || 0).getTime();
+          const tB = new Date(b.createdAt || b.created_at || 0).getTime();
+          return tB - tA;
+        });
+        localStorage.setItem(storageKey, JSON.stringify(localReviews));
+      }
+    } catch (err) {
+      // Offline fallback an toàn, không làm gián đoạn UI
+    }
+  }
+
+  return localReviews;
+}
+
+/**
+ * Thêm một đánh giá mới cho địa điểm (Lưu Local tức thì + Đồng bộ Cloud Firestore)
+ */
+export async function savePlaceReview(placeId, reviewData) {
+  if (!placeId) throw new Error('Cần cung cấp ID địa điểm để lưu đánh giá.');
+  const key = normalizePlaceKey(placeId);
+  const storageKey = `${LOCAL_REVIEWS_PREFIX}${key}`;
+
+  const reviewId = reviewData.id || `rev_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const currentUser = getCurrentUser();
+
+  const newReview = {
+    id: reviewId,
+    place_id: placeId,
+    place_key: key,
+    place_name: reviewData.place_name || '',
+    rating: Number(reviewData.rating) || 5,
+    author: (reviewData.author || currentUser?.displayName || 'Du khách Cố đô').trim(),
+    author_uid: currentUser?.uid || 'guest',
+    author_photo: currentUser?.photoURL || null,
+    trip_type: reviewData.trip_type || 'Gia đình',
+    title: (reviewData.title || '').trim(),
+    comment: (reviewData.comment || '').trim(),
+    tags: Array.isArray(reviewData.tags) ? reviewData.tags : [],
+    upvotes: 0,
+    verified: true,
+    created_at: new Date().toISOString(),
+    visit_date: reviewData.visit_date || `Tháng ${new Date().getMonth() + 1}, ${new Date().getFullYear()}`
+  };
+
+  // Làm sạch payload JSON
+  const cleanPayload = JSON.parse(JSON.stringify(newReview));
+
+  // 1. Lưu tức thì vào LocalStorage (Đảm bảo độ trễ 0ms)
+  try {
+    const list = await getPlaceReviews(placeId);
+    const existingIdx = list.findIndex(item => item.id === reviewId);
+    if (existingIdx >= 0) {
+      list[existingIdx] = cleanPayload;
+    } else {
+      list.unshift(cleanPayload);
+    }
+    localStorage.setItem(storageKey, JSON.stringify(list));
+  } catch (err) {
+    console.warn(`Lỗi ghi review LocalStorage [${key}]:`, err);
+  }
+
+  // 2. Đồng bộ lên Firestore nếu có mạng và SDK Firestore sẵn sàng
+  if (firestoreDb) {
+    try {
+      const docRef = doc(firestoreDb, 'places', key, 'user_reviews', reviewId);
+      await setDoc(docRef, {
+        ...cleanPayload,
+        createdAt: serverTimestamp()
+      }, { merge: true });
+
+      // Nếu user đã đăng nhập, lưu thêm vào hồ sơ cá nhân của user
+      if (currentUser && currentUser.uid && !currentUser.uid.startsWith('demo_')) {
+        const userReviewRef = doc(firestoreDb, 'users', currentUser.uid, 'my_reviews', reviewId);
+        await setDoc(userReviewRef, {
+          ...cleanPayload,
+          createdAt: serverTimestamp()
+        }, { merge: true });
+      }
+    } catch (err) {
+      console.warn(`Lỗi đồng bộ review lên Firestore (đã lưu an toàn Local):`, err);
+    }
+  }
+
+  // 3. Phát CustomEvent để UI (Drawer, Bản đồ) tự động cập nhật
+  try {
+    window.dispatchEvent(new CustomEvent('place-review-added', {
+      detail: { placeId, key, review: cleanPayload }
+    }));
+  } catch {}
+
+  return cleanPayload;
+}
+
+/**
+ * Kiểm tra xem người dùng hiện tại đã bấm Hữu ích (Upvote) cho nhận xét này chưa
+ */
+export function hasUserUpvoted(reviewId) {
+  try {
+    const raw = localStorage.getItem(LOCAL_UPVOTED_REVIEWS_KEY);
+    const set = raw ? JSON.parse(raw) : [];
+    return set.includes(reviewId);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Tăng số lượt Hữu ích (Upvote) cho một nhận xét
+ */
+export async function upvotePlaceReview(placeId, reviewId) {
+  if (!placeId || !reviewId) return { upvotes: 0, hasUpvoted: false };
+  const key = normalizePlaceKey(placeId);
+  const storageKey = `${LOCAL_REVIEWS_PREFIX}${key}`;
+
+  // Kiểm tra trạng thái đã upvote trong local set
+  let upvotedSet = [];
+  try {
+    const raw = localStorage.getItem(LOCAL_UPVOTED_REVIEWS_KEY);
+    if (raw) upvotedSet = JSON.parse(raw);
+  } catch {}
+
+  const alreadyUpvoted = upvotedSet.includes(reviewId);
+  let newCount = 0;
+
+  try {
+    const list = await getPlaceReviews(placeId);
+    const item = list.find(r => r.id === reviewId);
+    if (item) {
+      if (alreadyUpvoted) {
+        // Bỏ upvote (toggle)
+        item.upvotes = Math.max(0, (item.upvotes || 1) - 1);
+        upvotedSet = upvotedSet.filter(id => id !== reviewId);
+      } else {
+        // Thêm upvote
+        item.upvotes = (item.upvotes || 0) + 1;
+        upvotedSet.push(reviewId);
+      }
+      newCount = item.upvotes;
+      localStorage.setItem(storageKey, JSON.stringify(list));
+      localStorage.setItem(LOCAL_UPVOTED_REVIEWS_KEY, JSON.stringify(upvotedSet));
+
+      // Cố gắng cập nhật Firestore nếu có
+      if (firestoreDb) {
+        try {
+          const docRef = doc(firestoreDb, 'places', key, 'user_reviews', reviewId);
+          await setDoc(docRef, { upvotes: newCount }, { merge: true });
+        } catch {}
+      }
+    }
+  } catch (err) {
+    console.warn(`Lỗi cập nhật upvote [${reviewId}]:`, err);
+  }
+
+  return {
+    reviewId,
+    upvotes: newCount,
+    hasUpvoted: !alreadyUpvoted
+  };
+}
+

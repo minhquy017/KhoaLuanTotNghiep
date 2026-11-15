@@ -17,7 +17,11 @@ import {
   submitAiFeedback,
   onAuthChange,
   logoutUser,
-  loginWithDemoUser
+  loginWithDemoUser,
+  savePlaceReview,
+  getPlaceReviews,
+  upvotePlaceReview,
+  hasUserUpvoted
 } from './firebase.js';
 import { HueWeatherService } from './weather.js';
 import { budgetEstimator } from './budgetEstimator.js';
@@ -3332,21 +3336,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (poiReviewCount) poiReviewCount.textContent = `(${localPlace?.review_count || 350} ${i18n.t('reviewsCount', 'đánh giá')})`;
 
     if (poiReviewsList) {
-      if (localPlace?.reviews && localPlace.reviews.length > 0) {
-        if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
-        poiReviewsList.innerHTML = localPlace.reviews.map(r => `
-          <div class="poi-review-card">
-            <div class="review-header">
-              <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
-              <span class="review-tag">👤 ${r.trip_type || i18n.t('tourist', 'Du khách')} · ${r.visit_date || '2024'}</span>
-            </div>
-            <h5 class="review-title">${r.title}</h5>
-            <p class="review-comment">“${r.comment}”</p>
-          </div>
-        `).join('');
-      } else {
-        poiReviewsList.innerHTML = `<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">${i18n.t('poiReviewSyncing', 'Đang đồng bộ nhận xét từ du khách...')}</div>`;
-      }
+      if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
+      updatePoiReviewsDisplay(placeId || localPlace?.place_id, initialName, localPlace?.reviews || [], localPlace?.rating_value || 4.6, localPlace?.review_count || 150, currentReviewFilter);
     }
     if (poiNearbyList) poiNearbyList.innerHTML = `<div style="font-size: 0.78rem; color: var(--color-ink-muted); padding: 6px 0;">${i18n.t('poiNearbySearching', 'Đang tìm các địa điểm lân cận...')}</div>`;
 
@@ -3389,24 +3380,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (poiRatingVal) poiRatingVal.textContent = (data.rating_value || localPlace?.rating_value || 4.7).toFixed(1);
       if (poiReviewCount) poiReviewCount.textContent = `(${data.review_count || localPlace?.review_count || 120} ${i18n.t('reviewsCount', 'đánh giá')})`;
 
-      // 5. Nhận xét chân thực từ du khách (TripAdvisor / SQLite / Curated Local)
+      // 5. Nhận xét chân thực từ du khách (Hợp nhất Đánh giá thực địa người dùng + TripAdvisor)
       const activeReviews = (data.reviews && data.reviews.length > 0) ? data.reviews : (localPlace?.reviews || []);
       if (poiReviewsList) {
-        if (activeReviews.length > 0) {
-          if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
-          poiReviewsList.innerHTML = activeReviews.map(r => `
-            <div class="poi-review-card">
-              <div class="review-header">
-                <span class="review-stars">${'⭐'.repeat(Math.round(r.rating || 5))}</span>
-                <span class="review-tag">👤 ${r.trip_type || i18n.t('tourist', 'Du khách')} · ${r.visit_date || '2024'}</span>
-              </div>
-              <h5 class="review-title">${r.title}</h5>
-              <p class="review-comment">“${r.comment}”</p>
-            </div>
-          `).join('');
-        } else {
-          poiReviewsList.innerHTML = `<div style="font-size: 0.78rem; color: #64748B;">${i18n.t('poiNoReviews', 'Chưa có trích đoạn nhận xét chi tiết.')}</div>`;
-        }
+        if (poiSectionReviews) poiSectionReviews.style.display = 'flex';
+        updatePoiReviewsDisplay(data.place_id || placeId, data.name || initialName, activeReviews, data.rating_value || localPlace?.rating_value || 4.7, data.review_count || localPlace?.review_count || 120, currentReviewFilter);
       }
 
       // 7. Điểm lân cận qua cạnh NEAR_BY
@@ -3575,6 +3553,417 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateDrawerUserStatus(target.name, target.place_id);
     const stats = userStore.getExplorerStats();
     showHueToast(isChecked ? `${i18n.t('checkedInPrefix', 'Đã check-in:')} "${target.name}" (${stats.rankTitle})` : `${i18n.t('uncheckedInPrefix', 'Đã hủy check-in')} "${target.name}"`);
+  });
+
+  // =============================================================================
+  // 8.1 HỆ THỐNG ĐÁNH GIÁ & NHẬN XÉT ĐỊA ĐIỂM (CROWDSOURCED POI REVIEWS & RATINGS)
+  // Quản lý Dashboard phân bổ sao (5★ - 1★), Bộ lọc, Modal Đánh giá và Upvote Hữu ích
+  // =============================================================================
+  let currentReviewFilter = 'all';
+
+  async function updatePoiReviewsDisplay(targetId, targetName, baseReviews = [], baseRating = 4.6, baseCount = 120, filter = 'all') {
+    if (!poiReviewsList) return;
+    currentReviewFilter = filter;
+
+    // 1. Đọc danh sách đánh giá thực địa từ người dùng (Firebase Firestore & LocalStorage)
+    let userReviews = [];
+    try {
+      userReviews = await getPlaceReviews(targetId || targetName);
+    } catch (err) {
+      console.warn('Lỗi lấy reviews từ Firestore/Local:', err);
+    }
+
+    // 2. Định dạng đánh giá người dùng
+    const userReviewsFormatted = (userReviews || []).map(r => ({
+      id: r.id,
+      rating: Number(r.rating) || 5,
+      author: r.author || 'Du khách Cố đô',
+      author_photo: r.author_photo || null,
+      trip_type: r.trip_type || 'Gia đình',
+      title: r.title || 'Trải nghiệm tuyệt vời',
+      comment: r.comment || '',
+      tags: r.tags || [],
+      upvotes: r.upvotes || 0,
+      visit_date: r.visit_date || 'Gần đây',
+      created_at: r.created_at || r.createdAt || new Date().toISOString(),
+      is_user_review: true
+    }));
+
+    // 3. Định dạng đánh giá nền (TripAdvisor / SQLite)
+    const baseReviewsFormatted = (baseReviews || []).map((r, idx) => ({
+      id: `base_${idx}`,
+      rating: Number(r.rating || r.reviews_rating) || 5,
+      author: r.author || 'Du khách TripAdvisor',
+      author_photo: null,
+      trip_type: r.trip_type || 'Du khách',
+      title: r.title || 'Ấn tượng Cố đô',
+      comment: r.comment || '',
+      tags: [],
+      upvotes: 3 + (idx * 2),
+      visit_date: r.visit_date || '2024',
+      created_at: '2024-01-01',
+      is_user_review: false
+    }));
+
+    // Tổng hợp tất cả đánh giá
+    const allReviews = [...userReviewsFormatted, ...baseReviewsFormatted];
+
+    // 4. Tính toán điểm đánh giá tổng hợp & phân bổ sao (5★ -> 1★)
+    const totalCount = baseCount + userReviewsFormatted.length;
+    let blendedRating = baseRating;
+    if (userReviewsFormatted.length > 0) {
+      const userSum = userReviewsFormatted.reduce((acc, cur) => acc + cur.rating, 0);
+      blendedRating = ((baseRating * baseCount) + userSum) / totalCount;
+    }
+    blendedRating = Math.min(5, Math.max(1, blendedRating));
+
+    // Cập nhật điểm hiển thị trên Drawer
+    if (poiRatingVal) poiRatingVal.textContent = blendedRating.toFixed(1);
+    if (poiReviewCount) poiReviewCount.textContent = `(${totalCount.toLocaleString('vi-VN')} ${i18n.t('reviewsCount', 'đánh giá')})`;
+
+    const overviewRatingScore = document.getElementById('overview-rating-score');
+    const overviewRatingStars = document.getElementById('overview-rating-stars');
+    const overviewTotalCount = document.getElementById('overview-total-count');
+
+    if (overviewRatingScore) overviewRatingScore.textContent = blendedRating.toFixed(1);
+    if (overviewTotalCount) overviewTotalCount.textContent = `${totalCount.toLocaleString('vi-VN')} đánh giá`;
+    if (overviewRatingStars) {
+      const fullStars = Math.round(blendedRating);
+      overviewRatingStars.innerHTML = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+    }
+
+    // 5. Tính phân bổ phần trăm cho từng mức sao (5★ -> 1★)
+    const starDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    const ratio5 = Math.max(0.05, Math.min(0.85, (blendedRating - 3.5) / 1.5 * 0.75 + 0.15));
+    const ratio4 = Math.max(0.05, Math.min(0.35, (1 - ratio5) * 0.7));
+    const ratio3 = Math.max(0.02, Math.min(0.20, (1 - ratio5 - ratio4) * 0.6));
+    const ratio2 = Math.max(0.01, Math.min(0.10, (1 - ratio5 - ratio4 - ratio3) * 0.6));
+    const ratio1 = Math.max(0.01, 1 - (ratio5 + ratio4 + ratio3 + ratio2));
+
+    starDist[5] = Math.round(baseCount * ratio5);
+    starDist[4] = Math.round(baseCount * ratio4);
+    starDist[3] = Math.round(baseCount * ratio3);
+    starDist[2] = Math.round(baseCount * ratio2);
+    starDist[1] = Math.max(1, baseCount - (starDist[5] + starDist[4] + starDist[3] + starDist[2]));
+
+    // Cộng thêm các đánh giá thực tế của cộng đồng
+    userReviewsFormatted.forEach(r => {
+      const s = Math.min(5, Math.max(1, Math.round(r.rating)));
+      starDist[s] = (starDist[s] || 0) + 1;
+    });
+
+    const totalCalculated = Object.values(starDist).reduce((a, b) => a + b, 0) || 1;
+    [5, 4, 3, 2, 1].forEach(star => {
+      const count = starDist[star] || 0;
+      const pct = Math.round((count / totalCalculated) * 100);
+      const row = document.querySelector(`.rating-bar-row[data-star="${star}"]`);
+      if (row) {
+        const fill = row.querySelector('.bar-fill');
+        const pctEl = row.querySelector('.bar-pct');
+        if (fill) fill.style.width = `${pct}%`;
+        if (pctEl) pctEl.textContent = `${pct}%`;
+      }
+    });
+
+    // 6. Lọc đánh giá theo Tab bộ lọc
+    let filteredList = [...allReviews];
+    if (filter === '5star') {
+      filteredList = filteredList.filter(r => r.rating >= 4.5);
+    } else if (filter === 'community') {
+      filteredList = filteredList.filter(r => r.is_user_review);
+    } else if (filter === 'recent') {
+      filteredList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+
+    // 7. Render danh sách review cards
+    if (filteredList.length === 0) {
+      poiReviewsList.innerHTML = `
+        <div style="text-align: center; padding: 1.4rem 0.6rem; background: #FAFAFA; border: 1px solid #E4E4E7; border-radius: 8px;">
+          <p style="font-size: 0.8rem; font-weight: 600; color: #3F3F46; margin: 0 0 4px 0;">Chưa có nhận xét nào trong mục này</p>
+          <p style="font-size: 0.74rem; color: #71717A; margin: 0 0 10px 0;">Hãy là người đầu tiên chia sẻ cảm nhận thực tế của bạn.</p>
+          <button type="button" class="btn-open-review-modal" id="btn-empty-write-review" style="margin: 0 auto; display: inline-flex;">Viết nhận xét</button>
+        </div>
+      `;
+      document.getElementById('btn-empty-write-review')?.addEventListener('click', () => openReviewModal());
+      return;
+    }
+
+    poiReviewsList.innerHTML = filteredList.map(r => {
+      const upvoted = hasUserUpvoted(r.id);
+      const initial = (r.author || 'D').charAt(0).toUpperCase();
+      const starsHtml = '★'.repeat(Math.round(r.rating)) + '☆'.repeat(5 - Math.round(r.rating));
+      const badgeHtml = r.is_user_review
+        ? `<span class="author-badge-community">Du khách thực tế</span>`
+        : `<span class="author-badge-community" style="background: #F4F4F5; color: #52525B;">TripAdvisor</span>`;
+      const tagsHtml = (r.tags && r.tags.length > 0)
+        ? `<div class="review-tag-chips">${r.tags.map(t => `<span class="review-tag-chip">${escapeHtml(t)}</span>`).join('')}</div>`
+        : '';
+
+      return `
+        <div class="poi-review-card" data-review-id="${r.id}">
+          <div class="review-author-row">
+            <div class="author-meta">
+              <div class="author-avatar">${r.author_photo ? `<img src="${r.author_photo}" alt="${escapeHtml(r.author)}"/>` : initial}</div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                  <span class="author-name">${escapeHtml(r.author)}</span>
+                  ${badgeHtml}
+                </div>
+              </div>
+            </div>
+            <span class="review-date">${escapeHtml(r.visit_date)}</span>
+          </div>
+
+          <div class="review-stars-tags-row">
+            <span class="review-stars">${starsHtml}</span>
+            <span class="review-trip-pill">${escapeHtml(r.trip_type)}</span>
+          </div>
+
+          ${r.title ? `<h5 class="review-title">${escapeHtml(r.title)}</h5>` : ''}
+          <p class="review-comment">“${escapeHtml(r.comment)}”</p>
+          ${tagsHtml}
+
+          <div class="review-card-footer">
+            <button type="button" class="btn-review-helpful ${upvoted ? 'active' : ''}" data-review-id="${r.id}" title="Đánh giá nhận xét này hữu ích">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="${upvoted ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+              </svg>
+              <span>Hữu ích (<strong class="helpful-count">${r.upvotes || 0}</strong>)</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Gắn sự kiện bấm "Hữu ích" (Upvote)
+    poiReviewsList.querySelectorAll('.btn-review-helpful').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const rId = btn.dataset.reviewId;
+        const res = await upvotePlaceReview(targetId || targetName, rId);
+        btn.classList.toggle('active', res.hasUpvoted);
+        const countEl = btn.querySelector('.helpful-count');
+        if (countEl) countEl.textContent = res.upvotes;
+        const svg = btn.querySelector('svg');
+        if (svg) svg.setAttribute('fill', res.hasUpvoted ? 'currentColor' : 'none');
+      });
+    });
+  }
+
+  // =============================================================================
+  // MODAL ĐÁNH GIÁ ĐỊA ĐIỂM (POI REVIEW MODAL CONTROLLER)
+  // =============================================================================
+  const poiReviewModal = document.getElementById('poi-review-modal');
+  const btnOpenReviewModal = document.getElementById('btn-open-review-modal');
+  const btnCloseReviewModal = document.getElementById('btn-close-review-modal');
+  const btnCancelReview = document.getElementById('btn-cancel-review');
+  const poiReviewForm = document.getElementById('poi-review-form');
+  const reviewModalPlaceName = document.getElementById('review-modal-place-name');
+  const starBtns = document.querySelectorAll('.star-btn');
+  const starRatingLabel = document.getElementById('star-rating-label');
+  const inputReviewRating = document.getElementById('input-review-rating');
+  const tripPills = document.querySelectorAll('.trip-pill');
+  const inputReviewTripType = document.getElementById('input-review-trip-type');
+  const expTagBtns = document.querySelectorAll('.exp-tag-btn');
+  const inputReviewAuthor = document.getElementById('input-review-author');
+  const inputReviewTitle = document.getElementById('input-review-title');
+  const inputReviewComment = document.getElementById('input-review-comment');
+  const reviewCharsUsed = document.getElementById('review-chars-used');
+  const reviewFilterChips = document.querySelectorAll('.review-filter-chip');
+
+  const ratingLabelMap = {
+    1: '1/5 · Rất không hài lòng',
+    2: '2/5 · Chưa đạt kỳ vọng',
+    3: '3/5 · Tạm ổn',
+    4: '4/5 · Hài lòng / Đáng ghé thăm',
+    5: '5/5 · Tuyệt vời / Rất khuyến nghị'
+  };
+
+  let currentSelectedStar = 5;
+
+  function updateStarRatingUI(starVal, isHover = false) {
+    starBtns.forEach(btn => {
+      const s = parseInt(btn.dataset.star, 10);
+      if (isHover) {
+        btn.classList.toggle('hover', s <= starVal);
+      } else {
+        btn.classList.toggle('active', s <= starVal);
+      }
+    });
+    if (starRatingLabel) {
+      starRatingLabel.textContent = ratingLabelMap[starVal] || `${starVal}/5 sao`;
+    }
+  }
+
+  starBtns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      const s = parseInt(btn.dataset.star, 10);
+      updateStarRatingUI(s, true);
+    });
+    btn.addEventListener('mouseleave', () => {
+      starBtns.forEach(b => b.classList.remove('hover'));
+      updateStarRatingUI(currentSelectedStar, false);
+    });
+    btn.addEventListener('click', () => {
+      currentSelectedStar = parseInt(btn.dataset.star, 10);
+      if (inputReviewRating) inputReviewRating.value = currentSelectedStar;
+      updateStarRatingUI(currentSelectedStar, false);
+    });
+  });
+
+  tripPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      tripPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      if (inputReviewTripType) inputReviewTripType.value = pill.dataset.value;
+    });
+  });
+
+  expTagBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('active');
+    });
+  });
+
+  inputReviewComment?.addEventListener('input', () => {
+    if (reviewCharsUsed) {
+      reviewCharsUsed.textContent = inputReviewComment.value.length;
+    }
+  });
+
+  function openReviewModal() {
+    if (!poiReviewModal) return;
+    const placeName = currentPoiData?.name || poiTitle?.textContent || 'Địa điểm Cố đô Huế';
+    if (reviewModalPlaceName) {
+      reviewModalPlaceName.textContent = `Địa điểm: ${placeName}`;
+    }
+    // Điền trước tên tác giả nếu đã đăng nhập
+    if (inputReviewAuthor) {
+      const authUser = window.authController?.currentUser || null;
+      inputReviewAuthor.value = authUser?.displayName || inputReviewAuthor.value || '';
+    }
+    currentSelectedStar = 5;
+    if (inputReviewRating) inputReviewRating.value = 5;
+    updateStarRatingUI(5, false);
+
+    poiReviewModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeReviewModal() {
+    if (!poiReviewModal) return;
+    poiReviewModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  btnOpenReviewModal?.addEventListener('click', openReviewModal);
+  btnCloseReviewModal?.addEventListener('click', closeReviewModal);
+  btnCancelReview?.addEventListener('click', closeReviewModal);
+  poiReviewModal?.addEventListener('click', (e) => {
+    if (e.target === poiReviewModal) closeReviewModal();
+  });
+
+  // Sự kiện chuyển Tab bộ lọc đánh giá
+  reviewFilterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      reviewFilterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const filter = chip.dataset.filter;
+      const targetId = currentPoiData?.place_id || currentPoiData?.id;
+      const targetName = currentPoiData?.name || poiTitle?.textContent;
+      const baseReviews = currentPoiData?.reviews || [];
+      const baseRating = currentPoiData?.rating_value || 4.6;
+      const baseCount = currentPoiData?.review_count || 120;
+      updatePoiReviewsDisplay(targetId, targetName, baseReviews, baseRating, baseCount, filter);
+    });
+  });
+
+  // Sự kiện click vào thanh phân bổ sao để lọc trực tiếp
+  document.querySelectorAll('.rating-bar-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const star = row.dataset.star;
+      reviewFilterChips.forEach(c => c.classList.remove('active'));
+      if (star === '5') {
+        const star5Chip = document.querySelector('.review-filter-chip[data-filter="5star"]');
+        if (star5Chip) star5Chip.classList.add('active');
+        const targetId = currentPoiData?.place_id || currentPoiData?.id;
+        const targetName = currentPoiData?.name || poiTitle?.textContent;
+        const baseReviews = currentPoiData?.reviews || [];
+        const baseRating = currentPoiData?.rating_value || 4.6;
+        const baseCount = currentPoiData?.review_count || 120;
+        updatePoiReviewsDisplay(targetId, targetName, baseReviews, baseRating, baseCount, '5star');
+      }
+    });
+  });
+
+  // Gửi Form Đánh Giá Thực Địa
+  poiReviewForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const comment = (inputReviewComment?.value || '').trim();
+    if (!comment) {
+      alert('Vui lòng nhập nội dung chia sẻ cảm nhận của bạn.');
+      inputReviewComment?.focus();
+      return;
+    }
+
+    const targetId = currentPoiData?.place_id || currentPoiData?.id || (poiTitle?.textContent || 'place');
+    const targetName = currentPoiData?.name || poiTitle?.textContent || 'Địa điểm Huế';
+    const author = (inputReviewAuthor?.value || '').trim() || 'Du khách Cố đô';
+    const title = (inputReviewTitle?.value || '').trim() || 'Cảm nhận trải nghiệm';
+    const tripType = inputReviewTripType?.value || 'Gia đình';
+    const selectedTags = Array.from(document.querySelectorAll('.exp-tag-btn.active')).map(b => b.dataset.tag);
+
+    const submitBtn = poiReviewForm.querySelector('#btn-submit-review');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Đang gửi...</span>';
+    }
+
+    try {
+      await savePlaceReview(targetId, {
+        rating: currentSelectedStar,
+        author,
+        title,
+        comment,
+        trip_type: tripType,
+        tags: selectedTags,
+        place_name: targetName
+      });
+
+      closeReviewModal();
+      poiReviewForm.reset();
+      expTagBtns.forEach(b => b.classList.remove('active'));
+      if (reviewCharsUsed) reviewCharsUsed.textContent = '0';
+
+      showHueToast(`Cảm ơn bạn! Đánh giá "${targetName}" đã được ghi nhận.`);
+
+      // Cập nhật ngay lập tức danh sách review và biểu đồ sao
+      const baseReviews = currentPoiData?.reviews || [];
+      const baseRating = currentPoiData?.rating_value || 4.6;
+      const baseCount = currentPoiData?.review_count || 120;
+      await updatePoiReviewsDisplay(targetId, targetName, baseReviews, baseRating, baseCount, 'all');
+
+      poiSectionReviews?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      console.error('Lỗi lưu đánh giá:', err);
+      alert('Không thể lưu đánh giá: ' + (err.message || 'Vui lòng thử lại.'));
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Đăng đánh giá</span>';
+      }
+    }
+  });
+
+  // Lắng nghe sự kiện review mới được thêm từ bất kỳ luồng nào
+  window.addEventListener('place-review-added', async (e) => {
+    const detail = e.detail;
+    if (currentPoiData && (detail.placeId === currentPoiData.place_id || detail.placeId === currentPoiData.name)) {
+      const baseReviews = currentPoiData.reviews || [];
+      const baseRating = currentPoiData.rating_value || 4.6;
+      const baseCount = currentPoiData.review_count || 120;
+      await updatePoiReviewsDisplay(currentPoiData.place_id, currentPoiData.name, baseReviews, baseRating, baseCount, currentReviewFilter);
+    }
   });
 
   // Action: Click vào các thẻ địa điểm nổi bật ở màn hình chào mừng
