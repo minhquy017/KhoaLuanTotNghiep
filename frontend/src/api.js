@@ -101,7 +101,7 @@ export class TourismApiClient {
   static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null, externalSignal = null) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      const timeoutId = setTimeout(() => controller.abort(), 120000); // 120s: đảm bảo đủ thời gian cho lần suy luận đầu tiên trên GPU
       if (externalSignal) {
         if (externalSignal.aborted) {
           throw new DOMException('User stopped generation', 'AbortError');

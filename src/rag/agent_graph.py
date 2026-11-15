@@ -144,6 +144,7 @@ class TourismAgentState(TypedDict):
     session_context: Optional[Dict[str, Any]]        # Mốc ngữ cảnh: anchor_place_id / anchor_dish / topic
     resolved_query: Optional[str]                    # Câu hỏi sau khi giải đồng tham chiếu (trước khi ghép ngữ cảnh ảnh)
     anaphora: Optional[Dict[str, Any]]               # Kết quả giải nghĩa đại từ (nếu có)
+    is_greeting: Optional[bool]                      # Cờ nhận diện câu chào xã giao / chitchat mở đầu               # Kết quả giải nghĩa đại từ (nếu có)
 
 
 # =============================================================================
@@ -590,6 +591,17 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 
     norm_q = strip_accents(query)
 
+    # 0.2 Nhận diện câu chào hỏi xã giao (Greeting / Chitchat mở đầu)
+    clean_norm_q = norm_q.strip(" ?!,.:;~-_")
+    GREETING_WORDS = {
+        "xin chao", "chao ban", "chao em", "chao tro ly", "chao", "chao nhe", "chao ban nhe",
+        "hello", "hi", "hi ban", "hi em", "hey", "alo", "halo",
+        "hello ban", "hello em", "good morning", "good afternoon",
+        "ban la ai", "em la ai", "ban ten gi", "em ten gi", "gioi thieu", "gioi thieu ban than",
+        "tro ly la ai", "giup gi duoc", "giup duoc gi", "ban giup duoc gi", "em giup duoc gi"
+    }
+    is_greeting = clean_norm_q in GREETING_WORDS or (len(clean_norm_q) <= 12 and any(clean_norm_q.startswith(g) for g in ["xin chao", "chao ban", "hello", "hi "]))
+
     # 1. Nhận diện địa phương
     locality = "Thành phố Huế" if any(h in norm_q for h in ["hue", "thua thien", "co do"]) else ""
     if "ha noi" in norm_q or "hanoi" in norm_q:
@@ -817,8 +829,8 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                     "status": "found"
                 })
 
-    # C. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG
-    if not matched_places:
+    # C. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG (chỉ khi không phải câu chào hỏi)
+    if not matched_places and not is_greeting:
         searched = graph_retriever.search_places(query, locality=locality, limit=4)
         matched_places.extend(searched)
         trace_steps.append({
@@ -828,6 +840,14 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             "detail": f"Fuzzy search '{query}' → {len(searched)} kết quả",
             "count": len(searched),
             "status": "found" if searched else "empty"
+        })
+    elif is_greeting:
+        trace_steps.append({
+            "step": "greeting_detected",
+            "icon": "👋",
+            "label": "Nhận diện Lời chào Xã giao",
+            "detail": "Du khách mở đầu cuộc trò chuyện → kích hoạt phản hồi chào đón Cố đô",
+            "status": "found"
         })
 
     # 4. Nhận diện nhu cầu ăn chay hoặc danh mục đặc thù
@@ -887,6 +907,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "matched_places": matched_places,
         "nearby_map": nearby_map,
         "dishes_map": dishes_map,
+        "is_greeting": is_greeting,
         "graph_trace": trace_steps
     }
 
@@ -898,7 +919,33 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
     query = state["query"]
     trace_steps = list(state.get("graph_trace") or [])
     norm_q = strip_accents(query)
+
+    # 0.2 Nhận diện câu chào hỏi xã giao (Greeting / Chitchat mở đầu)
+    clean_norm_q = norm_q.strip(" ?!,.:;~-_")
+    GREETING_WORDS = {
+        "xin chao", "chao ban", "chao em", "chao tro ly", "chao", "chao nhe", "chao ban nhe",
+        "hello", "hi", "hi ban", "hi em", "hey", "alo", "halo",
+        "hello ban", "hello em", "good morning", "good afternoon",
+        "ban la ai", "em la ai", "ban ten gi", "em ten gi", "gioi thieu", "gioi thieu ban than",
+        "tro ly la ai", "giup gi duoc", "giup duoc gi", "ban giup duoc gi", "em giup duoc gi"
+    }
+    is_greeting = clean_norm_q in GREETING_WORDS or (len(clean_norm_q) <= 12 and any(clean_norm_q.startswith(g) for g in ["xin chao", "chao ban", "hello", "hi "]))
     matched_places = state.get("matched_places", [])
+
+    if is_greeting:
+        trace_steps.append({
+            "step": "vector_search",
+            "icon": "👋",
+            "label": "Bỏ qua Vector Search (Lời chào mở đầu)",
+            "detail": "Lời chào mở đầu hội thoại → phản hồi trực tiếp không cần truy vấn reviews",
+            "confidence": 85.0,
+            "status": "high"
+        })
+        return {
+            "reviews": [],
+            "confidence_score": 0.85,
+            "graph_trace": trace_steps
+        }
 
     # Nếu câu hỏi thuần về giờ mở cửa, giá vé, địa chỉ -> không cần inject review tránh loãng ngữ cảnh
     pure_fact_triggers = ["may gio", "mo cua", "dong cua", "gia ve", "bao nhieu tien", "o dau", "dia chi"]
@@ -1015,6 +1062,18 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
             "icon": "🎯",
             "label": "Router → Tri thức Thị giác & Di sản Nội bộ",
             "detail": "Nhận diện ảnh thành công → đối sánh và phản hồi từ CSDL tri thức Cố đô",
+            "decision": "local_knowledge",
+            "status": "confident"
+        })
+        return "node_generate_response"
+
+    # 0.1 Nếu là câu chào hỏi mở đầu (Greeting / Chitchat) -> Đi thẳng tới LLM
+    if state.get("is_greeting"):
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "👋",
+            "label": "Router → Trợ lý Cố đô Phản hồi Lời chào",
+            "detail": "Lời chào mở đầu hội thoại → phản hồi trực tiếp thân thiện",
             "decision": "local_knowledge",
             "status": "confident"
         })
@@ -1180,6 +1239,15 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
    - Bạn CHỈ ĐƯỢC PHÉP giới thiệu các quán ăn phục vụ món {target_dish} từ danh sách ngữ cảnh.
    - Tuyệt đối KHÔNG ĐƯỢC nhắc đến các món ăn hay quán ăn khác (như cơm hến, bánh bèo, chè...) không liên quan đến {target_dish}."""
 
+    greeting_rule = ""
+    if state.get("is_greeting"):
+        greeting_rule = """
+4. HƯỚNG DẪN KHI DU KHÁCH CHÀO HỎI (GREETING & CHITCHAT):
+   - Du khách đang chào hỏi xã giao hoặc mở đầu cuộc trò chuyện (ví dụ: 'xin chào', 'chào bạn', 'hello', 'bạn là ai').
+   - Hãy đáp lại lịch thiệp, thân thiện bằng phong cách hiếu khách của người dân Cố đô Huế (ví dụ: 'Dạ chào bạn! Rất vui được đồng hành cùng bạn...').
+   - Giới thiệu ngắn gọn các khả năng bạn có thể hỗ trợ du khách: tra cứu thông tin di tích lịch sử và lăng tẩm triều Nguyễn, gợi ý quán ẩm thực đặc sản chuẩn vị Huế, hướng dẫn chỉ đường tối ưu, nhận diện hình ảnh di sản, hoặc thiết kế lịch trình du lịch cá nhân hóa tại Cố đô.
+   - Tuyệt đối KHÔNG tự ý gợi ý các quán ăn hay nhà hàng ngoài lề khi du khách chưa yêu cầu!"""
+
     # Tính toán chính xác cự ly đường bộ khi có yêu cầu Chỉ đường (Ground Truth Navigation)
     nav_rule = ""
     nav_route_info = None
@@ -1335,7 +1403,7 @@ Nguyên tắc trả lời bắt buộc:
    - Thông báo tuyến đường đã được định vị và vẽ trực tiếp trên bản đồ bên cạnh, gợi ý du khách xem cự ly và bấm nút Google Maps bên dưới để nghe dẫn đường khi di chuyển.
 
 5. ĐỊNH DẠNG TÊN ĐỊA DANH BẰNG CHỮ IN ĐẬM:
-   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{nav_rule}{pref_section}"""
+   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{greeting_rule}{nav_rule}{pref_section}"""
 
     image_base64 = state.get("image_base64")
     if image_base64:
