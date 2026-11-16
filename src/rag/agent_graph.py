@@ -49,7 +49,7 @@ from langgraph.graph import StateGraph, END, START
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_ollama import ChatOllama
 
-from src.graph.graph_retriever import get_graph_retriever, strip_accents
+from src.graph.graph_retriever import get_graph_retriever, strip_accents, OFFICIAL_HUE_LANDMARKS_META
 from src.graph.spatial_indexer import haversine_distance
 from src.rag.vector_retriever import get_vector_retriever
 from src.rag.visual_retriever import get_visual_retriever
@@ -144,7 +144,8 @@ class TourismAgentState(TypedDict):
     session_context: Optional[Dict[str, Any]]        # Mốc ngữ cảnh: anchor_place_id / anchor_dish / topic
     resolved_query: Optional[str]                    # Câu hỏi sau khi giải đồng tham chiếu (trước khi ghép ngữ cảnh ảnh)
     anaphora: Optional[Dict[str, Any]]               # Kết quả giải nghĩa đại từ (nếu có)
-    is_greeting: Optional[bool]                      # Cờ nhận diện câu chào xã giao / chitchat mở đầu               # Kết quả giải nghĩa đại từ (nếu có)
+    is_greeting: Optional[bool]                      # Cờ nhận diện câu chào xã giao / chitchat mở đầu
+    is_ticket_query: Optional[bool]                  # Cờ truy vấn giá vé di tích Cố đô (ưu tiên tri thức HMDC)
 
 
 # =============================================================================
@@ -829,8 +830,50 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                     "status": "found"
                 })
 
-    # C. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG (chỉ khi không phải câu chào hỏi)
-    if not matched_places and not is_greeting:
+    # 3.1 Nhận diện câu hỏi về giá vé di tích Cố đô Huế
+    ticket_triggers = [
+        "gia ve", "ve vao", "ve vao cong", "ve tham quan", "bang gia ve",
+        "bao nhieu tien ve", "cap nhat gia ve", "cap nhat lai gia ve", "tien ve", "mua ve"
+    ]
+    is_ticket_query = any(k in norm_q for k in ticket_triggers)
+
+    # Nếu hỏi giá vé nhưng chưa có địa danh nào được bóc tách:
+    # Tự động nạp các di tích trọng điểm có thu phí và miễn phí vé tham quan tại Cố đô Huế
+    if is_ticket_query and not matched_places:
+        core_heritage_ids = [
+            "place_8875",  # Đại Nội Huế
+            "place_8879",  # Lăng Khải Định
+            "place_8880",  # Lăng Tự Đức
+            "place_8878",  # Lăng Minh Mạng
+            "custom_local_31", # Cung An Định
+            "custom_attr_01",  # Lăng Gia Long
+            "place_8881",  # Lăng Đồng Khánh
+            "place_8876",  # Chùa Thiên Mụ (Miễn phí)
+        ]
+        for hid in core_heritage_ids:
+            hp = graph_retriever.get_place(hid)
+            if hp and not any(p.get("node_id") == hid for p in matched_places):
+                matched_places.append(hp)
+        trace_steps.append({
+            "step": "ticket_knowledge_retrieval",
+            "icon": "🎫",
+            "label": "Biểu giá Vé Di tích HMDC",
+            "detail": f"Nạp {len(matched_places)} di tích trọng điểm để hiển thị biểu giá vé chính thức HMDC",
+            "count": len(matched_places),
+            "status": "found"
+        })
+    elif is_ticket_query and matched_places:
+        trace_steps.append({
+            "step": "ticket_knowledge_retrieval",
+            "icon": "🎫",
+            "label": "Biểu giá Vé Di tích HMDC",
+            "detail": f"Tra cứu biểu giá chính thức của Trung tâm BTDTCĐ Huế cho {', '.join(p.get('name', '') for p in matched_places[:3])}",
+            "count": len(matched_places),
+            "status": "found"
+        })
+
+    # C. Nếu chưa có địa điểm nào, tìm kiếm theo từ khóa trong KG (chỉ khi không phải câu chào hỏi và không phải hỏi giá vé chung)
+    if not matched_places and not is_greeting and not is_ticket_query:
         searched = graph_retriever.search_places(query, locality=locality, limit=4)
         matched_places.extend(searched)
         trace_steps.append({
@@ -908,6 +951,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "nearby_map": nearby_map,
         "dishes_map": dishes_map,
         "is_greeting": is_greeting,
+        "is_ticket_query": is_ticket_query,
         "graph_trace": trace_steps
     }
 
@@ -947,8 +991,28 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
             "graph_trace": trace_steps
         }
 
+    # 0.3 Nếu là câu hỏi về giá vé di tích -> Bỏ qua vector search reviews để tránh thông tin giá vé cũ từ bài đánh giá
+    is_ticket_query = state.get("is_ticket_query") or any(k in norm_q for k in [
+        "gia ve", "ve vao", "ve vao cong", "ve tham quan", "bang gia ve",
+        "bao nhieu tien ve", "cap nhat gia ve", "cap nhat lai gia ve", "tien ve", "mua ve"
+    ])
+    if is_ticket_query:
+        trace_steps.append({
+            "step": "vector_search",
+            "icon": "🎫",
+            "label": "Ưu tiên Biểu giá Chuẩn hóa (HMDC)",
+            "detail": "Bỏ qua trích xuất review tự do để đảm bảo giá vé tuyệt đối chính xác theo quy định HMDC",
+            "confidence": 95.0,
+            "status": "high"
+        })
+        return {
+            "reviews": [],
+            "confidence_score": 0.95,
+            "graph_trace": trace_steps
+        }
+
     # Nếu câu hỏi thuần về giờ mở cửa, giá vé, địa chỉ -> không cần inject review tránh loãng ngữ cảnh
-    pure_fact_triggers = ["may gio", "mo cua", "dong cua", "gia ve", "bao nhieu tien", "o dau", "dia chi"]
+    pure_fact_triggers = ["may gio", "mo cua", "dong cua", "bao nhieu tien", "o dau", "dia chi"]
     is_pure_fact = any(f in norm_q for f in pure_fact_triggers) and not any(k in norm_q for k in ["review", "danh gia", "ngon", "kinh nghiem", "khen", "che"])
 
     if is_pure_fact:
@@ -956,13 +1020,13 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
             "step": "vector_search",
             "icon": "⚡",
             "label": "Bỏ qua Vector Search (Truy vấn thông tin thực thể)",
-            "detail": "Câu hỏi trực tiếp về địa chỉ / giá vé / giờ mở cửa → ưu tiên dữ liệu chuẩn xác từ Đồ thị Tri thức",
-            "confidence": 50.0,
+            "detail": "Câu hỏi trực tiếp về địa chỉ / giờ mở cửa → ưu tiên dữ liệu chuẩn xác từ Đồ thị Tri thức",
+            "confidence": 90.0,
             "status": "high"
         })
         return {
             "reviews": [],
-            "confidence_score": 0.5,
+            "confidence_score": 0.9,
             "graph_trace": trace_steps
         }
 
@@ -1074,6 +1138,25 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
             "icon": "👋",
             "label": "Router → Trợ lý Cố đô Phản hồi Lời chào",
             "detail": "Lời chào mở đầu hội thoại → phản hồi trực tiếp thân thiện",
+            "decision": "local_knowledge",
+            "status": "confident"
+        })
+        return "node_generate_response"
+
+    # 0.2 Nếu là câu hỏi về giá vé di tích / bảng giá vé tham quan:
+    # Tuyệt đối KHÔNG fallback sang DuckDuckGo vì tri thức nội bộ HMDC là chuẩn xác nhất!
+    ticket_triggers = [
+        "gia ve", "giá vé", "ve vao cong", "vé vào cổng", "ve tham quan", "vé tham quan",
+        "bang gia ve", "bảng giá vé", "tien ve", "tiền vé", "cap nhat gia ve", "cập nhật giá vé",
+        "cap nhat lai gia ve", "cập nhật lại giá vé", "mua ve", "mua vé", "bao nhieu tien ve"
+    ]
+    is_ticket_query = state.get("is_ticket_query") or any(t in norm_q or t in query_lower for t in ticket_triggers)
+    if is_ticket_query:
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "🎫",
+            "label": "Router → Tri thức Nội bộ (Biểu giá Vé HMDC Chính thức)",
+            "detail": "Truy vấn giá vé di tích Cố đô → sử dụng biểu giá chuẩn hóa của Trung tâm BTDTCĐ Huế (HMDC)",
             "decision": "local_knowledge",
             "status": "confident"
         })
@@ -1212,11 +1295,36 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
         if web_context:
             context_blocks.append(web_context)
 
-    full_context = "\n\n".join(context_blocks) if context_blocks else "Không tìm thấy dữ liệu liên quan."
-
     # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
     norm_q = query.lower()
     norm_q_no_accent = strip_accents(norm_q)
+
+    # 4. Ngữ cảnh biểu giá vé di tích chính thức từ HMDC nếu là câu hỏi giá vé
+    ticket_triggers = [
+        "gia ve", "giá vé", "ve vao cong", "vé vào cổng", "ve tham quan", "vé tham quan",
+        "bang gia ve", "bảng giá vé", "tien ve", "tiền vé", "cap nhat gia ve", "cập nhật giá vé",
+        "cap nhat lai gia ve", "cập nhật lại giá vé", "mua ve", "mua vé", "bao nhieu tien ve"
+    ]
+    is_ticket_query = state.get("is_ticket_query") or any(t in norm_q or t in norm_q_no_accent for t in ticket_triggers)
+
+    if is_ticket_query:
+        official_ticket_table = """=== BIỂU GIÁ VÉ THAM QUAN DI TÍCH CỐ ĐÔ HUẾ CHÍNH THỨC (QUY ĐỊNH HMDC 2024) ===
+- Quần thể Đại Nội (Hoàng Thành & Tử Cấm Thành): 200.000 VNĐ/người lớn (đã bao gồm Bảo tàng Cổ vật Cung đình Huế); Trẻ em (7 - 12 tuổi): 40.000 VNĐ.
+- Các Lăng Vua (Lăng Khải Định, Lăng Tự Đức, Lăng Minh Mạng): 150.000 VNĐ/người lớn; Trẻ em: 30.000 VNĐ.
+- Lăng vua Đồng Khánh: 100.000 VNĐ/người lớn; Trẻ em: Miễn phí.
+- Lăng vua Gia Long, Cung An Định, Điện Hòn Chén: 50.000 VNĐ/người lớn; Trẻ em: Miễn phí.
+- Điểm tham quan MIỄN PHÍ vé: Chùa Thiên Mụ, Chùa Từ Hiếu, Cầu Trường Tiền, Đồi Vọng Cảnh, Đồi Thiên An, Rú Chá, Phá Tam Giang, Làng hương Thủy Xuân.
+- Vé tuyến COMBO ưu đãi:
+  + Tuyến 03 điểm (Đại Nội - Lăng Minh Mạng - Lăng Khải Định): 420.000 VNĐ/người lớn; 80.000 VNĐ/trẻ em.
+  + Tuyến 04 điểm (Đại Nội - Lăng Minh Mạng - Lăng Tự Đức - Lăng Khải Định): 530.000 VNĐ/người lớn; 100.000 VNĐ/trẻ em.
+  + Tuyến gộp tất cả các điểm di tích: 580.000 VNĐ/người lớn; 110.000 VNĐ/trẻ em.
+- Chính sách miễn/giảm:
+  + Trẻ em dưới 7 tuổi (hoặc cao dưới 1.3m): Miễn phí 100%.
+  + Người cao tuổi Việt Nam (từ 60 tuổi trở lên có CCCD): Giảm 50% giá vé.
+  + Học sinh, sinh viên các trường đại học, cao đẳng: Giảm 50% khi có thẻ HSSV."""
+        context_blocks.insert(0, official_ticket_table)
+
+    full_context = "\n\n".join(context_blocks) if context_blocks else "Không tìm thấy dữ liệu liên quan."
     nav_keywords = [
         "chỉ đường", "chi duong", "đường đi", "duong di", "đi đến", "di den", 
         "làm sao để đi", "lam sao de di", "cách đi", "cach di", "dẫn đường", "dan duong",
@@ -1247,6 +1355,16 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
    - Hãy đáp lại lịch thiệp, thân thiện bằng phong cách hiếu khách của người dân Cố đô Huế (ví dụ: 'Dạ chào bạn! Rất vui được đồng hành cùng bạn...').
    - Giới thiệu ngắn gọn các khả năng bạn có thể hỗ trợ du khách: tra cứu thông tin di tích lịch sử và lăng tẩm triều Nguyễn, gợi ý quán ẩm thực đặc sản chuẩn vị Huế, hướng dẫn chỉ đường tối ưu, nhận diện hình ảnh di sản, hoặc thiết kế lịch trình du lịch cá nhân hóa tại Cố đô.
    - Tuyệt đối KHÔNG tự ý gợi ý các quán ăn hay nhà hàng ngoài lề khi du khách chưa yêu cầu!"""
+
+    ticket_rule = ""
+    if is_ticket_query:
+        ticket_rule = """
+4. YÊU CẦU BẮT BUỘC VỀ GIÁ VÉ DI TÍCH:
+   - Du khách đang hỏi về giá vé tham quan di tích / danh thắng Cố đô Huế.
+   - BẮT BUỘC sử dụng CHÍNH XÁC số liệu từ [BIỂU GIÁ VÉ THAM QUAN DI TÍCH CỐ ĐÔ HUẾ CHÍNH THỨC (QUY ĐỊNH HMDC 2024)].
+   - Đại Nội Huế là 200.000 VNĐ/người lớn, các Lăng Tự Đức / Khải Định / Minh Mạng là 150.000 VNĐ/người lớn.
+   - TUYỆT ĐỐI KHÔNG dùng các mức giá cũ lỗi thời từ internet (như 100.000 VNĐ hay 120.000 VNĐ).
+   - Nêu rõ các chính sách vé combo ưu đãi và miễn giảm (trẻ em, người cao tuổi) để hỗ trợ du khách tối ưu chi phí."""
 
     # Tính toán chính xác cự ly đường bộ khi có yêu cầu Chỉ đường (Ground Truth Navigation)
     nav_rule = ""
@@ -1403,7 +1521,7 @@ Nguyên tắc trả lời bắt buộc:
    - Thông báo tuyến đường đã được định vị và vẽ trực tiếp trên bản đồ bên cạnh, gợi ý du khách xem cự ly và bấm nút Google Maps bên dưới để nghe dẫn đường khi di chuyển.
 
 5. ĐỊNH DẠNG TÊN ĐỊA DANH BẰNG CHỮ IN ĐẬM:
-   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{greeting_rule}{nav_rule}{pref_section}"""
+   - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{greeting_rule}{ticket_rule}{nav_rule}{pref_section}"""
 
     image_base64 = state.get("image_base64")
     if image_base64:

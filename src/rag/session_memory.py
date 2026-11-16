@@ -22,7 +22,7 @@ MAX_HISTORY_MESSAGES = 4          # 2 lượt hỏi - đáp gần nhất
 MAX_USER_CHARS = 300
 MAX_ASSISTANT_CHARS = 200
 MAX_LABEL_CHARS = 80
-MAX_ELLIPSIS_WORDS = 8
+MAX_ELLIPSIS_WORDS = 15
 
 TOPIC_LABELS = {
     "heritage": "Di tích & Lịch sử",
@@ -77,17 +77,21 @@ AMBIGUOUS_ALIASES = {
 
 # Câu tỉnh lược: hỏi thuộc tính mà không nêu đối tượng ("Giá vé bao nhiêu?", "Mở cửa mấy giờ?")
 _ELLIPSIS_ATTRS = (
-    "gia ve", "ve vao", "mo cua", "dong cua", "may gio", "gio mo", "dia chi", "lich su",
+    "gia ve", "ve vao", "ve vao cong", "ve tham quan", "bang gia ve", "cap nhat gia ve", "cap nhat lai gia ve",
+    "tien ve", "bao nhieu tien ve", "mo cua", "dong cua", "may gio", "gio mo", "gio dong", "dia chi", "lich su",
     "kien truc", "y nghia", "di bang gi", "gui xe", "dau xe", "trang phuc", "mac gi",
     "bao lau", "nen den", "luc nao", "thoi diem", "dep khong", "ngon khong", "xay dung",
-    "nam nao", "ai xay", "bao nhieu tien", "co dat", "thuc don", "menu", "so dien thoai",
+    "nam nao", "ai xay", "bao nhieu tien", "co dat", "thuc don", "menu", "so dien thoai", "lien he",
 )
 # Câu tỉnh lược nhưng mang ý định tìm kiếm mới / phạm vi rộng -> không gắn mốc cũ
 _ELLIPSIS_BLOCKERS = (
     "hue", "co do", "thanh pho", "viet nam", "mien trung", "da nang", "ha noi", "sai gon",
     "gan day", "quanh day", "o day", "tu day", "lich trinh", "tour", "khach san", "homestay",
-    "quan", "nha hang", "cafe", "ca phe", "bien", "cho ", "mon ", "dac san",
+    "nha hang", "cafe", "ca phe", "bien", "dac san",
 )
+_MARKET_BLOCKERS = ("di cho", "khu cho", "ngoi cho", "cho nao", "cac cho", "cho dem", "cho truyen thong")
+_DISH_BLOCKERS = ("mon an", "mon gi", "mon nao", "an mon", "cac mon")
+_VENUE_BLOCKERS = ("quan nao", "quan an nao", "quan gi", "tim quan", "co quan")
 
 
 # -----------------------------------------------------------------------------
@@ -398,11 +402,22 @@ def resolve_anaphora(
         mentions_entity = any(_contains_word(folded, a) for a in all_aliases) or any(
             _contains_word(folded, d) for d in (dish_keywords or []) if d
         )
+        has_attr = any(_contains_word(folded, a) for a in _ELLIPSIS_ATTRS)
+        has_generic_blocker = any(_contains_word(folded, b) for b in _ELLIPSIS_BLOCKERS)
+        has_market_blocker = any(m in folded for m in _MARKET_BLOCKERS) or (
+            bool(re.search(r"(?<!\w)chợ(?!\w)", text.lower())) if accented else False
+        )
+        has_dish_blocker = any(d in folded for d in _DISH_BLOCKERS) or (
+            bool(re.search(r"(?<!\w)món(?!\w)", text.lower())) if accented else False
+        )
+        has_venue_blocker = any(v in folded for v in _VENUE_BLOCKERS)
+        is_blocked = has_generic_blocker or has_market_blocker or has_dish_blocker or has_venue_blocker
+
         if (
             0 < len(words) <= MAX_ELLIPSIS_WORDS
             and not mentions_entity
-            and any(_contains_word(folded, a) for a in _ELLIPSIS_ATTRS)
-            and not any(_contains_word(folded, b) for b in _ELLIPSIS_BLOCKERS)
+            and has_attr
+            and not is_blocked
         ):
             text = f"Về {place_label}: {text.strip()}"
             result.place_id, result.place_label = place_id, place_label
