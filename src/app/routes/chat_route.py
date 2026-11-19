@@ -46,6 +46,7 @@ def chat_assistant(req: ChatRequest):
             "graph_trace": [],
             "user_lat": req.user_lat,
             "user_lng": req.user_lng,
+            "language": req.language or "auto",
             # Trí nhớ phiên chat đa lượt
             "session_id": req.session_id,
             "history": req.history or [],
@@ -74,7 +75,12 @@ def chat_assistant(req: ChatRequest):
             "kinh nghiệm", "phương tiện", "thời gian", "tổng kết", "chúc bạn", "chào bạn",
             "thông tin di sản", "địa chỉ", "gợi ý điểm đến lân cận thuận đường",
             "bún bò huế", "bún bò", "cơm hến", "bún hến", "bánh bèo", "bánh nậm",
-            "bánh lọc", "bánh bột lọc", "bánh khoái", "nem lụi", "bánh ép", "chè huế", "cà phê muối"
+            "bánh lọc", "bánh bột lọc", "bánh khoái", "nem lụi", "bánh ép", "chè huế", "cà phê muối",
+            # English headings & non-POI phrases
+            "note", "notice", "tips", "travel tips", "ticket price", "admission", "opening hours",
+            "recommended dishes", "local specialties", "historical context", "architecture",
+            "nearby attractions", "nearby destinations", "address", "summary", "best time to visit",
+            "transportation", "getting there", "heritage information", "specialty dishes"
         }
         mentioned_pois = []
         for be in bold_entities:

@@ -15,6 +15,7 @@ class ChatRequest(BaseModel):
     image_base64: Optional[str] = Field(None, description="Dữ liệu ảnh dạng chuỗi Base64 (hỗ trợ JPG/PNG) để AI nhận diện thị giác")
     # --- Trí nhớ phiên chat đa lượt ---
     session_id: Optional[str] = Field(None, max_length=80, examples=["session_1741165890"])
+    language: Optional[str] = Field("auto", description="Ngôn ngữ phản hồi: 'vi', 'en', hoặc 'auto' (tự động nhận diện theo câu hỏi)")
     history: Optional[List[Dict[str, Any]]] = Field(
         None,
         max_length=12,

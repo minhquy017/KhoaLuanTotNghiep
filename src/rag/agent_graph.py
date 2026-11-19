@@ -146,6 +146,7 @@ class TourismAgentState(TypedDict):
     anaphora: Optional[Dict[str, Any]]               # Kết quả giải nghĩa đại từ (nếu có)
     is_greeting: Optional[bool]                      # Cờ nhận diện câu chào xã giao / chitchat mở đầu
     is_ticket_query: Optional[bool]                  # Cờ truy vấn giá vé di tích Cố đô (ưu tiên tri thức HMDC)
+    language: Optional[str]                          # Ngôn ngữ phản hồi: 'vi', 'en', hoặc 'auto'
 
 
 # =============================================================================
@@ -348,7 +349,61 @@ PLACE_ALIAS_DICT = {
     "gac trinh": "custom_local_16",
     "ca phe gac trinh": "custom_local_16",
     "com hen thuy": "custom_local_01",
-    "banh beo o le": "custom_local_02"
+    "banh beo o le": "custom_local_02",
+    # --- English tourist aliases (Bilingual Gazetteer) ---
+    "imperial citadel": "place_8875",
+    "hue citadel": "place_8875",
+    "citadel": "place_8875",
+    "imperial city": "place_8875",
+    "forbidden city": "place_8875",
+    "purple forbidden city": "place_8875",
+    "thai hoa palace": "place_8875",
+    "flag tower": "place_8875",
+    "nine dynastic urns": "place_8875",
+    "thien mu pagoda": "place_8876",
+    "pagoda of the celestial lady": "place_8876",
+    "pagoda of celestial lady": "place_8876",
+    "perfume river": "place_8882",
+    "huong river": "place_8882",
+    "toa kham boat station": "place_8882",
+    "truong tien bridge": "place_8919",
+    "trang tien bridge": "place_8919",
+    "dong ba market": "place_8920",
+    "khai dinh tomb": "place_8879",
+    "tomb of khai dinh": "place_8879",
+    "tu duc tomb": "place_8880",
+    "tomb of tu duc": "place_8880",
+    "minh mang tomb": "place_8878",
+    "tomb of minh mang": "place_8878",
+    "dong khanh tomb": "place_8881",
+    "tomb of dong khanh": "place_8881",
+    "gia long tomb": "custom_attr_01",
+    "tomb of gia long": "custom_attr_01",
+    "thieu tri tomb": "custom_local_33",
+    "tomb of thieu tri": "custom_local_33",
+    "an dinh palace": "custom_local_31",
+    "hon chen temple": "custom_attr_04",
+    "huyen khong son thuong": "custom_attr_05",
+    "huyen khong pagoda": "custom_attr_05",
+    "tu dam pagoda": "custom_local_30",
+    "vong canh hill": "custom_attr_02",
+    "thien an hill": "custom_attr_thienan",
+    "thuy xuan incense village": "custom_attr_03",
+    "incense village": "custom_attr_03",
+    "thanh toan tile-roofed bridge": "place_8885",
+    "thanh toan bridge": "place_8885",
+    "bach ma national park": "place_8877",
+    "hai van pass": "place_8895",
+    "thuan an beach": "beach_thuan_an",
+    "lang co beach": "beach_lang_co",
+    "lang co bay": "beach_lang_co",
+    "lap an lagoon": "beach_lang_co",
+    "canh duong beach": "beach_canh_duong",
+    "hai duong beach": "beach_hai_duong",
+    "thuy tien lake": "custom_local_21",
+    "abandoned water park": "custom_local_21",
+    "con hen": "custom_attr_con_hen",
+    "hen island": "custom_attr_con_hen"
 }
 
 # Bí danh món đặc sản (không dấu) -> tên món chuẩn
@@ -371,8 +426,81 @@ DISH_ALIASES = {
     "banh mi bot loc": "Bánh mì bột lọc",
     "banh uot thit nuong": "Bánh ướt thịt nướng",
     "com am phu": "Cơm âm phủ",
-    "com bay mau": "Cơm âm phủ"
+    "com bay mau": "Cơm âm phủ",
+    # --- English dish aliases (Bilingual Gazetteer) ---
+    "beef noodle soup": "Bún bò Huế",
+    "spicy beef noodle": "Bún bò Huế",
+    "hue beef noodle": "Bún bò Huế",
+    "clam rice": "Cơm hến",
+    "mussel rice": "Cơm hến",
+    "clam noodle": "Bún hến",
+    "mussel noodle": "Bún hến",
+    "water fern cake": "Bánh bèo",
+    "steamed rice cake": "Bánh bèo",
+    "flat steamed rice cake": "Bánh nậm",
+    "tapioca dumpling": "Bánh bột lọc",
+    "tapioca cake": "Bánh bột lọc",
+    "hue pancake": "Bánh khoái",
+    "crispy pancake": "Bánh khoái",
+    "grilled pork skewer": "Nem lụi",
+    "lemongrass pork skewer": "Nem lụi",
+    "sweet soup": "Chè bắp",
+    "corn sweet soup": "Chè bắp",
+    "roast pork sweet soup": "Chè bột lọc bọc heo quay",
+    "sesame candy": "Mè xửng",
+    "pressed rice cake": "Bánh ép",
+    "hue crepe": "Bánh ép",
+    "nam pho noodle": "Bánh canh Nam Phổ",
+    "thick noodle soup": "Bánh canh Nam Phổ",
+    "am phu rice": "Cơm âm phủ",
+    "hell rice": "Cơm âm phủ"
 }
+
+
+# =============================================================================
+# 2.3 BỘ NHẬN DIỆN NGÔN NGỮ CÂU HỎI (DYNAMIC LANGUAGE DETECTOR)
+# =============================================================================
+def detect_query_language(query: str, client_lang: Optional[str] = "auto") -> str:
+    """
+    Tự động nhận diện ngôn ngữ của câu hỏi du khách: 'vi' (Tiếng Việt) hoặc 'en' (Tiếng Anh).
+    - Có chứa ký tự tiếng Việt có dấu -> 'vi'.
+    - Chứa từ khóa/mẫu câu hỏi tiếng Anh phổ biến -> 'en'.
+    - Nếu câu hỏi ngắn/mơ hồ -> tôn trọng client_lang (nếu là 'vi' hoặc 'en').
+    - Mặc định an toàn -> 'vi'.
+    """
+    if not query:
+        return client_lang if client_lang in ("vi", "en") else "vi"
+
+    # 1. Phát hiện ký tự tiếng Việt có dấu
+    viet_pattern = re.compile(r'[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]', re.IGNORECASE)
+    if viet_pattern.search(query):
+        return "vi"
+
+    # 2. Phát hiện từ vựng & cấu trúc tiếng Anh
+    en_keywords = {
+        "where", "what", "how", "which", "when", "who", "why", "can", "could", "would",
+        "is", "are", "was", "were", "do", "does", "did", "near", "around", "from", "to",
+        "between", "recommend", "suggest", "best", "top", "price", "ticket", "cost",
+        "far", "close", "food", "eat", "visit", "see", "temple", "pagoda", "tomb",
+        "palace", "citadel", "bridge", "river", "beach", "market", "hotel", "restaurant",
+        "hello", "hi", "hey", "good", "morning", "afternoon", "evening", "please",
+        "thank", "thanks", "trip", "tour", "guide", "vegetarian", "specialty", "street",
+        "walking", "map", "direction", "distance", "open", "close", "time", "hours",
+        "travel", "city", "local", "traditional", "famous", "show", "me", "find",
+        "about", "history", "architecture", "weather", "forecast", "entrance", "fee"
+    }
+    words = set(re.findall(r'[a-z]+', query.lower()))
+    en_matches = len(words & en_keywords)
+    if en_matches >= 2:
+        return "en"
+    if en_matches >= 1 and len(words) <= 4:
+        return "en"
+
+    # 3. Nếu client gửi chỉ định rõ ràng và không có dấu hiệu mâu thuẫn mạnh
+    if client_lang in ("vi", "en"):
+        return client_lang
+
+    return "vi"
 
 
 # =============================================================================
@@ -485,6 +613,8 @@ def next_session_context(
 def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     query = state.get("query", "")
     trace_steps = state.get("graph_trace", [])
+    raw_lang = state.get("language") or "auto"
+    detected_lang = detect_query_language(query, raw_lang)
     image_base64 = state.get("image_base64")
     image_detected_info = None
     visual_matches = None
@@ -597,11 +727,12 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     GREETING_WORDS = {
         "xin chao", "chao ban", "chao em", "chao tro ly", "chao", "chao nhe", "chao ban nhe",
         "hello", "hi", "hi ban", "hi em", "hey", "alo", "halo",
-        "hello ban", "hello em", "good morning", "good afternoon",
+        "hello ban", "hello em", "good morning", "good afternoon", "good evening",
         "ban la ai", "em la ai", "ban ten gi", "em ten gi", "gioi thieu", "gioi thieu ban than",
-        "tro ly la ai", "giup gi duoc", "giup duoc gi", "ban giup duoc gi", "em giup duoc gi"
+        "tro ly la ai", "giup gi duoc", "giup duoc gi", "ban giup duoc gi", "em giup duoc gi",
+        "who are you", "what can you do", "how can you help", "introduce yourself", "help me"
     }
-    is_greeting = clean_norm_q in GREETING_WORDS or (len(clean_norm_q) <= 12 and any(clean_norm_q.startswith(g) for g in ["xin chao", "chao ban", "hello", "hi "]))
+    is_greeting = clean_norm_q in GREETING_WORDS or (len(clean_norm_q) <= 14 and any(clean_norm_q.startswith(g) for g in ["xin chao", "chao ban", "hello", "hi ", "hey "]))
 
     # 1. Nhận diện địa phương
     locality = "Thành phố Huế" if any(h in norm_q for h in ["hue", "thua thien", "co do"]) else ""
@@ -672,13 +803,14 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         pid_to_pos[vis_matched_place_id] = 0
 
     # Nhận diện câu hỏi tổng quát về bãi biển / tắm biển / hải sản biển
-    is_beach_query = any(b in norm_q for b in ["bai bien", "bien", "tam bien", "ngam bien"]) and not any(k in norm_q for k in ["bien hoa", "bien gioi"])
+    is_beach_query = ((any(b in norm_q for b in ["bai bien", "bien", "tam bien", "ngam bien"]) and not any(k in norm_q for k in ["bien hoa", "bien gioi"]))
+                      or any(b in norm_q for b in ["beach", "beaches", "seaside", "coast"]))
     if is_beach_query and not any(pid in extracted_place_ids for pid in ["beach_thuan_an", "beach_lang_co", "beach_canh_duong", "beach_hai_duong"]):
         for b_id in ["beach_thuan_an", "beach_lang_co", "beach_canh_duong", "beach_hai_duong"]:
             extracted_place_ids.append(b_id)
 
     # Nhận diện câu hỏi tìm địa điểm lân cận ('quanh X', 'gần X', 'trong bán kính Y km')
-    is_nearby_query = any(k in norm_q for k in ["quanh", "xung quanh", "lan can", "ban kinh", "gan day", "gan do", "gan "])
+    is_nearby_query = any(k in norm_q for k in ["quanh", "xung quanh", "lan can", "ban kinh", "gan day", "gan do", "gan ", "near", "nearby", "around", "close to", "next to"])
     # Nếu hỏi quanh một địa danh mà có 'song huong' xuất hiện như cảnh quan, loại bỏ 'song huong' khỏi danh sách đích
     if is_nearby_query and "place_8882" in extracted_place_ids and len(extracted_place_ids) >= 2:
         extracted_place_ids = [pid for pid in extracted_place_ids if pid != "place_8882"]
@@ -700,7 +832,8 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     # A. ƯU TIÊN TUYỆT ĐỐI 1: Người dùng đề cập TỪ 2 ĐỊA DANH TRỞ LÊN và có ý định di chuyển (Từ A đi/sang/đến B):
     has_route_intent = any(w in norm_q for w in [
         "từ ", "tu ", "sang ", "đến ", "den ", "tới ", "toi ", "qua ", "đi ", "di ",
-        "sau khi ", "xong ", "khoang cach", "bao xa", "may cay", "may km", "duong nao"
+        "sau khi ", "xong ", "khoang cach", "bao xa", "may cay", "may km", "duong nao",
+        "from ", "to ", "how to get", "how far", "distance", "route to", "way to", "directions"
     ])
     if len(extracted_place_ids) >= 2 and has_route_intent:
         for pid in extracted_place_ids:
@@ -833,7 +966,8 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     # 3.1 Nhận diện câu hỏi về giá vé di tích Cố đô Huế
     ticket_triggers = [
         "gia ve", "ve vao", "ve vao cong", "ve tham quan", "bang gia ve",
-        "bao nhieu tien ve", "cap nhat gia ve", "cap nhat lai gia ve", "tien ve", "mua ve"
+        "bao nhieu tien ve", "cap nhat gia ve", "cap nhat lai gia ve", "tien ve", "mua ve",
+        "ticket", "tickets", "admission", "entrance fee", "ticket price", "ticket cost", "how much is the ticket", "fare"
     ]
     is_ticket_query = any(k in norm_q for k in ticket_triggers)
 
@@ -952,6 +1086,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "dishes_map": dishes_map,
         "is_greeting": is_greeting,
         "is_ticket_query": is_ticket_query,
+        "language": detected_lang,
         "graph_trace": trace_steps
     }
 
@@ -969,11 +1104,12 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
     GREETING_WORDS = {
         "xin chao", "chao ban", "chao em", "chao tro ly", "chao", "chao nhe", "chao ban nhe",
         "hello", "hi", "hi ban", "hi em", "hey", "alo", "halo",
-        "hello ban", "hello em", "good morning", "good afternoon",
+        "hello ban", "hello em", "good morning", "good afternoon", "good evening",
         "ban la ai", "em la ai", "ban ten gi", "em ten gi", "gioi thieu", "gioi thieu ban than",
-        "tro ly la ai", "giup gi duoc", "giup duoc gi", "ban giup duoc gi", "em giup duoc gi"
+        "tro ly la ai", "giup gi duoc", "giup duoc gi", "ban giup duoc gi", "em giup duoc gi",
+        "who are you", "what can you do", "how can you help", "introduce yourself", "help me"
     }
-    is_greeting = clean_norm_q in GREETING_WORDS or (len(clean_norm_q) <= 12 and any(clean_norm_q.startswith(g) for g in ["xin chao", "chao ban", "hello", "hi "]))
+    is_greeting = clean_norm_q in GREETING_WORDS or (len(clean_norm_q) <= 14 and any(clean_norm_q.startswith(g) for g in ["xin chao", "chao ban", "hello", "hi ", "hey "]))
     matched_places = state.get("matched_places", [])
 
     if is_greeting:
@@ -1148,7 +1284,8 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
     ticket_triggers = [
         "gia ve", "giá vé", "ve vao cong", "vé vào cổng", "ve tham quan", "vé tham quan",
         "bang gia ve", "bảng giá vé", "tien ve", "tiền vé", "cap nhat gia ve", "cập nhật giá vé",
-        "cap nhat lai gia ve", "cập nhật lại giá vé", "mua ve", "mua vé", "bao nhieu tien ve"
+        "cap nhat lai gia ve", "cập nhật lại giá vé", "mua ve", "mua vé", "bao nhieu tien ve",
+        "ticket", "tickets", "admission", "entrance fee", "ticket price"
     ]
     is_ticket_query = state.get("is_ticket_query") or any(t in norm_q or t in query_lower for t in ticket_triggers)
     if is_ticket_query:
@@ -1165,7 +1302,8 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
     # Các từ khóa hỏi về thông tin thời gian thực ngoài phạm vi dữ liệu tĩnh (thời tiết, vé máy bay)
     realtime_triggers = [
         "thoi tiet", "thời tiết", "ve may bay", "vé máy bay", 
-        "nhiet do", "nhiệt độ", "bao nhieu do", "mưa khong", "mưa không", "dự báo thời tiết"
+        "nhiet do", "nhiệt độ", "bao nhieu do", "mưa khong", "mưa không", "dự báo thời tiết",
+        "weather", "forecast", "temperature", "flight ticket"
     ]
     is_realtime_query = any(t in norm_q or t in query_lower for t in realtime_triggers)
     if is_realtime_query:
@@ -1295,7 +1433,8 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
         if web_context:
             context_blocks.append(web_context)
 
-    # Định dạng Prompt chuyên gia du lịch Cố Đô Huế
+    # Định dạng Prompt chuyên gia du lịch Cố Đô Huế (Hỗ trợ đa ngôn ngữ Anh - Việt)
+    lang = state.get("language") or detect_query_language(query)
     norm_q = query.lower()
     norm_q_no_accent = strip_accents(norm_q)
 
@@ -1303,12 +1442,29 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     ticket_triggers = [
         "gia ve", "giá vé", "ve vao cong", "vé vào cổng", "ve tham quan", "vé tham quan",
         "bang gia ve", "bảng giá vé", "tien ve", "tiền vé", "cap nhat gia ve", "cập nhật giá vé",
-        "cap nhat lai gia ve", "cập nhật lại giá vé", "mua ve", "mua vé", "bao nhieu tien ve"
+        "cap nhat lai gia ve", "cập nhật lại giá vé", "mua ve", "mua vé", "bao nhieu tien ve",
+        "ticket", "tickets", "admission", "entrance fee", "ticket price"
     ]
     is_ticket_query = state.get("is_ticket_query") or any(t in norm_q or t in norm_q_no_accent for t in ticket_triggers)
 
     if is_ticket_query:
-        official_ticket_table = """=== BIỂU GIÁ VÉ THAM QUAN DI TÍCH CỐ ĐÔ HUẾ CHÍNH THỨC (QUY ĐỊNH HMDC 2024) ===
+        if lang == "en":
+            official_ticket_table = """=== OFFICIAL TICKET PRICES FOR HUẾ MONUMENTS COMPLEX (HMDC 2024 REGULATION) ===
+- Imperial Citadel Complex (Hoàng Thành & Tử Cấm Thành / Imperial City): 200,000 VNĐ/adult (~$8 USD, includes Huế Museum of Royal Antiquities); Children (7 - 12 years): 40,000 VNĐ.
+- Royal Tombs (Khải Định Tomb, Tự Đức Tomb, Minh Mạng Tomb): 150,000 VNĐ/adult (~$6 USD); Children: 30,000 VNĐ.
+- Đồng Khánh Tomb: 100,000 VNĐ/adult; Children: Free.
+- Gia Long Tomb, An Định Palace, Hòn Chén Temple: 50,000 VNĐ/adult; Children: Free.
+- FREE admission sites: Thiên Mụ Pagoda, Từ Hiếu Pagoda, Trường Tiền Bridge, Vọng Cảnh Hill, Thiên An Hill, Rú Chá Mangrove Forest, Tam Giang Lagoon, Thủy Xuân Incense Village.
+- DISCOUNTED COMBO TICKETS:
+  + 3-site Combo (Citadel - Minh Mạng Tomb - Khải Định Tomb): 420,000 VNĐ/adult; 80,000 VNĐ/child.
+  + 4-site Combo (Citadel - Minh Mạng Tomb - Tự Đức Tomb - Khải Định Tomb): 530,000 VNĐ/adult; 100,000 VNĐ/child.
+  + All-heritage sites Combo: 580,000 VNĐ/adult; 110,000 VNĐ/child.
+- Exemption & Reduction Policies:
+  + Children under 7 years (or under 1.3m tall): 100% Free.
+  + Vietnamese senior citizens (60+ with ID): 50% discount.
+  + University/College students: 50% discount with valid student ID."""
+        else:
+            official_ticket_table = """=== BIỂU GIÁ VÉ THAM QUAN DI TÍCH CỐ ĐÔ HUẾ CHÍNH THỨC (QUY ĐỊNH HMDC 2024) ===
 - Quần thể Đại Nội (Hoàng Thành & Tử Cấm Thành): 200.000 VNĐ/người lớn (đã bao gồm Bảo tàng Cổ vật Cung đình Huế); Trẻ em (7 - 12 tuổi): 40.000 VNĐ.
 - Các Lăng Vua (Lăng Khải Định, Lăng Tự Đức, Lăng Minh Mạng): 150.000 VNĐ/người lớn; Trẻ em: 30.000 VNĐ.
 - Lăng vua Đồng Khánh: 100.000 VNĐ/người lớn; Trẻ em: Miễn phí.
@@ -1333,15 +1489,23 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
         "khoảng bao xa", "khoang bao xa", "bao xa", "mất bao xa", "mat bao xa",
         "mấy cây số", "may cay so", "mấy km", "may km", "mấy cây", "may cay",
         "cách mấy", "cach may", "lối đi", "loi di", "hướng đi", "huong di",
-        "đi ra", "di ra", "đi qua", "di qua", "đi sang", "di sang", "đi tới", "di toi"
+        "đi ra", "di ra", "đi qua", "di qua", "đi sang", "di sang", "đi tới", "di toi",
+        "how to get", "directions", "how far", "distance", "route to", "way to", "directions to"
     ]
-    has_from = any(w in norm_q for w in ["từ ", "tu ", "xuất phát từ", "khoi hanh tu"]) or any(w in norm_q_no_accent for w in ["tu ", "xuat phat tu"])
-    has_to = any(w in norm_q for w in ["đi ", "di ", "đến ", "den ", "tới ", "toi ", "sang ", "qua "]) or any(w in norm_q_no_accent for w in ["di ", "den ", "toi ", "sang ", "qua "])
+    has_from = any(w in norm_q for w in ["từ ", "tu ", "xuất phát từ", "khoi hanh tu", "from "]) or any(w in norm_q_no_accent for w in ["tu ", "xuat phat tu", "from "])
+    has_to = any(w in norm_q for w in ["đi ", "di ", "đến ", "den ", "tới ", "toi ", "sang ", "qua ", "to "]) or any(w in norm_q_no_accent for w in ["di ", "den ", "toi ", "sang ", "qua ", "to "])
     is_nav = any(k in norm_q for k in nav_keywords) or any(k in norm_q_no_accent for k in nav_keywords) or (has_from and has_to)
 
     dish_rule = ""
     if target_dish:
-        dish_rule = f"""
+        if lang == "en":
+            dish_rule = f"""
+4. SPECIAL REQUIREMENT FOR LOCAL DISH:
+   - The visitor is specifically inquiring about: "{target_dish}".
+   - You MUST ONLY recommend authentic eateries that serve {target_dish} from the provided context.
+   - Strictly DO NOT mention other unrelated dishes or eateries (like cơm hến, bánh bèo, chè...) unless directly related to {target_dish}."""
+        else:
+            dish_rule = f"""
 4. YÊU CẦU ĐẶC BIỆT VỀ MÓN ĂN:
    - Du khách đang hỏi về món: "{target_dish}".
    - Bạn CHỈ ĐƯỢC PHÉP giới thiệu các quán ăn phục vụ món {target_dish} từ danh sách ngữ cảnh.
@@ -1349,7 +1513,15 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
 
     greeting_rule = ""
     if state.get("is_greeting"):
-        greeting_rule = """
+        if lang == "en":
+            greeting_rule = """
+4. GUIDANCE FOR VISITOR GREETING & CHITCHAT:
+   - The visitor is greeting or initiating a conversation (e.g., 'hello', 'hi', 'who are you', 'how can you help').
+   - Warmly greet them with the gracious hospitality characteristic of Huế (e.g., 'Hello and welcome to Huế! It is my pleasure to accompany you...').
+   - Briefly introduce what you can assist with: historical monuments and Nguyen Dynasty royal tombs, authentic local culinary spots, optimal navigation and routing, heritage photo identification, or personalized travel itineraries in the Ancient Capital.
+   - Strictly DO NOT recommend unprompted restaurants or eateries when the visitor has only greeted you!"""
+        else:
+            greeting_rule = """
 4. HƯỚNG DẪN KHI DU KHÁCH CHÀO HỎI (GREETING & CHITCHAT):
    - Du khách đang chào hỏi xã giao hoặc mở đầu cuộc trò chuyện (ví dụ: 'xin chào', 'chào bạn', 'hello', 'bạn là ai').
    - Hãy đáp lại lịch thiệp, thân thiện bằng phong cách hiếu khách của người dân Cố đô Huế (ví dụ: 'Dạ chào bạn! Rất vui được đồng hành cùng bạn...').
@@ -1358,7 +1530,16 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
 
     ticket_rule = ""
     if is_ticket_query:
-        ticket_rule = """
+        if lang == "en":
+            ticket_rule = """
+4. MANDATORY REQUIREMENTS FOR TICKET PRICES:
+   - The visitor is asking about ticket prices for heritage monuments in Huế.
+   - You MUST use EXACT figures from [OFFICIAL TICKET PRICES FOR HUẾ MONUMENTS COMPLEX (HMDC 2024 REGULATION)].
+   - Imperial Citadel is 200,000 VNĐ (~$8 USD)/adult; Royal Tombs (Khải Định / Tự Đức / Minh Mạng) are 150,000 VNĐ (~$6 USD)/adult.
+   - NEVER quote outdated prices (such as 100,000 VNĐ or 120,000 VNĐ).
+   - Clearly explain combo ticket packages and free-entry landmarks (Thiên Mụ Pagoda, Vọng Cảnh Hill, Trường Tiền Bridge)."""
+        else:
+            ticket_rule = """
 4. YÊU CẦU BẮT BUỘC VỀ GIÁ VÉ DI TÍCH:
    - Du khách đang hỏi về giá vé tham quan di tích / danh thắng Cố đô Huế.
    - BẮT BUỘC sử dụng CHÍNH XÁC số liệu từ [BIỂU GIÁ VÉ THAM QUAN DI TÍCH CỐ ĐÔ HUẾ CHÍNH THỨC (QUY ĐỊNH HMDC 2024)].
@@ -1374,8 +1555,9 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
         dest_p = None
         has_origin_context = any(w in norm_q for w in [
             "từ ", "tu ", "ở ", "o ", "tại ", "tai ", "sau khi ", "xem xong ", 
-            "tham quan xong ", "ngắm ", "ngam ", "tren duong ve", "trên đường về", "gần ", "gan "
-        ]) or any(w in norm_q_no_accent for w in ["tu ", "o ", "tai ", "sau khi ", "ngam ", "tren duong ve", "gan "])
+            "tham quan xong ", "ngắm ", "ngam ", "tren duong ve", "trên đường về", "gần ", "gan ",
+            "from ", "at ", "after ", "near "
+        ]) or any(w in norm_q_no_accent for w in ["tu ", "o ", "tai ", "sau khi ", "ngam ", "tren duong ve", "gan ", "from ", "at ", "near "])
         
         if len(matched_places) >= 2 and has_origin_context:
             p0 = matched_places[0]
@@ -1383,8 +1565,10 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
             pos0 = p0.get("query_pos", 0)
             pos1 = p1.get("query_pos", 1)
 
-            # Tìm vị trí của từ "từ " hoặc "tu " trong câu hỏi
+            # Tìm vị trí của từ "từ " hoặc "tu " hoặc "from " trong câu hỏi
             tu_idx = norm_q_no_accent.find("tu ")
+            if tu_idx == -1:
+                tu_idx = norm_q_no_accent.find("from ")
             if tu_idx != -1:
                 d0 = (pos0 - tu_idx) if pos0 >= tu_idx else 9999
                 d1 = (pos1 - tu_idx) if pos1 >= tu_idx else 9999
@@ -1403,9 +1587,9 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
             user_lat = state.get("user_lat")
             user_lng = state.get("user_lng")
             if user_lat and user_lng:
-                origin_p = {"name": "Vị trí của bạn", "latitude": user_lat, "longitude": user_lng}
+                origin_p = {"name": "Your Location" if lang == "en" else "Vị trí của bạn", "latitude": user_lat, "longitude": user_lng}
             else:
-                origin_p = {"name": "Trung tâm TP Huế (Cầu Tràng Tiền)", "latitude": 16.4674, "longitude": 107.5905}
+                origin_p = {"name": "Huế City Center (Trường Tiền Bridge)" if lang == "en" else "Trung tâm TP Huế (Cầu Tràng Tiền)", "latitude": 16.4674, "longitude": 107.5905}
 
         if origin_p and dest_p and origin_p.get("latitude") and dest_p.get("latitude"):
             lat1, lng1 = float(origin_p["latitude"]), float(origin_p["longitude"])
@@ -1461,7 +1645,15 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
                 }
             }
 
-            nav_rule = f"""
+            if lang == "en":
+                nav_rule = f"""
+5. MANDATORY GROUND TRUTH ROUTING DATA:
+   - Route: From **{origin_p.get('name')}** to **{dest_p.get('name')}**.
+   - Actual road distance: ~{road_dist} km.
+   - Travel time: ~{dur_drive} mins (car / motorbike) or ~{dur_walk} mins (walking).
+   - MANDATORY PRINCIPLE: When stating travel distance or time, you MUST use the exact figure ~{road_dist} km and estimated time above. DO NOT fabricate other numbers! Remind the visitor to view the route plotted on the interactive map beside and tap 'Open Google Maps' for turn-by-turn navigation."""
+            else:
+                nav_rule = f"""
 5. DỮ LIỆU ĐỊNH VỊ KHÔNG GIAN BẮT BUỘC (GROUND TRUTH ROUTING):
    - Tuyến đường: Từ **{origin_p.get('name')}** đến **{dest_p.get('name')}**.
    - Khoảng cách đường bộ thực tế: ~{road_dist} km.
@@ -1475,28 +1667,56 @@ def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
         styles = preferences.get("styles") or []
         if styles:
             style_str = ", ".join(styles)
-            pref_rules.append(f"- Phong cách ưa thích: {style_str}. Ưu tiên các điểm đến và trải nghiệm đúng gu này.")
+            pref_rules.append(f"- Preferred style: {style_str}. Prioritize destinations matching this taste." if lang == "en" else f"- Phong cách ưa thích: {style_str}. Ưu tiên các điểm đến và trải nghiệm đúng gu này.")
         dietary = preferences.get("dietary") or []
-        if "Ăn chay" in dietary:
-            pref_rules.append("- Khẩu vị: Du khách ĂN CHAY. Tuyệt đối ưu tiên các quán chay, món chay, danh lam chùa chiền thanh tịnh ở Cố đô.")
-        if "Không ăn cay / Ít ớt" in dietary:
-            pref_rules.append("- Khẩu vị: Du khách KHÔNG ĂN CAY / ÍT ỚT. Nhắc nhở dặn quán làm ít cay, không bỏ ớt chưng sa tế đậm.")
-        if "Ăn cay chuẩn Huế" in dietary:
-            pref_rules.append("- Khẩu vị: Du khách thích ĂN CAY ĐẬM ĐÀ, chuẩn phong vị cay xé lưỡi đặc trưng của xứ Huế.")
-        if "Dị ứng hải sản" in dietary:
-            pref_rules.append("- Dị ứng: Du khách DỊ ỨNG HẢI SẢN. Cảnh báo tránh các món tôm cá, mắm ruốc truyền thống nếu có thể.")
+        if "Ăn chay" in dietary or "Vegetarian" in dietary:
+            pref_rules.append("- Dietary: Visitor is VEGETARIAN. Prioritize vegetarian eateries, vegetarian Huế specialties, and peaceful pagodas." if lang == "en" else "- Khẩu vị: Du khách ĂN CHAY. Tuyệt đối ưu tiên các quán chay, món chay, danh lam chùa chiền thanh tịnh ở Cố đô.")
+        if "Không ăn cay / Ít ớt" in dietary or "Non-spicy" in dietary:
+            pref_rules.append("- Dietary: Visitor PREFERS MILD / NON-SPICY FOOD. Advise reminding restaurants to use less chili." if lang == "en" else "- Khẩu vị: Du khách KHÔNG ĂN CAY / ÍT ỚT. Nhắc nhở dặn quán làm ít cay, không bỏ ớt chưng sa tế đậm.")
+        if "Ăn cay chuẩn Huế" in dietary or "Spicy" in dietary:
+            pref_rules.append("- Dietary: Visitor ENJOYS AUTHENTIC SPICY HUẾ FOOD." if lang == "en" else "- Khẩu vị: Du khách thích ĂN CAY ĐẬM ĐÀ, chuẩn phong vị cay xé lưỡi đặc trưng của xứ Huế.")
+        if "Dị ứng hải sản" in dietary or "Seafood allergy" in dietary:
+            pref_rules.append("- Allergy: Visitor has SEAFOOD ALLERGY. Warn about avoiding shrimp, crab, or traditional fermented shrimp paste." if lang == "en" else "- Dị ứng: Du khách DỊ ỨNG HẢI SẢN. Cảnh báo tránh các món tôm cá, mắm ruốc truyền thống nếu có thể.")
         party = preferences.get("party")
         if party:
-            pref_rules.append(f"- Nhóm đồng hành: {party}. Điều chỉnh nhịp độ di chuyển và không gian phù hợp với nhóm này.")
+            pref_rules.append(f"- Traveling group: {party}." if lang == "en" else f"- Nhóm đồng hành: {party}. Điều chỉnh nhịp độ di chuyển và không gian phù hợp với nhóm này.")
         transport = preferences.get("transport")
         if transport:
-            pref_rules.append(f"- Phương tiện di chuyển: {transport}.")
+            pref_rules.append(f"- Transportation: {transport}." if lang == "en" else f"- Phương tiện di chuyển: {transport}.")
 
     pref_section = ""
     if pref_rules:
-        pref_section = "\n\n6. CÁ NHÂN HÓA THEO GU DU LỊCH CỦA DU KHÁCH:\n" + "\n".join(pref_rules)
+        pref_header = "\n\n6. PERSONALIZED VISITOR PREFERENCES:\n" if lang == "en" else "\n\n6. CÁ NHÂN HÓA THEO GU DU LỊCH CỦA DU KHÁCH:\n"
+        pref_section = pref_header + "\n".join(pref_rules)
 
-    system_prompt = f"""Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
+    if lang == "en":
+        system_prompt = f"""You are a smart, warm, and highly knowledgeable local AI Heritage & Tourism Guide for the Ancient Imperial Capital of Huế, Vietnam.
+
+Mandatory Response Principles:
+1. NATURAL, HOSPITABLE, WELCOMING TONE:
+   - Address the visitor warmly as "you" or "dear traveler". Refer to yourself as "your Huế Heritage Guide" or "I".
+   - Open warmly and courteously ("Welcome to Huế!", "Hello! It is my pleasure to guide you...", "Great question!").
+   - NEVER use robotic phrases like: "Based on Knowledge Graph data...", "The system has successfully identified...".
+   - Respond 100% in fluent, natural, engaging English like a passionate local guide.
+   - PRESERVE VIETNAMESE CULTURAL PROPER NAMES: Always retain authentic Vietnamese diacritics for proper names of places, kings, and dishes with English translation in parentheses on first mention, e.g., **Đại Nội** (Imperial Citadel), **Chùa Thiên Mụ** (Thiên Mụ Pagoda), **Bún bò Huế** (Huế Spicy Beef Noodle Soup), **Lăng Khải Định** (Khải Định Tomb).
+   - NO CHINESE CHARACTERS: Strictly forbid inserting any Chinese characters or punctuation.
+
+2. WHEN VISITOR ASKS ABOUT NEARBY PLACES AROUND A LANDMARK (E.G. "NEAR THIEN MU PAGODA", "AROUND THE CITADEL"):
+   - Do NOT recommend the anchor landmark itself as a nearby attraction (never suggest Thiên Mụ Pagoda when asked what is around Thiên Mụ Pagoda).
+   - The Perfume River (Sông Hương) is a scenic waterway flowing through the city, NOT a standalone attraction with ticket fees. Instead, recommend specific riverview spots nearby: Bến Xuân Garden House, Thiên Mụ boat station, Hà Khê Hill, Temple of Literature (Văn Miếu), or riverside cafes/restaurants.
+
+3. BEACHES AND SEAFOOD IN THỪA THIÊN HUẾ:
+   - Thừa Thiên Huế features world-class beaches: Thuận An Beach (~15 km from city center, famous for fresh seafood and swimming), Lăng Cô Bay / Lập An Lagoon (at the foot of Hải Vân Pass, one of the world's most beautiful bays, famous for oysters and lobsters), Cảnh Dương Beach (camping, gentle sandbars), and Hải Dương Beach (scenic rocky breakwater).
+   - Sông Hương (Perfume River) is a FRESHWATER RIVER in the city center; THERE IS NO BEACH ALONG THE PERFUME RIVER. Never claim there is a beach on the Perfume River.
+
+4. DIRECTIONS / NAVIGATION:
+   - Answer concisely (1-2 sentences), quoting the exact road distance and travel time from the MANDATORY GROUND TRUTH ROUTING DATA.
+   - Inform the visitor that the route has been highlighted on the map alongside and suggest clicking 'Open Google Maps' for live navigation.
+
+5. BOLD ALL PLACE NAMES:
+   - BOLD all landmark, restaurant, and attraction names using **Place Name** syntax (e.g. **Đại Nội**, **Chùa Thiên Mụ**, **Bún bò Mụ Rơi**) so the interactive map can automatically pin and highlight them.{dish_rule}{greeting_rule}{ticket_rule}{nav_rule}{pref_section}"""
+    else:
+        system_prompt = f"""Bạn là Hướng dẫn viên & Trợ lý Du lịch Cố đô Huế thông minh, thân thiện, mang phong cách mến khách và nhã nhặn đặc trưng của người dân xứ Huế.
 
 Nguyên tắc trả lời bắt buộc:
 1. VĂN PHONG TỰ NHIÊN, LỊCH SỰ, ĐÚNG MỰC:
@@ -1525,7 +1745,16 @@ Nguyên tắc trả lời bắt buộc:
 
     image_base64 = state.get("image_base64")
     if image_base64:
-        system_prompt += """\n
+        if lang == "en":
+            system_prompt += """\n
+6. REAL-TIME IMAGE ANALYSIS & COMMENTARY:
+   - The visitor has uploaded a photo. Directly observe and confirm the identity of the heritage site, monument, or local specialty in the image.
+   - Provide thoughtful, vivid observations about its visual angle, royal architecture, colors, or how to best enjoy the dish.
+   - Seamlessly integrate with KNOWLEDGE GRAPH DATA (GPS coordinates, cultural history, ticket prices/opening hours, or nearby spots).
+   - BOLD all place and eatery names using **Place Name** syntax for automatic map pinning.
+"""
+        else:
+            system_prompt += """\n
 6. PHÂN TÍCH VÀ BÌNH LUẬN HÌNH ẢNH THỰC TẾ:
    - Du khách đã tải lên một bức ảnh thực tế. Hãy trực tiếp quan sát và xác nhận hình ảnh đối tượng du khách đã chụp (tên di tích / danh thắng / món ăn đặc sản).
    - Đưa ra những nhận xét tinh tế, sinh động về góc chụp, kiến trúc, màu sắc hoặc hương vị/cách thưởng thức món ăn trong ảnh.
@@ -1537,17 +1766,37 @@ Nguyên tắc trả lời bắt buộc:
     history_text = format_history_for_prompt(state.get("history"))
     history_section = ""
     if history_text:
-        system_prompt += """\n
+        if lang == "en":
+            system_prompt += """\n
+7. MULTI-TURN CONVERSATION:
+   - Use [RECENT CONVERSATION HISTORY] only to understand context (which place/dish is being discussed). Specific factual details MUST come from [SYSTEM CONTEXT].
+   - This is a follow-up query: DO NOT repeat pleasantries, DO NOT re-explain previous answers; address the user's specific question directly.
+"""
+            history_section = f"""[RECENT CONVERSATION HISTORY]:
+{history_text}
+
+"""
+        else:
+            system_prompt += """\n
 7. HỘI THOẠI NHIỀU LƯỢT:
    - Mục [LỊCH SỬ HỘI THOẠI GẦN ĐÂY] chỉ để hiểu mạch trò chuyện (du khách đang nói tới địa điểm / món nào). Thông tin thực tế (địa chỉ, giờ mở cửa, giá vé, khoảng cách) PHẢI lấy từ [NGỮ CẢNH HỆ THỐNG].
    - Đây là câu hỏi nối tiếp: KHÔNG chào hỏi lại từ đầu, KHÔNG lặp lại nội dung đã trả lời ở lượt trước, đi thẳng vào ý du khách cần.
 """
-        history_section = f"""[LỊCH SỬ HỘI THOẠI GẦN ĐÂY]:
+            history_section = f"""[LỊCH SỬ HỘI THOẠI GẦN ĐÂY]:
 {history_text}
 
 """
 
-    user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
+    if lang == "en":
+        user_prompt = f"""[SYSTEM CONTEXT]:
+{full_context}
+
+{history_section}[VISITOR'S QUESTION]:
+{query}
+
+[YOUR ANSWER]:"""
+    else:
+        user_prompt = f"""[NGỮ CẢNH HỆ THỐNG]:
 {full_context}
 
 {history_section}[CÂU HỎI CỦA DU KHÁCH]:
@@ -1572,88 +1821,156 @@ Nguyên tắc trả lời bắt buộc:
         answer_text = response.content.strip()
     except Exception as e:
         # Fallback thân thiện, tự nhiên khi LLM cục bộ chưa khởi động
-        if is_nav and matched_places:
-            if len(matched_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
-                origin_name = matched_places[0].get("name", "điểm xuất phát")
-                dest_p = matched_places[1]
+        if lang == "en":
+            if is_nav and matched_places:
+                if len(matched_places) >= 2 and ("from " in norm_q or "tu " in norm_q):
+                    origin_name = matched_places[0].get("name", "starting point")
+                    dest_p = matched_places[1]
+                else:
+                    origin_name = "your location"
+                    dest_p = matched_places[0]
+                dest_name = dest_p.get("name", "destination")
+                dest_addr = dest_p.get("address", "")
+                addr_str = f" ({dest_addr})" if dest_addr else ""
+                answer_text = (
+                    f"I have mapped out the optimal route from {origin_name} to **{dest_name}**{addr_str} on the interactive map beside! "
+                    f"You can review the distance, estimated travel time, and tap 'Open Google Maps' for live navigation."
+                )
+            elif is_nav:
+                answer_text = "I have noted your destination and plotted the optimal navigation route on the interactive map beside!"
+            elif target_dish and matched_places:
+                bullets = []
+                for p in matched_places[:4]:
+                    p_name = p.get('name')
+                    p_addr = p.get('address') or p.get('street_address') or 'Huế City'
+                    p_desc = p.get('description') or p.get('desc') or ''
+                    desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
+                    bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
+                places_bullets = "\n".join(bullets)
+                answer_text = (
+                    f"If you'd like to savor authentic **{target_dish}**, here are top-rated local spots recommended by locals and travelers:\n\n"
+                    f"{places_bullets}\n\n"
+                    f"You can click on the cards below to locate them on the interactive map!"
+                )
+            elif image_base64 and visual_matches and visual_confidence >= 0.70:
+                top_v = visual_matches[0]
+                matched_p = matched_places[0] if matched_places else {}
+                desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
+                addr = matched_p.get("address") or matched_p.get("street_address") or "Huế City"
+                sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
+
+                nearby_names = [f"**{p_sub.get('name')}**" for p_sub in matched_places[1:4] if p_sub.get("name")]
+                nearby_text = f"\n\n📍 **Nearby suggestions:** {', '.join(nearby_names)}." if nearby_names else ""
+                answer_text = (
+                    f"Hello! Based on visual recognition (Visual Image RAG with Cosine similarity **{sim_pct}%**), "
+                    f"I can confirm your photo was taken at **{top_v['place_name']}** in Ancient Huế!\n\n"
+                    f"🏛️ **Heritage Information:** {desc}\n"
+                    f"📍 **Address:** {addr}{nearby_text}\n\n"
+                    f"I have pinned this location on the map beside for your convenience!"
+                )
+            elif image_base64 and matched_places:
+                places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
+                answer_text = (
+                    f"From your photo, I identified and matched with Huế heritage data: {places_str}. "
+                    f"I have located these sites on the interactive map for your exploration!"
+                )
+            elif matched_places:
+                places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
+                answer_text = (
+                    f"Here is helpful tourism information regarding **{places_str}**. "
+                    f"You can view locations, local specialties, and real traveler reviews directly on the interactive map beside!"
+                )
+            elif web_results:
+                bullets = [f"• **{w.get('title', '')}**: {(w.get('snippet') or '')[:140]}..." for w in web_results[:3] if w.get("title")]
+                wb_str = "\n".join(bullets)
+                answer_text = f"According to travel information about Huế:\n\n{wb_str}\n\nYou can explore more on the interactive map!"
+            elif image_base64:
+                answer_text = "I have received your photo and cross-referenced it with the Huế heritage database. Please explore the map for nearby highlights!"
             else:
-                origin_name = "vị trí của bạn"
-                dest_p = matched_places[0]
-            
-            dest_name = dest_p.get("name", "điểm đến")
-            dest_addr = dest_p.get("address", "")
-            addr_str = f" ({dest_addr})" if dest_addr else ""
-            answer_text = (
-                f"Dạ, em đã định vị và vẽ tuyến đường nhanh nhất từ {origin_name} đến **{dest_name}**{addr_str} trên bản đồ bên cạnh rồi nhé! "
-                f"Bạn có thể xem cự ly, thời gian ước tính và bấm mở Google Maps bên dưới để nghe dẫn đường trực tiếp khi di chuyển."
-            )
-        elif is_nav:
-            answer_text = "Dạ, em đã ghi nhận điểm đến và định vị lộ trình di chuyển tối ưu trên bản đồ bên cạnh cho bạn rồi nhé!"
-        elif target_dish and matched_places:
-            bullets = []
-            for p in matched_places[:4]:
-                p_name = p.get('name')
-                p_addr = p.get('address') or p.get('street_address') or 'TP. Huế'
-                p_desc = p.get('description') or p.get('desc') or ''
-                desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
-                bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
-            places_bullets = "\n".join(bullets)
-            answer_text = (
-                f"Dạ, nếu bạn muốn thưởng thức món **{target_dish}** chuẩn vị xứ Huế, em xin gợi ý những quán nổi tiếng được người dân địa phương và du khách đánh giá cao nhất:\n\n"
-                f"{places_bullets}\n\n"
-                f"Bạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!"
-            )
-        elif image_base64 and visual_matches and visual_confidence >= 0.70:
-            top_v = visual_matches[0]
-            matched_p = matched_places[0] if matched_places else {}
-            desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
-            addr = matched_p.get("address") or matched_p.get("street_address") or "Thành phố Huế"
-            sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
-
-            nearby_names = []
-            for p_sub in matched_places[1:4]:
-                if p_sub.get("name"):
-                    nearby_names.append(f"**{p_sub.get('name')}**")
-            nearby_text = f"\n\n📍 **Gợi ý điểm đến lân cận thuận đường:** {', '.join(nearby_names)}." if nearby_names else ""
-
-            answer_text = (
-                f"Dạ chào bạn! Qua phân tích đặc trưng thị giác (Visual Image RAG với độ tương đồng Cosine **{sim_pct}%**), "
-                f"em xác nhận bức ảnh của bạn được chụp tại **{top_v['place_name']}** Cố đô Huế!\n\n"
-                f"🏛️ **Thông tin di sản:** {desc}\n"
-                f"📍 **Địa chỉ:** {addr}{nearby_text}\n\n"
-                f"Em đã ghim vị trí chính xác lên bản đồ di sản bên cạnh để bạn dễ dàng định vị và lên kế hoạch tham quan nhé!"
-            )
-        elif image_base64 and matched_places:
-            places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
-            answer_text = (
-                f"Dạ, qua hình ảnh bạn gửi, em nhận diện và đối chiếu với dữ liệu di sản Cố đô Huế: {places_str}. "
-                f"Em đã định vị các địa điểm này trên bản đồ tương tác để bạn tiện theo dõi và khám phá nhé!"
-            )
-        elif matched_places:
-            places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
-            answer_text = (
-                f"Dạ, em xin gửi bạn thông tin về **{places_str}**. "
-                f"Bạn có thể xem vị trí chi tiết, các món ăn đặc sắc và đánh giá thực tế của du khách ngay trên bản đồ bên cạnh nhé!"
-            )
-        elif web_results:
-            bullets = []
-            for w in web_results[:3]:
-                title = w.get("title") or ""
-                snippet = w.get("snippet") or ""
-                if title:
-                    bullets.append(f"• **{title}**: {snippet[:140]}...")
-            wb_str = "\n".join(bullets)
-            answer_text = (
-                f"Dạ, theo kết quả tra cứu tổng hợp về du lịch Cố đô Huế:\n\n{wb_str}\n\n"
-                f"Bạn có thể xem chi tiết vị trí và gợi ý trên bản đồ tương tác nhé!"
-            )
-        elif image_base64:
-            answer_text = (
-                "Dạ, em đã tiếp nhận hình ảnh của bạn và đối chiếu với bản đồ di sản Cố đô Huế. "
-                "Bạn có thể xem các điểm tham quan và quán ăn lân cận ngay trên bản đồ tương tác nhé!"
-            )
+                answer_text = "I have retrieved the relevant heritage and tourism information for your query about Huế. Please see the interactive map for details!"
         else:
-            answer_text = "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"
+            if is_nav and matched_places:
+                if len(matched_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
+                    origin_name = matched_places[0].get("name", "điểm xuất phát")
+                    dest_p = matched_places[1]
+                else:
+                    origin_name = "vị trí của bạn"
+                    dest_p = matched_places[0]
+                
+                dest_name = dest_p.get("name", "điểm đến")
+                dest_addr = dest_p.get("address", "")
+                addr_str = f" ({dest_addr})" if dest_addr else ""
+                answer_text = (
+                    f"Dạ, em đã định vị và vẽ tuyến đường nhanh nhất từ {origin_name} đến **{dest_name}**{addr_str} trên bản đồ bên cạnh rồi nhé! "
+                    f"Bạn có thể xem cự ly, thời gian ước tính và bấm mở Google Maps bên dưới để nghe dẫn đường trực tiếp khi di chuyển."
+                )
+            elif is_nav:
+                answer_text = "Dạ, em đã ghi nhận điểm đến và định vị lộ trình di chuyển tối ưu trên bản đồ bên cạnh cho bạn rồi nhé!"
+            elif target_dish and matched_places:
+                bullets = []
+                for p in matched_places[:4]:
+                    p_name = p.get('name')
+                    p_addr = p.get('address') or p.get('street_address') or 'TP. Huế'
+                    p_desc = p.get('description') or p.get('desc') or ''
+                    desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
+                    bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
+                places_bullets = "\n".join(bullets)
+                answer_text = (
+                    f"Dạ, nếu bạn muốn thưởng thức món **{target_dish}** chuẩn vị xứ Huế, em xin gợi ý những quán nổi tiếng được người dân địa phương và du khách đánh giá cao nhất:\n\n"
+                    f"{places_bullets}\n\n"
+                    f"Bạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!"
+                )
+            elif image_base64 and visual_matches and visual_confidence >= 0.70:
+                top_v = visual_matches[0]
+                matched_p = matched_places[0] if matched_places else {}
+                desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
+                addr = matched_p.get("address") or matched_p.get("street_address") or "Thành phố Huế"
+                sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
+
+                nearby_names = []
+                for p_sub in matched_places[1:4]:
+                    if p_sub.get("name"):
+                        nearby_names.append(f"**{p_sub.get('name')}**")
+                nearby_text = f"\n\n📍 **Gợi ý điểm đến lân cận thuận đường:** {', '.join(nearby_names)}." if nearby_names else ""
+
+                answer_text = (
+                    f"Dạ chào bạn! Qua phân tích đặc trưng thị giác (Visual Image RAG với độ tương đồng Cosine **{sim_pct}%**), "
+                    f"em xác nhận bức ảnh của bạn được chụp tại **{top_v['place_name']}** Cố đô Huế!\n\n"
+                    f"🏛️ **Thông tin di sản:** {desc}\n"
+                    f"📍 **Địa chỉ:** {addr}{nearby_text}\n\n"
+                    f"Em đã ghim vị trí chính xác lên bản đồ di sản bên cạnh để bạn dễ dàng định vị và lên kế hoạch tham quan nhé!"
+                )
+            elif image_base64 and matched_places:
+                places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
+                answer_text = (
+                    f"Dạ, qua hình ảnh bạn gửi, em nhận diện và đối chiếu với dữ liệu di sản Cố đô Huế: {places_str}. "
+                    f"Em đã định vị các địa điểm này trên bản đồ tương tác để bạn tiện theo dõi và khám phá nhé!"
+                )
+            elif matched_places:
+                places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
+                answer_text = (
+                    f"Dạ, em xin gửi bạn thông tin về **{places_str}**. "
+                    f"Bạn có thể xem vị trí chi tiết, các món ăn đặc sắc và đánh giá thực tế của du khách ngay trên bản đồ bên cạnh nhé!"
+                )
+            elif web_results:
+                bullets = []
+                for w in web_results[:3]:
+                    title = w.get("title") or ""
+                    snippet = w.get("snippet") or ""
+                    if title:
+                        bullets.append(f"• **{title}**: {snippet[:140]}...")
+                wb_str = "\n".join(bullets)
+                answer_text = (
+                    f"Dạ, theo kết quả tra cứu tổng hợp về du lịch Cố đô Huế:\n\n{wb_str}\n\n"
+                    f"Bạn có thể xem chi tiết vị trí và gợi ý trên bản đồ tương tác nhé!"
+                )
+            elif image_base64:
+                answer_text = (
+                    "Dạ, em đã tiếp nhận hình ảnh của bạn và đối chiếu với bản đồ di sản Cố đô Huế. "
+                    "Bạn có thể xem các điểm tham quan và quán ăn lân cận ngay trên bản đồ tương tác nhé!"
+                )
+            else:
+                answer_text = "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"
 
     # XAI trace: ghi lại bước sinh phản hồi cuối cùng
     trace_steps = list(state.get("graph_trace") or [])

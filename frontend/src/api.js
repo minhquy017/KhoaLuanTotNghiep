@@ -120,6 +120,14 @@ export class TourismApiClient {
       if (imageBase64) {
         payload.image_base64 = imageBase64;
       }
+      // Ngôn ngữ giao diện hiện tại ('vi' hoặc 'en') để backend phản hồi đúng ngôn ngữ du khách
+      try {
+        const currentLang = (typeof window !== 'undefined' && window.i18n?.currentLang) || localStorage.getItem('hue_lang') || 'vi';
+        payload.language = currentLang;
+      } catch {
+        payload.language = 'auto';
+      }
+
       // Trí nhớ phiên chat đa lượt: lịch sử rút gọn + mốc ngữ cảnh server trả về ở lượt trước
       if (session) {
         if (session.sessionId) payload.session_id = session.sessionId;
