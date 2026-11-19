@@ -99,7 +99,15 @@ Hàm đánh giá độ tin cậy được mô hình hóa toán học thông qua 
     S_{\text{conf}}(\mathcal{C}, q) = w_{\text{sim}} \cdot S_{\text{sim}} + w_{\text{graph}} \cdot S_{\text{graph}}
     \label{eq:grading-score}
 \end{equation}
-trong đó $S_{\text{sim}} \in [0, 1]$ là độ tương đồng cô-sin trung bình giữa véc-tơ câu hỏi và các đoạn tài liệu truy xuất từ ChromaDB; $S_{\text{graph}} \in [0, 1]$ là tỷ lệ các thực thể địa danh và món ăn trong câu hỏi được liên kết thành công vào Đồ thị Tri thức Không gian; $w_{\text{sim}} = 0,6$ và $w_{\text{graph}} = 0,4$ là các hệ số trọng số tương ứng ($w_{\text{sim}} + w_{\text{graph}} = 1,0$).
+trong đó $S_{\text{sim}} \in [0, 1]$ là độ tương đồng cô-sin trung bình giữa véc-tơ câu hỏi và các đoạn tài liệu truy xuất từ ChromaDB; $w_{\text{sim}} = 0,6$ và $w_{\text{graph}} = 0,4$ là các hệ số trọng số tương ứng ($w_{\text{sim}} + w_{\text{graph}} = 1,0$). Điểm số bao phủ đồ thị $S_{\text{graph}} \in [0, 1]$ được định nghĩa tường minh toán học dựa trên tỷ lệ liên kết thành công của tập thực thể trích xuất $\mathcal{E}_q = \mathcal{E}_{\text{poi}} \cup \mathcal{E}_{\text{dish}}$ từ câu hỏi $q$ vào tập đỉnh $\mathcal{V}_{\mathcal{G}}$ và tập cạnh $\mathcal{E}_{\mathcal{G}}$ của Đồ thị Tri thức:
+\begin{equation}
+    S_{\text{graph}}(q, \mathcal{G}) = \begin{cases}
+        \displaystyle \frac{\sum_{e \in \mathcal{E}_q} \mathbb{I}(e \in \mathcal{V}_{\mathcal{G}}) + \sum_{(u, v) \in \mathcal{E}_q \times \mathcal{E}_q} \text{Conf}(u, v) \cdot \mathbb{I}((u, v) \in \mathcal{E}_{\mathcal{G}})}{|\mathcal{E}_q| + |\mathcal{E}_q \times \mathcal{E}_q \cap \mathcal{E}_{\mathcal{G}}|}, & \text{khi } |\mathcal{E}_q| > 0 \\
+        0, & \text{khi } |\mathcal{E}_q| = 0
+    \end{cases}
+    \label{eq:sgraph-explicit}
+\end{equation}
+với $\mathbb{I}(\cdot)$ là hàm chỉ thị và $\text{Conf}(u, v) \in [0, 1]$ là trọng số tin cậy của cạnh quan hệ trên đồ thị (ví dụ: độ tin cậy của cạnh $\text{SERVES}$ nối cơ sở ẩm thực $u$ với món đặc sản $v$).
 
 Dựa trên điểm số tin cậy $S_{\text{conf}}(\mathcal{C}, q)$, máy trạng thái LangGraph định tuyến luồng thực thi theo cơ chế phân luồng dự phòng (Confidence Router):
 \begin{equation}
@@ -115,11 +123,11 @@ trong đó $\tau_{\text{conf}} = 0,65$ là ngưỡng quyết định định tuy
 \phantomsection
 \addcontentsline{toc}{subsection}{1.7. Mô hình hóa Toán học Bài toán TTDP có Ràng buộc}
 
-Bài toán Thiết kế Chuyến đi Du lịch (Tourist Trip Design Problem -- TTDP) là bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem -- OP)~\cite{vansteenwegen2011orienteering}. Trong nghiên cứu này, bài toán TTDP được mô hình hóa trên mạng lưới địa lý của thành phố Huế có xét đến các ràng buộc thời gian, điểm ưa thích của du khách và cự ly di chuyển thực tế.
+Bài toán Thiết kế Chuyến đi Du lịch (Tourist Trip Design Problem -- TTDP) là bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem -- OP)~\cite{vansteenwegen2011orienteering}. Trong nghiên cứu này, bài toán TTDP được mô hình hóa toàn diện trên mạng lưới địa lý của thành phố Huế có xét đến các ràng buộc ngân sách thời gian, khung giờ mở cửa thực địa (Time Windows), khử chu trình con (Subtour Elimination) và giới hạn cự ly di chuyển ẩm thực.
 
-Cho đồ thị có hướng $\mathcal{G}_{\text{tour}} = (\mathcal{V}_{\text{tour}}, \mathcal{A})$, trong đó $\mathcal{V}_{\text{tour}} = \{v_0, v_1, \dots, v_n\}$ là tập hợp các điểm đến tiềm năng, bao gồm điểm xuất phát $v_0$ (ví dụ: khách sạn lưu trú của du khách) và điểm kết thúc $v_n$. Mỗi địa điểm $v_i \in \mathcal{V}_{\text{tour}}$ được gán kèm một điểm số ưa thích $S_i \ge 0$ phản ánh mức độ phù hợp với sở thích của du khách và thời gian lưu lại tham quan hoặc thưởng thức ẩm thực $T_i \ge 0$. Mỗi cung liên kết có hướng $(v_i, v_j) \in \mathcal{A}$ đặc trưng cho hành trình di chuyển từ $v_i$ đến $v_j$ với thời gian di chuyển $t_{ij} \ge 0$ được tính toán dựa trên khoảng cách mạng lưới đường bộ thực tế $D_{\text{OSRM}}(v_i, v_j)$ do OSRM cung cấp và vận tốc di chuyển trung bình trong đô thị.
+Cho đồ thị có hướng $\mathcal{G}_{\text{tour}} = (\mathcal{V}_{\text{tour}}, \mathcal{A})$, trong đó $\mathcal{V}_{\text{tour}} = \{v_0, v_1, \dots, v_n\}$ là tập hợp các điểm đến tiềm năng, bao gồm điểm xuất phát $v_0$ (ví dụ: khách sạn lưu trú của du khách) và điểm kết thúc $v_n$. Mỗi địa điểm $v_i \in \mathcal{V}_{\text{tour}}$ được gán kèm một điểm số ưa thích $S_i \ge 0$ phản ánh mức độ phù hợp với sở thích của du khách, thời gian lưu lại tham quan hoặc thưởng thức ẩm thực $T_i \ge 0$, và khung thời gian mở cửa tiếp đón $[O_i, C_i]$ với $O_i$ là giờ mở cửa và $C_i$ là giờ đóng cửa. Mỗi cung liên kết có hướng $(v_i, v_j) \in \mathcal{A}$ đặc trưng cho hành trình di chuyển từ $v_i$ đến $v_j$ với thời gian di chuyển $t_{ij} \ge 0$ được tính toán dựa trên khoảng cách mạng lưới đường bộ thực tế $D_{\text{OSRM}}(v_i, v_j)$ do OSRM cung cấp và vận tốc di chuyển trung bình trong đô thị.
 
-Bài toán TTDP hướng đến việc xác định chuỗi hành trình tối ưu nhằm tối đa hóa tổng điểm số ưa thích tích lũy trong khi tổng thời gian hành trình không vượt quá ngân sách thời gian cho phép $T_{\max}$:
+Bài toán TTDP hướng đến việc xác định chuỗi hành trình tối ưu nhằm tối đa hóa tổng điểm số ưa thích tích lũy trong khi tổng thời gian hành trình không vượt quá ngân sách cho phép $T_{\max}$:
 \begin{equation}
     \max \sum_{i=1}^{n-1} S_i y_i
     \label{eq:ttdp-objective}
@@ -134,18 +142,30 @@ với hệ thống các điều kiện ràng buộc:
     \label{eq:ttdp-conservation}
 \end{equation}
 \begin{equation}
+    u_i - u_j + 1 \le (n - 1)(1 - x_{ij}), \quad \forall 1 \le i \ne j \le n-1
+    \label{eq:ttdp-mtz-sec}
+\end{equation}
+\begin{equation}
+    O_i \le a_i \le C_i, \quad \forall v_i \in \mathcal{V}_{\text{tour}}
+    \label{eq:ttdp-time-window}
+\end{equation}
+\begin{equation}
+    a_i + T_i + t_{ij} - M_{\text{big}}(1 - x_{ij}) \le a_j, \quad \forall (v_i, v_j) \in \mathcal{A}
+    \label{eq:ttdp-arrival-propagation}
+\end{equation}
+\begin{equation}
     \sum_{i=0}^{n-1} \sum_{j=1, j \ne i}^n t_{ij} x_{ij} + \sum_{i=1}^{n-1} T_i y_i \le T_{\max}
     \label{eq:ttdp-time-budget}
 \end{equation}
 \begin{equation}
-    x_{ij} \in \{0, 1\}, \quad \forall (v_i, v_j) \in \mathcal{A}; \quad y_i \in \{0, 1\}, \quad \forall v_i \in \mathcal{V}_{\text{tour}}
-    \label{eq:ttdp-binary}
-\end{equation}
-\begin{equation}
-    (v_i, v_j) \in \mathcal{A}_{\text{dine}} \implies d(v_i, v_j) \le \tau_{\text{spatial}}
+    d(v_i, v_j) \cdot x_{ij} \le \tau_{\text{spatial}}, \quad \forall (v_i, v_j) \in \mathcal{A}_{\text{dine}}
     \label{eq:ttdp-spatial-constraint}
 \end{equation}
-Trong hệ thống ràng buộc trên, điều kiện (\ref{eq:ttdp-spatial-constraint}) áp dụng nghiêm ngặt cho tập các cung ghép nối $\mathcal{A}_{\text{dine}} \subset \mathcal{A}$ giữa Điểm tham quan di tích neo giữ ($v_i \in \mathcal{V}_{\text{attr}}$) và Cơ sở ẩm thực dùng bữa ($v_j \in \mathcal{V}_{\text{rest}}$) nhằm khống chế bán kính đi bộ ăn trưa/tối trong phạm vi $\tau_{\text{spatial}} = 1,5\text{ km}$; trong khi các cung di chuyển liên kết giữa các Điểm tham quan chính trong cùng cụm phân vùng địa lý (như giữa Đại Nội và Chùa Thiên Mụ hay giữa các Lăng tẩm) được tối ưu hóa toàn cục theo hàm mục tiêu ma trận đường bộ OSRM mà không bị giới hạn cứng bởi ngưỡng đi bộ lân cận.
+\begin{equation}
+    x_{ij} \in \{0, 1\}, \quad \forall (v_i, v_j) \in \mathcal{A}; \quad y_i \in \{0, 1\}, \quad 2 \le u_i \le n, \quad \forall v_i \in \mathcal{V}_{\text{tour}}
+    \label{eq:ttdp-binary}
+\end{equation}
+Trong hệ thống ràng buộc trên, phương trình (\ref{eq:ttdp-mtz-sec}) là ràng buộc khử chu trình con Miller--Tucker--Zemlin (MTZ), sử dụng biến phụ thứ tự thăm $u_i \in [2, n]$ nhằm ngăn chặn triệt để hiện tượng xuất hiện các chu trình con khép kín tách rời khỏi lộ trình xuất phát từ $v_0$. Các phương trình (\ref{eq:ttdp-time-window}) và (\ref{eq:ttdp-arrival-propagation}) thiết lập ràng buộc Cửa sổ Thời gian (Time Windows) với thời điểm đến $a_i$ và hằng số lớn $M_{\text{big}} \ge T_{\max}$, bảo đảm du khách luôn có mặt trong khung giờ mở cửa hợp lệ của di tích (như Đại Nội, các Lăng tẩm chỉ đón khách trước 17h30, hoặc phố đi bộ đêm chỉ mở sau 18h00). Ràng buộc (\ref{eq:ttdp-spatial-constraint}) gắn trực tiếp biến quyết định $x_{ij}$ với khoảng cách địa lý trên tập cung $\mathcal{A}_{\text{dine}} \subset \mathcal{A}$ giữa Điểm tham quan di tích neo giữ ($v_i \in \mathcal{V}_{\text{attr}}$) và Cơ sở ẩm thực dùng bữa ($v_j \in \mathcal{V}_{\text{rest}}$) nhằm khống chế bán kính đi bộ ăn trưa/tối trong phạm vi $\tau_{\text{spatial}} = 1,5\text{ km}$; trong khi các cung di chuyển liên kết giữa các Điểm tham quan chính trong cùng cụm phân vùng địa lý được tối ưu hóa toàn cục theo hàm mục tiêu ma trận đường bộ OSRM mà không bị giới hạn cứng bởi ngưỡng đi bộ lân cận.
 
 \subsection*{1.8. Mô hình Thị giác Đa phương thức CLIP và Kiến trúc Vision Transformer}
 \phantomsection

@@ -204,15 +204,15 @@ Sau khi hoàn tất quá trình thu thập, toàn bộ dữ liệu thô được
 
 Bước 1 -- Kiểm toán tỷ lệ khuyết thiếu (Missing Value Audit): Kiểm tra tính toàn vẹn của các trường bắt buộc. Toàn bộ 612 địa điểm du lịch tại Huế đạt tỷ lệ có đầy đủ tên gọi, danh mục và tọa độ GPS là 100,0\%. Đối với các bài nhận xét, 100\% các bản ghi thu thập đều có đầy đủ trường nội dung văn bản và điểm số xếp hạng sao; trường kiểu hình chuyến đi bị khuyết (chiếm 37,24\%) được gán nhãn chuẩn hóa là Chưa phân loại.
 
-Bước 2 -- Kiểm toán tính hợp lệ của tọa độ trắc địa (Bounding Box Validation): Để loại trừ hoàn toàn các sai lệch về tọa độ (như hiện tượng đảo ngược vĩ độ/kinh độ hoặc sai lệch vị trí sang tỉnh thành khác), giải thuật áp dụng bộ lọc Hộp giới hạn địa lý hình chữ nhật bao quanh địa giới hành chính Thành phố Huế:
+Bước 2 -- Kiểm toán tính hợp lệ của tọa độ trắc địa (Bounding Box Validation): Để loại trừ hoàn toàn các sai lệch về tọa độ (như hiện tượng đảo ngược vĩ độ/kinh độ hoặc sai lệch vị trí sang tỉnh thành khác), giải thuật áp dụng bộ lọc Hộp giới hạn địa lý hình chữ nhật bao quanh địa giới hành chính Cố đô Huế:
 \begin{equation}
     (\phi_v, \lambda_v) \text{ hợp lệ} \iff \begin{cases}
         16,00^{\circ}\text{N} \le \phi_v \le 16,85^{\circ}\text{N} \\
-        107,00^{\circ}\text{E} \le \lambda_v \le 108,25^{\circ}\text{E}
+        107,00^{\circ}\text{E} \le \lambda_v \le 108,15^{\circ}\text{E}
     \end{cases}
     \label{eq:bounding-box}
 \end{equation}
-Toàn bộ các tọa độ nằm ngoài hộp giới hạn đều được tự động đối soát và chuẩn hóa lại thông qua Geocoding API để bảo đảm độ tin cậy tuyệt đối trước khi đưa vào tính toán khoảng cách mặt cầu Haversine.
+Hộp giới hạn tại Công thức (\ref{eq:bounding-box}) ôm sát phạm vi địa lý của Thừa Thiên Huế (nay là Thành phố Huế trực thuộc Trung ương), trong đó kinh độ cực đông được khống chế chặt chẽ tại $108,15^{\circ}\text{E}$ (ngay đỉnh đèo Hải Vân tại $108,13^{\circ}\text{E}$) nhằm ngăn chặn triệt để nguy cơ trùm lấn sang địa phận quận Liên Chiểu, thành phố Đà Nẵng (vốn nằm từ $108,18^{\circ}\text{E}$ đến $108,25^{\circ}\text{E}$). Đồng thời, hệ thống kết hợp bộ lọc nhãn địa giới hành chính (\texttt{locality = Thừa Thiên Huế}) từ dữ liệu thuộc tính của OSM và Google Maps để bảo đảm 100\% thực thể thuộc đúng địa bàn nghiên cứu. Toàn bộ các tọa độ nằm ngoài hộp giới hạn đều được tự động đối soát và chuẩn hóa lại thông qua Geocoding API để bảo đảm độ tin cậy tuyệt đối trước khi đưa vào tính toán khoảng cách mặt cầu Haversine.
 
 Bước 3 -- Khử trùng lặp thực thể (Entity Deduplication): Bằng cách kết hợp bán kính không gian nhỏ ($d < 50\text{ mét}$) với độ đo tương đồng chuỗi Levenshtein trên tên gọi chuẩn hóa, hệ thống đã loại bỏ thành công hơn 1.200 bản ghi trùng lặp giữa OpenStreetMap và Google Maps, đồng nhất các thực thể trùng tên vào một nút duy nhất.
 
@@ -226,12 +226,17 @@ Trong các bài nhận xét của du khách, một văn bản có thể kéo dà
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.88\textwidth]{img/atomic_chunking_pipeline.png}
+\includegraphics[width=\textwidth]{img/atomic_chunking_pipeline.png}
 \caption{Quy trình phân mảnh văn bản phân tử (Atomic Chunking) cho các bài nhận xét du khách}
 \label{fig:atomic-chunking}
 \end{figure}
 
-Theo quy trình tại Hình \ref{fig:atomic-chunking}, mỗi bài nhận xét thô trước tiên được làm sạch các thẻ HTML, liên kết URL rác, biểu tượng cảm xúc và ký tự vô nghĩa. Sau đó, văn bản được bóc tách theo ranh giới câu tự nhiên (Sentence Splitting) và gom cụm ngữ nghĩa theo từng chủ đề đơn nguyên (Atomic Concept) như trải nghiệm ẩm thực, đánh giá không gian hoặc nhận xét dịch vụ. Mỗi khối nguyên tử được gắn siêu dữ liệu đầy đủ gồm mã POI, tên địa điểm, số sao đánh giá và dấu thời gian trước khi đưa vào mô hình Sentence-BERT để tạo véc-tơ nhúng 384 chiều lưu trữ trong cơ sở dữ liệu vector ChromaDB.
+Theo quy trình tại Hình \ref{fig:atomic-chunking}, mỗi bài nhận xét thô trước tiên được làm sạch các thẻ HTML, liên kết URL rác, biểu tượng cảm xúc và ký tự vô nghĩa. Tiếp đó, hệ thống áp dụng chiến lược phân mảnh phân tầng thích ứng theo độ dài văn bản:
+\begin{itemize}
+    \item \textbf{Phân mảnh nguyên tử đơn bài (Single-review Atomic Chunking):} Đối với các bài nhận xét ngắn và trung bình (dưới 120 từ, chiếm đa số thực tế hơn 85,4\% toàn bộ tập ngữ liệu), mỗi bài đánh giá hoàn chỉnh cùng tiêu đề được bảo tồn trọn vẹn dưới dạng một phân mảnh nguyên tử độc lập (kích thước trung bình dao động từ 80 đến 100 token). Việc bảo tồn tính toàn vẹn của bài đánh giá giúp duy trì trọn vẹn bối cảnh trải nghiệm, cảm xúc chủ đạo và mối liên kết thực thể (tên món ăn, tên di tích) mà không làm đứt đoạn logic ngữ nghĩa.
+    \item \textbf{Bóc tách đa khía cạnh (Multi-aspect Sentence Splitting):} Đối với các bài nhận xét dài (từ 120 từ trở lên, chứa nhiều đoạn văn phản ánh đa chiều từ ẩm thực, giá cả đến thái độ phục vụ), văn bản được bóc tách theo ranh giới câu tự nhiên và gom cụm ngữ nghĩa theo từng khía cạnh đơn nguyên (Atomic Concept/Aspect) trước khi tạo lập phân đoạn.
+\end{itemize}
+Mỗi khối phân mảnh nguyên tử sau đó đều được gán siêu dữ liệu đầy đủ gồm mã POI, tên địa điểm, số sao đánh giá và dấu thời gian trước khi đưa vào mô hình Sentence-BERT để tạo véc-tơ nhúng 384 chiều lưu trữ trong cơ sở dữ liệu véc-tơ ChromaDB.
 
 \section*{3. Phương pháp luận nghiên cứu và Thiết kế hệ thống}
 \phantomsection

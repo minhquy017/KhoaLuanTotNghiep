@@ -16,6 +16,7 @@
 \usepackage{multirow}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{float}
 \usepackage{amsmath,amssymb}
 \usepackage{titlesec}
 \usepackage{setspace}
@@ -23,7 +24,7 @@
 \usepackage{tocloft}
 \usepackage{indentfirst}
 \usepackage[top=3cm, bottom=3cm, left=3cm, right=2cm]{geometry}
-\usepackage[unicode,hypertexnames=false]{hyperref}
+\usepackage[unicode,hypertexnames=false,hidelinks]{hyperref}
 \usepackage{cite}
 \usepackage{tikz}
 \usepackage{chngcntr}
@@ -164,10 +165,8 @@
 \renewcommand{\thesubsubsection}{\thesubsection.\arabic{subsubsection}}
 \renewcommand{\theHsection}{\thechapter.\arabic{section}}
 \vspace{0.3cm}
-\begingroup
-\let\clearpage\relax
+\let\realclearpage\clearpage
 \input{noi-dung/phan-4-thuc-nghiem/chuong-1-kien-truc}
-\endgroup
 \input{noi-dung/phan-4-thuc-nghiem/chuong-2-ket-qua}
 
 \include{noi-dung/phan-5-ket-luan/ket-luan}

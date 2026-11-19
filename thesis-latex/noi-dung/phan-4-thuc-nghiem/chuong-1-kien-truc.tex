@@ -1,27 +1,37 @@
+\begingroup
+\let\clearpage\relax
 \chapter{Kiến trúc Hệ thống Spatial GraphRAG và Khai phá Thực đơn Ngầm}
 \label{ch:kien-truc}
+\endgroup
 
 \section{Kiến trúc tổng thể 4 tầng của Hệ thống}
 \label{sec:ch1-tong-quan}
 
 Để giải quyết đồng bộ các rào cản về ảo giác thực thể, sự bất định vị không gian và sự thiếu hụt dữ liệu đánh giá thực tế, khóa luận đề xuất một kiến trúc hệ thống hoàn chỉnh mang tên Spatial GraphRAG. Hệ thống được tổ chức thành bốn tầng chức năng phân lập và tương tác lỏng lẻo (loosely coupled), bảo đảm khả năng mở rộng quy mô, tính mô-đun hóa cao và thuận tiện trong việc bảo trì, vận hành. Sơ đồ kiến trúc tổng thể bốn tầng của hệ thống được minh họa chi tiết trên Hình \ref{fig:system-architecture}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.92\textwidth]{img/system_architecture.png}
+\vspace{-0.6em}
+\includegraphics[width=0.72\textwidth]{img/system_architecture.png}
+\vspace{-0.6em}
 \caption{Kiến trúc tổng thể bốn tầng của Hệ thống Spatial GraphRAG Du lịch Thông minh}
 \label{fig:system-architecture}
+\vspace{-0.6em}
 \end{figure}
+
+\clearpage
 
 Từ sơ đồ tại Hình \ref{fig:system-architecture}, quy trình xử lý luồng dữ liệu và suy luận được vận hành tuần tự qua bốn tầng kiến trúc:
 
-Tầng thứ nhất là Tầng Dữ liệu và Lưu trữ (Data and Storage Layer), chịu trách nhiệm quản lý toàn bộ các nguồn dữ liệu gốc và dữ liệu bán cấu trúc. Tầng này bao gồm cơ sở dữ liệu quan hệ SQLite lưu trữ kho dữ liệu địa danh và 44.355 bài nhận xét chuyên sâu tại Cố đô Huế; cơ sở dữ liệu vector ChromaDB lưu trữ các véc-tơ nhúng ngữ nghĩa của các phân mảnh nhận xét phân tử cùng bộ chỉ mục thị giác đa phương thức \texttt{hue\_landmarks\_visual} lưu trữ 3.528 véc-tơ đặc trưng hình ảnh 512 chiều của các di sản và cơ sở dịch vụ du lịch Cố đô Huế (kết hợp tập kiểm chuẩn độc lập 77 ảnh của 25 di tích phục vụ đánh giá LOOCV); và cấu trúc Đồ thị Tri thức Không gian được biểu diễn và tối ưu hóa trong bộ nhớ thông qua thư viện NetworkX.
+Tầng thứ nhất là Tầng Dữ liệu và Lưu trữ (Data and Storage Layer), chịu trách nhiệm quản trị đa mô hình: cơ sở dữ liệu quan hệ SQLite quản lý dữ liệu địa danh và 44.355 bài nhận xét chuyên sâu tại Huế; cơ sở dữ liệu vector ChromaDB lưu trữ các phân mảnh nhận xét phân tử cùng bộ chỉ mục thị giác đa phương thức \texttt{hue\_landmarks\_visual} (3.528 véc-tơ 512 chiều, kết hợp tập kiểm chuẩn 77 ảnh của 25 di tích); cùng Đồ thị Tri thức Không gian NetworkX biểu diễn 9.525 nút và 90.948 cạnh quan hệ ngữ nghĩa trong bộ nhớ.
 
-Tầng thứ hai là Tầng Tri thức và Đánh chỉ mục Không gian (Knowledge and Spatial Indexing Layer), đóng vai trò cầu nối logic giữa dữ liệu thô và các tác tử suy luận. Tầng này cung cấp bốn cơ chế chỉ mục cốt lõi: chỉ mục cự ly không gian dựa trên công thức mặt cầu Haversine và mạng lưới đường bộ OpenStreetMap phục vụ truy vấn lân cận nhanh với bán kính $\tau_{\text{spatial}} = 1,5\text{ km}$; chỉ mục quan hệ thực đơn ẩm thực $\text{SERVES}$ liên kết các nhà hàng với danh mục 570 món ăn trong từ điển ẩm thực; bộ mô hình nhúng ngữ nghĩa văn bản \texttt{paraphrase-multilingual-MiniLM-L12-v2} chuyển đổi câu hỏi của du khách thành véc-tơ đặc trưng 384 chiều; và mô hình thị giác \texttt{clip-ViT-B-32} nhúng ảnh chụp di tích thành véc-tơ không gian đa phương thức.
+Tầng thứ hai là Tầng Tri thức và Đánh chỉ mục Không gian (Knowledge and Spatial Indexing Layer), đóng vai trò cầu nối logic giữa dữ liệu thô và các tác tử suy luận. Tầng này cung cấp bốn cơ chế cốt lõi: chỉ mục cự ly Haversine và mạng đường bộ OpenStreetMap truy vấn lân cận nhanh ($\tau_{\text{spatial}} = 1{,}5\text{ km}$); chỉ mục quan hệ $\text{SERVES}$ liên kết cơ sở ẩm thực với 570 món ăn đặc sản; mô hình nhúng văn bản \texttt{paraphrase-multilingual-MiniLM-L12-v2} (384 chiều); và mô hình thị giác \texttt{clip-ViT-B-32} nhúng ảnh chụp di tích.
 
-Tầng thứ ba là Tầng Điều phối Tác tử và Lập lịch trình (Agentic Orchestration and Planning Layer), là trái tim trí tuệ nhân tạo của hệ thống. Tầng này tích hợp máy trạng thái hữu hạn LangGraph để kiểm soát luồng hội thoại; bộ chấm điểm tin cậy (Confidence Grading Module) đánh giá mức độ bao phủ của tri thức đồ thị; nhánh rẽ dự phòng tìm kiếm Internet (Web Search Fallback) khi cần bổ sung thông tin sự kiện thời gian thực; bộ phân loại gu du lịch (Traveler Persona Classifier); công cụ dự toán chi phí chuyến đi thực tế (Trip Budget Calculator) dựa trên biểu giá bảo tồn di tích; mô hình thị giác -- ngôn ngữ lớn cục bộ Qwen2.5-VL:7B thực thi suy luận ngữ cảnh; và bộ thuật toán Lập lịch trình phân cụm không gian (Spatial Itinerary Planner) tối ưu hóa lộ trình di chuyển.
+Tầng thứ ba là Tầng Điều phối Tác tử và Lập lịch trình (Agentic Orchestration and Planning Layer), giữ vai trò trung tâm trí tuệ nhân tạo của hệ thống. Tầng này tích hợp máy trạng thái hữu hạn LangGraph kiểm soát luồng hội thoại; bộ chấm điểm tin cậy (Confidence Grader); nhánh rẽ dự phòng Web Search Fallback; công cụ dự toán ngân sách chuyến đi (Trip Budget Calculator); mô hình thị giác -- ngôn ngữ lớn Qwen2.5-VL:7B; và bộ thuật toán lập lịch trình phân cụm không gian (Spatial Itinerary Planner).
 
-Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp hai phương thức tương tác người dùng: Cổng API RESTful chuẩn mở được xây dựng trên nền tảng FastAPI với tài liệu Swagger UI tự động, trả về dữ liệu định dạng JSON chuẩn hóa kèm mảng tọa độ GPS để sẵn sàng tích hợp trực tiếp vào ứng dụng công dân số di động Hue-S của Thành phố Huế; và giao diện Web tương tác trực quan thích ứng đa nền tảng (Adaptive Responsive Web Client) hỗ trợ du khách trải nghiệm mượt mà trên cả máy tính để bàn lẫn điện thoại di động thông minh khi tham quan thực địa tại Cố đô.
+Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp Cổng API RESTful chuẩn mở FastAPI với tài liệu Swagger UI tự động, trả về định dạng GeoJSON kèm tọa độ GPS sẵn sàng tích hợp trực tiếp vào ứng dụng di động Hue-S của Thành phố Huế; cùng Giao diện Web di động thích ứng (Adaptive Responsive Web Client) hỗ trợ du khách trải nghiệm mượt mà trên cả máy tính lẫn thiết bị di động.
+
+\clearpage
 
 \section{Thiết kế Đồ thị Tri thức Không gian Du lịch Huế}
 \label{sec:ch1-skg-design}
@@ -31,30 +41,35 @@ Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Applicatio
 
 Đồ thị Tri thức Không gian Du lịch Huế được thiết kế dựa trên một lược đồ hình thức chặt chẽ, bảo đảm mô hình hóa đầy đủ các khía cạnh không gian, ngữ nghĩa và dịch vụ của một đô thị di sản. Lược đồ phân cấp thực thể và các mối quan hệ ngữ nghĩa của đồ thị được trực quan hóa trên Hình \ref{fig:spatial-kg-schema}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.88\textwidth]{img/spatial_kg_schema.png}
+\vspace{-0.6em}
+\includegraphics[width=0.52\textwidth]{img/spatial_kg_schema.png}
+\vspace{-0.6em}
 \caption{Lược đồ cấu trúc thực thể và các mối quan hệ ngữ nghĩa trong Đồ thị Tri thức Không gian}
 \label{fig:spatial-kg-schema}
+\vspace{-0.6em}
 \end{figure}
 
-Theo lược đồ tại Hình \ref{fig:spatial-kg-schema}, hệ thống mô hình hóa không gian du lịch Cố đô thông qua năm lớp nút thực thể chính, bao gồm lớp Điểm tham quan (Attraction) đại diện cho các di tích lịch sử và danh lam cổ kính, lớp Cơ sở ẩm thực (Restaurant) bao quát các nhà hàng và quán ăn truyền thống, lớp Cơ sở lưu trú (Hotel) quản lý hệ thống khách sạn và homestay, lớp Món ăn đặc sản (Dish) chuẩn hóa 570 món ăn Cố đô, cùng lớp Khu vực địa lý (Locality) định danh các đơn vị hành chính xã phường. Giữa các thực thể này, cấu trúc đồ thị xác lập bốn mối quan hệ ngữ nghĩa cốt lõi, bao gồm quan hệ phân cấp địa giới $(u, \text{LOCATED\_IN}, v)$ định vị cơ sở trong phân vùng hành chính, quan hệ lân cận không gian $(u, \text{NEAR\_BY}, v)$ liên kết hai địa điểm có khoảng cách trắc địa Haversine $d(u, v) \le 1,5\text{ km}$ với trọng số cự ly vật lý thực tế, quan hệ phục vụ ẩm thực $(u, \text{SERVES}, m)$ kết nối cơ sở ăn uống với món ăn đặc sản thông qua điểm bảo chứng thực đơn ngầm, và quan hệ nguồn gốc xuất xứ đặc sản $(m, \text{ORIGINATED\_FROM}, v)$ định vị nguồn gốc 112 đặc sản gắn liền với địa danh văn hóa truyền thống.
+Theo lược đồ tại Hình \ref{fig:spatial-kg-schema}, hệ thống mô hình hóa không gian du lịch Cố đô thông qua năm lớp nút thực thể chính: lớp Điểm tham quan (Attraction) đại diện cho các di tích lịch sử và danh lam cổ kính, lớp Cơ sở ẩm thực (Restaurant) bao quát các nhà hàng và quán ăn truyền thống, lớp Cơ sở lưu trú (Hotel) quản lý hệ thống khách sạn và homestay, lớp Món ăn đặc sản (Dish) chuẩn hóa 570 món ăn Cố đô, cùng lớp Khu vực địa lý (Locality) định danh các đơn vị hành chính xã phường. Giữa các thực thể này, cấu trúc đồ thị xác lập bốn mối quan hệ ngữ nghĩa cốt lõi, bao gồm quan hệ phân cấp địa giới $(u, \text{LOCATED\_IN}, v)$ định vị cơ sở trong phân vùng hành chính, quan hệ lân cận không gian $(u, \text{NEAR\_BY}, v)$ liên kết hai địa điểm có khoảng cách trắc địa Haversine $d(u, v) \le 1{,}5\text{ km}$ với trọng số cự ly vật lý thực tế, quan hệ phục vụ ẩm thực $(u, \text{SERVES}, m)$ kết nối cơ sở ăn uống với món ăn đặc sản thông qua điểm bảo chứng thực đơn ngầm, và quan hệ nguồn gốc xuất xứ đặc sản $(m, \text{ORIGINATED\_FROM}, v)$ định vị nguồn gốc 112 đặc sản gắn liền với địa danh văn hóa truyền thống.
+
+\clearpage
 
 \subsection{Đặc tính topo và Quy mô dữ liệu đồ thị}
 \label{subsec:ch1-topo}
 
 Sau quá trình xử lý và liên kết tự động, đồ thị tri thức đạt quy mô 9.525 nút thực thể và 90.948 cạnh quan hệ. Cấu trúc đồ thị bộc lộ các đặc tính topo mạng lưới điển hình của đồ thị thế giới nhỏ (Small-world Network): các điểm di tích đóng vai trò là các nút trung tâm (hubs) có bậc nút cao, kết nối dày đặc với hàng chục cơ sở ẩm thực và dịch vụ lưu trú xung quanh thông qua các cạnh $\text{NEAR\_BY}$. Bảng \ref{tab:kg-statistics} tổng hợp chi tiết phân bố số lượng nút theo từng lớp thực thể và số lượng cạnh theo từng mối quan hệ.
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \caption{Thống kê định lượng các thành phần trong Đồ thị Tri thức Không gian}
 \label{tab:kg-statistics}
-\small
-\begin{tabularx}{\textwidth}{l r l r}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l r l r}
 \hline
 \textbf{Lớp thực thể (Entity Type)} & \textbf{Số lượng nút} & \textbf{Loại quan hệ (Relation)} & \textbf{Số lượng cạnh} \\
 \hline
-Attraction (Điểm tham quan) & 2.036 & NEAR\_BY (Lân cận $\le 1,5\text{ km}$) & 77.578 \\
+Attraction (Điểm tham quan) & 2.036 & NEAR\_BY (Lân cận $\le 1{,}5\text{ km}$) & 77.578 \\
 Restaurant (Ẩm thực, quán ăn) & 4.462 & LOCATED\_IN (Thuộc địa phương) & 8.921 \\
 Hotel (Lưu trú, khách sạn) & 2.423 & SERVES (Phục vụ món ăn) & 4.337 \\
 Dish (Món ăn đặc sản) & 570 & ORIGINATED\_FROM (Xuất xứ đặc sản) & 112 \\
@@ -62,21 +77,22 @@ Locality (Đơn vị tỉnh/thành) & 34 & -- & -- \\
 \hline
 \textbf{Tổng số nút thực thể} & \textbf{9.525} & \textbf{Tổng số cạnh quan hệ} & \textbf{90.948} \\
 \hline
-\end{tabularx}
+\end{tabular}%
+}
 \end{table}
 
-Quy mô định lượng tại Bảng \ref{tab:kg-statistics} chứng minh rằng hơn 70\% số cạnh trong đồ thị là các liên kết không gian $\text{NEAR\_BY}$, phản ánh mật độ kết nối dày đặc giữa các dịch vụ du lịch trong bán kính đi bộ. Cấu trúc mạng lưới này cho phép giải thuật tìm kiếm thực hiện duyệt đồ thị theo chiều sâu hoặc chiều rộng (Graph Traversal) trong thời gian dưới 10 mili-giây, tạo tiền đề để hệ thống lọc sạch các địa điểm ở xa trước khi chuyển ngữ cảnh cho mô hình ngôn ngữ lớn.
+Quy mô định lượng tại Bảng \ref{tab:kg-statistics} chứng minh rằng các liên kết không gian $\text{NEAR\_BY}$ chiếm tới 85,3\% tổng số cạnh quan hệ trong đồ thị, phản ánh mật độ kết nối dày đặc giữa các dịch vụ du lịch trong bán kính đi bộ. Cấu trúc mạng lưới này cho phép giải thuật tìm kiếm thực hiện duyệt đồ thị theo chiều sâu hoặc chiều rộng (Graph Traversal) trong thời gian dưới 10 mili-giây, tạo tiền đề để hệ thống lọc sạch các địa điểm ở xa trước khi chuyển ngữ cảnh cho mô hình ngôn ngữ lớn.
+
+\clearpage
 
 \section{Khai phá Thực đơn Ngầm từ Dữ liệu Nhận xét Du khách}
 \label{sec:ch1-menu-mining}
 
-Để giải quyết bài toán menu tĩnh và lấp đầy các khoảng trống thông tin về món ăn đặc sản, nghiên cứu ứng dụng quy trình khai phá dữ liệu nhận xét dựa trên Bộ từ điển ẩm thực 570 món ăn. Mỗi bài nhận xét của du khách được quét qua một bộ lọc đối sánh thực thể xâu chuỗi (Aho-Corasick Automaton) kết hợp bộ quy tắc khử nhiễu từ đồng âm (ví dụ: phân biệt giữa từ ``bánh khoái'' chỉ món ăn và tính từ ``khoái chí'', hay ``cơm hến'' và danh từ chỉ loài sinh vật ``hến'').
+Để giải quyết bài toán menu tĩnh và lấp đầy khoảng trống thông tin về món ăn đặc sản, nghiên cứu ứng dụng quy trình khai phá dữ liệu nhận xét dựa trên Bộ từ điển ẩm thực 570 món ăn. Mỗi bài nhận xét được quét qua bộ lọc đối sánh thực thể xâu chuỗi (Aho-Corasick Automaton) kết hợp quy tắc khử nhiễu từ đồng âm (như phân biệt ``bánh khoái'' chỉ món ăn với tính từ ``khoái chí'', hay ``cơm hến'' với sinh vật ``hến'').
 
-Mỗi khi phát hiện sự xuất hiện đồng thời của một món ăn đặc sản $m$ trong bài nhận xét viết về cơ sở ăn uống $u$, hệ thống tiến hành trích xuất điểm số đánh giá $\text{Rating}_k \in [1, 5]$ của bài nhận xét chứa món ăn đó để tổng hợp điểm bảo chứng thực đơn theo Công thức (\ref{eq:dish-confidence}). Cạnh quan hệ $(u, \text{SERVES}, m)$ chỉ được xác lập chính thức trên đồ thị khi chỉ số tin cậy $\text{Conf}(u, m)$ vượt qua ngưỡng $\tau_{\text{dish}} = 0,70$ và số lượng bài nhận xét khen ngợi tối thiểu từ 3 du khách độc lập trở lên.
+Khi phát hiện sự xuất hiện đồng thời của món ăn $m$ trong bài nhận xét về cơ sở $u$, hệ thống trích xuất điểm đánh giá $\text{Rating}_k \in [1, 5]$ để tính điểm bảo chứng thực đơn theo Công thức (\ref{eq:dish-confidence}). Quan hệ $(u, \text{SERVES}, m)$ được xác lập khi chỉ số tin cậy $\text{Conf}(u, m) \ge \tau_{\text{dish}} = 0,70$ với tối thiểu 3 lượt nhận xét độc lập. Bảng \ref{tab:mined-dishes-sample} minh họa kết quả đối soát tại các quán ăn truyền thống nổi tiếng ở Huế so với danh mục ban đầu.
 
-Bảng \ref{tab:mined-dishes-sample} minh họa một số kết quả khai phá thực đơn ngầm tiêu biểu tại các quán ăn truyền thống nổi tiếng ở Huế so sánh với danh mục đăng ký ban đầu.
-
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \caption{Mẫu đối soát kết quả khai phá thực đơn ngầm từ nhận xét du khách tại Huế}
 \label{tab:mined-dishes-sample}
@@ -94,7 +110,9 @@ Chè Hẻm & 01 kiệt 29 Hùng Vương & Chè bột lọc heo quay, Chè hạt 
 \end{tabularx}
 \end{table}
 
-Bảng \ref{tab:mined-dishes-sample} chứng minh rằng quy trình khai phá dữ liệu đã bóc tách chính xác các món ăn cốt lõi làm nên thương hiệu của từng quán. Những thông tin này hoàn toàn không có trong danh bạ phân loại kinh doanh chung (vốn chỉ phân loại chung là ``Nhà hàng Việt Nam''), chứng minh tính đúng đắn của Giả thuyết $H_2$ về khả năng làm giàu tri thức ẩm thực địa phương từ dữ liệu du khách.
+Bảng \ref{tab:mined-dishes-sample} chứng minh quy trình khai phá dữ liệu đã bóc tách chính xác các món đặc sản cốt lõi của từng quán mà danh bạ chung không có, khẳng định tính đúng đắn của Giả thuyết $H_2$ về làm giàu tri thức ẩm thực từ nhận xét du khách.
+
+\clearpage
 
 \section{Khung điều phối Agentic RAG trên LangGraph}
 \label{sec:ch1-langgraph}
@@ -104,31 +122,38 @@ Bảng \ref{tab:mined-dishes-sample} chứng minh rằng quy trình khai phá d�
 
 Kiến trúc tác tử thông minh của Spatial GraphRAG được hiện thực hóa dưới dạng một Đồ thị Trạng thái (StateGraph) trên thư viện LangGraph. Sơ đồ luồng điều phối trạng thái và các nhánh rẽ điều kiện được trực quan hóa trên Hình \ref{fig:langgraph-architecture}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{img/langgraph_architecture.png}
+\vspace{-0.6em}
+\includegraphics[width=0.62\textwidth]{img/langgraph_architecture.png}
+\vspace{-0.6em}
 \caption{Kiến trúc Đồ thị Trạng thái (StateGraph) điều phối quy trình Agentic RAG trên LangGraph}
 \label{fig:langgraph-architecture}
+\vspace{-0.6em}
 \end{figure}
 
 Theo kiến trúc minh họa tại Hình \ref{fig:langgraph-architecture}, quy trình xử lý của tác tử trải qua năm nút trạng thái tuần tự và có điều kiện:
 
 Nút 1: Trích xuất ý định và thực thể (Entity and Intent Extraction). Khi nhận câu hỏi từ du khách, nút này sử dụng mô hình Qwen2.5-VL:7B với cấu trúc Prompt ép kiểu JSON để trích xuất các thông tin then chốt: loại truy vấn (hỏi đáp POI đơn lẻ, tìm quán ăn lân cận, hay lập lịch trình nhiều ngày), tên địa danh neo (Anchor POI), món ăn mong muốn, và ngân sách thời gian.
 
-Nút 2: Truy vấn Đồ thị Tri thức Không gian (Spatial Graph Retrieval). Dựa trên Anchor POI đã nhận diện, hệ thống truy xuất các nút láng giềng trên đồ thị NetworkX thông qua các cạnh $\text{NEAR\_BY}$ trong bán kính $d \le 1,5\text{ km}$, đồng thời lọc theo cạnh $\text{SERVES}$ nếu câu hỏi có yêu cầu về món ăn đặc sản. Đồng thời, các phân mảnh nhận xét liên quan từ ChromaDB được truy xuất để bổ sung đánh giá thực tế. Do Nút 2 đã áp dụng bộ lọc cứng topo trên cạnh $\text{NEAR\_BY}$ và $\text{SERVES}$, toàn bộ thực thể được chuyển giao sang Nút 3 mặc định đều được neo giữ không gian hợp lệ và triệt tiêu hoàn toàn vi phạm cự ly lân cận.
+Nút 2: Truy vấn Đồ thị Tri thức Không gian (Spatial Graph Retrieval). Dựa trên Anchor POI đã nhận diện, hệ thống truy xuất các nút láng giềng trên đồ thị NetworkX qua các cạnh $\text{NEAR\_BY}$ ($d \le 1{,}5\text{ km}$), đồng thời lọc theo cạnh $\text{SERVES}$ nếu có yêu cầu về món ăn đặc sản kết hợp truy xuất ChromaDB. Do áp dụng bộ lọc cứng topo trên cạnh $\text{NEAR\_BY}$ và $\text{SERVES}$, toàn bộ thực thể chuyển sang Nút 3 đều được neo giữ không gian hợp lệ và triệt tiêu hoàn toàn vi phạm cự ly lân cận.
 
-Nút 3: Đánh giá độ tin cậy ngữ cảnh (Confidence Grading Node). Nút này hoạt động như một cơ chế tự suy ngẫm (Self-reflection), tính toán chỉ số tin cậy tổng hợp $S_{\text{conf}}$ kết hợp giữa độ tương đồng ngữ nghĩa véc-tơ và độ tin cậy đồ thị theo tổ hợp tuyến tính:
+\clearpage
+
+Nút 3: Đánh giá độ tin cậy ngữ cảnh (Confidence Grading Node). Nút này hoạt động như cơ chế tự suy ngẫm (Self-reflection), tính chỉ số tin cậy tổng hợp $S_{\text{conf}}$ kết hợp giữa độ tương đồng ngữ nghĩa véc-tơ và độ tin cậy đồ thị theo tổ hợp tuyến tính:
 \begin{equation}
     S_{\text{conf}}(\mathcal{C}, q) = w_{\text{sim}} \cdot S_{\text{sim}}(q, \mathcal{C}) + w_{\text{graph}} \cdot S_{\text{graph}}(\mathcal{C})
     \label{eq:confidence-score}
 \end{equation}
-trong đó $S_{\text{sim}}(q, \mathcal{C}) \in [0, 1]$ là độ tương đồng ngữ nghĩa Cosine giữa truy vấn người dùng và ngữ cảnh các bài nhận xét truy xuất từ ChromaDB; $S_{\text{graph}}(\mathcal{C}) \in [0, 1]$ là điểm bảo chứng chất lượng đồ thị, được xác định bởi tỷ lệ liên kết thực thể hợp lệ trên đồ thị (kết hợp trung bình điểm tin cậy $\text{Conf}(u, m)$ đối với các truy vấn có yêu cầu ẩm thực); và $w_{\text{sim}}, w_{\text{graph}}$ là các trọng số thành phần thỏa mãn $w_{\text{sim}} + w_{\text{graph}} = 1$, được nghiên cứu thiết lập tối ưu tương ứng là $w_{\text{sim}} = 0,6$ và $w_{\text{graph}} = 0,4$, bảo đảm đồng bộ tuyệt đối với Công thức (\ref{eq:grading-score}) ở Phần II.
+trong đó $S_{\text{sim}}(q, \mathcal{C}) \in [0, 1]$ là độ tương đồng ngữ nghĩa Cosine với các bài nhận xét ChromaDB; $S_{\text{graph}}(\mathcal{C}) \in [0, 1]$ là điểm bảo chứng chất lượng đồ thị theo tỷ lệ liên kết thực thể hợp lệ (kèm trung bình $\text{Conf}(u, m)$ cho truy vấn ẩm thực); trọng số thành phần $w_{\text{sim}} = 0,6$ và $w_{\text{graph}} = 0,4$ thỏa mãn $w_{\text{sim}} + w_{\text{graph}} = 1$, đồng bộ với Công thức (\ref{eq:grading-score}) ở Phần II.
 
-Nút 4: Phân luồng dự phòng tìm kiếm mạng (Web Search Fallback). Nếu điểm số tin cậy $S_{\text{conf}} < \tau_{\text{conf}} = 0,65$ (xảy ra khi du khách hỏi về các sự kiện thời sự mới phát sinh ngoài phạm vi đồ thị tĩnh), cạnh có điều kiện sẽ kích hoạt nhánh rẽ sang công cụ tìm kiếm DuckDuckGo/Google Search để thu thập các trang tin mới nhất, sau đó hợp nhất vào ngữ cảnh. Ngược lại, nếu $S_{\text{conf}} \ge 0,65$, hệ thống chuyển thẳng sang nút tạo sinh.
+Nút 4: Phân luồng dự phòng tìm kiếm mạng (Web Search Fallback). Nếu $S_{\text{conf}} < \tau_{\text{conf}} = 0,65$ (khi du khách hỏi về sự kiện thời sự ngoài phạm vi đồ thị), cạnh điều kiện sẽ kích hoạt nhánh tìm kiếm DuckDuckGo/Google Search để bổ sung tin tức vào ngữ cảnh. Ngược lại, nếu $S_{\text{conf}} \ge 0,65$, hệ thống chuyển thẳng sang nút tạo sinh.
 
-Nút 5: Tạo sinh câu trả lời có kiểm soát (Constrained Generation Node). Mô hình Qwen2.5-VL:7B tiếp nhận toàn bộ ngữ cảnh đã được neo giữ (grounded context) từ đồ thị tri thức để sinh câu trả lời bằng tiếng Việt tự nhiên, bảo đảm không bịa đặt bất kỳ thông tin nào ngoài các nút thực thể đã được cung cấp.
+Nút 5: Tạo sinh câu trả lời có kiểm soát (Constrained Generation Node). Mô hình Qwen2.5-VL:7B tiếp nhận ngữ cảnh đã neo giữ từ đồ thị tri thức để sinh câu trả lời tiếng Việt tự nhiên, bảo đảm không bịa đặt thông tin ngoài các nút thực thể đã cung cấp.
 
-Bên cạnh năng lực sinh câu trả lời tự nhiên, khung tác tử tích hợp cơ chế Giải thích Minh bạch Đồ thị (Explainable AI -- XAI Graph Reasoning Trace thông qua trường trạng thái \texttt{graph\_trace}). Trong các hệ thống RAG truyền thống, mô hình ngôn ngữ lớn hoạt động như một chiếc hộp đen (Black-box), người dùng hoàn toàn không thể kiểm chứng nguồn gốc lập luận vì sao một cơ sở ẩm thực hoặc danh lam lại được đề xuất. Với Spatial GraphRAG, mỗi bước duyệt trên đồ thị (từ Nút neo Anchor POI $\to$ cạnh lân cận $\text{NEAR\_BY}$ kèm cự ly mét $\to$ cạnh phục vụ $\text{SERVES}$ kèm điểm bảo chứng thực đơn ngầm $\text{Conf}(u, m)$) đều được kiên định hóa thành một chuỗi vết suy luận có cấu trúc. Chuỗi vết này được chuyển giao trực tiếp cho giao diện người dùng để trực quan hóa sơ đồ lập luận không gian, mang lại sự tin cậy tuyệt đối và tính minh bạch học thuật cao cho toàn bộ quá trình gợi ý du lịch.
+Bên cạnh năng lực tạo sinh, khung tác tử tích hợp cơ chế Giải thích Minh bạch Đồ thị (Explainable AI -- XAI Graph Reasoning Trace qua trường \texttt{graph\_trace}). Thay vì hoạt động như chiếc hộp đen, mỗi bước duyệt đồ thị (Anchor POI $\to \text{NEAR\_BY} \to \text{SERVES} \to \text{Conf}(u, m)$) đều được kiên định hóa thành chuỗi vết suy luận có cấu trúc và gửi về giao diện người dùng để trực quan hóa, mang lại tính minh bạch học thuật cao cho quá trình gợi ý du lịch.
+
+\clearpage
 
 \section{Tầng Lưu trữ Đám mây NoSQL và Quản trị Đa phiên Hội thoại}
 \label{sec:ch1-cloud-storage}
@@ -138,13 +163,13 @@ Bên cạnh năng lực sinh câu trả lời tự nhiên, khung tác tử tích
 
 Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận cục bộ, toàn bộ dữ liệu trạng thái phiên, hành trình du lịch và dữ liệu đánh giá thực địa được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán theo mô hình phân vùng an toàn gồm bốn bộ sưu tập cốt lõi:
 
-Bộ sưu tập thứ nhất là \texttt{chat\_sessions} (tổ chức dưới dạng bộ sưu tập phân cấp người dùng tại đường dẫn \texttt{users/\{userId\}/chat\_sessions}), đóng vai trò lưu trữ toàn diện lịch sử các cuộc trò chuyện của từng du khách. Mỗi tài liệu trong bộ sưu tập đại diện cho một phiên hội thoại duy nhất với định danh khóa chính là \texttt{sessionId}. Tài liệu lưu trữ các trường dữ liệu tổng quan bao gồm mã định danh du khách (\texttt{userId}), tiêu đề tóm tắt phiên (\texttt{title}) được tự động trích xuất từ câu hỏi đầu tiên, mốc thời gian khởi tạo (\texttt{createdAt}) và thời điểm cập nhật gần nhất (\texttt{updatedAt}). Đáng chú ý, toàn bộ diễn biến cuộc đối thoại được kiên định hóa bên trong mảng cấu trúc \texttt{messages}: mỗi phần tử trong mảng lưu trữ vai trò người phát ngôn (\texttt{role}: người dùng hoặc trợ lý), nội dung phản hồi văn bản (\texttt{text}), câu hỏi truy vấn gốc (\texttt{prompt}), mã định danh thông điệp duy nhất (\texttt{id}), chỉ số phản hồi của du khách (\texttt{feedbackRating}: thích hoặc chưa tốt), và đối tượng dữ liệu phân tích chi tiết (\texttt{resData}) bao gồm danh sách các thực thể POI đề xuất, thẻ hành trình điều hướng và các thông số suy luận không gian.
+Bộ sưu tập thứ nhất là \texttt{chat\_sessions} (tổ chức dưới dạng bộ sưu tập phân cấp người dùng tại đường dẫn \texttt{users/\{userId\}/}\allowbreak\texttt{chat\_sessions}), đóng vai trò lưu trữ toàn diện lịch sử các cuộc trò chuyện của từng du khách. Mỗi tài liệu trong bộ sưu tập đại diện cho một phiên hội thoại duy nhất với định danh khóa chính là \texttt{sessionId}. Tài liệu lưu trữ các trường dữ liệu tổng quan bao gồm mã định danh du khách (\texttt{userId}), tiêu đề tóm tắt phiên (\texttt{title}) được tự động trích xuất từ câu hỏi đầu tiên, mốc thời gian khởi tạo (\texttt{createdAt}) và thời điểm cập nhật gần nhất (\texttt{updatedAt}). Đáng chú ý, toàn bộ diễn biến cuộc đối thoại được kiên định hóa bên trong mảng cấu trúc \texttt{messages}: mỗi phần tử trong mảng lưu trữ vai trò người phát ngôn (\texttt{role}: người dùng hoặc trợ lý), nội dung phản hồi văn bản (\texttt{text}), câu hỏi truy vấn gốc (\texttt{prompt}), mã định danh thông điệp duy nhất (\texttt{id}), chỉ số phản hồi của du khách (\texttt{feedbackRating}: thích hoặc chưa tốt), và đối tượng dữ liệu phân tích chi tiết (\texttt{resData}) bao gồm danh sách các thực thể POI đề xuất, thẻ hành trình điều hướng và các thông số suy luận không gian.
 
-Bộ sưu tập thứ hai là \texttt{itineraries} (tại đường dẫn \texttt{users/\{userId\}/itineraries}), chịu trách nhiệm lưu trữ các tour du lịch đa chặng đã được thuật toán tối ưu hóa và được du khách đánh dấu lưu lại. Mỗi tài liệu hành trình lưu trữ tiêu đề chuyến đi, số ngày trải nghiệm, kiểu hình du lịch, danh mục các điểm dừng theo từng chặng (Legs), khoảng cách di chuyển dự kiến, thời gian tham quan ước tính tại mỗi di tích, danh sách món ăn đặc sản được bảo chứng tại các quán ăn lân cận, và mảng tọa độ GPS đầy đủ phục vụ việc tái hiện trực quan tuyến đường trên bản đồ số.
+Bộ sưu tập thứ hai là \texttt{itineraries} (tại đường dẫn \texttt{users/\{userId\}/}\allowbreak\texttt{itineraries}), chịu trách nhiệm lưu trữ các tour du lịch đa chặng đã được thuật toán tối ưu hóa và được du khách đánh dấu lưu lại. Mỗi tài liệu hành trình lưu trữ tiêu đề chuyến đi, số ngày trải nghiệm, kiểu hình du lịch, danh mục các điểm dừng theo từng chặng (Legs), khoảng cách di chuyển dự kiến, thời gian tham quan ước tính tại mỗi di tích, danh sách món ăn đặc sản được bảo chứng tại các quán ăn lân cận, và mảng tọa độ GPS đầy đủ phục vụ việc tái hiện trực quan tuyến đường trên bản đồ số.
 
 Bộ sưu tập thứ ba là \texttt{ai\_feedbacks} (bộ sưu tập gốc cấp hệ thống), ghi nhận toàn bộ các phản hồi đánh giá của du khách đối với từng câu trả lời cụ thể của tác tử RAG. Dữ liệu này bao gồm mã thông điệp (\texttt{messageId}), câu truy vấn gốc (\texttt{prompt}), nội dung phản hồi của mô hình, nhãn đánh giá nhị phân (\texttt{rating} mang giá trị $+1$ cho phản hồi hữu ích và $-1$ cho phản hồi chưa chính xác), cùng nhãn thời gian và ngữ cảnh không gian lúc đánh giá. Đây là tập ngữ liệu quý giá phục vụ chu trình kiểm thử và tinh chỉnh mô hình ngôn ngữ theo phản hồi con người (RLHF) trong các giai đoạn phát triển tiếp theo.
 
-Bộ sưu tập thứ tư là \texttt{places} (bao gồm bộ sưu tập con đánh giá thực địa \texttt{places/\{placeKey\}/user\_reviews} và đường dẫn theo dõi cá nhân \texttt{users/\{userId\}/my\_reviews}), chịu trách nhiệm quản lý nguồn dữ liệu đánh giá thực địa do cộng đồng du khách đóng góp trực tiếp tại hiện trường. Mỗi tài liệu lưu trữ định danh địa danh, khóa chuẩn hóa \texttt{placeKey}, thông tin định danh tác giả (\texttt{author}, \texttt{author\_uid}), điểm xếp hạng (1 đến 5 sao), trường phái chuyến đi (\texttt{trip\_type}), tiêu đề tóm tắt, nội dung trải nghiệm chi tiết (tối đa 1.000 ký tự), mảng nhãn ấn tượng cảm quan (\texttt{tags}), số lượt bình chọn hữu ích (\texttt{upvotes}), huy hiệu du khách thực tế (\texttt{verified}) và mốc thời gian ghi nhận thực tế.
+Bộ sưu tập thứ tư là \texttt{places} (bao gồm bộ sưu tập con đánh giá thực địa \texttt{places/\{placeKey\}/}\allowbreak\texttt{user\_reviews} và đường dẫn theo dõi cá nhân \texttt{users/\{userId\}/}\allowbreak\texttt{my\_reviews}), chịu trách nhiệm quản lý nguồn dữ liệu đánh giá thực địa do cộng đồng du khách đóng góp trực tiếp tại hiện trường. Mỗi tài liệu lưu trữ định danh địa danh, khóa chuẩn hóa \texttt{placeKey}, thông tin định danh tác giả (\texttt{author}, \texttt{author\_uid}), điểm xếp hạng (1 đến 5 sao), trường phái chuyến đi (\texttt{trip\_type}), tiêu đề tóm tắt, nội dung trải nghiệm chi tiết (tối đa 1.000 ký tự), mảng nhãn ấn tượng cảm quan (\texttt{tags}), số lượt bình chọn hữu ích (\texttt{upvotes}), huy hiệu du khách thực tế (\texttt{verified}) và mốc thời gian ghi nhận thực tế.
 
 Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đồ các bộ sưu tập dữ liệu trên Cloud Firestore.
 
@@ -152,35 +177,35 @@ Bảng \ref{tab:firestore-schema} tổng hợp chi tiết cấu trúc lược đ
 \centering
 \caption{Cấu trúc lược đồ và đặc tả dữ liệu các bộ sưu tập trên Cloud Firestore}
 \label{tab:firestore-schema}
-\small
+\footnotesize
+\singlespacing
+\renewcommand{\arraystretch}{0.95}
 \begin{tabularx}{\textwidth}{l l l X}
 \hline
 \textbf{Bộ sưu tập} & \textbf{Tên trường} & \textbf{Kiểu dữ liệu} & \textbf{Mô tả chức năng nghiệp vụ} \\
 \hline
 \texttt{chat\_sessions} & \texttt{sessionId} & String (Khóa) & Định danh duy nhất của phiên hội thoại \\
-(\texttt{users/\{uid\}/...}) & \texttt{userId} & String & Mã định danh người dùng sở hữu phiên \\
-& \texttt{title} & String & Tiêu đề phiên trích xuất từ câu hỏi đầu \\
-& \texttt{createdAt, updatedAt} & Timestamp & Mốc thời gian tạo và cập nhật phiên \\
+(\texttt{users/\{uid\}/...}) & \texttt{userId, title} & String & Mã người dùng và tiêu đề trích xuất từ câu hỏi đầu \\
+& \texttt{createdAt, updatedAt} & Timestamp & Mốc thời gian tạo và cập nhật phiên đàm thoại \\
 & \texttt{messages} & Array[Object] & Mảng thông điệp, mốc ngữ cảnh \texttt{session\_context} và kết quả RAG \\
 \hline
-\texttt{itineraries} & \texttt{itineraryId} & String (Khóa) & Mã định danh lộ trình du lịch đã lưu \\
-(\texttt{users/\{uid\}/...}) & \texttt{userId} & String & Mã người dùng sở hữu lịch trình \\
-& \texttt{title, days, tripType} & String, Number & Thông tin tổng quát cấu hình chuyến đi \\
-& \texttt{legs, coordinates} & Array[Object] & Danh sách các chặng dừng và mảng tọa độ GPS \\
-& \texttt{savedAt} & Timestamp & Thời điểm lưu trữ lịch trình \\
+\texttt{itineraries} & \texttt{itineraryId} & String (Khóa) & Mã định danh duy nhất của lịch trình đã lưu \\
+(\texttt{users/\{uid\}/...}) & \texttt{userId, tripType} & String & Mã người dùng và kiểu hình du lịch \\
+& \texttt{title, days} & String, Number & Tiêu đề tour và số ngày trải nghiệm hành trình \\
+& \texttt{legs, coordinates} & Array[Object] & Danh sách chặng dừng, điểm tham quan và tọa độ GPS \\
+& \texttt{savedAt} & Timestamp & Thời điểm người dùng lưu trữ lịch trình \\
 \hline
-\texttt{ai\_feedbacks} & \texttt{feedbackId} & String (Khóa) & Mã định danh bản ghi phản hồi du khách \\
-& \texttt{messageId} & String & Tham chiếu thông điệp được đánh giá \\
-& \texttt{rating} & String & Nhãn đánh giá (\texttt{like} hoặc \texttt{dislike}) \\
-& \texttt{prompt, response} & String & Cặp câu hỏi và câu trả lời được đánh giá \\
-& \texttt{timestamp} & Timestamp & Thời điểm ghi nhận phản hồi \\
+\texttt{ai\_feedbacks} & \texttt{feedbackId} & String (Khóa) & Mã định danh duy nhất của phản hồi RAG \\
+& \texttt{messageId, rating} & String & Tham chiếu thông điệp và nhãn đánh giá (+1 / -1) \\
+& \texttt{prompt, response} & String & Cặp câu hỏi truy vấn và nội dung câu trả lời \\
+& \texttt{timestamp} & Timestamp & Thời điểm ghi nhận đánh giá của du khách \\
 \hline
 \texttt{places} & \texttt{reviewId} & String (Khóa) & Mã định danh duy nhất của bản ghi nhận xét \\
 (\texttt{places/\{key\}/...}) & \texttt{place\_id, place\_key} & String & Mã định danh và khóa chuẩn hóa điểm đến \\
 & \texttt{author, author\_uid} & String & Thông tin định danh du khách thực hiện đánh giá \\
 & \texttt{rating, trip\_type} & Number, String & Điểm số (1--5 sao) và trường phái đồng hành \\
-& \texttt{title, comment, tags} & String, Array & Tiêu đề, nội dung nhận xét và nhãn ấn tượng \\
-& \texttt{upvotes, verified} & Number, Boolean & Số lượt hữu ích và huy hiệu du khách thực tế \\
+& \texttt{title, comment, tags} & String, Array & Tiêu đề, nội dung nhận xét và nhãn cảm quan \\
+& \texttt{upvotes, verified} & Number, Boolean & Số lượt bình chọn hữu ích và huy hiệu thực tế \\
 & \texttt{createdAt, visit\_date} & Timestamp, String & Mốc thời gian ghi nhận và thời điểm tham quan \\
 \hline
 \end{tabularx}
@@ -232,39 +257,23 @@ Nhằm bảo đảm an toàn thông tin và tính toàn vẹn dữ liệu, hàm 
 
 Về phương diện hiển thị và giải thích minh bạch (Explainable AI), kết quả chuyển đổi ngữ cảnh được liên kết trực tiếp vào chuỗi vết suy luận $\texttt{graph\_trace}$ thông qua bước định tuyến $\text{context\_carryover}$. Du khách và chuyên gia kiểm thử có thể trực quan hóa minh bạch từng mắt xích suy luận (ví dụ: ``\textit{'từ đó' $\to$ Chùa Thiên Mụ}'') ngay bên dưới khung đàm thoại trên cả giao diện máy tính lẫn thiết bị di động. Hiệu năng của phân hệ Trí nhớ Ngữ cảnh đã được kiểm chứng toàn diện qua bộ 27 kịch bản kiểm thử tích hợp chuyên biệt (\texttt{test\_session\_memory.py}), ghi nhận tỷ lệ thành công tuyệt đối ($100\%$ test cases passed), xác nhận tính sẵn sàng cao cho môi trường ứng dụng thực địa.
 
-\subsection{Phân hệ Thu nhận và Tổng hợp Đánh giá Thực địa Cộng đồng (Crowdsourced POI Reviews)}
+\subsection{Thu nhận và Quản trị Đánh giá Thực địa Cộng đồng (Crowdsourced POI Reviews)}
 \label{subsec:ch1-crowdsourced-reviews}
 
-Trong các nền tảng thông tin du lịch truyền thống tại Cố đô Huế (tiêu biểu như ứng dụng công dân số Hue-S), thông tin điểm đến phần lớn được biên tập tĩnh, thiếu hụt dữ liệu đánh giá thực tế cập nhật từ du khách (Cold-start Review Gap), dẫn đến hiện tượng suy giảm mức độ tin cậy và không phản ánh kịp thời sự biến động về chất lượng dịch vụ thực tế tại hiện trường. Nhằm giải quyết triệt để rào cản này, hệ thống thiết kế và tích hợp Phân hệ Thu nhận và Tổng hợp Đánh giá Thực địa Cộng đồng (Crowdsourced POI Reviews and Ratings Subsystem) vận hành dựa trên nguyên lý Thông tin Địa lý Tình nguyện (Volunteered Geographic Information -- VGI)~\cite{goodchild2007citizens}. Phân hệ này cho phép du khách đóng vai trò như các cảm biến xã hội sống (Social Sensors), trực tiếp chia sẻ nhận xét, chấm điểm và gán nhãn trải nghiệm ngay tại điểm di tích hoặc cơ sở ẩm thực, hình thành dòng tri thức động liên tục bổ sung và làm giàu cho kho dữ liệu 44.355 bài đánh giá lịch sử từ TripAdvisor.
+Trong các nền tảng thông tin du lịch truyền thống tại Cố đô Huế (như ứng dụng công dân số Hue-S), thông tin điểm đến phần lớn được biên tập tĩnh, thiếu hụt dữ liệu đánh giá và cảm nhận thực tế cập nhật từ du khách. Nhằm giải quyết hạn chế này, hệ thống tích hợp tính năng Thu nhận và Quản trị Đánh giá Thực địa Cộng đồng (Crowdsourced POI Reviews) dựa trên nguyên lý Thông tin Địa lý Tình nguyện (Volunteered Geographic Information -- VGI)~\cite{goodchild2007citizens}. Tính năng này cho phép du khách trực tiếp chia sẻ nhận xét, chấm điểm theo thang đo 5 sao, lựa chọn nhóm đồng hành (Gia đình, Cặp đôi, Bạn bè, Độc hành, Công tác) và gán nhãn ấn tượng cảm quan (như Cảnh quan đẹp, Không gian yên tĩnh, Kiến trúc độc đáo, Giá cả hợp lý) cho từng di tích lịch sử hoặc cơ sở ẩm thực. Dữ liệu thực địa này tạo thành nguồn tri thức tương tác thời gian thực, bổ sung liên tục cho kho dữ liệu bài đánh giá lịch sử từ TripAdvisor.
 
-Về mặt kiến trúc kỹ thuật, phân hệ vận hành theo nguyên lý Lưu trữ Lai Hai tầng Ưu tiên Ngoại tuyến (Offline-First Hybrid Persistence Architecture) nhằm triệt tiêu hoàn toàn độ trễ giao diện khi người dùng thao tác trên điện thoại di động trong điều kiện mạng viễn thông chập chờn tại các di tích lăng tẩm ngoại thành. Tầng đệm tức thời cục bộ được kiểm soát thông qua bộ nhớ \texttt{localStorage} với khóa phân vùng không gian dạng \texttt{hue\_place\_reviews\_\{placeKey\}}, trong đó khóa \texttt{placeKey} được chuẩn hóa tất định thông qua hàm rút gọn ký tự $\text{normalizePlaceKey}(\text{placeId})$. Nhờ tầng đệm này, thao tác hiển thị danh sách nhận xét và gửi đánh giá mới được xử lý với độ trễ tiệm cận $0\text{ ms}$ (Optimistic UI Update). Ngay sau đó, tiến trình đồng bộ bất đồng bộ sẽ đẩy bản ghi lên cây tài liệu NoSQL phân tán trên Cloud Firestore tại đường dẫn \texttt{places/\{placeKey\}/user\_reviews/\{reviewId\}}. Nếu du khách đã xác thực tài khoản, bản ghi đánh giá đồng thời được liên kết vào bộ sưu tập con \texttt{users/\{userId\}/my\_reviews} phục vụ công tác theo dõi hồ sơ cá nhân và quản trị nội dung.
-
-Để giải quyết bài toán biến động và thiên lệch điểm số khi số lượng đánh giá thực tế ban đầu còn khiêm tốn ($M$ nhỏ), hệ thống xây dựng Mô hình Làm mịn Điểm số Bayes Thực nghiệm (Empirical Bayesian Rating Smoothing) để dung hòa giữa dữ liệu lịch sử từ TripAdvisor và dữ liệu đóng góp cộng đồng thời gian thực:
-\begin{equation}
-\label{eq:bayesian-rating}
-\bar{R}_{\text{fused}} = \frac{C \cdot R_{\text{prior}} + \sum_{j=1}^{M} r_j}{C + M}
-\end{equation}
-trong đó $R_{\text{prior}} \in [1, 5]$ là điểm xếp hạng cơ sở lịch sử từ TripAdvisor; $r_j \in \{1, 2, 3, 4, 5\}$ là điểm số do du khách thực tế thứ $j$ đánh giá; $M \in \mathbb{N}$ là tổng số lượt nhận xét mới thu nhận từ cộng đồng; và $C$ biểu diễn trọng số tin cậy tiên nghiệm (Prior Confidence Weight, được thiết lập chuẩn $C = 10$). Khi địa điểm chưa có đánh giá thực địa ($M = 0$), điểm hiển thị bảo lưu chuẩn xác điểm gốc $\bar{R}_{\text{fused}} = R_{\text{prior}}$. Khi số lượng đánh giá cộng đồng gia tăng ($M \to \infty$), trọng số dần dịch chuyển ưu tiên về trải nghiệm đương đại của người dùng thực tế. Đồng thời, cấu trúc phân bổ mức độ hài lòng của du khách được hình thức hóa thành Véc-tơ Tỷ lệ Phân bố Sao $\mathbf{p} = [p_1, p_2, p_3, p_4, p_5]^\top$ với:
-\begin{equation}
-\label{eq:star-distribution}
-p_k = \frac{\sum_{j=1}^{M_{\text{total}}} \mathbb{I}(r_j = k)}{M_{\text{total}}} \times 100\% \quad (k \in \{1, 2, 3, 4, 5\})
-\end{equation}
-trong đó $\mathbb{I}(\cdot)$ là hàm chỉ thị và $M_{\text{total}}$ là tổng số lượng bài đánh giá hợp nhất. Véc-tơ $\mathbf{p}$ được kết xuất động thành năm thanh tỷ lệ phần trăm trực quan ngay trên đầu bảng thông tin chi tiết của điểm đến, giúp du khách nắm bắt nhanh chóng mức độ đồng thuận chất lượng của cộng đồng.
-
-Bên cạnh thang đo định lượng sao, phân hệ thiết lập cấu trúc thu nhận dữ liệu đa chiều phản ánh bản sắc du lịch thực địa xứ Huế qua hai không gian ngữ nghĩa: Không gian trường phái đồng hành $T_{\text{companion}} \in \{\text{Gia đình}, \text{Cặp đôi}, \text{Bạn bè}, \text{Độc hành}, \text{Công tác}\}$ cung cấp cơ sở để hệ thống lọc thứ bậc gợi ý tương thích với hồ sơ du khách; và Tập nhãn ấn tượng cảm quan $\mathcal{K}_{\text{impress}} = \{\text{Cảnh quan đẹp}, \text{Không gian yên tĩnh}, \text{Kiến trúc độc đáo}, \text{Ẩm thực đặc trưng}, \text{Giá cả hợp lý}, \text{Dịch vụ chu đáo}, \text{Khuôn viên rộng rãi}\}$ giúp trích xuất tức thời các đặc tính nổi trội của điểm đến. Nội dung nhận xét định tính (hỗ trợ tối đa 1.000 ký tự) cung cấp nguồn ngữ liệu dồi dào phục vụ các tác vụ phân tích cảm xúc và mở rộng đồ thị tri thức không gian.
-
-Nhằm bảo đảm an toàn dữ liệu và khuyến khích sự tương tác văn minh, phân hệ tích hợp cơ chế Bình chọn Hữu ích (Upvote Helpfulness Voting) hỗ trợ trạng thái đảo ngược (Toggle) với tập khóa ghi nhận cục bộ \texttt{LOCAL\_UPVOTED\_REVIEWS\_KEY} nhằm triệt tiêu hoàn toàn hiện tượng thao túng bình chọn trùng lặp. Về phương diện an toàn ứng dụng, toàn bộ dữ liệu văn bản người dùng nhập liệu bắt buộc phải trải qua khâu khử khuẩn ký tự đặc biệt (\texttt{escapeHtml}) trước khi hiển thị lên giao diện DOM, vô hiệu hóa triệt để các nguy cơ tấn công chèn mã độc Cross-Site Scripting (XSS). Khi một đánh giá mới được gửi thành công, hệ thống kích hoạt cơ chế hướng sự kiện phản ứng nhanh (Event-Driven Reactive State) thông qua việc phát sự kiện tùy biến \texttt{CustomEvent('place-review-added')}, cho phép bản đồ số, ngăn kéo thông tin di tích và các thẻ liên quan tự động cập nhật đồng bộ mà không cần tải lại toàn bộ trang web. Kiến trúc giao diện trực quan và hộp thoại đóng góp đánh giá thực địa cộng đồng được minh họa chi tiết trên Hình \ref{fig:poi-review-system}.
+Về mặt kiến trúc kỹ thuật, tính năng vận hành theo mô hình Lưu trữ Lai Ưu tiên Ngoại tuyến (Offline-First Hybrid Persistence). Tầng lưu trữ đệm tại trình duyệt sử dụng \texttt{localStorage} với khóa định danh phân vùng theo địa điểm, giúp hiển thị danh sách nhận xét và cập nhật đánh giá mới ngay lập tức mà không có độ trễ kết xuất (Optimistic UI Update). Đồng thời, dữ liệu được đồng bộ hóa ngầm lên cơ sở dữ liệu Cloud Firestore theo đường dẫn phân cấp \texttt{places/\{placeKey\}/user\_reviews/\{reviewId\}}. Để đảm bảo an toàn ứng dụng, toàn bộ nội dung văn bản do người dùng nhập được khử khuẩn tự động qua cơ chế mã hóa thực thể HTML (\texttt{escapeHtml}) nhằm triệt tiêu nguy cơ tấn công Cross-Site Scripting (XSS). Sau khi người dùng gửi đánh giá thành công, hệ thống phát sự kiện tùy biến \texttt{CustomEvent('place-review-added')} để cập nhật đồng bộ trạng thái trên ngăn kéo thông tin di tích và bản đồ số mà không cần tải lại toàn bộ trang web. Giao diện hiển thị đánh giá cộng đồng và hộp thoại gửi nhận xét thực tế được minh họa chi tiết tại Hình \ref{fig:poi-review-system}.
 
 \begin{figure}[htbp]
 \centering
-\begin{subfigure}[b]{0.45\textwidth}
+\begin{subfigure}[b]{0.44\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{img/poi_review_drawer.jpg}
+    \includegraphics[width=\textwidth]{img/poi_review_drawer.png}
     \caption{Ngăn kéo hiển thị điểm số và nhận xét cộng đồng}
     \label{subfig:poi-review-drawer}
 \end{subfigure}
 \hfill
-\begin{subfigure}[b]{0.49\textwidth}
+\begin{subfigure}[b]{0.52\textwidth}
     \centering
     \includegraphics[width=\textwidth]{img/poi_review_modal.jpg}
     \caption{Hộp thoại đóng góp đánh giá đa chiều thực tế}
@@ -299,6 +308,9 @@ Bộ tham số khí tượng thu nhận tức thời bao gồm nhiệt độ kh�
 \centering
 \caption{Ma trận Quy tắc Thích ứng Lộ trình theo Ngữ cảnh Khí tượng Cố đô Huế}
 \label{tab:weather-rules}
+\small
+\singlespacing
+\renewcommand{\arraystretch}{1.05}
 \begin{tabularx}{\textwidth}{l c c X X}
 \hline
 \textbf{Mã WMO} & \textbf{Nhiệt độ $T$} & \textbf{Mưa $P$} & \textbf{Ngữ cảnh môi trường} & \textbf{Chiến lược Thích ứng Gợi ý} \\
@@ -352,7 +364,26 @@ Tính năng thứ nhất là Danh mục Địa điểm Yêu thích (Wishlist): C
 
 Tính năng thứ hai là Hộ chiếu Khám phá Di sản (Heritage Check-in Passport): Áp dụng nguyên lý Trò chơi hóa (Gamification) để kích thích tinh thần trải nghiệm thực địa của du khách. Hệ thống tích hợp một thanh tiến trình theo dõi tỷ lệ hoàn thành hành trình khám phá trên tổng số 29 danh lam thắng cảnh và di tích lịch sử cốt lõi của thành phố Huế trên Đồ thị Tri thức (đồng thời liên kết mở rộng tới 158 không gian văn hóa, ẩm thực và điểm trải nghiệm Cố đô tiêu biểu trong tập dữ liệu tinh tuyển \texttt{hue\_top\_places.json}). Dựa trên số lượng địa điểm du khách đã đặt chân check-in thực tế, hệ thống xác lập bốn cấp bậc vinh danh tăng dần theo chuẩn mực phong cách ấn bản Cố đô: Cấp 01 Khách bộ hành Cố Đô (dưới 3 điểm), Cấp 02 Lữ khách Khám phá (từ 3 đến 7 điểm), Cấp 03 Người chu du xứ Huế (từ 8 đến 15 điểm), và Cấp 04 Chuyên gia Di sản Cố Đô (từ 16 điểm trở lên trên tổng số 29 di tích trọng điểm).
 
-Tính năng thứ ba là Bộ lọc Gu Du lịch và Khẩu vị Cá nhân (Travel Preferences and Palate): Cung cấp giao diện trực quan cho phép du khách thiết lập nhịp độ di chuyển mong muốn (Thong thả, Vừa phải, Nhanh), trọng số quan tâm theo các chủ đề di sản, ẩm thực hoặc sinh thái, cùng các yêu cầu kiêng cữ dinh dưỡng đặc thù (như ăn chay hoặc kiêng ăn cay), làm tiền đề để thuật toán tối ưu hóa lịch trình và bộ truy xuất RAG lọc bỏ các đề xuất không tương thích ngay từ gốc.
+Tính năng thứ ba là Bộ lọc Gu Du lịch và Khẩu vị Cá nhân (Travel Preferences and Palate): Cung cấp giao diện trực quan cho phép du khách thiết lập nhịp độ di chuyển mong muốn (Thong thả, Vừa phải, Nhanh), trọng số quan tâm theo các chủ đề di sản, ẩm thực hoặc sinh thái, cùng các yêu cầu kiêng cữ dinh dưỡng đặc thù (như ăn chay hoặc kiêng ăn cay), làm tiền đề để thuật toán tối ưu hóa lịch trình và bộ truy xuất RAG lọc bỏ các đề xuất không tương thích ngay từ gốc. Giao diện trực quan của phân hệ Sổ tay Du lịch Cố Đô được minh họa chi tiết tại Hình \ref{fig:travel-notebook}.
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/heritage_notebook_passport.jpg}
+    \caption{Hộ chiếu Khám phá Di sản với cấp bậc vinh danh check-in}
+    \label{subfig:notebook-passport}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{img/heritage_notebook_preferences.jpg}
+    \caption{Thiết lập Gu du lịch, khẩu vị và ghi chú trải nghiệm cá nhân}
+    \label{subfig:notebook-preferences}
+\end{subfigure}
+\caption{Giao diện Sổ tay Du lịch Cố Đô: Quản lý tiến trình check-in di sản và cá nhân hóa trải nghiệm ẩm thực}
+\label{fig:travel-notebook}
+\end{figure}
 
 \subsection{Quản lý Lịch sử Hội thoại Đa tầng, Bản địa hóa Song ngữ và Chế độ Nền tối (Multi-tier Session Pinning, i18n Localization and Dark Mode Architecture)}
 \label{subsec:ch1-session-i18n-darkmode}
