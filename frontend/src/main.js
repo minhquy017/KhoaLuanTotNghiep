@@ -1733,7 +1733,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const sidebarBackdrop = document.getElementById('sidebar-backdrop');
   const btnSidebarNewChat = document.getElementById('btn-sidebar-new-chat');
   const btnSidebarSavedTours = document.getElementById('btn-sidebar-saved-tours');
-  const btnSidebarToggleMap = document.getElementById('btn-sidebar-toggle-map');
   const sidebarFooterGroup = document.getElementById('sidebar-footer-group');
   const btnSidebarSettings = document.getElementById('btn-sidebar-settings');
   const sidebarUserChip = document.getElementById('sidebar-user-chip');
@@ -2253,10 +2252,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Sự kiện bật / tắt User Account Popover
+  // Sự kiện mở Traveler Profile Modal khi click vào nút Profile
   sidebarUserChip?.addEventListener('click', (e) => {
     e.stopPropagation();
-    toggleUserPopover();
+    if (window.openTravelerProfileModal) {
+      window.openTravelerProfileModal();
+    } else {
+      toggleUserPopover();
+    }
   });
 
   sidebarUserPopover?.addEventListener('click', (e) => {
@@ -2350,9 +2353,65 @@ document.addEventListener('DOMContentLoaded', async () => {
     const autoMapToggle = document.getElementById('pref-toggle-auto-map');
     const animToggle = document.getElementById('pref-toggle-animations');
     const weatherToggle = document.getElementById('pref-toggle-weather-tips');
+    const prefDensitySelect = document.getElementById('pref-density-select');
     const aiDetailSelect = document.getElementById('pref-ai-detail-select');
     const aiStyleInputs = document.querySelectorAll('input[name="ai-style-option"]');
     const btnClearCache = document.getElementById('btn-settings-clear-cache');
+
+    const getSavedDensity = () => {
+      try {
+        return localStorage.getItem('hue_density') || 'auto';
+      } catch {
+        return 'auto';
+      }
+    };
+
+    const applyDensity = (densityChoice) => {
+      if (densityChoice === 'auto') {
+        document.documentElement.removeAttribute('data-density');
+      } else {
+        document.documentElement.setAttribute('data-density', densityChoice);
+      }
+      try {
+        localStorage.setItem('hue_density', densityChoice);
+      } catch { }
+      if (prefDensitySelect && prefDensitySelect.value !== densityChoice) {
+        prefDensitySelect.value = densityChoice;
+      }
+    };
+
+    applyDensity(getSavedDensity());
+
+    if (prefDensitySelect) {
+      prefDensitySelect.value = getSavedDensity();
+      prefDensitySelect.addEventListener('change', (e) => {
+        applyDensity(e.target.value);
+        window.authController?.showToast?.(
+          e.target.value === 'compact' ? i18n.t('densityCompact') :
+          e.target.value === 'cozy' ? i18n.t('densityCozy') : i18n.t('densityAuto')
+        );
+      });
+    }
+
+    const btnHeaderDensity = document.getElementById('btn-header-density-toggle');
+    if (btnHeaderDensity) {
+      btnHeaderDensity.addEventListener('click', () => {
+        const currentDensity = document.documentElement.getAttribute('data-density') || 'auto';
+        let nextDensity;
+        if (currentDensity === 'compact') {
+          nextDensity = 'cozy';
+        } else if (currentDensity === 'cozy') {
+          nextDensity = 'compact';
+        } else {
+          // If currently in auto, switch away from auto to show visible difference immediately
+          nextDensity = window.innerWidth <= 1536 ? 'cozy' : 'compact';
+        }
+        applyDensity(nextDensity);
+        window.authController?.showToast?.(
+          nextDensity === 'compact' ? i18n.t('densityCompact') : i18n.t('densityCozy')
+        );
+      });
+    }
 
     if (autoMapToggle) {
       autoMapToggle.checked = localStorage.getItem('hue_pref_auto_map') !== 'false';
@@ -2406,6 +2465,194 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.authController?.showToast(i18n.t('cacheRefreshed', 'Đã làm mới bộ nhớ đệm và dữ liệu tạm thành công.'));
       });
     }
+  };
+
+  /**
+   * Traveler Profile & AI Preferences Modal (Hồ sơ Du khách Cố Đô)
+   */
+  const initTravelerProfileModal = () => {
+    const modal = document.getElementById('traveler-profile-modal');
+    const btnClose = document.getElementById('btn-close-profile-modal');
+    const nameEl = document.getElementById('profile-modal-title');
+    const emailEl = document.getElementById('profile-hero-email');
+    const avatarImg = document.getElementById('profile-hero-avatar-img');
+    const avatarFallback = document.getElementById('profile-hero-avatar-fallback');
+    const badgeEl = document.getElementById('profile-badge-status');
+    const rankTitleEl = document.getElementById('profile-rank-title-text');
+
+    const statSessions = document.getElementById('profile-stat-sessions');
+    const statFavorites = document.getElementById('profile-stat-favorites');
+    const statCheckins = document.getElementById('profile-stat-checkins');
+    const statTours = document.getElementById('profile-stat-tours');
+
+    const btnOpenNotebook = document.getElementById('btn-profile-open-notebook');
+    const btnOpenCheckins = document.getElementById('btn-profile-open-checkins');
+    const btnOpenTours = document.getElementById('btn-profile-open-tours');
+    const btnSwitchAccount = document.getElementById('btn-profile-switch-account');
+    const btnLogout = document.getElementById('btn-profile-logout');
+    const btnSavePersona = document.getElementById('btn-save-profile-persona');
+
+    const dietaryChips = document.querySelectorAll('#profile-dietary-chips .pref-chip');
+    const styleChips = document.querySelectorAll('#profile-style-chips .pref-chip');
+    const transportChips = document.querySelectorAll('#profile-transport-chips .pref-chip');
+
+    const openProfileModal = () => {
+      closeUserPopover();
+      const currentUser = window.authController?.currentUser;
+      const displayName = currentUser?.displayName || localStorage.getItem('hue_demo_user_name') || 'Minh Quý - DEMO';
+      const email = currentUser?.email || 'minhquy017@gmail.com';
+      const photoURL = currentUser?.photoURL || null;
+
+      if (nameEl) nameEl.textContent = displayName;
+      if (emailEl) emailEl.textContent = email;
+      if (badgeEl) {
+        badgeEl.textContent = currentUser?.isAnonymous ? 'Demo' : (currentUser ? 'Thành viên' : 'Khảo nghiệm');
+      }
+
+      if (avatarImg && avatarFallback) {
+        if (photoURL) {
+          avatarImg.src = photoURL;
+          avatarImg.classList.remove('hidden');
+          avatarFallback.classList.add('hidden');
+        } else {
+          avatarImg.classList.add('hidden');
+          avatarFallback.classList.remove('hidden');
+          avatarFallback.textContent = (displayName.trim()[0] || 'M').toUpperCase();
+        }
+      }
+
+      // Thống kê hành trình
+      const sessionCount = chatSessionsList?.querySelectorAll('.chat-session-item')?.length || 
+                           (window.chatSessions ? window.chatSessions.length : 26);
+      if (statSessions) statSessions.textContent = sessionCount;
+
+      const favCount = userStore?.getFavorites?.()?.length ?? 4;
+      if (statFavorites) statFavorites.textContent = favCount;
+
+      const checkinCount = userStore?.getCheckins?.()?.length ?? 0;
+      if (statCheckins) statCheckins.textContent = checkinCount;
+
+      let toursCount = 0;
+      try {
+        const savedTours = JSON.parse(localStorage.getItem('hue_saved_itineraries') || '[]');
+        toursCount = Array.isArray(savedTours) ? savedTours.length : 0;
+      } catch {}
+      if (statTours) statTours.textContent = toursCount || 2;
+
+      // Cấp bậc
+      const explorerStats = userStore?.getExplorerStats?.();
+      if (rankTitleEl && explorerStats) {
+        rankTitleEl.textContent = explorerStats.rankTitle || 'Lữ khách Khám phá Cố Đô';
+      }
+
+      // Đồng bộ preferences
+      const prefs = userStore?.getPreferences?.() || {
+        dietary: ['Ăn cay chuẩn Huế'],
+        styles: ['heritage', 'foodie'],
+        transport: 'Xe máy'
+      };
+
+      dietaryChips.forEach(chip => {
+        const val = chip.getAttribute('data-value');
+        chip.classList.toggle('active', Array.isArray(prefs.dietary) && prefs.dietary.includes(val));
+      });
+
+      styleChips.forEach(chip => {
+        const val = chip.getAttribute('data-value');
+        chip.classList.toggle('active', Array.isArray(prefs.styles) && prefs.styles.includes(val));
+      });
+
+      transportChips.forEach(chip => {
+        const val = chip.getAttribute('data-value');
+        chip.classList.toggle('active', prefs.transport === val);
+      });
+
+      modal?.classList.add('active');
+    };
+
+    const closeProfileModal = () => {
+      modal?.classList.remove('active');
+    };
+
+    // Toggle chip active
+    dietaryChips.forEach(chip => {
+      chip.addEventListener('click', () => chip.classList.toggle('active'));
+    });
+
+    styleChips.forEach(chip => {
+      chip.addEventListener('click', () => chip.classList.toggle('active'));
+    });
+
+    transportChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        transportChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      });
+    });
+
+    // Save persona
+    btnSavePersona?.addEventListener('click', () => {
+      const selectedDietary = Array.from(dietaryChips)
+        .filter(c => c.classList.contains('active'))
+        .map(c => c.getAttribute('data-value'));
+
+      const selectedStyles = Array.from(styleChips)
+        .filter(c => c.classList.contains('active'))
+        .map(c => c.getAttribute('data-value'));
+
+      const selectedTransport = document.querySelector('#profile-transport-chips .pref-chip.active')?.getAttribute('data-value') || 'Xe máy';
+
+      userStore?.savePreferences?.({
+        dietary: selectedDietary.length ? selectedDietary : ['Ăn cay chuẩn Huế'],
+        styles: selectedStyles.length ? selectedStyles : ['heritage'],
+        transport: selectedTransport
+      });
+
+      window.authController?.showToast?.(i18n.t('profileSavedToast', 'Đã cập nhật hồ sơ sở thích du khách thành công!'));
+      closeProfileModal();
+    });
+
+    // Navigation handlers inside modal
+    btnOpenNotebook?.addEventListener('click', () => {
+      closeProfileModal();
+      document.getElementById('btn-sidebar-travel-notebook')?.click();
+    });
+
+    btnOpenCheckins?.addEventListener('click', () => {
+      closeProfileModal();
+      document.getElementById('btn-sidebar-travel-notebook')?.click();
+      document.getElementById('tab-notebook-checkin')?.click();
+    });
+
+    btnOpenTours?.addEventListener('click', () => {
+      closeProfileModal();
+      window.authController?.openSavedToursModal?.();
+    });
+
+    btnSwitchAccount?.addEventListener('click', () => {
+      closeProfileModal();
+      window.authController?.openAuthModal?.('login');
+    });
+
+    btnLogout?.addEventListener('click', async () => {
+      closeProfileModal();
+      await logoutUser();
+      window.authController?.showToast?.(i18n.t('toastLogoutSuccess', 'Đã đăng xuất thành công.'));
+    });
+
+    btnClose?.addEventListener('click', closeProfileModal);
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeProfileModal();
+    });
+
+    const headerUserChip = document.getElementById('header-user-chip');
+    headerUserChip?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProfileModal();
+    });
+
+    window.openTravelerProfileModal = openProfileModal;
+    window.closeTravelerProfileModal = closeProfileModal;
   };
 
   /**
@@ -2536,6 +2783,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   initSettingsModal();
+  initTravelerProfileModal();
   initThemeAndLanguage();
 
   btnToggleSidebar?.addEventListener('click', () => toggleSidebar());
@@ -2571,11 +2819,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.authController.openSavedToursModal();
       }
     }
-    if (window.innerWidth <= 1024) toggleSidebar(false);
-  });
-
-  btnSidebarToggleMap?.addEventListener('click', () => {
-    toggleMapPanel();
     if (window.innerWidth <= 1024) toggleSidebar(false);
   });
 

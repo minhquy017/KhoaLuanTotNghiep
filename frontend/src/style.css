@@ -15970,5 +15970,894 @@ html[data-theme="dark"] .btn-msg-feedback.copied {
   color: #4ADE80 !important;
 }
 
+/* =============================================================================
+   RESPONSIVE MULTI-SCREEN & DISPLAY DENSITY OPTIMIZATION
+   Tự động thích ứng hoàn hảo cho:
+   - Màn hình lớn (Desktop / 27" Monitor >= 1537px): To rõ, thoáng mắt, khoảng cách nhìn xa
+   - Màn hình Laptop (13" - 16.5" Display <= 1536px): Gọn gàng, tối ưu chiều cao, vừa vặn tầm mắt
+   ============================================================================= */
+
+/* 1. TỰ ĐỘNG THEO BREAKPOINT MÀN HÌNH LAPTOP (<= 1536px) */
+@media (max-width: 1536px) {
+  html:not([data-density="cozy"]) {
+    font-size: 14.5px;
+  }
+
+  :root:not([data-density="cozy"]) {
+    --chat-col: 740px;
+  }
+
+  /* Header thanh mảnh hơn */
+  .site-header:not([data-density="cozy"]) {
+    height: 52px;
+  }
+
+  /* Khung Studio chia cột tiết kiệm lề thừa */
+  .studio-layout:not([data-density="cozy"]) {
+    padding: 0.5rem 0.85rem;
+    gap: 0.85rem;
+    height: calc(100vh - 52px);
+    height: calc(100dvh - 52px);
+  }
+
+  /* Weather card bên trong sidebar co giãn linh hoạt */
+  .sidebar-gemini:not([data-density="cozy"]) .hue-weather-widget {
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 0.6rem 0.75rem;
+    gap: 0.45rem;
+  }
+
+  /* Luồng chat: Giảm khoảng cách đệm dọc giúp hiển thị nhiều tin nhắn cùng lúc */
+  .chat-thread:not([data-density="cozy"]) {
+    padding: 1rem 0.85rem 1.65rem !important;
+    gap: 1.35rem !important;
+  }
+
+  /* Bong bóng tin nhắn người dùng */
+  .chat-message.user:not([data-density="cozy"]) {
+    max-width: min(85%, 580px) !important;
+    margin-top: 0.75rem !important;
+  }
+
+  .chat-message.user:not([data-density="cozy"]) .message-bubble {
+    padding: 0.55rem 1.15rem !important;
+    border-radius: 20px !important;
+  }
+
+  .chat-message.user:not([data-density="cozy"]) .message-bubble p {
+    font-size: 0.98rem !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Nội dung câu trả lời trợ lý */
+  .answer-content:not([data-density="cozy"]),
+  .message-bubble:not([data-density="cozy"]) {
+    font-size: 0.98rem !important;
+    line-height: 1.68 !important;
+  }
+
+  .answer-content:not([data-density="cozy"]) p {
+    font-size: 0.98rem !important;
+    line-height: 1.68 !important;
+    margin-bottom: 0.65rem !important;
+  }
+
+  .answer-content:not([data-density="cozy"]) ul,
+  .answer-content:not([data-density="cozy"]) ol {
+    font-size: 0.98rem !important;
+    line-height: 1.65 !important;
+    margin-bottom: 0.65rem !important;
+    padding-left: 1.25rem !important;
+  }
+
+  .answer-content:not([data-density="cozy"]) li {
+    font-size: 0.98rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  /* Vết suy luận XAI */
+  .xai-trace-wrapper:not([data-density="cozy"]) {
+    margin: 0.25rem 0 0.75rem !important;
+  }
+
+  .xai-trace-toggle:not([data-density="cozy"]) {
+    padding: 0.25rem 0.5rem !important;
+    gap: 0.45rem !important;
+  }
+
+  .xai-trace-label:not([data-density="cozy"]) {
+    font-size: 0.86rem !important;
+  }
+
+  /* Ô nhập liệu (Chat Input) - Thu gọn độ cao từ 60px về 50px */
+  .chat-input-container:not([data-density="cozy"]) {
+    padding: 0.4rem 0.6rem 0.65rem !important;
+  }
+
+  .chat-input-wrapper:not([data-density="cozy"]) {
+    min-height: 50px !important;
+    border-radius: 20px !important;
+    padding: 7px 12px 7px 16px !important;
+  }
+
+  .chat-input:not([data-density="cozy"]) {
+    font-size: 0.98rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .chat-input:not([data-density="cozy"])::placeholder {
+    font-size: 0.94rem !important;
+  }
+
+  .chat-tool-btn:not([data-density="cozy"]) {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .chat-tool-btn:not([data-density="cozy"]) svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .chat-send-btn:not([data-density="cozy"]) {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .chat-send-btn:not([data-density="cozy"]) svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  .chat-input-hints:not([data-density="cozy"]) {
+    font-size: 0.78rem !important;
+    margin-top: 0.35rem !important;
+  }
+
+  /* Chip gợi ý điểm đến & hỏi tiếp */
+  .chat-suggested-places:not([data-density="cozy"]) {
+    margin-top: 1.25rem !important;
+  }
+
+  .suggested-places-label:not([data-density="cozy"]),
+  .deck-followup-label:not([data-density="cozy"]) {
+    font-size: 0.88rem !important;
+    margin-bottom: 0.6rem !important;
+  }
+
+  .chat-poi-btn:not([data-density="cozy"]),
+  .btn-deck-followup:not([data-density="cozy"]) {
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.92rem !important;
+    border-radius: 10px !important;
+    gap: 0.5rem !important;
+  }
+
+  .chat-poi-btn:not([data-density="cozy"]) .poi-btn-name {
+    font-size: 0.92rem !important;
+  }
+
+  /* Thanh công cụ Header của bảng tác vụ */
+  .workbench-header:not([data-density="cozy"]) {
+    padding: 0.6rem 0.95rem !important;
+  }
+
+  .workbench-title:not([data-density="cozy"]) {
+    font-size: 1.08rem !important;
+  }
+
+  .btn-workbench-action:not([data-density="cozy"]) {
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.82rem !important;
+    border-radius: 9px !important;
+  }
+
+  /* Màn hình khởi đầu Hero */
+  .welcome-heading:not([data-density="cozy"]) {
+    font-size: 1.95rem !important;
+    margin: 0 0 0.65rem !important;
+  }
+
+  .welcome-subheading:not([data-density="cozy"]) {
+    font-size: 0.95rem !important;
+    max-width: 580px !important;
+  }
+}
+
+/* Thu gọn Sidebar từ 320px về 268px cho màn hình Desktop/Laptop từ 1025px đến 1536px */
+@media (min-width: 1025px) and (max-width: 1536px) {
+  .sidebar-gemini:not(.collapsed):not([data-density="cozy"]) {
+    width: 268px !important;
+  }
+
+  .sidebar-gemini:not(.collapsed):not([data-density="cozy"]) .sidebar-brand-title {
+    font-size: 1.12rem;
+  }
+
+  .sidebar-gemini:not(.collapsed):not([data-density="cozy"]) .btn-sidebar-new-chat {
+    height: 40px;
+    font-size: 0.88rem;
+    padding: 0 12px;
+    gap: 0.65rem;
+  }
+
+  .sidebar-gemini:not(.collapsed):not([data-density="cozy"]) .sidebar-nav-item {
+    height: 38px;
+    font-size: 0.88rem;
+    padding: 0 10px;
+  }
+
+  .sidebar-gemini:not(.collapsed):not([data-density="cozy"]) .sidebar-history-item {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.84rem;
+  }
+
+  .sidebar-gemini:not(.collapsed):not([data-density="cozy"]) .sidebar-user-pill {
+    padding: 0.45rem 0.65rem;
+  }
+}
+
+/* 2. CHẾ ĐỘ THỦ CÔNG: GỌN GÀNG (ÉP COMPACT TRÊN MỌI MÀN HÌNH NẾU NGƯỜI DÙNG CHỌN) */
+html[data-density="compact"] {
+  font-size: 14.5px !important;
+}
+
+html[data-density="compact"] :root,
+html[data-density="compact"] {
+  --chat-col: 740px !important;
+}
+
+@media (min-width: 1025px) {
+  html[data-density="compact"] .sidebar-gemini:not(.collapsed) {
+    width: 268px !important;
+  }
+
+  html[data-density="compact"] .sidebar-gemini:not(.collapsed) .sidebar-brand-title {
+    font-size: 1.12rem;
+  }
+
+  html[data-density="compact"] .sidebar-gemini:not(.collapsed) .btn-sidebar-new-chat {
+    height: 40px;
+    font-size: 0.88rem;
+    padding: 0 12px;
+    gap: 0.65rem;
+  }
+
+  html[data-density="compact"] .sidebar-gemini:not(.collapsed) .sidebar-nav-item {
+    height: 38px;
+    font-size: 0.88rem;
+    padding: 0 10px;
+  }
+}
+
+html[data-density="compact"] .site-header {
+  height: 52px !important;
+}
+
+html[data-density="compact"] .studio-layout {
+  padding: 0.5rem 0.85rem !important;
+  gap: 0.85rem !important;
+  height: calc(100vh - 52px) !important;
+  height: calc(100dvh - 52px) !important;
+}
+
+html[data-density="compact"] .sidebar-gemini .hue-weather-widget {
+  min-width: 0 !important;
+  width: 100% !important;
+  padding: 0.6rem 0.75rem !important;
+  gap: 0.45rem !important;
+}
+
+html[data-density="compact"] .chat-thread {
+  padding: 1rem 0.85rem 1.65rem !important;
+  gap: 1.35rem !important;
+}
+
+html[data-density="compact"] .chat-message.user {
+  max-width: min(85%, 580px) !important;
+  margin-top: 0.75rem !important;
+}
+
+html[data-density="compact"] .chat-message.user .message-bubble {
+  padding: 0.55rem 1.15rem !important;
+  border-radius: 20px !important;
+}
+
+html[data-density="compact"] .chat-message.user .message-bubble p {
+  font-size: 0.98rem !important;
+  line-height: 1.55 !important;
+}
+
+html[data-density="compact"] .answer-content,
+html[data-density="compact"] .message-bubble {
+  font-size: 0.98rem !important;
+  line-height: 1.68 !important;
+}
+
+html[data-density="compact"] .answer-content p {
+  font-size: 0.98rem !important;
+  line-height: 1.68 !important;
+  margin-bottom: 0.65rem !important;
+}
+
+html[data-density="compact"] .answer-content ul,
+html[data-density="compact"] .answer-content ol {
+  font-size: 0.98rem !important;
+  line-height: 1.65 !important;
+  margin-bottom: 0.65rem !important;
+  padding-left: 1.25rem !important;
+}
+
+html[data-density="compact"] .answer-content li {
+  font-size: 0.98rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+html[data-density="compact"] .chat-input-container {
+  padding: 0.4rem 0.6rem 0.65rem !important;
+}
+
+html[data-density="compact"] .chat-input-wrapper {
+  min-height: 50px !important;
+  border-radius: 20px !important;
+  padding: 7px 12px 7px 16px !important;
+}
+
+html[data-density="compact"] .chat-input {
+  font-size: 0.98rem !important;
+  line-height: 1.45 !important;
+}
+
+html[data-density="compact"] .chat-input::placeholder {
+  font-size: 0.94rem !important;
+}
+
+html[data-density="compact"] .chat-tool-btn {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+html[data-density="compact"] .chat-tool-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+html[data-density="compact"] .chat-send-btn {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+html[data-density="compact"] .chat-send-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+html[data-density="compact"] .chat-input-hints {
+  font-size: 0.78rem !important;
+  margin-top: 0.35rem !important;
+}
+
+html[data-density="compact"] .chat-suggested-places {
+  margin-top: 1.25rem !important;
+}
+
+html[data-density="compact"] .chat-poi-btn,
+html[data-density="compact"] .btn-deck-followup {
+  padding: 0.45rem 0.85rem !important;
+  font-size: 0.92rem !important;
+  border-radius: 10px !important;
+  gap: 0.5rem !important;
+}
+
+html[data-density="compact"] .workbench-header {
+  padding: 0.6rem 0.95rem !important;
+}
+
+html[data-density="compact"] .workbench-title {
+  font-size: 1.08rem !important;
+}
+
+html[data-density="compact"] .btn-workbench-action {
+  padding: 0.35rem 0.65rem !important;
+  font-size: 0.82rem !important;
+  border-radius: 9px !important;
+}
+
+html[data-density="compact"] .welcome-heading {
+  font-size: 1.95rem !important;
+  margin: 0 0 0.65rem !important;
+}
+
+html[data-density="compact"] .welcome-subheading {
+  font-size: 0.95rem !important;
+  max-width: 580px !important;
+}
+
+/* 3. CHẾ ĐỘ THỦ CÔNG: RỘNG RÃI (ÉP COZY MÀN 27" TRÊN MỌI THIẾT BỊ) */
+html[data-density="cozy"] {
+  font-size: 16px !important;
+}
+
+html[data-density="cozy"] :root,
+html[data-density="cozy"] {
+  --chat-col: 880px !important;
+}
+
+@media (min-width: 1025px) {
+  html[data-density="cozy"] .sidebar-gemini:not(.collapsed) {
+    width: 320px !important;
+  }
+}
+
+html[data-density="cozy"] .chat-thread {
+  padding: 1.75rem 1.25rem 2.5rem !important;
+  gap: 2.25rem !important;
+}
+
+html[data-density="cozy"] .chat-message.user {
+  max-width: min(85%, 680px) !important;
+  margin-top: 1.25rem !important;
+}
+
+html[data-density="cozy"] .chat-message.user .message-bubble {
+  padding: 0.75rem 1.35rem !important;
+  border-radius: 24px !important;
+}
+
+html[data-density="cozy"] .chat-message.user .message-bubble p {
+  font-size: 1.0625rem !important;
+  line-height: 1.6 !important;
+}
+
+html[data-density="cozy"] .answer-content,
+html[data-density="cozy"] .message-bubble {
+  font-size: 1.0625rem !important;
+  line-height: 1.78 !important;
+}
+
+html[data-density="cozy"] .answer-content p {
+  font-size: 1.0625rem !important;
+  line-height: 1.78 !important;
+  margin-bottom: 0.85rem !important;
+}
+
+html[data-density="cozy"] .chat-input-wrapper {
+  min-height: 60px !important;
+  padding: 10px 14px 10px 18px !important;
+  border-radius: 24px !important;
+}
+
+html[data-density="cozy"] .chat-input {
+  font-size: 1.05rem !important;
+}
+
+html[data-density="cozy"] .chat-tool-btn {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+html[data-density="cozy"] .chat-send-btn {
+  width: 42px !important;
+  height: 42px !important;
+}
+
+html[data-density="cozy"] .welcome-heading {
+  font-size: 2.25rem !important;
+  margin: 0 0 0.85rem !important;
+}
+
+html[data-density="cozy"] .welcome-subheading {
+  font-size: 1.05rem !important;
+  max-width: 680px !important;
+}
+
+/* =============================================================================
+   TRAVELER PROFILE & AI PREFERENCES MODAL
+   Hồ sơ cá nhân hóa du khách Cố Đô và thống kê hành trình
+   ============================================================================= */
+.traveler-profile-modal-card {
+  max-width: 580px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  padding: 1.5rem 1.65rem !important;
+  border-radius: 20px !important;
+}
+
+.profile-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+  background: var(--color-surface-subtle);
+  padding: 1.15rem;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  margin-bottom: 1.25rem;
+}
+
+.profile-hero-avatar-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.profile-hero-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-hero-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #18181B;
+  color: #FFFFFF;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.profile-hero-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profile-hero-name {
+  font-family: var(--font-display);
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 0;
+}
+
+.profile-badge-status {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 600;
+  background: rgba(24, 24, 27, 0.08);
+  color: var(--color-ink);
+}
+
+.profile-hero-email {
+  font-size: 0.82rem;
+  color: var(--color-ink-secondary);
+  margin: 2px 0 6px;
+}
+
+.profile-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.profile-tag-rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  background: rgba(217, 119, 6, 0.12);
+  color: #B45309;
+}
+
+.profile-tag-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  color: #166534;
+  background: rgba(34, 197, 94, 0.12);
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22C55E;
+  display: inline-block;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+}
+
+.profile-section-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin: 1.15rem 0 0.5rem;
+}
+
+.profile-section-subtitle {
+  font-size: 0.78rem;
+  color: var(--color-ink-muted);
+  margin: -0.25rem 0 0.85rem;
+  line-height: 1.45;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.65rem;
+  margin-bottom: 1.15rem;
+}
+
+.profile-stat-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+}
+
+.profile-stat-box.interactive-stat {
+  cursor: pointer;
+}
+
+.profile-stat-box.interactive-stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-border-focus);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.profile-stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-stat-icon.chat-icon { background: rgba(59, 130, 246, 0.1); color: #2563EB; }
+.profile-stat-icon.fav-icon { background: rgba(239, 68, 68, 0.1); color: #DC2626; }
+.profile-stat-icon.checkin-icon { background: rgba(16, 185, 129, 0.1); color: #059669; }
+.profile-stat-icon.tour-icon { background: rgba(168, 85, 247, 0.1); color: #9333EA; }
+
+.profile-stat-num {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-ink);
+  line-height: 1.1;
+}
+
+.profile-stat-label {
+  font-size: 0.72rem;
+  color: var(--color-ink-muted);
+  font-weight: 500;
+}
+
+.profile-preferences-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.pref-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pref-field-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.pref-chips-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.pref-chip {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pref-chip:hover {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.pref-chip.active {
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.profile-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.profile-left-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-profile-primary {
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-profile-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-profile-secondary {
+  background: var(--color-surface-subtle);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-profile-secondary:hover {
+  background: var(--color-surface-hover);
+}
+
+.btn-profile-danger {
+  background: rgba(239, 68, 68, 0.08);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-profile-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* Dark Mode overrides for Traveler Profile Modal */
+[data-theme="dark"] .traveler-profile-modal-card {
+  background: #18181B !important;
+  border-color: #27272A !important;
+}
+
+[data-theme="dark"] .profile-hero-card {
+  background: #27272A !important;
+  border-color: #3F3F46 !important;
+}
+
+[data-theme="dark"] .profile-hero-fallback {
+  background: #09090B !important;
+  color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .profile-hero-name {
+  color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .profile-hero-email {
+  color: #A1A1AA !important;
+}
+
+[data-theme="dark"] .profile-badge-status {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .profile-section-title {
+  color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .profile-section-subtitle {
+  color: #71717A !important;
+}
+
+[data-theme="dark"] .profile-stat-box {
+  background: #27272A !important;
+  border-color: #3F3F46 !important;
+}
+
+[data-theme="dark"] .profile-stat-num {
+  color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .profile-stat-label {
+  color: #A1A1AA !important;
+}
+
+[data-theme="dark"] .pref-field-label {
+  color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .pref-chip {
+  background: #27272A !important;
+  border-color: #3F3F46 !important;
+  color: #D4D4D8 !important;
+}
+
+[data-theme="dark"] .pref-chip:hover {
+  border-color: #F4F4F5 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .pref-chip.active {
+  background: #F4F4F5 !important;
+  color: #09090B !important;
+  border-color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .btn-profile-primary {
+  background: #F4F4F5 !important;
+  color: #09090B !important;
+}
+
+[data-theme="dark"] .btn-profile-secondary {
+  background: #27272A !important;
+  border-color: #3F3F46 !important;
+  color: #F4F4F5 !important;
+}
+
+[data-theme="dark"] .profile-modal-actions {
+  border-top-color: #27272A !important;
+}
+
+
+
 
 

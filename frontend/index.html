@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-  <!-- Anti-FOUC Early Theme Initializer (evon:ui-ux design tokens) -->
+  <!-- Anti-FOUC Early Theme & Density Initializer (evon:ui-ux design tokens) -->
   <script>
     (function () {
       try {
@@ -28,6 +28,10 @@
         var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         var theme = savedTheme === 'dark' || (savedTheme !== 'light' && systemDark) ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', theme);
+        var savedDensity = localStorage.getItem('hue_density');
+        if (savedDensity && savedDensity !== 'auto') {
+          document.documentElement.setAttribute('data-density', savedDensity);
+        }
       } catch (e) { }
     })();
   </script>
@@ -104,15 +108,6 @@
             <line x1="2" y1="10" x2="22" y2="10"></line>
           </svg>
           <span data-i18n="budgetEstimator">Dự toán chi phí</span>
-        </button>
-        <button type="button" class="sidebar-nav-item" id="btn-sidebar-toggle-map"
-          title="Mở / Thu gọn bản đồ không gian" data-i18n-title="spatialMap" data-i18n-tooltip="spatialMap">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-            <line x1="9" y1="3" x2="9" y2="18" />
-            <line x1="15" y1="6" x2="15" y2="21" />
-          </svg>
-          <span id="sidebar-map-toggle-label" data-i18n="spatialMap">Bản đồ không gian</span>
         </button>
       </div>
 
@@ -322,6 +317,17 @@
                   <line x1="21" y1="12" x2="23" y2="12"></line>
                   <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                   <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+              </button>
+
+              <button type="button" class="header-theme-icon-btn" id="btn-header-density-toggle"
+                title="Mật độ hiển thị: Gọn gàng (Laptop) / Rộng rãi (Màn 27&quot;)"
+                aria-label="Chuyển chế độ hiển thị" data-i18n-title="densityTooltip">
+                <!-- Monitor / Display scale icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
               </button>
             </div>
@@ -852,7 +858,8 @@
               </h3>
               <span class="poi-verified-badge" title="Đánh giá xác thực từ du khách thực tế">Xác thực</span>
             </div>
-            <button type="button" class="btn-open-review-modal" id="btn-open-review-modal" title="Viết đánh giá của bạn cho địa điểm này">
+            <button type="button" class="btn-open-review-modal" id="btn-open-review-modal"
+              title="Viết đánh giá của bạn cho địa điểm này">
               <span>Viết đánh giá</span>
             </button>
           </div>
@@ -862,7 +869,8 @@
             <div class="rating-score-box">
               <div class="rating-big-num" id="overview-rating-score">4.8</div>
               <div class="rating-stars-row" id="overview-rating-stars">
-                <span class="star-active">★</span><span class="star-active">★</span><span class="star-active">★</span><span class="star-active">★</span><span class="star-active">★</span>
+                <span class="star-active">★</span><span class="star-active">★</span><span
+                  class="star-active">★</span><span class="star-active">★</span><span class="star-active">★</span>
               </div>
               <div class="rating-total-count" id="overview-total-count">350 đánh giá</div>
             </div>
@@ -870,27 +878,37 @@
             <div class="rating-bars-box" id="overview-rating-bars">
               <div class="rating-bar-row" data-star="5">
                 <span class="bar-label">5 sao</span>
-                <div class="bar-track"><div class="bar-fill" style="width: 78%;"></div></div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 78%;"></div>
+                </div>
                 <span class="bar-pct">78%</span>
               </div>
               <div class="rating-bar-row" data-star="4">
                 <span class="bar-label">4 sao</span>
-                <div class="bar-track"><div class="bar-fill" style="width: 15%;"></div></div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 15%;"></div>
+                </div>
                 <span class="bar-pct">15%</span>
               </div>
               <div class="rating-bar-row" data-star="3">
                 <span class="bar-label">3 sao</span>
-                <div class="bar-track"><div class="bar-fill" style="width: 4%;"></div></div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 4%;"></div>
+                </div>
                 <span class="bar-pct">4%</span>
               </div>
               <div class="rating-bar-row" data-star="2">
                 <span class="bar-label">2 sao</span>
-                <div class="bar-track"><div class="bar-fill" style="width: 2%;"></div></div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 2%;"></div>
+                </div>
                 <span class="bar-pct">2%</span>
               </div>
               <div class="rating-bar-row" data-star="1">
                 <span class="bar-label">1 sao</span>
-                <div class="bar-track"><div class="bar-fill" style="width: 1%;"></div></div>
+                <div class="bar-track">
+                  <div class="bar-fill" style="width: 1%;"></div>
+                </div>
                 <span class="bar-pct">1%</span>
               </div>
             </div>
@@ -1154,6 +1172,21 @@
 
             <div class="settings-item">
               <div class="settings-item-info">
+                <span class="settings-item-title" data-i18n="densityLabel">Mật độ hiển thị (Tỷ lệ màn hình)</span>
+                <span class="settings-item-desc" data-i18n="densityDesc">Tối ưu không gian hiển thị tự động cho Màn hình
+                  rời (27") hoặc Laptop (14–16.5").</span>
+              </div>
+              <div class="settings-select-wrapper">
+                <select id="pref-density-select" class="settings-select" aria-label="Lựa chọn mật độ hiển thị">
+                  <option value="auto" data-i18n="densityAuto">Tự động thích ứng (Khuyên dùng)</option>
+                  <option value="compact" data-i18n="densityCompact">Gọn gàng (Tối ưu Laptop 14–16.5")</option>
+                  <option value="cozy" data-i18n="densityCozy">Rộng rãi (Tối ưu Màn hình lớn 27")</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-item">
+              <div class="settings-item-info">
                 <span class="settings-item-title" data-i18n="autoMapLabel">Tự động kích hoạt Bản đồ & Lộ trình</span>
                 <span class="settings-item-desc" data-i18n="autoMapDesc">Tự động mở không gian bản đồ khi Trợ lý AI gợi
                   ý địa danh hoặc tuyến tham quan.</span>
@@ -1216,7 +1249,8 @@
               <input type="radio" name="ai-style-option" value="balanced" checked />
               <div class="ai-style-box">
                 <div class="ai-style-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
                   </svg>
@@ -1230,7 +1264,8 @@
               <input type="radio" name="ai-style-option" value="heritage" />
               <div class="ai-style-box">
                 <div class="ai-style-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <line x1="3" y1="21" x2="21" y2="21"></line>
                     <line x1="3" y1="10" x2="21" y2="10"></line>
                     <polyline points="5 10 5 21"></polyline>
@@ -1249,7 +1284,8 @@
               <input type="radio" name="ai-style-option" value="foodie" />
               <div class="ai-style-box">
                 <div class="ai-style-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
                     <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
                     <line x1="6" y1="1" x2="6" y2="4"></line>
@@ -1608,7 +1644,8 @@
        POI REVIEW & RATING MODAL (VIẾT ĐÁNH GIÁ ĐỊA ĐIỂM CỐ ĐÔ HUẾ)
        Hệ thống đánh giá trải nghiệm thực địa chuẩn Google Maps / Airbnb
   =========================================================================== -->
-  <div class="modal-backdrop" id="poi-review-modal" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+  <div class="modal-backdrop" id="poi-review-modal" role="dialog" aria-modal="true"
+    aria-labelledby="review-modal-title">
     <div class="modal-card poi-review-modal-card">
       <button type="button" class="modal-close-btn" id="btn-close-review-modal" aria-label="Đóng cửa sổ">✕</button>
 
@@ -1625,19 +1662,29 @@
           <div class="star-rating-widget" id="review-star-widget" role="radiogroup" aria-label="Chọn số sao">
             <div class="star-rating-buttons">
               <button type="button" class="star-btn" data-star="1" aria-label="1 sao">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
               </button>
               <button type="button" class="star-btn" data-star="2" aria-label="2 sao">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
               </button>
               <button type="button" class="star-btn" data-star="3" aria-label="3 sao">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
               </button>
               <button type="button" class="star-btn" data-star="4" aria-label="4 sao">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
               </button>
               <button type="button" class="star-btn" data-star="5" aria-label="5 sao">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
               </button>
             </div>
             <span class="star-rating-label" id="star-rating-label">5/5 · Tuyệt vời</span>
@@ -1676,18 +1723,23 @@
         <div class="review-form-row">
           <div class="review-form-group flex-1">
             <label class="review-form-label" for="input-review-author">Tên người đánh giá</label>
-            <input type="text" id="input-review-author" class="review-input" placeholder="Tên hiển thị (ví dụ: Hoàng Minh)" maxlength="50" />
+            <input type="text" id="input-review-author" class="review-input"
+              placeholder="Tên hiển thị (ví dụ: Hoàng Minh)" maxlength="50" />
           </div>
           <div class="review-form-group flex-1">
             <label class="review-form-label" for="input-review-title">Tiêu đề nhận xét</label>
-            <input type="text" id="input-review-title" class="review-input" placeholder="Tóm tắt ngắn gọn cảm nhận" maxlength="100" />
+            <input type="text" id="input-review-title" class="review-input" placeholder="Tóm tắt ngắn gọn cảm nhận"
+              maxlength="100" />
           </div>
         </div>
 
         <!-- Comment Textarea -->
         <div class="review-form-group">
-          <label class="review-form-label" for="input-review-comment">Nội dung chia sẻ chi tiết <span class="required">*</span></label>
-          <textarea id="input-review-comment" class="review-textarea" rows="4" placeholder="Chia sẻ trải nghiệm thực tế, thời điểm đẹp nhất, lưu ý vé vào cổng hoặc kinh nghiệm cho du khách tiếp theo..." required maxlength="1000"></textarea>
+          <label class="review-form-label" for="input-review-comment">Nội dung chia sẻ chi tiết <span
+              class="required">*</span></label>
+          <textarea id="input-review-comment" class="review-textarea" rows="4"
+            placeholder="Chia sẻ trải nghiệm thực tế, thời điểm đẹp nhất, lưu ý vé vào cổng hoặc kinh nghiệm cho du khách tiếp theo..."
+            required maxlength="1000"></textarea>
           <div class="review-char-count"><span id="review-chars-used">0</span>/1000 ký tự</div>
         </div>
 
@@ -1699,6 +1751,162 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ===========================================================================
+       TRAVELER PROFILE & AI PREFERENCES MODAL (HỒ SƠ DU KHÁCH CỐ ĐÔ)
+  =========================================================================== -->
+  <div class="modal-backdrop" id="traveler-profile-modal" role="dialog" aria-modal="true"
+    aria-labelledby="profile-modal-title">
+    <div class="modal-card traveler-profile-modal-card">
+      <button type="button" class="modal-close-btn" id="btn-close-profile-modal" aria-label="Đóng cửa sổ">✕</button>
+
+      <!-- Profile Header / Hero Card -->
+      <div class="profile-hero-card">
+        <div class="profile-hero-avatar-wrap">
+          <img id="profile-hero-avatar-img" class="profile-hero-avatar hidden" alt="Avatar" />
+          <div id="profile-hero-avatar-fallback" class="profile-hero-avatar profile-hero-fallback">M</div>
+        </div>
+        <div class="profile-hero-meta">
+          <div class="profile-hero-title-row">
+            <h3 id="profile-modal-title" class="profile-hero-name">Minh Quý - DEMO</h3>
+            <span class="profile-badge-status" id="profile-badge-status">Demo</span>
+          </div>
+          <p class="profile-hero-email" id="profile-hero-email">minhquy017@gmail.com</p>
+          <div class="profile-hero-tags">
+            <span class="profile-tag-rank" id="profile-tag-rank">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span id="profile-rank-title-text">Lữ khách Khám phá Cố Đô</span>
+            </span>
+            <span class="profile-tag-sync" id="profile-tag-sync">
+              <span class="pulse-dot"></span>
+              <span data-i18n="syncFirestoreActive">Đồng bộ Cloud Firestore</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Travel Stats Summary Grid (Dấu ấn Hành trình Cố Đô) -->
+      <div class="profile-section-title" data-i18n="profileStatsTitle">Dấu ấn Hành trình Cố Đô</div>
+      <div class="profile-stats-grid">
+        <div class="profile-stat-box">
+          <div class="profile-stat-icon chat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <div class="profile-stat-content">
+            <div class="profile-stat-num" id="profile-stat-sessions">0</div>
+            <div class="profile-stat-label" data-i18n="profileStatSessions">Phiên chat AI</div>
+          </div>
+        </div>
+
+        <div class="profile-stat-box interactive-stat" id="btn-profile-open-notebook" title="Xem danh sách địa điểm đã lưu">
+          <div class="profile-stat-icon fav-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <div class="profile-stat-content">
+            <div class="profile-stat-num" id="profile-stat-favorites">0</div>
+            <div class="profile-stat-label" data-i18n="profileStatFavorites">Địa điểm lưu</div>
+          </div>
+        </div>
+
+        <div class="profile-stat-box interactive-stat" id="btn-profile-open-checkins" title="Xem danh sách điểm check-in">
+          <div class="profile-stat-icon checkin-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div class="profile-stat-content">
+            <div class="profile-stat-num" id="profile-stat-checkins">0</div>
+            <div class="profile-stat-label" data-i18n="profileStatCheckins">Điểm Check-in</div>
+          </div>
+        </div>
+
+        <div class="profile-stat-box interactive-stat" id="btn-profile-open-tours" title="Xem các tour đã lưu">
+          <div class="profile-stat-icon tour-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+              <line x1="9" y1="3" x2="9" y2="18" />
+              <line x1="15" y1="6" x2="15" y2="21" />
+            </svg>
+          </div>
+          <div class="profile-stat-content">
+            <div class="profile-stat-num" id="profile-stat-tours">0</div>
+            <div class="profile-stat-label" data-i18n="profileStatTours">Lịch trình tour</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Personalization Preferences Section (Gu Du lịch & Khẩu vị AI) -->
+      <div class="profile-section-title" data-i18n="profilePersonaTitle">Hồ sơ Sở thích Trợ lý AI (AI Travel Persona)</div>
+      <p class="profile-section-subtitle" data-i18n="profilePersonSubtitle">Trợ lý Spatial GraphRAG sẽ dựa vào hồ sơ này để cá nhân hóa kết quả tìm kiếm và gợi ý lộ trình phù hợp.</p>
+
+      <div class="profile-preferences-form">
+        <!-- Dietary & Spice -->
+        <div class="pref-field-group">
+          <label class="pref-field-label" data-i18n="profileDietLabel">Khẩu vị & Dinh dưỡng đặc sản Huế:</label>
+          <div class="pref-chips-group" id="profile-dietary-chips">
+            <button type="button" class="pref-chip active" data-value="Ăn cay chuẩn Huế">🌶️ Ăn cay chuẩn Huế</button>
+            <button type="button" class="pref-chip" data-value="Ít cay / Vừa phải">🍲 Ít cay / Vừa phải</button>
+            <button type="button" class="pref-chip" data-value="Ăn chay (Vegetarian)">🥗 Ăn chay (Vegetarian)</button>
+            <button type="button" class="pref-chip" data-value="Không ăn hải sản">🚫 Không ăn hải sản</button>
+          </div>
+        </div>
+
+        <!-- Travel Style -->
+        <div class="pref-field-group">
+          <label class="pref-field-label" data-i18n="profileStyleLabel">Phong cách trải nghiệm ưu tiên:</label>
+          <div class="pref-chips-group" id="profile-style-chips">
+            <button type="button" class="pref-chip active" data-value="heritage">🏛️ Di sản & Lịch sử</button>
+            <button type="button" class="pref-chip active" data-value="foodie">🥢 Ẩm thực truyền thống</button>
+            <button type="button" class="pref-chip" data-value="photo">📸 Sống ảo & Check-in</button>
+            <button type="button" class="pref-chip" data-value="relax">🌿 Nghỉ dưỡng & Thiên nhiên</button>
+          </div>
+        </div>
+
+        <!-- Transport Preference -->
+        <div class="pref-field-group">
+          <label class="pref-field-label" data-i18n="profileTransportLabel">Phương tiện di chuyển chính:</label>
+          <div class="pref-chips-group" id="profile-transport-chips">
+            <button type="button" class="pref-chip" data-value="Đi bộ / Xe đạp">🚶 Đi bộ / Xe đạp</button>
+            <button type="button" class="pref-chip active" data-value="Xe máy">🛵 Thuê xe máy</button>
+            <button type="button" class="pref-chip" data-value="Taxi / Ô tô">🚕 Taxi / Grab</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Actions -->
+      <div class="profile-modal-actions">
+        <div class="profile-left-actions">
+          <button type="button" class="btn-profile-secondary" id="btn-profile-switch-account">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="8.5" cy="7" r="4"></circle>
+              <line x1="20" y1="8" x2="20" y2="14"></line>
+              <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+            <span data-i18n="profileSwitchAccount">Đổi tài khoản</span>
+          </button>
+          <button type="button" class="btn-profile-danger" id="btn-profile-logout">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span data-i18n="popoverLogout">Đăng xuất</span>
+          </button>
+        </div>
+        <button type="button" class="btn-profile-primary" id="btn-save-profile-persona">
+          <span data-i18n="profileSaveBtn">Lưu sở thích du lịch</span>
+        </button>
+      </div>
     </div>
   </div>
 
