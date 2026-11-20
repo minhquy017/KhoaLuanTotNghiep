@@ -268,8 +268,8 @@ Về quản lý lịch sử hội thoại, hệ thống áp dụng mô hình lư
 \begin{equation}
 \label{eq:pin-ranking}
 \text{Rank}(S_i) = \begin{cases} 
-(1, \text{Timestamp}_{\text{pinned}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{true} \\ 
-(0, \text{Timestamp}_{\text{updated}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{false} 
+(1, \text{Timestamp}_{\text{pinned}}(S_i)), & \text{nếu } S_i\text{.isPinned} = \text{true} \\ 
+(0, \text{Timestamp}_{\text{updated}}(S_i)), & \text{nếu } S_i\text{.isPinned} = \text{false} 
 \end{cases}
 \end{equation}
 Theo Công thức (\ref{eq:pin-ranking}), các phiên được ghim chủ động luôn hiển thị ở nhóm đầu danh sách với viền hổ phách (\texttt{\#F59E0B}). Bên cạnh đó, hệ thống tích hợp Chế độ Nền tối công thái học đạt chuẩn WCAG 2.1 AA (\texttt{\#09090B}, \texttt{\#18181B}, \texttt{\#27272A}) với độ tương phản $\ge 4,5:1$ chống mỏi mắt khi du lịch đêm, cùng phân hệ bản địa hóa song ngữ hoàn chỉnh (\texttt{i18n.js}) bao gồm hơn 1.200 mục từ điển Anh -- Việt chuyển đổi tức thời không cần tải lại trang. Toàn bộ các đặc tả kiến trúc web client và bảo mật được tổng hợp tại Bảng \ref{tab:web-security-architecture}.
