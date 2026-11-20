@@ -144,8 +144,6 @@
             </div>
             <div class="sidebar-user-info">
               <span class="sidebar-user-name" id="sidebar-user-name" data-i18n="userGuest">Khách vãng lai</span>
-              <span class="sidebar-user-status" id="sidebar-user-status" data-i18n="syncFirestore">Đồng bộ Cloud
-                Firestore</span>
             </div>
           </div>
         </div>
@@ -321,10 +319,11 @@
               </button>
 
               <button type="button" class="header-theme-icon-btn" id="btn-header-density-toggle"
-                title="Mật độ hiển thị: Gọn gàng (Laptop) / Rộng rãi (Màn 27&quot;)"
-                aria-label="Chuyển chế độ hiển thị" data-i18n-title="densityTooltip">
+                title="Mật độ hiển thị: Gọn gàng (Laptop) / Rộng rãi (Màn 27&quot;)" aria-label="Chuyển chế độ hiển thị"
+                data-i18n-title="densityTooltip">
                 <!-- Monitor / Display scale icon -->
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                   <line x1="8" y1="21" x2="16" y2="21"></line>
                   <line x1="12" y1="17" x2="12" y2="21"></line>
@@ -1774,18 +1773,6 @@
             <span class="profile-badge-status" id="profile-badge-status">Demo</span>
           </div>
           <p class="profile-hero-email" id="profile-hero-email">minhquy017@gmail.com</p>
-          <div class="profile-hero-tags">
-            <span class="profile-tag-rank" id="profile-tag-rank">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-              </svg>
-              <span id="profile-rank-title-text">Lữ khách Khám phá Cố Đô</span>
-            </span>
-            <span class="profile-tag-sync" id="profile-tag-sync">
-              <span class="pulse-dot"></span>
-              <span data-i18n="syncFirestoreActive">Đồng bộ Cloud Firestore</span>
-            </span>
-          </div>
         </div>
       </div>
 
@@ -1804,7 +1791,8 @@
           </div>
         </div>
 
-        <div class="profile-stat-box interactive-stat" id="btn-profile-open-notebook" title="Xem danh sách địa điểm đã lưu">
+        <div class="profile-stat-box interactive-stat" id="btn-profile-open-notebook"
+          title="Xem danh sách địa điểm đã lưu">
           <div class="profile-stat-icon fav-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -1816,7 +1804,8 @@
           </div>
         </div>
 
-        <div class="profile-stat-box interactive-stat" id="btn-profile-open-checkins" title="Xem danh sách điểm check-in">
+        <div class="profile-stat-box interactive-stat" id="btn-profile-open-checkins"
+          title="Xem danh sách điểm check-in">
           <div class="profile-stat-icon checkin-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -1845,18 +1834,20 @@
       </div>
 
       <!-- AI Personalization Preferences Section (Gu Du lịch & Khẩu vị AI) -->
-      <div class="profile-section-title" data-i18n="profilePersonaTitle">Hồ sơ Sở thích Trợ lý AI (AI Travel Persona)</div>
-      <p class="profile-section-subtitle" data-i18n="profilePersonSubtitle">Trợ lý Spatial GraphRAG sẽ dựa vào hồ sơ này để cá nhân hóa kết quả tìm kiếm và gợi ý lộ trình phù hợp.</p>
+      <div class="profile-section-title" data-i18n="profilePersonaTitle">Hồ sơ Sở thích Trợ lý AI (AI Travel Persona)
+      </div>
+      <p class="profile-section-subtitle" data-i18n="profilePersonSubtitle">Trợ lý Spatial GraphRAG sẽ dựa vào hồ sơ này
+        để cá nhân hóa kết quả tìm kiếm và gợi ý lộ trình phù hợp.</p>
 
       <div class="profile-preferences-form">
         <!-- Dietary & Spice -->
         <div class="pref-field-group">
           <label class="pref-field-label" data-i18n="profileDietLabel">Khẩu vị & Dinh dưỡng đặc sản Huế:</label>
           <div class="pref-chips-group" id="profile-dietary-chips">
-            <button type="button" class="pref-chip active" data-value="Ăn cay chuẩn Huế">🌶️ Ăn cay chuẩn Huế</button>
-            <button type="button" class="pref-chip" data-value="Ít cay / Vừa phải">🍲 Ít cay / Vừa phải</button>
-            <button type="button" class="pref-chip" data-value="Ăn chay (Vegetarian)">🥗 Ăn chay (Vegetarian)</button>
-            <button type="button" class="pref-chip" data-value="Không ăn hải sản">🚫 Không ăn hải sản</button>
+            <button type="button" class="pref-chip active" data-value="Ăn cay chuẩn Huế">Ăn cay chuẩn Huế</button>
+            <button type="button" class="pref-chip" data-value="Ít cay / Vừa phải">Ít cay / Vừa phải</button>
+            <button type="button" class="pref-chip" data-value="Ăn chay (Vegetarian)">Ăn chay (Vegetarian)</button>
+            <button type="button" class="pref-chip" data-value="Không ăn hải sản">Không ăn hải sản</button>
           </div>
         </div>
 
@@ -1864,10 +1855,10 @@
         <div class="pref-field-group">
           <label class="pref-field-label" data-i18n="profileStyleLabel">Phong cách trải nghiệm ưu tiên:</label>
           <div class="pref-chips-group" id="profile-style-chips">
-            <button type="button" class="pref-chip active" data-value="heritage">🏛️ Di sản & Lịch sử</button>
-            <button type="button" class="pref-chip active" data-value="foodie">🥢 Ẩm thực truyền thống</button>
-            <button type="button" class="pref-chip" data-value="photo">📸 Sống ảo & Check-in</button>
-            <button type="button" class="pref-chip" data-value="relax">🌿 Nghỉ dưỡng & Thiên nhiên</button>
+            <button type="button" class="pref-chip active" data-value="heritage">Di sản & Lịch sử</button>
+            <button type="button" class="pref-chip active" data-value="foodie">Ẩm thực truyền thống</button>
+            <button type="button" class="pref-chip" data-value="photo">Sống ảo & Check-in</button>
+            <button type="button" class="pref-chip" data-value="relax">Nghỉ dưỡng & Thiên nhiên</button>
           </div>
         </div>
 
@@ -1875,9 +1866,9 @@
         <div class="pref-field-group">
           <label class="pref-field-label" data-i18n="profileTransportLabel">Phương tiện di chuyển chính:</label>
           <div class="pref-chips-group" id="profile-transport-chips">
-            <button type="button" class="pref-chip" data-value="Đi bộ / Xe đạp">🚶 Đi bộ / Xe đạp</button>
-            <button type="button" class="pref-chip active" data-value="Xe máy">🛵 Thuê xe máy</button>
-            <button type="button" class="pref-chip" data-value="Taxi / Ô tô">🚕 Taxi / Grab</button>
+            <button type="button" class="pref-chip" data-value="Đi bộ / Xe đạp">Đi bộ / Xe đạp</button>
+            <button type="button" class="pref-chip active" data-value="Xe máy">Thuê xe máy</button>
+            <button type="button" class="pref-chip" data-value="Taxi / Ô tô">Taxi / Grab</button>
           </div>
         </div>
       </div>

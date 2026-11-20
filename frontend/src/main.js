@@ -2188,7 +2188,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const initial = (displayName || 'U')[0].toUpperCase();
 
       sidebarUserName.textContent = displayName;
-      sidebarUserStatus.textContent = user.isDemo ? i18n.t('demoAccount', 'Tài khoản Demo') : i18n.t('syncFirestore', 'Đồng bộ Cloud Firestore');
+      if (sidebarUserStatus) {
+        sidebarUserStatus.textContent = user.isDemo ? i18n.t('demoAccount', 'Tài khoản Demo') : i18n.t('syncFirestore', 'Đồng bộ Cloud Firestore');
+      }
 
       if (popoverUserName) popoverUserName.textContent = displayName;
       if (popoverUserEmail) popoverUserEmail.textContent = email;
@@ -2227,7 +2229,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } else {
       sidebarUserName.textContent = i18n.t('guestUser', 'Khách vãng lai');
-      sidebarUserStatus.textContent = i18n.t('clickToLogin', 'Bấm để đăng nhập');
+      if (sidebarUserStatus) {
+        sidebarUserStatus.textContent = i18n.t('clickToLogin', 'Bấm để đăng nhập');
+      }
       sidebarAvatarImg?.classList.add('hidden');
       if (sidebarAvatarFallback) {
         sidebarAvatarFallback.textContent = 'U';
@@ -2388,7 +2392,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         applyDensity(e.target.value);
         window.authController?.showToast?.(
           e.target.value === 'compact' ? i18n.t('densityCompact') :
-          e.target.value === 'cozy' ? i18n.t('densityCozy') : i18n.t('densityAuto')
+            e.target.value === 'cozy' ? i18n.t('densityCozy') : i18n.t('densityAuto')
         );
       });
     }
@@ -2522,8 +2526,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // Thống kê hành trình
-      const sessionCount = chatSessionsList?.querySelectorAll('.chat-session-item')?.length || 
-                           (window.chatSessions ? window.chatSessions.length : 26);
+      const sessionCount = chatSessionsList?.querySelectorAll('.chat-session-item')?.length ||
+        (window.chatSessions ? window.chatSessions.length : 26);
       if (statSessions) statSessions.textContent = sessionCount;
 
       const favCount = userStore?.getFavorites?.()?.length ?? 4;
@@ -2536,7 +2540,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         const savedTours = JSON.parse(localStorage.getItem('hue_saved_itineraries') || '[]');
         toursCount = Array.isArray(savedTours) ? savedTours.length : 0;
-      } catch {}
+      } catch { }
       if (statTours) statTours.textContent = toursCount || 2;
 
       // Cấp bậc
@@ -2643,12 +2647,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnClose?.addEventListener('click', closeProfileModal);
     modal?.addEventListener('click', (e) => {
       if (e.target === modal) closeProfileModal();
-    });
-
-    const headerUserChip = document.getElementById('header-user-chip');
-    headerUserChip?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openProfileModal();
     });
 
     window.openTravelerProfileModal = openProfileModal;
