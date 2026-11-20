@@ -55,57 +55,39 @@ Thứ hai, Nhóm bài toán khám phá danh thắng không gian lân cận (Spat
 
 Thứ ba, Nhóm bài toán lập lịch trình du lịch tổng hợp (Multi-day \& Half-day Itinerary Planning -- từ TC-76 đến TC-100, gồm 25 kịch bản) giải quyết bài toán lập lịch trình du lịch đa ngày tổng hợp dựa trên mô hình Orienteering Problem, kết hợp phân cụm địa lý hai bờ sông Hương và ghép nối các bữa ăn đặc sản chuẩn vị cho các khung thời gian linh hoạt từ tour nửa ngày (ngắm hoàng hôn, ẩm thực đêm) đến các tour 1 ngày, 2 ngày, 3 ngày cho đa dạng đối tượng du khách (cặp đôi, gia đình, thanh niên trải nghiệm).
 
-Để minh họa cấu trúc chi tiết của bộ dữ liệu, Bảng \ref{tab:benchmark-suite-specs} trình bày đặc tả 12 kịch bản đại diện tiêu biểu trích xuất từ 3 nhóm bài toán của bộ 100 kịch bản kiểm thử chuẩn (toàn văn 100 kịch bản được lưu trữ trong cơ sở dữ liệu kiểm thử và tóm lược tại Phụ lục A).
+Để minh họa cấu trúc chi tiết của bộ dữ liệu, Bảng \ref{tab:benchmark-suite-specs} trình bày đặc tả 6 kịch bản đại diện tiêu biểu trích xuất từ 3 nhóm bài toán của bộ 100 kịch bản kiểm thử chuẩn (toàn văn 100 kịch bản được lưu trữ trong cơ sở dữ liệu kiểm thử và tóm lược tại Phụ lục A).
 
-\begingroup
-\setlength{\tabcolsep}{3.5pt}
+\begin{table}[htbp]
+\centering
+\caption{Đặc tả 6 kịch bản đại diện tiêu biểu trong Bộ dữ liệu kiểm thử chuẩn 100 kịch bản du lịch Huế}
+\label{tab:benchmark-suite-specs}
 \footnotesize
-\renewcommand{\arraystretch}{1.2}
-\begin{longtable}{>{\centering\arraybackslash}p{1.0cm} >{\raggedright\arraybackslash}p{4.1cm} >{\raggedright\arraybackslash}p{2.5cm} >{\raggedright\arraybackslash}p{2.3cm} >{\raggedright\arraybackslash}p{4.7cm}}
-\caption{Đặc tả 12 kịch bản đại diện tiêu biểu trong Bộ dữ liệu kiểm thử chuẩn 100 kịch bản cho du lịch Huế} \label{tab:benchmark-suite-specs} \\
+\singlespacing
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{>{\centering\arraybackslash}p{1.0cm} >{\raggedright\arraybackslash}p{3.8cm} >{\raggedright\arraybackslash}p{2.2cm} >{\raggedright\arraybackslash}p{2.0cm} >{\raggedright\arraybackslash}X}
 \hline
-\textbf{Mã} & \textbf{Câu hỏi truy vấn của du khách (Prompt)} & \textbf{Điểm neo (Anchor POI)} & \textbf{Món / Dịch vụ yêu cầu} & \textbf{Kết quả kỳ vọng và Tiêu chuẩn nghiệm đúng} \\
+\textbf{Mã} & \textbf{Câu hỏi truy vấn của du khách (Prompt)} & \textbf{Điểm neo (Anchor POI)} & \textbf{Món / Dịch vụ} & \textbf{Kết quả kỳ vọng và Tiêu chuẩn nghiệm đúng} \\
 \hline
-\endfirsthead
-
-\multicolumn{5}{c}%
-{{\bfseries \tablename\ \thetable{} -- Tiếp theo từ trang trước}} \\
+TC-01 & Tôi đang ở Đại Nội Huế, muốn tìm quán bún bò chuẩn vị gần đây để đi bộ ăn trưa. & Đại Nội Huế (bờ Bắc) & Bún bò Huế & Gợi ý quán bún bò bờ Bắc ($d \le 1,5\text{ km}$; Bún bò Mụ Rơi, Cẩm); không nhảy bờ sang bờ Nam. \\
+TC-03 & Tôi đang ở khu vực Cồn Hến, muốn thưởng thức cơm hến và chè bắp đúng gốc Huế. & Cồn Hến (Vĩ Dạ) & Cơm hến, chè bắp & Gợi ý quán truyền thống tại đảo Cồn Hến (Hoa Đông); $d \le 800\text{ m}$; xác thực $\text{Conf} \ge 0,75$. \\
 \hline
-\textbf{Mã} & \textbf{Câu hỏi truy vấn của du khách (Prompt)} & \textbf{Điểm neo (Anchor POI)} & \textbf{Món / Dịch vụ yêu cầu} & \textbf{Kết quả kỳ vọng và Tiêu chuẩn nghiệm đúng} \\
+TC-42 & Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không? & Chùa Thiên Mụ (bờ Bắc) & Điểm văn hóa kế cận & Gợi ý các điểm cùng hành lang thượng nguồn bờ Bắc ($d \le 2,0\text{ km}$; Văn Thánh, An Hiên). \\
+TC-44 & Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút. & Chợ Đông Ba (Trần Hưng Đạo) & Di tích đi bộ ngắn & Gợi ý điểm văn hóa cửa ngõ Kinh thành ($d \le 1,2\text{ km}$; Cầu Trường Tiền, Cửa Thượng Tứ). \\
 \hline
-\endhead
-
+TC-76 & Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam. & Khách sạn bờ Nam & Lịch trình 1 ngày & Sáng Cụm Kinh thành bờ Bắc, Chiều Cụm Lăng tẩm bờ Nam; vượt sông tối đa 1 lần/ngày. \\
+TC-77 & Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống. & Không gian đô thị Huế & Lịch trình 2 ngày & Ngày 1 trọn vẹn bờ Bắc, Ngày 2 trọn vẹn bờ Nam (Lăng Tự Đức, Khải Định); 0 lần đổi bờ/ngày. \\
 \hline
-\multicolumn{5}{r}{{Còn tiếp ở trang sau\dots}} \\
-\endfoot
-
-\hline
-\endlastfoot
-
-TC-01 & Tôi đang ở Đại Nội Huế, muốn tìm quán bún bò chuẩn vị gần đây để đi bộ ăn trưa. & Đại Nội Huế (Cửa Thượng Tứ, bờ Bắc) & Bún bò Huế & Gợi ý quán bún bò có thật ở bờ Bắc (như Bún bò Mụ Rơi, Bún bò Cẩm, Bún bò Đông Ba); cự ly $d \le 1,5\text{ km}$; tuyệt đối không gợi ý nhảy qua cầu sang bờ Nam. \\
-TC-04 & Sau khi tham quan Lăng Tự Đức, tôi muốn ăn bánh bèo hoặc bánh nậm gần đó thì ghé quán nào? & Lăng Tự Đức (Thôn Thượng 2, Thủy Xuân) & Bánh bèo, bánh nậm Huế & Gợi ý quán bánh bèo/nậm trên trục Lê Ngô Cát hoặc Huyền Trân Công Chúa (Quán Bánh Chi, Bánh Thủy Xuân); cự ly $d \le 1,5\text{ km}$; loại trừ quán Bà Đỏ ($> 5\text{ km}$). \\
-TC-03 & Tôi đang ở khu vực Cồn Hến, muốn thưởng thức cơm hến và chè bắp đúng gốc Huế. & Cồn Hến (Phường Vĩ Dạ) & Cơm hến, chè bắp Cồn Hến & Gợi ý đúng quán cơm hến truyền thống tại đảo Cồn Hến (Hoa Đông, Quán Nhỏ); cự ly $d \le 800\text{ m}$; xác thực có bán đồng thời cả hai món với $\text{Conf} \ge 0,75$. \\
-TC-06 & Gợi ý quán bánh khoái và nem lụi ngon ở bờ Nam gần khu phố Tây Chu Văn An. & Phố đi bộ Chu Văn An -- Võ Thị Sáu & Bánh khoái, nem lụi Huế & Gợi ý quán bánh khoái, nem lụi bờ Nam trong cự ly $d \le 1,2\text{ km}$ (Bánh khoái Hạnh đường Phó Đức Chính); không nhầm sang quán bún bò hay cà phê lân cận. \\
-\hline
-TC-42 & Tôi vừa ghé Chùa Thiên Mụ, xung quanh đây có điểm văn hóa nào có thể ghé tiếp theo không? & Chùa Thiên Mụ (Đồi Hà Khê, bờ Bắc) & Di tích, điểm văn hóa kế cận & Gợi ý các điểm văn hóa cùng hành lang thượng nguồn bờ Bắc trong cự ly $d \le 2,0\text{ km}$ (Văn Thánh Huế, Nhà vườn An Hiên, Bến Kim Long); không điều hướng sang lăng tẩm bờ Nam. \\
-TC-43 & Từ Đồi Vọng Cảnh, có những di tích lăng tẩm hoặc làng nghề nào nằm gần trên cùng trục đường? & Đồi Vọng Cảnh (Đường Huyền Trân Công Chúa) & Lăng tẩm và làng nghề truyền thống & Gợi ý các điểm thuộc Cụm bờ Nam liên kết trên trục giao thông trong cự ly $d \le 2,5\text{ km}$ (Lăng Tự Đức, Lăng Đồng Khánh, Làng hương Thủy Xuân); thứ tự di chuyển logic. \\
-TC-44 & Tôi đang ở Chợ Đông Ba, muốn tìm các điểm di tích có thể đi bộ tham quan trong 15 phút. & Chợ Đông Ba (Đường Trần Hưng Đạo) & Di tích lịch sử cự ly đi bộ ngắn & Gợi ý các điểm văn hóa cửa ngõ Đông Nam Kinh thành trong cự ly $d \le 1,2\text{ km}$ (Cầu Trường Tiền, Cửa Thượng Tứ, Bảo tàng Cổ vật Cung đình); không gợi ý Chùa Thiên Mụ ($> 5\text{ km}$). \\
-TC-57 & Khám phá danh thắng thiên nhiên và sinh thái đầm phá ở ngoại ô phía Đông Nam thành phố Huế. & Đầm Chuồn (Phá Tam Giang, Phú Vang) & Du lịch sinh thái dã ngoại, làng chài & Gợi ý chuỗi liên kết ngoại ô: Làng chài Đầm Chuồn (ẩm thực cá kình đầm phá), kết hợp tham quan Cầu ngói Thanh Toàn trên cùng hành lang sinh thái; hướng dẫn phương tiện di chuyển. \\
-\hline
-TC-76 & Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi, xuất phát từ khách sạn bờ Nam. & Khách sạn trung tâm bờ Nam TP. Huế & Lịch trình 1 ngày tối ưu không gian & Chia 2 buổi rành mạch: Sáng khám phá Cụm Kinh thành bờ Bắc (Đại Nội, Chùa Thiên Mụ, ăn bún bò); Chiều về Cụm Lăng tẩm bờ Nam (Làng hương, Lăng Tự Đức); vượt sông tối đa 1 lần/ngày. \\
-TC-77 & Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống. & Không gian đô thị Cố đô Huế & Lịch trình 2 ngày phân cụm triệt để & Ngày 1 dành trọn vẹn bờ Bắc (Đại Nội, Bảo tàng Cổ vật, Nhà vườn, ẩm thực chợ Đông Ba); Ngày 2 dành trọn cụm di tích và làng nghề bờ Nam (Lăng Tự Đức, Lăng Khải Định, Đồi Vọng Cảnh, Làng hương Thủy Xuân, ẩm thực bánh Huế bờ Nam); 0 lần đổi bờ mỗi ngày. \\
-TC-78 & Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái. & Cố đô Huế và vùng phụ cận đầm phá & Lịch trình 3 ngày mở rộng ngoại ô & Ngày 1: Quần thể di sản Kinh thành bờ Bắc; Ngày 2: Lăng tẩm triều Nguyễn bờ Nam; Ngày 3: Vùng sinh thái Cầu ngói Thanh Toàn và Đầm Chuồn; thời gian biểu khoa học, không quay vòng ngược đường. \\
-TC-79 & Lập tour nửa ngày (chiều từ 14h đến 19h) ngắm hoàng hôn và thưởng thức ẩm thực đêm xứ Huế. & Trục đồi Tây Nam bờ Nam (Thủy Xuân) & Tour bán nhật chiều -- tối chi tiết & Chuỗi mốc giờ chặt chẽ: 14h00 Làng hương $\to$ 15h30 Lăng Tự Đức $\to$ 17h00 hoàng hôn Đồi Vọng Cảnh $\to$ 18h30 ẩm thực đặc sản bánh Huế bờ Nam; các điểm cách nhau $< 2,5\text{ km}$, tổng di chuyển $< 20$ phút. \\
-\end{longtable}
-\endgroup
+\multicolumn{5}{l}{\footnotesize \textit{Ghi chú:} Toàn văn đặc tả chi tiết 100 kịch bản kiểm thử chuẩn được cung cấp tại Phụ lục A.}
+\end{tabularx}
+\end{table}
 
 Từ dữ liệu đặc tả tại Bảng \ref{tab:benchmark-suite-specs}, quy trình chấm điểm và đánh giá nghiệm đúng cho từng kịch bản được thiết lập chặt chẽ dựa trên các tiêu chuẩn định lượng minh bạch:
 
-Thứ nhất, đối với nhóm bài toán ẩm thực (các ca đại diện tiêu biểu TC-01, TC-04, TC-03, TC-06 thuộc nhóm kịch bản từ TC-01 đến TC-40), một đề xuất được công nhận là nghiệm đúng khi và chỉ khi thỏa mãn đồng thời ba điều kiện nghiêm ngặt: cơ sở ẩm thực được gợi ý phải là thực thể có thật tồn tại trong đồ thị tri thức với tọa độ GPS đã xác minh; khoảng cách Haversine tính từ điểm neo Anchor POI đến quán ăn không vượt quá $1,5\text{ km}$ và tuyệt đối nằm cùng bờ sông Hương; và món ăn du khách yêu cầu phải có điểm tin cậy khai phá thực đơn ngầm $\text{Conf}(u,m) \ge 0,70$. Ví dụ trong kịch bản TC-01, nếu mô hình đề xuất quán Bún bò Cẩm hoặc Bún bò Mụ Rơi ở đường Mai Thúc Loan (bờ Bắc, cách Ngọ Môn khoảng $800\text{ m}$), kết quả được tính là chính xác; ngược lại, nếu mô hình đề xuất quán Bún bò O Cương Chú Điệp ở đường Đống Đa (thuộc bờ Nam, cách hơn $3,2\text{ km}$ và phải vượt cầu Phú Xuân), đề xuất sẽ bị chấm là vi phạm không gian (Spatial Violation) bất kể quán ăn đó có chất lượng đánh giá cao đến đâu.
+Thứ nhất, đối với nhóm bài toán ẩm thực (tiêu biểu như TC-01, TC-03 thuộc nhóm kịch bản từ TC-01 đến TC-40), một đề xuất được công nhận là nghiệm đúng khi và chỉ khi thỏa mãn đồng thời ba điều kiện nghiêm ngặt: cơ sở ẩm thực được gợi ý phải là thực thể có thật tồn tại trong đồ thị tri thức với tọa độ GPS đã xác minh; khoảng cách Haversine tính từ điểm neo Anchor POI đến quán ăn không vượt quá $1,5\text{ km}$ và tuyệt đối nằm cùng bờ sông Hương; và món ăn du khách yêu cầu phải có điểm tin cậy khai phá thực đơn ngầm $\text{Conf}(u,m) \ge 0,70$. Ví dụ trong kịch bản TC-01, nếu mô hình đề xuất quán Bún bò Cẩm hoặc Bún bò Mụ Rơi ở đường Mai Thúc Loan (bờ Bắc, cách Ngọ Môn khoảng $800\text{ m}$), kết quả được tính là chính xác; ngược lại, nếu mô hình đề xuất quán Bún bò O Cương Chú Điệp ở đường Đống Đa (thuộc bờ Nam, cách hơn $3,2\text{ km}$ và phải vượt cầu Phú Xuân), đề xuất sẽ bị chấm là vi phạm không gian (Spatial Violation) bất kể quán ăn đó có chất lượng đánh giá cao đến đâu.
 
-Thứ hai, đối với nhóm bài toán khám phá không gian lân cận (các ca đại diện tiêu biểu TC-42, TC-43, TC-44, TC-57 thuộc nhóm kịch bản từ TC-41 đến TC-75), tiêu chuẩn nghiệm đúng đo lường khả năng bám sát hành lang giao thông thực tế. Tại các điểm danh lam như Đồi Vọng Cảnh hay Chùa Thiên Mụ, hệ thống phải đề xuất các điểm đến nằm trên cùng trục đường giao thông liên hoàn (như trục Huyền Trân Công Chúa hoặc trục đường Kim Long -- Nguyễn Phúc Nguyên) với khoảng cách không quá $2,5\text{ km}$. Mô hình sẽ bị trừ điểm nếu gợi ý các điểm đến tuy gần về khoảng cách trắc địa đường chim bay nhưng bị ngăn cách bởi chướng ngại tự nhiên không có cầu nối trực tiếp.
+Thứ hai, đối với nhóm bài toán khám phá không gian lân cận (tiêu biểu như TC-42, TC-44 thuộc nhóm kịch bản từ TC-41 đến TC-75), tiêu chuẩn nghiệm đúng đo lường khả năng bám sát hành lang giao thông thực tế. Tại các điểm danh lam như Đồi Vọng Cảnh hay Chùa Thiên Mụ, hệ thống phải đề xuất các điểm đến nằm trên cùng trục đường giao thông liên hoàn (như trục Huyền Trân Công Chúa hoặc trục đường Kim Long -- Nguyễn Phúc Nguyên) với khoảng cách không quá $2,5\text{ km}$. Mô hình sẽ bị trừ điểm nếu gợi ý các điểm đến tuy gần về khoảng cách trắc địa đường chim bay nhưng bị ngăn cách bởi chướng ngại tự nhiên không có cầu nối trực tiếp.
 
-Thứ ba, đối với nhóm bài toán lập lịch trình đa ngày (các ca đại diện tiêu biểu TC-76, TC-77, TC-78, TC-79 thuộc nhóm kịch bản từ TC-76 đến TC-100), tiêu chí nghiệm đúng đánh giá cấu trúc thời gian và tính tối ưu tổng thể của hành trình. Một lịch trình được coi là hợp lệ khi đáp ứng bốn chuẩn mực: sự phân cụm không gian triệt để (các điểm tham quan trong một buổi sáng hoặc chiều phải cùng thuộc một Spatial Cluster); khống chế tần suất vượt sông Hương (không quá 1 lần trong tour 1 ngày và bằng 0 trong từng ngày của tour 2--3 ngày); ghép nối bữa ăn hợp lý (điểm ăn trưa hoặc ăn tối phải nằm trong bán kính $d \le 1,5\text{ km}$ quanh điểm tham quan liền kề); và tổng thời gian di chuyển cộng thời gian tham quan thực tế không vượt quá quỹ thời gian của chuyến đi. Toàn bộ các tiêu chí này tạo thành một khung đánh giá toàn diện, bảo đảm tính khách quan tuyệt đối khi đo lường hiệu năng của các mô hình đối sánh.
+Thứ ba, đối với nhóm bài toán lập lịch trình đa ngày (tiêu biểu như TC-76, TC-77 thuộc nhóm kịch bản từ TC-76 đến TC-100), tiêu chí nghiệm đúng đánh giá cấu trúc thời gian và tính tối ưu tổng thể của hành trình. Một lịch trình được coi là hợp lệ khi đáp ứng bốn chuẩn mực: sự phân cụm không gian triệt để (các điểm tham quan trong một buổi sáng hoặc chiều phải cùng thuộc một Spatial Cluster); khống chế tần suất vượt sông Hương (không quá 1 lần trong tour 1 ngày và bằng 0 trong từng ngày của tour 2--3 ngày); ghép nối bữa ăn hợp lý (điểm ăn trưa hoặc ăn tối phải nằm trong bán kính $d \le 1,5\text{ km}$ quanh điểm tham quan liền kề); và tổng thời gian di chuyển cộng thời gian tham quan thực tế không vượt quá quỹ thời gian của chuyến đi. Toàn bộ các tiêu chí này tạo thành một khung đánh giá toàn diện, bảo đảm tính khách quan tuyệt đối khi đo lường hiệu năng của các mô hình đối sánh.
 
 \section{Kết quả thực nghiệm đối sánh định lượng}
 \label{sec:ch2-results}
@@ -129,7 +111,7 @@ Kết quả thực nghiệm đối sánh định lượng chi tiết giữa ba p
 \small
 \begin{tabularx}{\textwidth}{l c c c}
 \hline
-\textbf{Chỉ số đánh giá định lượng} & \textbf{Zero-shot LLM} & \textbf{Naive RAG (Vector)} & \textbf{Spatial GraphRAG (Đề xuất)} \\
+\textbf{Chỉ số đánh giá định lượng} & \textbf{Zero-shot LLM} & \textbf{Naive RAG (Vector)} & \textbf{Spatial GraphRAG} \\
 \hline
 Grounding Rate (\%) $\uparrow$ & 85,8\% & 76,0\% & \textbf{100,0\%} \\
 Hallucination Rate (\%) $\downarrow$ & 14,2\% & 24,0\% & \textbf{0,0\%} \\
