@@ -162,3 +162,179 @@ HUE\_10 & Bún mắm nêm & Bún tươi thịt luộc, tai mui heo, mắm nêm c
 \hline
 \end{tabularx}
 \endgroup
+
+\vspace{0.8cm}
+
+\clearpage
+\section*{Phụ lục C: Giao diện và Toàn bộ các Tính năng Thực nghiệm của Hệ thống Web Spatial GraphRAG}
+\phantomsection
+\addcontentsline{toc}{section}{Phụ lục C: Giao diện và Toàn bộ các Tính năng Thực nghiệm của Hệ thống Web Spatial GraphRAG}
+
+Phụ lục này trình bày bộ sưu tập hình ảnh thực nghiệm chuyên sâu được ghi nhận trực tiếp từ giao diện hệ thống Web ứng dụng trợ lý du lịch thông minh Cố đô Huế (\textit{Huế Smart Tourism AI Studio}). Hệ thống được thiết kế và triển khai trên nền tảng Frontend hiện đại (Vite, Leaflet GIS, Leaflet MarkerCluster) kết nối đồng bộ với Backend FastAPI phục vụ kiến trúc Spatial GraphRAG và luồng tác tử điều phối StateGraph. Nhằm đảm bảo khả năng quan sát trực quan tối đa, các cửa sổ chức năng (\textit{Modals}) và thẻ công cụ đều được trích xuất trực tiếp tại ranh giới hiển thị thực tế (độ phân giải 2x Retina High-DPI), loại bỏ toàn bộ khoảng mờ nền dư thừa để nội dung dữ liệu đạt kích thước to, rõ nét và chuẩn mực học thuật.
+
+\renewcommand{\thefigure}{C.\arabic{figure}}
+\setcounter{figure}{0}
+
+\subsection*{C.1. Giao diện chính toàn cảnh tích hợp Không gian và Hội thoại AI}
+
+Giao diện chính của hệ thống (Hình \ref{fig:web_main_interface}) áp dụng bố cục phân tách trực quan (\textit{Spatial Split-screen Layout}):
+\begin{itemize}
+    \item \textbf{Khung bản đồ không gian tương tác (Spatial Map Studio):} Tích hợp nền bản đồ GIS với hơn 158 điểm di tích, cơ sở dịch vụ và quán ăn đặc sản đã chuẩn hóa trong Đồ thị Tri thức. Hệ thống tự động phân cụm mật độ điểm (\textit{Marker Clustering}), gắn mã màu trực quan theo danh mục (Di tích - đỏ cam, Ẩm thực - nâu cam, Cà phê - tím, Khách sạn - xanh navy), tích hợp thanh tìm kiếm thông minh và các bộ lọc phân loại nhanh.
+    \item \textbf{Bảng điều khiển Trợ lý AI (Smart Tourism Chatbot):} Nơi du khách tương tác bằng ngôn ngữ tự nhiên để tra cứu lịch sử, tìm quán ăn lân cận, hoặc yêu cầu sinh lịch trình du lịch thông minh.
+    \item \textbf{Thanh tiện ích bên (Sidebar):} Cung cấp widget thời tiết động thời gian thực tại thành phố Huế, lối tắt truy cập Sổ tay du lịch, Lịch trình đã lưu, Bảng dự toán chi phí và menu Cài đặt cá nhân hóa.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{img/web_main_interface.png}
+    \caption{Giao diện chính toàn cảnh của Hệ thống Web Spatial GraphRAG Cố đô Huế}
+    \label{fig:web_main_interface}
+\end{figure}
+
+\clearpage
+\subsection*{C.2. Luồng Hỏi đáp Tác tử Spatial GraphRAG với Trích dẫn XAI và Thẻ Ghim Địa điểm}
+
+Khi du khách đặt câu hỏi truy vấn không gian phức tạp (ví dụ: \textit{«Ăn bún bò ở đâu ngon và gần Đại Nội Huế nhất?»}), hệ thống kích hoạt luồng tác tử truy xuất đồ thị tri thức và hiển thị minh bạch toàn bộ chuỗi lập luận (Hình \ref{fig:web_chat_spatial_rag}):
+\begin{itemize}
+    \item \textbf{Chuỗi lập luận có thể giải thích (Explainable Graph Trace - XAI):} Trình bày trực quan tiến trình xử lý gồm 4 bước: (1) Phân loại ý định ẩm thực; (2) Lọc bán kính không gian ($d \le 1.5\text{ km}$); (3) Khai thác liên kết quan hệ trong Đồ thị Tri thức NetworkX; và (4) Đánh giá điểm tin cậy ngữ cảnh với thước đo đồ họa trực quan (đạt $94\% \ge 0.65$ đủ điều kiện sinh câu trả lời nội bộ).
+    \item \textbf{Thẻ địa điểm gợi ý tương tác (POI Action Cards):} Cung cấp các nút tương tác gắn biểu tượng chuyên biệt (Bún bò Mụ Rơi, Đại Nội Huế, Chợ Đông Ba) cho phép ghim trực tiếp tọa độ lên bản đồ GIS chỉ với một thao tác nhấp chuột.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{img/web_chat_spatial_rag.png}
+    \caption{Phản hồi trực quan của Trợ lý AI kết hợp Cây suy luận XAI và Thẻ tương tác Địa điểm}
+    \label{fig:web_chat_spatial_rag}
+\end{figure}
+
+\clearpage
+\subsection*{C.3. Trực quan hóa Tuyến Tour Tối ưu và Điều hướng Chặng OSRM trên Bản đồ GIS}
+
+Để phục vụ bài toán di chuyển thực tế của du khách, hệ thống tích hợp công cụ mô phỏng đường đi chính xác theo mạng lưới giao thông đô thị Huế (Hình \ref{fig:web_route_itinerary_map}):
+\begin{itemize}
+    \item \textbf{Đường đa giác tuyến đường (OSRM Tour Route Polyline):} Vẽ tuyến đường liên kết thông suốt từ điểm xuất phát (Cầu Tràng Tiền) qua các điểm di tích và ẩm thực (Đại Nội $\to$ Bún bò Mụ Rơi $\to$ Chùa Thiên Mụ $\to$ Lăng Tự Đức) bám sát các cây cầu và cung đường ven sông Hương.
+    \item \textbf{Bộ đánh số chặng dừng chân:} Đánh số thứ tự trực quan từng điểm đến ($A, 2, 3, 4$), hỗ trợ du khách hình dung rõ ràng thứ tự hành trình theo thứ tự không gian tối ưu.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{img/web_route_itinerary_map.png}
+    \caption{Lộ trình tham quan thực tế theo mạng lưới giao thông đường bộ Cố đô Huế}
+    \label{fig:web_route_itinerary_map}
+\end{figure}
+
+\clearpage
+\subsection*{C.4. Công cụ Khởi tạo Nhanh Lịch trình theo Điểm Xuất phát GPS và Khẩu vị}
+
+Nhằm nâng cao trải nghiệm người dùng, hệ thống cung cấp thẻ lập lịch trình nhanh ngay trên giao diện bản đồ (Hình \ref{fig:web_quick_planner}):
+\begin{itemize}
+    \item \textbf{Tự động định vị điểm xuất phát:} Nhận diện tọa độ GPS thực tế của du khách hoặc mặc định tại điểm trung tâm Cố đô (Cầu Tràng Tiền).
+    \item \textbf{Tùy biến tham số hành trình:} Cho phép lựa chọn thời lượng chuyến đi (1, 2, 3 ngày), nhóm đối tượng đồng hành (Cặp đôi, Gia đình, Bạn bè) và danh mục các món ăn đặc sản ưu tiên thưởng thức thông qua hệ thống nút chọn nhanh (\textit{Tag Pills}).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.92\textwidth]{img/web_quick_planner.png}
+    \caption{Thẻ công cụ tạo nhanh tour du lịch theo vị trí xuất phát GPS và khẩu vị ẩm thực}
+    \label{fig:web_quick_planner}
+\end{figure}
+
+\clearpage
+\subsection*{C.5. Tính năng Nhận diện Thị giác Di sản và Món ăn Đa phương thức (Multimodal Vision)}
+
+Khung nhập liệu hội thoại hỗ trợ cơ chế tiếp nhận hình ảnh đa phương thức (Hình \ref{fig:web_multimodal_vision}):
+\begin{itemize}
+    \item \textbf{Thanh xem trước hình ảnh đính kèm (Image Preview Bar):} Cho phép du khách tải lên hình ảnh di tích kiến trúc hoặc món ăn thực tế chụp tại hiện trường.
+    \item \textbf{Truy vấn kết hợp Đa phương thức:} Mô hình thị giác máy tính trích xuất đặc trưng hình ảnh, đối sánh với kho vector mẫu và Đồ thị Tri thức để định danh chính xác công trình di sản (Cổng Ngọ Môn) cùng thông tin lịch sử và vị trí trên bản đồ.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{img/web_multimodal_vision.png}
+    \caption{Thanh tải ảnh và tính năng nhận diện thị giác di sản đa phương thức}
+    \label{fig:web_multimodal_vision}
+\end{figure}
+
+\clearpage
+\subsection*{C.6. Cửa sổ Cá nhân hóa Hồ sơ và Phong cách Du lịch (AI Traveler Persona Modal)}
+
+Nhằm giải quyết triệt để tính cá nhân hóa trong mô hình Spatial GraphRAG, hệ thống cung cấp giao diện quản lý hồ sơ du khách (Hình \ref{fig:web_traveler_persona}):
+\begin{itemize}
+    \item \textbf{Khẩu vị \& Dinh dưỡng đặc sản Huế:} Lựa chọn các cấp độ cay (Ăn cay chuẩn Huế, Ít cay/Vừa phải), thực đơn ăn chay (\textit{Vegetarian}), hoặc hạn chế dị ứng (Không ăn hải sản). Các tham số này được tác tử tự động nhúng vào cấu trúc truy vấn để lọc bỏ các cơ sở ăn uống không tương thích.
+    \item \textbf{Phong cách trải nghiệm ưu tiên:} Tùy chọn trọng số trải nghiệm như \textit{Di sản \& Lịch sử}, \textit{Ẩm thực truyền thống}, \textit{Sống ảo \& Check-in}, hoặc \textit{Nghỉ dưỡng \& Thiên nhiên}.
+    \item \textbf{Phương tiện di chuyển chính:} Lựa chọn phương tiện (Đi bộ/Xe đạp, Thuê xe máy, Taxi/Grab) để tác tử lập lịch trình tính toán vận tốc trung bình và ma trận khoảng cách OSRM phù hợp.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.56\textwidth]{img/web_traveler_persona.png}
+    \caption{Cửa sổ Tùy biến Hồ sơ và Phong cách Du lịch của Du khách (AI Traveler Persona Modal)}
+    \label{fig:web_traveler_persona}
+\end{figure}
+
+\clearpage
+\subsection*{C.7. Cửa sổ Sổ tay Du lịch Cố Đô và Hộ chiếu Khám phá Di sản (Heritage Passport Modal)}
+
+Giao diện Sổ tay du lịch Cố Đô (Hình \ref{fig:web_heritage_passport}) đóng vai trò lưu vết hành trình và thúc đẩy tương tác trải nghiệm văn hóa thông qua cơ chế trò chơi hóa (\textit{Gamification}):
+\begin{itemize}
+    \item \textbf{Hộ chiếu Khám phá (Discovery Passport):} Theo dõi tiến độ tham quan qua thanh cấp độ người dùng (\textit{Explorer Level Tag} từ Cấp 01 - \textit{Khách bộ hành Cố Đô} đến Cấp 04 - \textit{Chuyên gia Di sản Cố Đô}). Mỗi điểm di tích hoặc quán ăn du khách đặt chân đến được đánh dấu tem mộc check-in cùng mốc thời gian thực tế.
+    \item \textbf{Danh mục Yêu thích (Wishlist):} Lưu trữ các địa điểm do du khách chủ động đánh dấu trên bản đồ để đưa vào kế hoạch tham quan tiếp theo.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.80\textwidth]{img/web_heritage_passport.png}
+    \caption{Cửa sổ Sổ tay Du lịch Cố Đô và Hộ chiếu Khám phá Di sản (Heritage Passport Modal)}
+    \label{fig:web_heritage_passport}
+\end{figure}
+
+\clearpage
+\subsection*{C.8. Bảng Dự toán Ngân sách Lịch trình Du lịch Chi tiết (Trip Budget Estimator Modal)}
+
+Bảng dự toán ngân sách (Hình \ref{fig:web_trip_budget}) cung cấp công cụ tự động bóc tách chi phí minh bạch cho toàn bộ tour tham quan do tác tử AI khởi tạo:
+\begin{itemize}
+    \item \textbf{Biểu phí vé tham quan chính thức:} Tự động tra cứu giá vé niêm yết từ Trung tâm Bảo tồn Di tích Cố đô Huế (áp dụng chính sách miễn/giảm cho trẻ em và gói vé tuyến di tích gộp).
+    \item \textbf{Định mức ẩm thực \& Lưu trú:} Ước tính chi phí ăn uống theo số lượng thành viên đoàn và phong cách ẩm thực đã chọn trong hồ sơ cá nhân.
+    \item \textbf{Chi phí di chuyển OSRM:} Tính toán cước phí phương tiện dựa trên tổng quãng đường di chuyển thực tế mô phỏng qua mạng lưới giao thông đường bộ.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{img/web_trip_budget.png}
+    \caption{Bảng Dự toán Ngân sách Lịch trình Du lịch Chi tiết (Trip Budget Estimator Modal)}
+    \label{fig:web_trip_budget}
+\end{figure}
+
+\clearpage
+\subsection*{C.9. Ngăn kéo Thông tin Chi tiết Địa điểm và Đánh giá Du khách (POI Details Drawer)}
+
+Khi người dùng nhấn chọn bất kỳ biểu tượng địa danh nào trên bản đồ hoặc trong phản hồi của Trợ lý AI, hệ thống sẽ kích hoạt ngăn kéo trượt thông tin chuyên sâu (Hình \ref{fig:web_poi_details}):
+\begin{itemize}
+    \item \textbf{Hồ sơ văn hóa - lịch sử:} Trích xuất trực tiếp thuộc tính bản thể học từ Đồ thị Tri thức (tên chữ Hán, niên đại xây dựng, giá trị kiến trúc, địa chỉ hành chính, tọa độ GPS).
+    \item \textbf{Đánh giá cộng đồng du khách:} Biểu đồ phân bổ sao đánh giá (từ 1 đến 5 sao), tỷ lệ đánh giá thực tế và khu vực viết nhận xét trải nghiệm có xác thực tài khoản.
+    \item \textbf{Thanh tác vụ nhanh (Quick Actions):} Cung cấp các nút tương tác tức thì bao gồm: \textit{Yêu thích}, \textit{Check-in}, \textit{Mở Google Maps}, \textit{Chỉ đường từ vị trí hiện tại}, \textit{Thêm vào Tour} và \textit{Hỏi AI chi tiết về địa điểm này}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{img/web_poi_details.png}
+    \caption{Ngăn kéo Thông tin Chi tiết Địa điểm và Đánh giá Du khách (POI Details Drawer)}
+    \label{fig:web_poi_details}
+\end{figure}
+
+\clearpage
+\subsection*{C.10. Cửa sổ Đóng góp Đánh giá và Phản hồi Trải nghiệm Du khách (POI Review Modal)}
+
+Nhằm xây dựng kho dữ liệu phản hồi thực địa liên tục làm giàu cho hệ thống, ứng dụng cung cấp giao diện gửi đánh giá đa chiều (Hình \ref{fig:web_poi_review_modal}):
+\begin{itemize}
+    \item \textbf{Widget Chấm sao Tương tác:} Cho phép du khách đánh giá chất lượng từ 1 đến 5 sao kèm nhãn đánh giá tương ứng (\textit{5/5 · Tuyệt vời / Rất khuyến nghị}).
+    \item \textbf{Thẻ phân loại mục đích \& Ấn tượng nổi bật:} Hệ thống các nút chọn nhanh phân loại mục đích chuyến đi (\textit{Gia đình, Cặp đôi, Bạn bè, Độc hành}) và các điểm ấn tượng (\textit{Cảnh quan đẹp, Không gian yên tĩnh, Kiến trúc độc đáo, Giá cả hợp lý}).
+    \item \textbf{Khu vực nhận xét chi tiết:} Ô nhập nội dung chia sẻ cảm nhận thực tế với bộ đếm ký tự thời gian thực phục vụ tinh chỉnh dữ liệu đánh giá.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.58\textwidth]{img/web_poi_review_modal.png}
+    \caption{Cửa sổ Gửi Đánh giá và Phản hồi Trải nghiệm Du khách Thực địa (POI Review Modal)}
+    \label{fig:web_poi_review_modal}
+\end{figure}

@@ -48,13 +48,13 @@ Nhược điểm chí tử của Naive RAG trong bài toán du lịch là tính 
 
 Thế hệ thứ hai là GraphRAG, được tiên phong bởi Microsoft Research~\cite{edge2024graphrag}, khắc phục hạn chế trên bằng cách tổ chức tri thức dưới dạng đồ thị có cấu trúc. Thay vì chỉ truy xuất các đoạn văn bản rời rạc, GraphRAG khai thác các đường đi liên kết trên đồ thị (Graph Traversal) để tổng hợp tri thức đa chặng (multi-hop reasoning), giúp mô hình nắm bắt được mối quan hệ phân cấp giữa thành phố, phường xã, điểm di tích và các cơ sở kinh doanh lân cận.
 
-Thế hệ thứ ba là Agentic RAG, chuyển dịch từ luồng xử lý tuyến tính cố định sang mô hình tác tử tự chủ có khả năng tự suy ngẫm (Self-reflection), tự đánh giá chất lượng thông tin truy xuất (Confidence Grading), và định tuyến động (Dynamic Routing) giữa nhiều công cụ khác nhau~\cite{pan2024unifying}. Khi tri thức nội bộ từ đồ thị không đủ độ tin cậy để trả lời các sự kiện thời gian thực (như giá vé mới cập nhật hay lễ hội đột xuất), tác tử có khả năng tự động rẽ nhánh sang công cụ tìm kiếm mạng (Web Search Fallback) nhằm bổ sung thông tin kịp thời.
+Thế hệ thứ ba là Agentic RAG, chuyển dịch từ luồng xử lý tuyến tính cố định sang mô hình tác tử tự chủ có khả năng tự suy ngẫm (Self-reflection), tự đánh giá chất lượng thông tin truy xuất (Confidence Grading), và định tuyến động (Dynamic Routing) theo mô hình Tăng cường Tạo sinh Truy xuất có Hiệu chỉnh (Corrective RAG -- CRAG)~\cite{yan2024crag}. Khi tri thức nội bộ từ đồ thị không đủ độ tin cậy để trả lời các sự kiện thời gian thực (như giá vé mới cập nhật hay lễ hội đột xuất), tác tử có khả năng tự động rẽ nhánh sang công cụ tìm kiếm mạng (Web Search Fallback) nhằm bổ sung thông tin kịp thời.
 
 \subsection*{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5-VL:7B}
 \phantomsection
 \addcontentsline{toc}{subsection}{1.3. Khung điều phối trạng thái LangGraph và Mô hình cục bộ Qwen2.5-VL:7B}
 
-Để hiện thực hóa kiến trúc Agentic RAG với khả năng kiểm soát luồng thực thi nghiêm ngặt, thư viện LangGraph được lựa chọn làm nền tảng điều phối~\cite{langgraph2024}. Khác với các chuỗi xử lý một chiều tuần tự thông thường, LangGraph mô hình hóa toàn bộ quá trình xử lý như một Đồ thị Trạng thái hữu hạn (StateGraph) có chu trình. Trạng thái của hệ thống được đóng gói trong một cấu trúc dữ liệu chung (GraphState) chứa đựng toàn bộ ngữ cảnh bao gồm câu hỏi của du khách, các thực thể đã nhận diện, các nút đồ thị đã truy xuất, điểm số tin cậy và phản hồi tạo sinh cuối cùng.
+Để hiện thực hóa kiến trúc Agentic RAG với khả năng kiểm soát luồng thực thi nghiêm ngặt, thư viện LangGraph được lựa chọn làm nền tảng điều phối~\cite{langgraph2024}. Khác với các chuỗi xử lý một chiều tuần tự thông thường, LangGraph mô hình hóa toàn bộ quá trình xử lý như một Đồ thị Trạng thái hữu hạn (StateGraph) với các điểm rẽ nhánh điều kiện và kiểm soát trạng thái tập trung. Trạng thái của hệ thống được đóng gói trong một cấu trúc dữ liệu chung (GraphState) chứa đựng toàn bộ ngữ cảnh bao gồm câu hỏi của du khách, các thực thể đã nhận diện, các nút đồ thị đã truy xuất, điểm số tin cậy và phản hồi tạo sinh cuối cùng.
 
 Các nút xử lý trong đồ thị trạng thái thực hiện các chức năng phân lập: nút trích xuất thực thể, nút truy vấn đồ thị không gian, nút đánh giá độ tin cậy của ngữ cảnh, nút tìm kiếm bổ trợ và nút sinh câu trả lời. Sự chuyển tiếp giữa các nút được điều khiển bởi các Cạnh có điều kiện (Conditional Edges) dựa trên các ngưỡng xác suất toán học.
 
@@ -92,7 +92,7 @@ Tuy nhiên, như đã phân tích, mô hình véc-tơ thuần túy chỉ giải 
 \phantomsection
 \addcontentsline{toc}{subsection}{1.6. Cơ chế Tự suy ngẫm và Phân loại Đánh giá Tin cậy trong Agentic RAG}
 
-Khác biệt cốt lõi giữa hệ thống RAG thụ động truyền thống và hệ thống RAG hướng tác tử (Agentic RAG) nằm ở khả năng Tự suy ngẫm (Self-Reflection) và Đánh giá chất lượng tài liệu trước khi tạo sinh (Document and Context Grading)~\cite{asai2024selfrag}. Thay vì trực tiếp đưa toàn bộ ngữ cảnh truy xuất vào dấu nhắc sinh câu trả lời của mô hình ngôn ngữ lớn, tác tử sẽ thực thi một bước phản tư nhằm đánh giá độ tương thích giữa ngữ cảnh $\mathcal{C}$ thu được từ đồ thị với câu hỏi $q$ của người dùng.
+Khác biệt cốt lõi giữa hệ thống RAG thụ động truyền thống và hệ thống RAG hướng tác tử (Agentic RAG) nằm ở khả năng Tự suy ngẫm (Self-Reflection) và Đánh giá chất lượng tài liệu trước khi tạo sinh (Document and Context Grading)~\cite{asai2024selfrag, yan2024crag}. Thay vì trực tiếp đưa toàn bộ ngữ cảnh truy xuất vào dấu nhắc sinh câu trả lời của mô hình ngôn ngữ lớn, tác tử sẽ thực thi một bước phản tư nhằm đánh giá độ tương thích giữa ngữ cảnh $\mathcal{C}$ thu được từ đồ thị với câu hỏi $q$ của người dùng.
 
 Hàm đánh giá độ tin cậy được mô hình hóa toán học thông qua tổ hợp tuyến tính giữa độ tương đồng ngữ nghĩa véc-tơ và mức độ bao phủ thực thể không gian trên đồ thị:
 \begin{equation}
