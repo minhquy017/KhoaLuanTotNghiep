@@ -78,8 +78,17 @@ thesis-latex/*.synctex.gz
 
 # Presentation figures & generation scripts
 docs/figures/
+docs/generate_*.py
+crawlers/**/generate_doc.py
 scripts/generate_*.py
 scripts/build_presentation.py
 scripts/export_presentation_script_docx.py
 .agents/
 .ag-kit-backups/
+
+# Old thesis PDF builds, backups & archives
+thesis-latex/main_*.pdf
+thesis-latex/main_build.pdf
+docs/KHOA_LUAN_TOT_NGHIEP_TOAN_VAN.pdf
+*.zip
+data/**/*_backup.json
