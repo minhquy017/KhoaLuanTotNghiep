@@ -82,7 +82,7 @@ Quy mô định lượng tại Bảng \ref{tab:kg-statistics} chứng minh rằn
 
 Để giải quyết bài toán menu tĩnh và lấp đầy khoảng trống thông tin về món ăn đặc sản, nghiên cứu ứng dụng quy trình khai phá dữ liệu nhận xét dựa trên Bộ từ điển ẩm thực 570 món ăn. Mỗi bài nhận xét được quét qua bộ lọc đối sánh thực thể xâu chuỗi (Aho-Corasick Automaton) kết hợp quy tắc khử nhiễu từ đồng âm (như phân biệt ``bánh khoái'' chỉ món ăn với tính từ ``khoái chí'', hay ``cơm hến'' với sinh vật ``hến'').
 
-Khi phát hiện sự xuất hiện đồng thời của món ăn $m$ trong bài nhận xét về cơ sở $u$, hệ thống trích xuất điểm đánh giá $\text{Rating}_k \in [1, 5]$ để tính điểm bảo chứng thực đơn theo Công thức (\ref{eq:dish-confidence}). Quan hệ $(u, \text{SERVES}, m)$ được xác lập khi chỉ số tin cậy $\text{Conf}(u, m) \ge \tau_{\text{dish}} = 0,70$ với tối thiểu 3 lượt nhận xét độc lập. Bảng \ref{tab:mined-dishes-sample} minh họa kết quả đối soát tại các quán ăn truyền thống nổi tiếng ở Huế so với danh mục ban đầu.
+Khi phát hiện sự xuất hiện đồng thời của món ăn trong ngữ liệu đánh giá về một cơ sở ẩm thực, hệ thống tiến hành kiểm chứng tần suất và mức độ hài lòng chung của du khách. Quan hệ phục vụ món ăn chỉ được thiết lập trên đồ thị tri thức khi món đặc sản được cộng đồng du khách ghi nhận lặp lại qua nhiều bài nhận xét tích cực độc lập. Bảng \ref{tab:mined-dishes-sample} minh họa kết quả đối soát tại các quán ăn truyền thống nổi tiếng ở Huế so với danh mục ban đầu.
 
 \begin{table}[H]
 \centering
@@ -128,13 +128,13 @@ Nút 1: Trích xuất ý định và thực thể (Entity and Intent Extraction)
 
 Nút 2: Truy vấn Đồ thị Tri thức Không gian (Spatial Graph Retrieval). Dựa trên Anchor POI đã nhận diện, hệ thống truy xuất các nút láng giềng trên đồ thị NetworkX qua các cạnh $\text{NEAR\_BY}$ ($d \le 1{,}5\text{ km}$), đồng thời lọc theo cạnh $\text{SERVES}$ nếu có yêu cầu về món ăn đặc sản kết hợp truy xuất ChromaDB. Do áp dụng bộ lọc cứng topo trên cạnh $\text{NEAR\_BY}$ và $\text{SERVES}$, toàn bộ thực thể chuyển sang Nút 3 đều được neo giữ không gian hợp lệ và triệt tiêu hoàn toàn vi phạm cự ly lân cận.
 
-Nút 3: Đánh giá độ tin cậy ngữ cảnh (Confidence Grading Node). Nút này đóng vai trò là cơ chế tự suy ngẫm (Self-reflection), áp dụng trực tiếp Công thức (\ref{eq:grading-score}) đã thiết lập ở Phần II để tính toán chỉ số tin cậy tổng hợp $S_{\text{conf}}(\mathcal{C}, q) = 0{,}6 \cdot S_{\text{sim}} + 0{,}4 \cdot S_{\text{graph}}$ kết hợp giữa độ tương đồng ngữ nghĩa véc-tơ trên ChromaDB và điểm bảo chứng liên kết thực thể trên Đồ thị Tri thức Không gian.
+Nút 3: Đánh giá độ tin cậy ngữ cảnh (Confidence Grading Node). Nút này đóng vai trò là cơ chế tự suy ngẫm (Self-reflection), áp dụng nguyên lý thẩm định kép đã thiết lập ở Phần II để đánh giá mức độ tin cậy của ngữ cảnh dựa trên độ tương đồng ngữ nghĩa véc-tơ trên ChromaDB và điểm bảo chứng liên kết thực thể trên Đồ thị Tri thức Không gian.
 
-Nút 4: Phân luồng dự phòng tìm kiếm mạng (Web Search Fallback). Nếu $S_{\text{conf}} < \tau_{\text{conf}} = 0,65$ (khi du khách hỏi về sự kiện thời sự ngoài phạm vi đồ thị), cạnh điều kiện sẽ kích hoạt nhánh tìm kiếm DuckDuckGo/Google Search để bổ sung tin tức vào ngữ cảnh. Ngược lại, nếu $S_{\text{conf}} \ge 0,65$, hệ thống chuyển thẳng sang nút tạo sinh.
+Nút 4: Phân luồng dự phòng tìm kiếm mạng (Web Search Fallback). Khi phát hiện ngữ cảnh nội bộ thiếu hụt thông tin hoặc câu hỏi đề cập đến sự kiện thời sự ngoài phạm vi dữ liệu đồ thị, cạnh điều kiện tự động kích hoạt nhánh tìm kiếm DuckDuckGo để bổ sung tin tức cập nhật vào ngữ cảnh. Ngược lại, khi ngữ cảnh đạt độ tin cậy và được bảo chứng đầy đủ, hệ thống chuyển thẳng sang nút tạo sinh.
 
 Nút 5: Tạo sinh câu trả lời có kiểm soát (Constrained Generation Node). Dựa trên cơ chế nhận diện ngôn ngữ động (Dynamic Language Detector), mô hình Qwen2.5-VL:7B tiếp nhận ngữ cảnh đã neo giữ từ đồ thị tri thức để sinh câu trả lời song ngữ (Anh -- Việt) tự nhiên và chuẩn xác, đáp ứng linh hoạt cho cả du khách trong nước lẫn quốc tế, đồng thời bảo đảm không bịa đặt thông tin ngoài các nút thực thể đã cung cấp.
 
-Bên cạnh năng lực tạo sinh, khung tác tử tích hợp cơ chế Giải thích Minh bạch Đồ thị (Explainable AI -- XAI Graph Reasoning Trace qua trường \texttt{graph\_trace}). Thay vì hoạt động như chiếc hộp đen, mỗi bước duyệt đồ thị (Anchor POI $\to \text{NEAR\_BY} \to \text{SERVES} \to \text{Conf}(u, m)$) đều được kiên định hóa thành chuỗi vết suy luận có cấu trúc và gửi về giao diện người dùng để trực quan hóa, mang lại tính minh bạch học thuật cao cho quá trình gợi ý du lịch.
+Bên cạnh năng lực tạo sinh, khung tác tử tích hợp cơ chế Giải thích Minh bạch Đồ thị (Explainable AI -- XAI Graph Reasoning Trace qua trường \texttt{graph\_trace}). Thay vì hoạt động như chiếc hộp đen, mỗi bước duyệt đồ thị (Anchor POI $\to \text{NEAR\_BY} \to \text{SERVES} \to \text{Dish Mining}$) đều được kiên định hóa thành chuỗi vết suy luận có cấu trúc và gửi về giao diện người dùng để trực quan hóa, mang lại tính minh bạch học thuật cao cho quá trình gợi ý du lịch.
 
 \section{Tầng Lưu trữ Đám mây NoSQL và Quản trị Đa phiên Hội thoại}
 \label{sec:ch1-cloud-storage}
@@ -200,25 +200,9 @@ Quá trình tương tác của du khách được kiểm soát thông qua một 
 
 Trong các hệ thống Hỏi đáp du lịch dựa trên Retrieval-Augmented Generation truyền thống, phần lớn các giải pháp hiện nay tiếp cận tương tác người dùng theo mô hình đơn lượt (Single-turn Stateless), trong đó mỗi câu hỏi của du khách được xử lý như một sự kiện độc lập tách rời. Tuy nhiên, trong thực tế trải nghiệm du lịch, hành vi giao tiếp của du khách mang tính xâu chuỗi cao với xu hướng sử dụng dày đặc các hiện tượng đồng tham chiếu (Anaphora) và câu hỏi tỉnh lược (Ellipsis). Chẳng hạn, sau khi nhận được thông tin giới thiệu về Chùa Thiên Mụ, du khách thường đặt các câu hỏi tiếp nối như ``\textit{Từ đó đi Đại Nội bao xa?}'' hoặc ``\textit{Quanh đó có quán chay nào ngon?}''. Nếu thiếu cơ chế quản trị ngữ cảnh phiên, bộ trích xuất thực thể sẽ nhận diện chuỗi ký tự ``\textit{từ đó}'' hoặc hoàn toàn không tìm thấy thực thể hợp lệ trên Đồ thị Tri thức Không gian $\mathcal{G} = (\mathcal{V}, \mathcal{E})$, dẫn tới sự đổ vỡ hoàn toàn của chu trình điều hướng và suy luận không gian.
 
-Để giải quyết triệt để thách thức trên mà không làm gia tăng độ trễ tính toán của hệ thống, nghiên cứu thiết kế một phân hệ Trí nhớ Ngữ cảnh Phiên tương tác (Session Memory Subsystem) hoạt động theo nguyên lý suy luận ngữ nghĩa tất định (Deterministic Semantic Resolution). Trạng thái ngữ cảnh của phiên làm việc thứ $t$ được hình thức hóa thành bộ năm giá trị:
-\begin{equation}
-\label{eq:session-context}
-\mathcal{S}_t = \big\langle \text{sid}, \mathcal{T}_t, a_{\text{place}}, a_{\text{dish}}, \tau \big\rangle
-\end{equation}
-trong đó $\text{sid}$ biểu diễn định danh duy nhất của phiên hội thoại; $\mathcal{T}_t \in \{\text{heritage}, \allowbreak \text{culinary}, \allowbreak \text{leisure}, \allowbreak \text{lodging}, \allowbreak \text{route\_navigation}\}$ là miền chủ đề hội thoại tự động suy diễn dựa trên loại hình thực thể được truy xuất; $a_{\text{place}} \in \mathcal{V}$ là đỉnh địa danh mốc (Anchor POI) đã được kiểm chứng tồn tại thực tế trên đồ thị $\mathcal{G}$; $a_{\text{dish}}$ là tên món ăn đặc sản trọng tâm; và $\tau \in \mathbb{N}$ là bộ đếm số lượt trao đổi tích lũy trong phiên.
+Để giải quyết triệt để thách thức trên mà không làm gia tăng độ trễ tính toán của hệ thống, nghiên cứu thiết kế phân hệ Trí nhớ Ngữ cảnh Phiên tương tác (Session Memory Subsystem) hoạt động theo nguyên lý phân giải ngữ nghĩa tất định (Deterministic Semantic Resolution). Trạng thái ngữ cảnh của mỗi phiên làm việc được quản trị tập trung thông qua cấu trúc dữ liệu lưu trữ định danh phiên, chủ đề hội thoại tự động suy diễn (di sản, ẩm thực, giải trí, lưu trú hoặc định tuyến), đỉnh địa danh neo (Anchor POI) đã được kiểm chứng trên Đồ thị Tri thức, tên món ăn đặc sản trọng tâm và bộ đếm số lượt trao đổi tích lũy.
 
-Khi du khách gửi câu hỏi $q_t$ tại lượt tương tác thứ $t$, hệ thống kích hoạt hàm biến đổi câu hỏi ngữ cảnh $f_{\text{resolve}}: (q_t, \mathcal{S}_{t-1}) \to q'_t$ trước khi luồng dữ liệu tiến vào Node 1 của LangGraph. Quá trình giải quyết đồng tham chiếu vận hành dựa trên cơ chế phân tích văn bản kết hợp với cấu trúc phân loại thực thể đồ thị:
-\begin{equation}
-\label{eq:anaphora-resolution}
-q'_t = 
-\begin{cases}
-\text{Subst}\big(q_t, p, \text{Label}(a_{\text{place}})\big) & \text{nếu } \exists p \in \mathcal{P}_{\text{place}} \land a_{\text{place}} \neq \emptyset \\
-\text{Subst}\big(q_t, d, a_{\text{dish}}\big) & \text{nếu } \exists d \in \mathcal{P}_{\text{dish}} \land a_{\text{dish}} \neq \emptyset \\
-\text{Prefix}\big(\text{Label}(a_{\text{place}}), q_t\big) & \text{nếu } q_t \in \mathcal{Q}_{\text{ellipsis}} \land a_{\text{place}} \neq \emptyset \\
-q_t & \text{trong các trường hợp còn lại}
-\end{cases}
-\end{equation}
-với $\mathcal{P}_{\text{place}}$ là tập hợp các biểu thức đại từ chỉ nơi chốn trong tiếng Việt được cấu tạo từ tổ hợp giới từ không gian ($\text{quanh}, \text{từ}, \text{ở}, \text{gần}$) và đại từ chỉ định ($\text{đó}, \text{đấy}, \text{này}$); $\mathcal{P}_{\text{dish}}$ là tập đại từ chỉ món ăn; và $\mathcal{Q}_{\text{ellipsis}}$ biểu diễn lớp các câu hỏi tỉnh lược ngắn (dưới 8 từ) tập trung tra cứu thuộc tính (như ``\textit{giá vé bao nhiêu}'', ``\textit{mở cửa mấy giờ}'') mà không lặp lại danh xưng chủ thể.
+Khi du khách gửi câu hỏi tại mỗi lượt thoại, phân hệ trí nhớ ngữ cảnh sẽ kích hoạt bộ giải quyết đồng tham chiếu trước khi luồng dữ liệu tiến vào các trạm xử lý của LangGraph. Dựa trên các luật phân tích văn bản kết hợp từ điển thực thể, hệ thống tự động nhận diện và thay thế các đại từ chỉ nơi chốn trong tiếng Việt (được cấu tạo từ tổ hợp giới từ không gian như \textit{quanh}, \textit{từ}, \textit{ở}, \textit{gần} và đại từ chỉ định như \textit{đó}, \textit{đấy}, \textit{này}) bằng nhãn địa danh neo hợp lệ từ lượt tương tác trước, đồng thời bổ sung chủ thể cho các câu hỏi tỉnh lược thuộc tính ngắn (như ``\textit{giá vé bao nhiêu}'', ``\textit{mở cửa mấy giờ}'').
 
 Hàm chuyển đổi $f_{\text{resolve}}$ sở hữu độ phức tạp thời gian tuyến tính $\mathcal{O}(|q_t|)$ theo độ dài chuỗi ký tự, cho phép thời gian thực thi duy trì dưới 1 mili-giây. Giải pháp này triệt tiêu hoàn toàn độ trễ phát sinh so với phương pháp sử dụng một lượt suy luận mô hình ngôn ngữ lớn phụ (LLM Query Rewriting), vốn tiêu tốn từ 1.5 đến 3.0 giây trên phần cứng biên. Đồng thời, thuật toán tích hợp các bộ lọc phủ định nghiêm ngặt nhằm tránh các hiện tượng giải sai: hệ thống phân biệt tường minh giữa đại từ chỉ mốc quá khứ (``\textit{ở đó}'') và đại từ trỏ vào tọa độ GPS thời gian thực của thiết bị du khách (``\textit{ở đây}'', ``\textit{gần đây}''); loại trừ các cụm từ ngữ nghĩa thời gian (``\textit{từ đó đến nay}''); và ngăn chặn việc phân rã nhầm các tên riêng đặc thù như cơ sở ẩm thực ``\textit{Bánh bèo Bà Đỏ}''.
 
@@ -264,15 +248,7 @@ Về mặt bố cục, hệ thống thiết lập thanh bên điều hướng ha
 
 Về quản trị danh tính và bảo mật phía khách hàng (Client-side Security) tuân thủ khuyến nghị OWASP, hệ thống hỗ trợ đăng nhập một chạm qua Google OAuth 2.0 (JWT ký số), đăng nhập truyền thống với nút chuyển đổi hiển thị/ẩn mật khẩu công thái học, và chế độ Khách vãng lai (Guest Demo). Hệ thống tuyệt đối không lưu mật khẩu trong \texttt{localStorage} mà ủy quyền an toàn cho trình duyệt qua các thuộc tính \texttt{autocomplete}, bảo vệ người dùng trước các nguy cơ tấn công XSS.
 
-Về quản lý lịch sử hội thoại, hệ thống áp dụng mô hình lưu trữ lai giữa \texttt{localStorage} và Firestore, giới hạn tối đa 40 lượt thoại gần nhất để dung lượng tài liệu luôn dưới $100\text{ KB}$. Nhằm hỗ trợ du khách lưu giữ các hành trình quan trọng, hệ thống thiết lập giải thuật Sắp xếp Ưu tiên Ghim (\texttt{sortSessionsWithPinned}):
-\begin{equation}
-\label{eq:pin-ranking}
-\text{Rank}(S_i) = \begin{cases} 
-(1, \text{Timestamp}_{\text{pinned}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{true} \\ 
-(0, \text{Timestamp}_{\text{updated}}(S_i)), & \text{nếu } S_i.\text{isPinned} = \text{false} 
-\end{cases}
-\end{equation}
-Theo Công thức (\ref{eq:pin-ranking}), các phiên được ghim chủ động luôn hiển thị ở nhóm đầu danh sách với viền hổ phách (\texttt{\#F59E0B}). Bên cạnh đó, hệ thống tích hợp Chế độ Nền tối công thái học đạt chuẩn WCAG 2.1 AA (\texttt{\#09090B}, \texttt{\#18181B}, \texttt{\#27272A}) với độ tương phản $\ge 4,5:1$ chống mỏi mắt khi du lịch đêm, cùng phân hệ bản địa hóa song ngữ hoàn chỉnh (\texttt{i18n.js}) bao gồm hơn 1.200 mục từ điển Anh -- Việt chuyển đổi tức thời không cần tải lại trang. Toàn bộ các đặc tả kiến trúc web client và bảo mật được tổng hợp tại Bảng \ref{tab:web-security-architecture}.
+Về quản lý lịch sử hội thoại, hệ thống áp dụng mô hình lưu trữ lai giữa \texttt{localStorage} và Firestore, giới hạn tối đa 40 lượt thoại gần nhất để dung lượng tài liệu luôn dưới $100\text{ KB}$. Nhằm hỗ trợ du khách lưu giữ các hành trình quan trọng, hệ thống thiết lập cơ chế Sắp xếp Ưu tiên Ghim (\texttt{sortSessionsWithPinned}): các phiên được người dùng chủ động ghim luôn hiển thị ở nhóm đầu danh sách theo thứ tự thời gian ghim gần nhất và được làm nổi bật với viền màu hổ phách (\texttt{\#F59E0B}). Bên cạnh đó, hệ thống tích hợp Chế độ Nền tối công thái học đạt chuẩn WCAG 2.1 AA (\texttt{\#09090B}, \texttt{\#18181B}, \texttt{\#27272A}) với độ tương phản $\ge 4,5:1$ chống mỏi mắt khi du lịch đêm, cùng phân hệ bản địa hóa song ngữ hoàn chỉnh (\texttt{i18n.js}) bao gồm hơn 1.200 mục từ điển Anh -- Việt chuyển đổi tức thời không cần tải lại trang. Toàn bộ các đặc tả kiến trúc web client và bảo mật được tổng hợp tại Bảng \ref{tab:web-security-architecture}.
 
 \begin{table}[htbp]
 \centering
@@ -289,7 +265,7 @@ Bố cục Thích ứng & RWD, Mobile-First, $100\text{dvh}$ & Chiều cao độ
 Thanh bên Điều hướng & Collapsible Sidebar, Tooltip & 2 trạng thái: mở rộng 280px (full widget) và thu gọn 52px (Icon Rail với hover tooltip công thái học). \\
 Quản trị Định danh & Google OAuth 2.0, Firebase & Xác thực 1 chạm an toàn; phân quyền độc lập qua Firestore Security Rules; hỗ trợ chế độ Khách vãng lai (Guest Demo). \\
 An toàn Thông tin & Khuyến nghị OWASP Client-side & Không lưu mật khẩu ở \texttt{localStorage}; ủy quyền mật khẩu cho trình duyệt qua \texttt{autocomplete}; nút ẩn/hiện mật khẩu. \\
-Ghim Hội thoại & Giải thuật $\text{Rank}(S_i)$ ưu tiên & Phân tách phiên ghim lên đầu danh sách theo Công thức~(\ref{eq:pin-ranking}); viền màu hổ phách \texttt{\#F59E0B}. \\
+Ghim Hội thoại & Cơ chế Sắp xếp Ưu tiên & Phân tách phiên ghim lên đầu danh sách theo thời gian ghim; viền màu hổ phách \texttt{\#F59E0B}. \\
 Giao diện Nền tối & WCAG 2.1 AA, CSS Variables & Bảng màu phân tầng (\texttt{\#09090B}, \texttt{\#18181B}, \texttt{\#27272A}); tỷ số tương phản $\ge 4,5:1$ chống mỏi mắt ban đêm. \\
 Bản địa hóa Song ngữ & Module \texttt{i18n.js} độc lập & Hơn 1.200 mục từ điển song ngữ Anh -- Việt; chuyển đổi ngôn ngữ tức thời không tải lại trang. \\
 \hline
@@ -367,12 +343,12 @@ Mô hình hoạt động dựa trên cơ chế hai bộ mã hóa song song (Dual
 \subsection{Cơ chế Truy xuất Không gian Đa phương thức và Neo giữ Đồ thị}
 \label{subsec:ch1-visual-retrieval}
 
-Bộ chỉ mục thị giác \texttt{hue\_landmarks\_visual} được thiết lập trong cơ sở dữ liệu vector ChromaDB, lưu trữ 3.528 véc-tơ đặc trưng hình ảnh chuẩn hóa bao phủ toàn diện các danh mục di tích lịch sử, thắng cảnh, làng nghề truyền thống và các cơ sở ẩm thực Cố đô Huế. Khi du khách tải lên một ảnh chụp thực địa, hệ thống áp dụng công thức tương đồng đặc trưng đa phương thức (\ref{eq:clip-sim}) ở Phần II để đo lường độ tương đồng giữa véc-tơ truy vấn $\mathbf{z}_{\text{query}}$ và từng véc-tơ mẫu $\mathbf{z}_k$. Điểm mốc tương thích nhất được xác định theo:
+Bộ chỉ mục thị giác \texttt{hue\_landmarks\_visual} được thiết lập trong cơ sở dữ liệu vector ChromaDB, lưu trữ 3.528 véc-tơ đặc trưng hình ảnh chuẩn hóa bao phủ toàn diện các danh mục di tích lịch sử, thắng cảnh, làng nghề truyền thống và các cơ sở ẩm thực Cố đô Huế. Khi du khách tải lên một ảnh chụp thực địa, hệ thống áp dụng độ tương đồng cô-sin đặc trưng đa phương thức đã thiết lập ở Phần II để đo lường độ tương quan giữa véc-tơ truy vấn $\mathbf{z}_{\text{query}}$ và từng véc-tơ mẫu $\mathbf{z}_k$. Điểm mốc tương thích nhất được xác định theo:
 \begin{equation}
     k^* = \arg\max_{k \in \mathcal{K}} \text{Sim}_{\text{clip}}(\mathbf{z}_{\text{query}}, \mathbf{z}_k)
     \label{eq:top1-visual}
 \end{equation}
-Nếu $\text{Sim}_{\text{clip}}(\mathbf{z}_{\text{query}}, \mathbf{z}_{k^*}) \ge \tau_{\text{visual}} = 0,60$, điểm mốc được công nhận là nhận diện thành công và trường định danh thực thể \textit{place\_id} tương ứng được trích xuất. Ngay sau đó, \textit{place\_id} đóng vai trò là Nút neo (Anchor Node) trên Đồ thị Tri thức Không gian NetworkX, tự động kích hoạt truy xuất các thuộc tính văn hóa lịch sử, các bài nhận xét tinh hoa từ TripAdvisor, và các cơ sở ẩm thực lân cận trong bán kính $1,5\text{ km}$ để cung cấp bài thuyết minh di sản toàn diện cho du khách.
+Nếu độ tương đồng cao nhất đạt từ ngưỡng $0,60$ trở lên, điểm mốc được công nhận là nhận diện thành công và trường định danh thực thể \textit{place\_id} tương ứng được trích xuất. Ngay sau đó, \textit{place\_id} đóng vai trò là Nút neo (Anchor Node) trên Đồ thị Tri thức Không gian NetworkX, tự động kích hoạt truy xuất các thuộc tính văn hóa lịch sử, các bài nhận xét tinh hoa từ TripAdvisor, và các cơ sở ẩm thực lân cận trong bán kính $1,5\text{ km}$ để cung cấp bài thuyết minh di sản toàn diện cho du khách.
 
 \section{Mô hình Hóa Gu Du lịch và Công cụ Dự toán Ngân sách Lộ trình}
 \label{sec:ch1-budget-persona}
@@ -395,13 +371,9 @@ Nhằm cá nhân hóa trải nghiệm theo từng phân khúc du khách, hệ th
 \subsection{Công cụ Dự toán Chi phí và Ngân sách Lộ trình Thực tế}
 \label{subsec:ch1-budget-calculator}
 
-Một trong những băn khoăn lớn nhất của du khách khi lên kế hoạch du lịch là vấn đề tài chính. Nhằm giải quyết bài toán này, hệ thống hiện thực hóa Công cụ Dự toán Chi phí Du lịch Thực tế (Trip Budget Calculator). Tổng chi phí ước tính của một chuyến đi $C_{\text{total}}$ được mô hình hóa toán học qua công thức:
-\begin{equation}
-    C_{\text{total}} = C_{\text{tickets}} + C_{\text{food}} + C_{\text{transport}} + C_{\text{lodging}}
-    \label{eq:total-cost}
-\end{equation}
+Một trong những băn khoăn lớn nhất của du khách khi lên kế hoạch du lịch là vấn đề tài chính. Nhằm giải quyết bài toán này, hệ thống hiện thực hóa Công cụ Dự toán Chi phí Du lịch Thực tế (Trip Budget Calculator). Tổng chi phí ước tính của một chuyến đi được hợp thành từ bốn cấu phần chi tiêu thực tế gồm chi phí vé tham quan di tích, chi phí ẩm thực, chi phí phương tiện di chuyển đường bộ và chi phí lưu trú.
 
-Trong đó, chi phí vé tham quan $C_{\text{tickets}}$ được tính toán chuẩn xác dựa trên Biểu giá dịch vụ chính thức do Trung tâm Bảo tồn Di tích Cố đô Huế ban hành~\cite{hmdc2024tickets}, được tổng hợp chi tiết tại Bảng \ref{tab:hmdc-ticket-pricing}.
+Trong đó, chi phí vé tham quan được tính toán chuẩn xác dựa trên Biểu giá dịch vụ chính thức do Trung tâm Bảo tồn Di tích Cố đô Huế ban hành~\cite{hmdc2024tickets}, được tổng hợp chi tiết tại Bảng \ref{tab:hmdc-ticket-pricing}.
 
 \begin{table}[htbp]
 \centering

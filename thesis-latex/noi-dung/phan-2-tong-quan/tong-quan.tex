@@ -64,14 +64,11 @@ Về mô hình suy luận ngôn ngữ và thị giác, nghiên cứu tích hợp
 \phantomsection
 \addcontentsline{toc}{subsection}{1.4. Khai phá thực đơn ngầm từ Dữ liệu Nhận xét Du khách}
 
-Một trong những hạn chế lớn của các hệ thống gợi ý ẩm thực hiện nay là sự phụ thuộc vào các menu tĩnh đăng ký trên giấy phép kinh doanh, vốn chỉ liệt kê tên quán và danh mục chung mà không phản ánh được món ăn thực sự làm nên danh tiếng của quán. Trong thực tế, du khách đến một quán ăn cụ thể thường vì một hoặc hai món đặc sản gia truyền được cộng đồng truyền tai nhau.
+Một trong những hạn chế lớn của các hệ thống gợi ý ẩm thực truyền thống là sự phụ thuộc vào danh mục kinh doanh đăng ký tĩnh, vốn chỉ liệt kê tên cơ sở mà không phản ánh được các món ăn thực sự làm nên thương hiệu của quán. Trong thực tế, du khách tìm đến một quán ăn địa phương thường vì một vài món đặc sản nổi tiếng được cộng đồng truyền tai nhau qua trải nghiệm ẩm thực thực tế.
 
-Để giải quyết khoảng trống này, kỹ thuật Khai phá thực đơn ngầm (Implicit Menu Mining) được đề xuất thông qua việc kết hợp Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer gồm 570 món ăn chuẩn hóa) với thuật toán đối sánh chuỗi thực thể mờ (Fuzzy String Entity Linking) trên tập ngữ liệu đánh giá du khách từ TripAdvisor~\cite{tripadvisor2024}. Một cạnh quan hệ $\mathbf{e}_{\text{SERVES}} = (u, \text{SERVES}, m)$ liên kết giữa nhà hàng $u$ và món ăn $m$ chỉ được hình thành trên đồ thị khi thỏa mãn điều kiện ngưỡng tần suất và chỉ số tin cậy thống kê:
-\begin{equation}
-    \text{Conf}(u, m) = \frac{\sum_{k \in \mathcal{K}_{u, m}} \text{Rating}_k}{5 \cdot |\mathcal{K}_{u, m}|} = \frac{\overline{\text{Rating}}_{u, m}}{5} \ge \tau_{\text{dish}}
-    \label{eq:dish-confidence}
-\end{equation}
-trong đó $\mathcal{K}_{u, m} = \{k \in \mathcal{K}_u \mid m \in \text{text}_k\}$ là tập hợp các bài đánh giá về nhà hàng $u$ có nhắc trực tiếp đến món ăn $m$; $|\mathcal{K}_{u, m}|$ là số lượng bài đánh giá đề cập món $m$ (với điều kiện tần suất xuất hiện tối thiểu $|\mathcal{K}_{u, m}| \ge N_{\min} = 3$ bài nhằm triệt tiêu các trường hợp nhắc đến ngẫu nhiên); $\text{Rating}_k \in [1, 5]$ là điểm số xếp hạng của bài đánh giá thứ $k$; $\overline{\text{Rating}}_{u, m}$ là điểm số hài lòng trung bình của du khách dành riêng cho món ăn $m$ tại quán $u$; và $\tau_{\text{dish}} = 0,70$ là ngưỡng tin cậy bảo chứng chất lượng (tương ứng với việc món ăn đó phải đạt điểm trung bình từ $3,5 / 5$ sao trở lên). Nhờ cơ chế này, một nhà hàng dù phục vụ đồng thời nhiều món đặc sản (như quán Cơm hến Hoa Đông có cả cơm hến, bún hến và chè bắp) vẫn có thể đạt điểm tin cậy cao trên từng món riêng biệt nếu món ăn đó được cộng đồng đánh giá tích cực, khắc phục triệt để nghịch lý mẫu số toàn cục của các công thức phân bố truyền thống.
+Để giải quyết khoảng trống này, nghiên cứu xây dựng quy trình khai phá thực đơn ngầm (\textit{implicit menu mining}) dựa trên kỹ thuật trích xuất thực thể theo từ điển chuyên ngành (\textit{gazetteer-based entity linking}) trên tập ngữ liệu nhận xét du khách từ TripAdvisor~\cite{tripadvisor2024}. Phương pháp kết hợp bộ từ điển ẩm thực Việt Nam gồm 570 món ăn chuẩn hóa với thuật toán đối sánh chuỗi tốc độ cao theo cấu trúc cây tiền tố Trie của Aho-Corasick. Bằng cách thiết lập bộ lọc chuỗi dài nhất ưu tiên (\textit{longest-span matching}), hệ thống triệt tiêu được hiện tượng nhận diện trùng lặp giữa các biến thể tên gọi địa phương và tên món ăn đồng âm.
+
+Cạnh quan hệ phục vụ món ăn giữa cơ sở kinh doanh và món đặc sản được định hình trên đồ thị tri thức thông qua cơ chế kiểm duyệt chất lượng dựa trên sự đồng thuận của cộng đồng. Hệ thống chỉ công nhận liên kết này khi món ăn được nhiều du khách độc lập nhắc đến nhiều lần trong các bài nhận xét tích cực, thay vì chỉ xuất hiện tình cờ trong một vài ngữ cảnh cá biệt. Cách tiếp cận dựa trên dữ liệu cộng đồng này giúp đồ thị tri thức tự động làm giàu mạng lưới ẩm thực địa phương một cách khách quan, phản ánh chính xác thị hiếu thực tế mà không đòi hỏi các cơ sở kinh doanh phải cung cấp thực đơn số hóa thủ công.
 
 \subsection*{1.5. Mô hình Không gian Véc-tơ và Kỹ thuật Nhúng Ngữ nghĩa Đa ngôn ngữ}
 \phantomsection
@@ -88,104 +85,36 @@ Nhằm tối ưu hóa năng lực nắm bắt ngữ nghĩa đối với ngôn ng
 
 Tuy nhiên, như đã phân tích, mô hình véc-tơ thuần túy chỉ giải quyết được sự tương đồng phân bố từ vựng trong không gian ngữ nghĩa mà hoàn toàn không thể mã hóa được các tiên đề tô-pô không gian địa lý. Do đó, việc kết hợp mô hình không gian véc-tơ với Đồ thị Tri thức Không gian là điều kiện tiên quyết để đạt được khả năng truy xuất chính xác cả về mặt ngữ nghĩa lẫn cự ly thực tế.
 
-\subsection*{1.6. Cơ chế Tự suy ngẫm và Phân loại Đánh giá Tin cậy trong Agentic RAG}
+\subsection*{1.6. Cơ chế Tự suy ngẫm và Phân luồng Định tuyến Tin cậy trong Agentic RAG}
 \phantomsection
-\addcontentsline{toc}{subsection}{1.6. Cơ chế Tự suy ngẫm và Phân loại Đánh giá Tin cậy trong Agentic RAG}
+\addcontentsline{toc}{subsection}{1.6. Cơ chế Tự suy ngẫm và Phân luồng Định tuyến Tin cậy trong Agentic RAG}
 
-Khác biệt cốt lõi giữa hệ thống RAG thụ động truyền thống và hệ thống RAG hướng tác tử (Agentic RAG) nằm ở khả năng Tự suy ngẫm (Self-Reflection) và Đánh giá chất lượng tài liệu trước khi tạo sinh (Document and Context Grading)~\cite{asai2024selfrag, yan2024crag}. Thay vì trực tiếp đưa toàn bộ ngữ cảnh truy xuất vào dấu nhắc sinh câu trả lời của mô hình ngôn ngữ lớn, tác tử sẽ thực thi một bước phản tư nhằm đánh giá độ tương thích giữa ngữ cảnh $\mathcal{C}$ thu được từ đồ thị với câu hỏi $q$ của người dùng.
+Khác biệt cốt lõi giữa hệ thống RAG thụ động truyền thống và hệ thống RAG hướng tác tử (Agentic RAG) nằm ở khả năng tự suy ngẫm (Self-Reflection) và đánh giá chất lượng tài liệu trước khi tạo sinh (Document and Context Grading)~\cite{asai2024selfrag, yan2024crag}. Thay vì chuyển tiếp thụ động toàn bộ ngữ cảnh truy xuất vào dấu nhắc sinh câu trả lời của mô hình ngôn ngữ lớn, tác tử thực thi bước phản tư nhằm thẩm định tính xác thực và mức độ đầy đủ của ngữ cảnh đối chiếu với câu hỏi của người dùng.
 
-Hàm đánh giá độ tin cậy được mô hình hóa toán học thông qua tổ hợp tuyến tính giữa độ tương đồng ngữ nghĩa véc-tơ và mức độ bao phủ thực thể không gian trên đồ thị:
-\begin{equation}
-    S_{\text{conf}}(\mathcal{C}, q) = w_{\text{sim}} \cdot S_{\text{sim}} + w_{\text{graph}} \cdot S_{\text{graph}}
-    \label{eq:grading-score}
-\end{equation}
-trong đó $S_{\text{sim}} \in [0, 1]$ là độ tương đồng cô-sin trung bình giữa véc-tơ câu hỏi và các đoạn tài liệu truy xuất từ ChromaDB; $w_{\text{sim}} = 0,6$ và $w_{\text{graph}} = 0,4$ là các hệ số trọng số tương ứng ($w_{\text{sim}} + w_{\text{graph}} = 1,0$). Điểm số bao phủ đồ thị $S_{\text{graph}} \in [0, 1]$ được định nghĩa tường minh toán học dựa trên tỷ lệ liên kết thành công của tập thực thể trích xuất $\mathcal{E}_q = \mathcal{E}_{\text{poi}} \cup \mathcal{E}_{\text{dish}}$ từ câu hỏi $q$ vào tập đỉnh $\mathcal{V}_{\mathcal{G}}$ và tập cạnh $\mathcal{E}_{\mathcal{G}}$ của Đồ thị Tri thức:
-\begin{equation}
-    S_{\text{graph}}(q, \mathcal{G}) = \begin{cases}
-        \displaystyle \frac{\sum_{e \in \mathcal{E}_q} \mathbb{I}(e \in \mathcal{V}_{\mathcal{G}}) + \sum_{(u, v) \in \mathcal{E}_q \times \mathcal{E}_q} \text{Conf}(u, v) \cdot \mathbb{I}((u, v) \in \mathcal{E}_{\mathcal{G}})}{|\mathcal{E}_q| + |\mathcal{E}_q \times \mathcal{E}_q \cap \mathcal{E}_{\mathcal{G}}|}, & \text{khi } |\mathcal{E}_q| > 0 \\
-        0, & \text{khi } |\mathcal{E}_q| = 0
-    \end{cases}
-    \label{eq:sgraph-explicit}
-\end{equation}
-với $\mathbb{I}(\cdot)$ là hàm chỉ thị và $\text{Conf}(u, v) \in [0, 1]$ là trọng số tin cậy của cạnh quan hệ trên đồ thị (ví dụ: độ tin cậy của cạnh $\text{SERVES}$ nối cơ sở ẩm thực $u$ với món đặc sản $v$).
+Quy trình thẩm định tin cậy vận hành dựa trên cơ chế đánh giá kép, kết hợp giữa độ tương đồng ngữ nghĩa phân bố trong không gian véc-tơ và độ bảo chứng thực thể có cấu trúc trên Đồ thị Tri thức Không gian. Cụ thể, hệ thống đối soát các thực thể then chốt (như tên di tích, địa danh, món ăn đặc sản) trích xuất từ câu hỏi với các đỉnh và cạnh quan hệ đã được kiểm chứng trên đồ thị. Khi ngữ cảnh truy xuất chứng minh được tính neo giữ vững chắc trên mạng lưới tri thức cục bộ và đạt độ tương đồng ngữ nghĩa cao, máy trạng thái sẽ phê duyệt luồng điều hướng chuyển thẳng sang trạm tạo sinh câu trả lời có kiểm soát. Ngược lại, đối với những câu hỏi đề cập đến các sự kiện lễ hội đương thời, thông tin thời sự mới hoặc các địa điểm nằm ngoài phạm vi dữ liệu đã thu thập, cơ chế tự suy ngẫm sẽ nhận diện sự thiếu hụt ngữ cảnh nội bộ và tự động kích hoạt nhánh định tuyến dự phòng (Web Search Fallback qua công cụ tìm kiếm mạng DuckDuckGo). Bằng cách chủ động truy vấn thông tin bổ sung theo thời gian thực thay vì cố gắng suy diễn từ ngữ cảnh không đầy đủ, hệ thống triệt tiêu tận gốc hiện tượng tạo sinh ảo giác, đồng thời duy trì độ chính xác và tính thời sự của câu trả lời cung cấp cho du khách.
 
-Dựa trên điểm số tin cậy $S_{\text{conf}}(\mathcal{C}, q)$, máy trạng thái LangGraph định tuyến luồng thực thi theo cơ chế phân luồng dự phòng (Confidence Router):
-\begin{equation}
-    \text{Route}(\mathcal{C}, q) = \begin{cases}
-        \text{LLM Generator (Tạo sinh trực tiếp)}, & \text{khi } S_{\text{conf}}(\mathcal{C}, q) \ge \tau_{\text{conf}} \\
-        \text{Web Search Fallback (Tìm kiếm mở rộng)}, & \text{khi } S_{\text{conf}}(\mathcal{C}, q) < \tau_{\text{conf}}
-    \end{cases}
-    \label{eq:branching-logic}
-\end{equation}
-trong đó $\tau_{\text{conf}} = 0,65$ là ngưỡng quyết định định tuyến đã được tinh chỉnh qua thực nghiệm. Khi điểm tin cậy đạt từ 0,65 trở lên, ngữ cảnh nội bộ từ đồ thị được xác nhận là đủ phong phú và chính xác để mô hình ngôn ngữ lớn sinh câu trả lời; ngược lại, khi điểm tin cậy dưới 0,65, hệ thống tự động kích hoạt công cụ tìm kiếm mạng DuckDuckGo để bổ sung thông tin cập nhật thời gian thực, bảo đảm triệt tiêu hiện tượng tạo sinh ảo giác.
-
-\subsection*{1.7. Mô hình hóa Toán học Bài toán Thiết kế Chuyến đi Du lịch có Ràng buộc}
+\subsection*{1.7. Cơ sở lý thuyết Bài toán Thiết kế Chuyến đi Du lịch có Ràng buộc (TTDP)}
 \phantomsection
-\addcontentsline{toc}{subsection}{1.7. Mô hình hóa Toán học Bài toán TTDP có Ràng buộc}
+\addcontentsline{toc}{subsection}{1.7. Cơ sở lý thuyết Bài toán Thiết kế Chuyến đi Du lịch có Ràng buộc (TTDP)}
 
-Bài toán Thiết kế Chuyến đi Du lịch (Tourist Trip Design Problem -- TTDP) là bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có giới hạn thời gian (Orienteering Problem -- OP)~\cite{vansteenwegen2011orienteering}. Trong nghiên cứu này, bài toán TTDP được mô hình hóa toàn diện trên mạng lưới địa lý của thành phố Huế có xét đến các ràng buộc ngân sách thời gian, khung giờ mở cửa thực địa (Time Windows), khử chu trình con (Subtour Elimination) và giới hạn cự ly di chuyển ẩm thực.
+Bài toán Thiết kế Chuyến đi Du lịch (Tourist Trip Design Problem -- TTDP) là một bài toán tối ưu hóa tổ hợp kinh điển thuộc lớp bài toán Người du lịch định tuyến có thưởng (Orienteering Problem)~\cite{vansteenwegen2011orienteering}. Mục tiêu cốt lõi của bài toán là xác định một chuỗi các điểm dừng chân tham quan và trải nghiệm ẩm thực trong không gian đô thị nhằm tối đa hóa tổng giá trị thỏa dụng và mức độ hài lòng của du khách, đồng thời thỏa mãn một tập hợp các điều kiện ràng buộc thực địa ngặt nghèo về mặt thời gian, không gian và chi phí.
 
-Cho đồ thị có hướng $\mathcal{G}_{\text{tour}} = (\mathcal{V}_{\text{tour}}, \mathcal{A})$, trong đó $\mathcal{V}_{\text{tour}} = \{v_0, v_1, \dots, v_n\}$ là tập hợp các điểm đến tiềm năng, bao gồm điểm xuất phát $v_0$ (ví dụ: khách sạn lưu trú của du khách) và điểm kết thúc $v_n$. Mỗi địa điểm $v_i \in \mathcal{V}_{\text{tour}}$ được gán kèm một điểm số ưa thích $S_i \ge 0$ phản ánh mức độ phù hợp với sở thích của du khách, thời gian lưu lại tham quan hoặc thưởng thức ẩm thực $T_i \ge 0$, và khung thời gian mở cửa tiếp đón $[O_i, C_i]$ với $O_i$ là giờ mở cửa và $C_i$ là giờ đóng cửa. Mỗi cung liên kết có hướng $(v_i, v_j) \in \mathcal{A}$ đặc trưng cho hành trình di chuyển từ $v_i$ đến $v_j$ với thời gian di chuyển $t_{ij} \ge 0$ được tính toán dựa trên khoảng cách mạng lưới đường bộ thực tế $D_{\text{OSRM}}(v_i, v_j)$ do OSRM cung cấp và vận tốc di chuyển trung bình trong đô thị.
-
-Bài toán TTDP hướng đến việc xác định chuỗi hành trình tối ưu nhằm tối đa hóa tổng điểm số ưa thích tích lũy trong khi tổng thời gian hành trình không vượt quá ngân sách cho phép $T_{\max}$:
-\begin{equation}
-    \max \sum_{i=1}^{n-1} S_i y_i
-    \label{eq:ttdp-objective}
-\end{equation}
-với hệ thống các điều kiện ràng buộc:
-\begin{equation}
-    \sum_{j=1}^n x_{0j} = 1, \quad \sum_{i=0}^{n-1} x_{in} = 1
-    \label{eq:ttdp-start-end}
-\end{equation}
-\begin{equation}
-    \sum_{i=0, i \ne k}^{n-1} x_{ik} = \sum_{j=1, j \ne k}^n x_{kj} = y_k, \quad \forall k \in \{1, \dots, n-1\}
-    \label{eq:ttdp-conservation}
-\end{equation}
-\begin{equation}
-    u_i - u_j + 1 \le (n - 1)(1 - x_{ij}), \quad \forall 1 \le i \ne j \le n-1
-    \label{eq:ttdp-mtz-sec}
-\end{equation}
-\begin{equation}
-    O_i \le a_i \le C_i, \quad \forall v_i \in \mathcal{V}_{\text{tour}}
-    \label{eq:ttdp-time-window}
-\end{equation}
-\begin{equation}
-    a_i + T_i + t_{ij} - M_{\text{big}}(1 - x_{ij}) \le a_j, \quad \forall (v_i, v_j) \in \mathcal{A}
-    \label{eq:ttdp-arrival-propagation}
-\end{equation}
-\begin{equation}
-    \sum_{i=0}^{n-1} \sum_{j=1, j \ne i}^n t_{ij} x_{ij} + \sum_{i=1}^{n-1} T_i y_i \le T_{\max}
-    \label{eq:ttdp-time-budget}
-\end{equation}
-\begin{equation}
-    d(v_i, v_j) \cdot x_{ij} \le \tau_{\text{spatial}}, \quad \forall (v_i, v_j) \in \mathcal{A}_{\text{dine}}
-    \label{eq:ttdp-spatial-constraint}
-\end{equation}
-\begin{equation}
-    x_{ij} \in \{0, 1\}, \quad \forall (v_i, v_j) \in \mathcal{A}; \quad y_i \in \{0, 1\}, \quad 2 \le u_i \le n, \quad \forall v_i \in \mathcal{V}_{\text{tour}}
-    \label{eq:ttdp-binary}
-\end{equation}
-Trong hệ thống ràng buộc trên, phương trình (\ref{eq:ttdp-mtz-sec}) là ràng buộc khử chu trình con Miller--Tucker--Zemlin (MTZ), sử dụng biến phụ thứ tự thăm $u_i \in [2, n]$ nhằm ngăn chặn triệt để hiện tượng xuất hiện các chu trình con khép kín tách rời khỏi lộ trình xuất phát từ $v_0$. Các phương trình (\ref{eq:ttdp-time-window}) và (\ref{eq:ttdp-arrival-propagation}) thiết lập ràng buộc Cửa sổ Thời gian (Time Windows) với thời điểm đến $a_i$ và hằng số lớn $M_{\text{big}} \ge T_{\max}$, bảo đảm du khách luôn có mặt trong khung giờ mở cửa hợp lệ của di tích (như Đại Nội, các Lăng tẩm chỉ đón khách trước 17h30, hoặc phố đi bộ đêm chỉ mở sau 18h00). Ràng buộc (\ref{eq:ttdp-spatial-constraint}) gắn trực tiếp biến quyết định $x_{ij}$ với khoảng cách địa lý trên tập cung $\mathcal{A}_{\text{dine}} \subset \mathcal{A}$ giữa Điểm tham quan di tích neo giữ ($v_i \in \mathcal{V}_{\text{attr}}$) và Cơ sở ẩm thực dùng bữa ($v_j \in \mathcal{V}_{\text{rest}}$) nhằm khống chế bán kính đi bộ ăn trưa/tối trong phạm vi $\tau_{\text{spatial}} = 1,5\text{ km}$; trong khi các cung di chuyển liên kết giữa các Điểm tham quan chính trong cùng cụm phân vùng địa lý được tối ưu hóa toàn cục theo hàm mục tiêu ma trận đường bộ OSRM mà không bị giới hạn cứng bởi ngưỡng đi bộ lân cận.
+Trong bối cảnh địa bàn du lịch Cố đô Huế, việc thiết kế lịch trình đòi hỏi phải giải quyết đồng thời năm nhóm ràng buộc thực tế:
+Thứ nhất là ràng buộc ngân sách thời gian tổng thể trong ngày, bảo đảm tổng thời lượng lưu lại tham quan tại các điểm đến cùng thời gian di chuyển trên mạng lưới đường bộ giữa các chặng không vượt quá giới hạn thể lực và khung thời gian cho phép của du khách.
+Thứ hai là ràng buộc cửa sổ thời gian mở cửa (Time Windows), yêu cầu thời điểm du khách đặt chân đến từng di tích phải nằm trọn vẹn trong khung giờ đón khách hợp lệ (chẳng hạn như Đại Nội và các Lăng tẩm Hoàng gia chỉ mở cửa tham quan ban ngày trước 17h30, trong khi các hoạt động phố đêm hoặc ca Huế trên sông Hương chỉ diễn ra sau 18h00).
+Thứ ba là tính khả thi của mạng lưới giao thông đường bộ, trong đó thời gian và cự ly di chuyển giữa các điểm đến được tính toán chính xác thông qua ma trận đường bộ thực tế OSRM thay vì cự ly đường chim bay giả định, phản ánh đúng các nút giao thông, tuyến đường một chiều và các cây cầu bắc qua sông Hương.
+Thứ tư là ràng buộc lân cận ẩm thực, yêu cầu cơ sở ăn uống được đề xuất trong mỗi buổi tham quan phải nằm trong bán kính đi bộ hợp lý (dưới 1,5 kilômét) tính từ điểm di tích neo giữ chính của buổi đó, giúp tối ưu hóa thời gian nghỉ ngơi của du khách.
+Cuối cùng là nguyên lý phân cụm không gian địa lý triệt để, nhóm các điểm tham quan theo từng phân vùng tự nhiên (bờ Bắc sông Hương tập trung Kinh thành và phố cổ, bờ Nam tập trung các di tích cận đại và cơ sở lưu trú, khu vực ngoại thành tập trung các quần thể lăng tẩm và danh lam đồi núi). Cơ chế phân cụm này triệt tiêu triệt để hiện tượng di chuyển ziczac hoặc qua lại cầu nhiều lần trong cùng một buổi tham quan, bảo đảm lịch trình đề xuất luôn đạt tính mạch lạc, khoa học và khả thi cao trên thực tế.
 
 \subsection*{1.8. Mô hình Thị giác Đa phương thức CLIP và Kiến trúc Vision Transformer}
 \phantomsection
 \addcontentsline{toc}{subsection}{1.8. Mô hình Thị giác Đa phương thức CLIP và Kiến trúc Vision Transformer}
 
-Trong bối cảnh du lịch thực địa tại Cố đô Huế, du khách thường xuyên bắt gặp các công trình kiến trúc cổ kính (cổng thành, bia đá, lăng tẩm, mái đình) nhưng không nắm rõ tên gọi chính xác để nhập liệu dạng văn bản. Nhằm hỗ trợ khả năng tìm kiếm và hỏi đáp đa phương thức (Multimodal Visual Search), nghiên cứu tích hợp mô hình Học biểu diễn ngôn ngữ -- thị giác tương phản (Contrastive Language-Image Pre-training -- CLIP) do Radford và các cộng sự tại OpenAI phát triển~\cite{radford2021clip}.
+Trong bối cảnh du lịch thực địa tại Cố đô Huế, du khách thường xuyên bắt gặp các công trình kiến trúc cổ kính (cổng tam quan, bia đá, lăng tẩm, mái đình) nhưng không nắm rõ tên gọi chính xác để nhập liệu dạng văn bản. Nhằm hỗ trợ khả năng tìm kiếm và hỏi đáp đa phương thức (Multimodal Visual Search), nghiên cứu tích hợp mô hình Học biểu diễn ngôn ngữ -- thị giác tương phản (Contrastive Language-Image Pre-training -- CLIP) do Radford và các cộng sự tại OpenAI phát triển~\cite{radford2021clip}.
 
-Khác với các mạng nơ-ron tích chập (CNN) truyền thống chỉ phân loại hình ảnh vào một tập nhãn đóng cố định, CLIP bao gồm hai nhánh mã hóa song song được huấn luyện liên kết: Bộ mã hóa thị giác Vision Transformer (ViT-B/32) $f_{\text{img}}$ và Bộ mã hóa văn bản Transformer $f_{\text{txt}}$. Bộ mã hóa ViT-B/32 chia nhỏ hình ảnh kích thước $224 \times 224$ pixel thành một lưới các mảng vuông (patches) kích thước $32 \times 32$ pixel, chiếu tuyến tính các mảng này thành chuỗi các véc-tơ đặc trưng 1 chiều tương tự như chuỗi từ vị trí trong văn bản, và xử lý tương quan không gian đa tầng thông qua cơ chế tự chú ý (Multi-Head Self-Attention)~\cite{vaswani2017attention}. Cả hai nhánh trích xuất đều ánh xạ biểu diễn vào một không gian nhúng chung đa phương thức $D_{\text{clip}} = 512$ chiều có chuẩn $L_2$:
-\begin{equation}
-    \mathbf{z}_{\text{img}} = \frac{f_{\text{img}}(I)}{\|f_{\text{img}}(I)\|_2}, \quad \mathbf{z}_{\text{txt}} = \frac{f_{\text{txt}}(T)}{\|f_{\text{txt}}(T)\|_2}
-    \label{eq:clip-embedding}
-\end{equation}
-trong đó $I$ là hình ảnh chụp thực địa và $T$ là mô tả văn bản hoặc tên danh lam thắng cảnh.
+Khác với các mạng nơ-ron tích chập (CNN) truyền thống chỉ phân loại hình ảnh vào một tập nhãn đóng cố định, CLIP vận hành dựa trên kiến trúc hai nhánh mã hóa song song được huấn luyện liên kết: Bộ mã hóa thị giác Vision Transformer (ViT-B/32) và Bộ mã hóa văn bản Transformer. Nhánh thị giác ViT-B/32 chia nhỏ hình ảnh đầu vào kích thước $224 \times 224$ pixel thành một lưới các mảng vuông (patches) kích thước $32 \times 32$ pixel, chiếu tuyến tính các mảng này thành chuỗi các véc-tơ đặc trưng một chiều tương tự như chuỗi từ vị trí trong văn bản, và xử lý tương quan không gian đa tầng thông qua cơ chế tự chú ý (Multi-Head Self-Attention)~\cite{vaswani2017attention}. Cả hai nhánh trích xuất đều ánh xạ biểu diễn vào một không gian nhúng chung đa phương thức 512 chiều được chuẩn hóa theo chuẩn $L_2$.
 
-Mức độ tương thích giữa một hình ảnh truy vấn $I_q$ và một điểm mốc di sản trong cơ sở dữ liệu được định lượng thông qua độ tương đồng cô-sin của véc-tơ đặc trưng đa phương thức:
-\begin{equation}
-    \text{Sim}_{\text{clip}}(I_q, I_k) = \mathbf{z}_{I_q} \cdot \mathbf{z}_{I_k} = \cos(\theta_{\mathbf{z}_{I_q}, \mathbf{z}_{I_k}})
-    \label{eq:clip-sim}
-\end{equation}
-Nhờ cơ chế này, hệ thống có khả năng nhận diện điểm mốc di sản tức thời (Top-1 Visual Landmark Recognition) bằng cách so khớp véc-tơ ảnh tải lên của du khách với kho véc-tơ đặc trưng của 25 di tích trọng điểm tại Huế lưu trữ trong bộ chỉ mục ChromaDB \texttt{hue\_landmarks\_visual}, đạt thời gian trích xuất véc-tơ dưới 100 mili-giây trên GPU mà không cần huấn luyện lại toàn bộ mô hình nền tảng.
+Trong không gian nhúng đa phương thức hợp nhất này, khoảng cách ngữ nghĩa giữa một hình ảnh chụp thực địa và các điểm mốc di sản lưu trữ sẵn được định lượng trực tiếp thông qua độ tương đồng cô-sin của các véc-tơ đặc trưng. Cơ chế biểu diễn tương phản cho phép hệ thống nhận diện điểm mốc di sản tức thời (Top-1 Visual Landmark Recognition) bằng cách so khớp véc-tơ ảnh của du khách với kho đặc trưng của các di tích trọng điểm Cố đô Huế được chỉ mục hóa trong cơ sở dữ liệu véc-tơ ChromaDB. Quá trình nhận diện đạt thời gian phản hồi dưới 100 mili-giây trên bộ xử lý đồ họa phổ thông với độ chính xác cao mà hoàn toàn không đòi hỏi phải huấn luyện lại hay tinh chỉnh mô hình nền tảng, loại trừ triệt để rủi ro rò rỉ dữ liệu hoặc suy giảm hiệu năng tổng quát.
 
 \subsection*{1.9. Kỹ thuật Định tuyến Mạng lưới Đường bộ OSRM và Phân cấp Co rút Đồ thị}
 \phantomsection

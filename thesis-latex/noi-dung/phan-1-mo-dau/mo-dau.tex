@@ -60,7 +60,7 @@ Mục tiêu tổng quát của khóa luận là thiết kế, hiện thực hóa
 Để đạt được mục tiêu tổng quát, nghiên cứu xác lập sáu mục tiêu cụ thể:
 \begin{itemize}
     \item \textbf{Mục tiêu 1:} Xây dựng Đồ thị Tri thức Không gian du lịch Huế và phụ cận quy mô 9.525 nút và 90.948 cạnh, tích hợp tọa độ GPS chuẩn WGS84 và cơ chế lọc không gian hai bước (Haversine $d \le 1,5\text{ km}$ kết hợp định tuyến đường bộ OSRM).
-    \item \textbf{Mục tiêu 2:} Xây dựng bộ từ điển ẩm thực Việt Nam gồm 570 món (hơn 60 đặc sản Huế) và thiết lập giải thuật khai phá thực đơn ngầm từ 44.355 bài nhận xét TripAdvisor để gán quan hệ $\text{SERVES}$ với điểm tin cậy $\text{Conf}(u,m) \ge 0,70$.
+    \item \textbf{Mục tiêu 2:} Xây dựng bộ từ điển ẩm thực Việt Nam gồm 570 món (chú trọng hơn 60 đặc sản Huế) và thiết lập quy trình khai phá thực đơn ngầm từ 44.355 bài nhận xét TripAdvisor nhằm tự động gán quan hệ phục vụ món ăn cho các cơ sở ẩm thực trên đồ thị.
     \item \textbf{Mục tiêu 3:} Thiết kế khung điều phối Agentic RAG trên LangGraph gồm 5 nút tuần tự, tích hợp bộ chấm điểm tin cậy và cơ chế phân luồng dự phòng tìm kiếm web, vận hành hoàn toàn trên mô hình cục bộ Qwen2.5-VL:7B (Zero API Cost).
     \item \textbf{Mục tiêu 4:} Tích hợp mô hình thị giác CLIP ViT-B/32, xây dựng kho 3.528 ảnh thực địa và bộ chỉ mục ChromaDB, thiết lập giao thức kiểm thử chéo LOOCV trên 77 ảnh thực địa của 25 di tích nhằm nhận diện tức thời điểm mốc di sản không rò rỉ dữ liệu.
     \item \textbf{Mục tiêu 5:} Hiện thực hóa giải thuật lập lịch trình phân cụm không gian dựa trên bài toán Orienteering Problem kết hợp định tuyến OSRM và công cụ Dự toán ngân sách chuyến đi bám sát biểu giá vé chính thức của Trung tâm Bảo tồn Di tích Cố đô Huế.
