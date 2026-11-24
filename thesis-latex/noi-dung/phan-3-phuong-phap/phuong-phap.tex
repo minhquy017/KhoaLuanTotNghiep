@@ -9,7 +9,7 @@
 \phantomsection
 \addcontentsline{toc}{subsection}{1.1. Hiện trạng đa nguồn dữ liệu và Quy mô tổng thể}
 
-Nghiên cứu được thiết lập dựa trên một cơ sở dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp chặt chẽ giữa thông tin tọa độ không gian chính xác, kho ngữ liệu nhận xét trải nghiệm thực tế từ cộng đồng du khách, hệ thống từ điển ẩm thực chuẩn hóa và kho hình ảnh di sản thực địa. Toàn bộ cơ sở dữ liệu được cấu thành từ năm nguồn thành phần chính: (1) Dữ liệu tọa độ địa lý WGS84 từ OpenStreetMap~\cite{openstreetmap2024} và Google Maps với 8.921 POI toàn quốc và trọng tâm 612 địa điểm tại Huế; (2) Kho ngữ liệu 44.355 bài đánh giá thực tế của du khách tại Huế bóc tách từ 1,7 triệu bài trên TripAdvisor; (3) Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer) gồm 570 món đặc sản; (4) Đồ thị Tri thức Không gian gồm 9.525 nút và 90.948 cạnh; và (5) Bộ dữ liệu thị giác 3.528 hình ảnh thực địa di sản Cố đô phục vụ mô hình CLIP ViT-B/32 (kèm tập kiểm chuẩn 77 ảnh của 25 di tích theo giao thức LOOCV).
+Nghiên cứu được thiết lập dựa trên một cơ sở dữ liệu đa nguồn tích hợp quy mô lớn, kết hợp chặt chẽ giữa thông tin tọa độ không gian chính xác, kho ngữ liệu nhận xét trải nghiệm thực tế từ cộng đồng du khách, hệ thống từ điển ẩm thực chuẩn hóa và kho hình ảnh di sản thực địa. Toàn bộ cơ sở dữ liệu được cấu thành từ năm nguồn thành phần chính: (1) Dữ liệu tọa độ địa lý WGS84 từ OpenStreetMap~\cite{openstreetmap2024} và Google Maps với 8.921 POI toàn quốc và trọng tâm 612 địa điểm tại Huế; (2) Kho ngữ liệu 44.355 bài đánh giá thực tế của du khách tại Huế bóc tách từ 1,7 triệu bài trên TripAdvisor; (3) Bộ từ điển ẩm thực Việt Nam (Culinary Gazetteer) gồm 570 món đặc sản; (4) Đồ thị Tri thức Không gian gồm 9.525 nút và 90.948 cạnh; và (5) Bộ dữ liệu thị giác 3.528 hình ảnh thực địa di sản Cố đô phục vụ mô hình CLIP ViT-B/32 (kèm bộ dữ liệu kiểm chuẩn thực địa gồm 77 ảnh tại 25 di tích đánh giá theo giao thức kiểm định chéo LOOCV).
 
 Các thông số tổng hợp về quy mô lưu trữ, số lượng bản ghi và định dạng cấu trúc của các nguồn dữ liệu thành phần được thống kê chi tiết tại Bảng \ref{tab:dataset-summary}.
 
@@ -33,7 +33,7 @@ Hình ảnh Di tích \& Điểm mốc & JPEG / RGB & 3.528 tệp & Kho ảnh th�
 \end{tabularx}
 \end{table}
 
-Từ số liệu tại Bảng \ref{tab:dataset-summary}, việc kết hợp đa nguồn dữ liệu cho phép hệ thống khắc phục triệt để các hạn chế của từng nguồn đơn lẻ: dữ liệu bản đồ số bảo đảm tính chuẩn xác tuyệt đối về mặt tọa độ trắc địa, kho ngữ liệu hàng chục ngàn bài đánh giá cung cấp nguồn tri thức sống động về chất lượng dịch vụ và thị hiếu ẩm thực thực tế, trong khi bộ tư liệu hình ảnh di sản tạo tiền đề vững chắc cho các tác vụ nhận diện thị giác đa phương thức trực tiếp từ ảnh chụp của du khách.
+Từ số liệu tại Bảng \ref{tab:dataset-summary}, việc kết hợp đa nguồn dữ liệu cho phép hệ thống khắc phục các hạn chế của từng nguồn đơn lẻ: dữ liệu bản đồ số bảo đảm độ chính xác cao về mặt tọa độ trắc địa, kho ngữ liệu hàng chục ngàn bài đánh giá cung cấp nguồn tri thức sống động về chất lượng dịch vụ và thị hiếu ẩm thực thực tế, trong khi bộ tư liệu hình ảnh di sản tạo tiền đề vững chắc cho các tác vụ nhận diện thị giác đa phương thức trực tiếp từ ảnh chụp của du khách.
 
 \subsection*{1.2. Giải phẫu cấu trúc tập dữ liệu 44.355 bài đánh giá thực tế tại Huế}
 \phantomsection
@@ -53,20 +53,20 @@ Phân tích định lượng về phân bố điểm số đánh giá của tậ
 \hline
 \textbf{Mức xếp hạng (Rating)} & \textbf{Số lượng bài viết} & \textbf{Tỷ lệ phần trăm} & \textbf{Ý nghĩa đánh giá và phân cực cảm xúc} \\
 \hline
-5.0 sao (Tuyệt hảo) & 31.877 bài & 71,87\% & Trải nghiệm rất hài lòng, khen ngợi sâu sắc về món ăn và dịch vụ \\
-4.0 sao (Rất tốt) & 7.867 bài & 17,74\% & Trải nghiệm tích cực, đánh giá cao chất lượng tổng thể \\
-3.0 sao (Trung bình) & 2.747 bài & 6,19\% & Mức độ hài lòng vừa phải, có một số điểm chưa ưng ý \\
-2.0 sao (Kém) & 974 bài & 2,20\% & Trải nghiệm không tốt về giá cả, vệ sinh hoặc thời gian chờ \\
-1.0 sao (Rất tệ) & 890 bài & 2,00\% & Đánh giá tiêu cực, phản ánh sự thất vọng nghiêm trọng \\
+5,0 sao (Tuyệt hảo) & 31.877 bài & 71,87\% & Trải nghiệm rất hài lòng, khen ngợi sâu sắc về món ăn và dịch vụ \\
+4,0 sao (Rất tốt) & 7.867 bài & 17,74\% & Trải nghiệm tích cực, đánh giá cao chất lượng tổng thể \\
+3,0 sao (Trung bình) & 2.747 bài & 6,19\% & Mức độ hài lòng vừa phải, có một số điểm chưa ưng ý \\
+2,0 sao (Kém) & 974 bài & 2,20\% & Trải nghiệm không tốt về giá cả, vệ sinh hoặc thời gian chờ \\
+1,0 sao (Rất tệ) & 890 bài & 2,00\% & Đánh giá tiêu cực, phản ánh sự thất vọng nghiêm trọng \\
 \hline
 \textbf{Tổng cộng} & \textbf{44.355 bài} & \textbf{100,00\%} & \textbf{Điểm đánh giá trung bình toàn tập đạt 4,51 / 5,0 sao} \\
 \hline
 \end{tabularx}
 \end{table}
 
-Các số liệu thống kê tại Bảng \ref{tab:rating-distribution} cho thấy một đặc tính thực nghiệm nổi bật: tỷ lệ bài đánh giá tích cực từ 4.0 sao trở lên chiếm tới 89,61\% tổng số bài nhận xét, đưa điểm trung bình toàn mạng lưới đạt mức ấn tượng 4,51 sao. Điều này khẳng định sức hấp dẫn mạnh mẽ của du lịch và ẩm thực Huế đối với du khách, đồng thời chứng minh rằng tập ngữ liệu có mật độ thông tin khen ngợi đặc sản rất dày đặc, tạo điều kiện thuận lợi để giải thuật khai phá thực đơn ngầm bóc tách các món ăn làm nên thương hiệu của từng quán ăn.
+Các số liệu thống kê tại Bảng \ref{tab:rating-distribution} cho thấy một đặc tính thực nghiệm nổi bật: tỷ lệ bài đánh giá tích cực từ 4,0 sao trở lên chiếm tới 89,61\% tổng số bài nhận xét, đưa điểm trung bình toàn mạng lưới đạt mức 4,51 / 5,0 sao. Điều này khẳng định sức hấp dẫn mạnh mẽ của du lịch và ẩm thực Huế đối với du khách, đồng thời chứng minh rằng tập ngữ liệu có mật độ thông tin khen ngợi đặc sản rất dày đặc, tạo điều kiện thuận lợi để giải thuật khai phá thực đơn ngầm bóc tách các món ăn làm nên thương hiệu của từng quán ăn.
 
-Song song với xếp hạng sao, thông tin về kiểu hình chuyến đi của du khách cung cấp bức tranh rõ nét về hành vi lữ hành tại Cố đô, được thống kê định lượng tại Bảng \ref{tab:trip-type-distribution}.
+Song song với xếp hạng sao, thông tin về kiểu hình chuyến đi của du khách phản ánh cơ cấu hành vi lữ hành tại Cố đô, được thống kê định lượng tại Bảng \ref{tab:trip-type-distribution}.
 
 \begin{table}[htbp]
 \centering
@@ -95,7 +95,7 @@ Từ Bảng \ref{tab:trip-type-distribution}, trong số các bản ghi có khai
 \phantomsection
 \addcontentsline{toc}{subsection}{1.3. Thống kê đặc trưng và Cơ cấu 612 địa điểm du lịch tại Huế}
 
-Xét riêng trên địa bàn thành phố Huế và các vùng phụ cận, tập dữ liệu bao gồm 612 thực thể địa lý đã được chuẩn hóa toàn diện về tọa độ GPS và địa chỉ hành chính. Sự phân bố số lượng cơ sở dịch vụ theo từng phân loại danh mục và theo đơn vị hành chính được tổng hợp tại Bảng \ref{tab:hue-places-distribution}.
+Xét riêng trên địa bàn thành phố Huế và các vùng phụ cận, tập dữ liệu bao gồm 612 thực thể địa lý đã được chuẩn hóa cấu trúc và tọa độ GPS cùng địa chỉ hành chính. Sự phân bố số lượng cơ sở dịch vụ theo từng phân loại danh mục và theo đơn vị hành chính được tổng hợp tại Bảng \ref{tab:hue-places-distribution}.
 
 \begin{table}[htbp]
 \centering
@@ -178,7 +178,7 @@ Thông qua bảng đối soát tại Bảng \ref{tab:culinary-sample}, việc th
 
 Để xây dựng tập dữ liệu 44.355 bài nhận xét tại 500 địa điểm ở Huế từ TripAdvisor, một hệ thống cào dữ liệu tự động chuyên biệt (Web Scraping Pipeline) đã được nghiên cứu và phát triển bằng ngôn ngữ Python. Quy trình thu thập vận hành qua bốn giai đoạn xử lý kỹ thuật nghiêm ngặt:
 
-Giai đoạn 1 -- Khám phá và Định danh mục tiêu (Target Discovery): Hệ thống phân tích cấu trúc cây thư mục địa lý của TripAdvisor để bóc tách danh sách 500 liên kết URL đại diện cho các nhà hàng, quán ăn, khách sạn và di tích lịch sử trên địa bàn Thừa Thiên Huế.
+Giai đoạn 1 -- Khám phá và Định danh mục tiêu (Target Discovery): Hệ thống phân tích cấu trúc cây thư mục địa lý của TripAdvisor để bóc tách danh sách 500 liên kết URL đại diện cho các nhà hàng, quán ăn, khách sạn và di tích lịch sử trên địa bàn Thành phố Huế.
 
 Giai đoạn 2 -- Thu thập đa luồng có kiểm soát (Rate-limited Multithreaded Crawling): Nhằm tuân thủ chuẩn mực truy cập và ngăn ngừa nguy cơ bị chặn địa chỉ IP (IP Rate-limiting), hệ thống tích hợp cơ chế xoay vòng ngẫu nhiên tập hợp User-Agent Header mô phỏng hành vi của nhiều trình duyệt phổ biến. Đồng thời, một khoảng thời gian chờ ngẫu nhiên (Jitter Delay) từ 1,5 đến 3,0 giây được áp dụng giữa các lượt gửi yêu cầu HTTP.
 
@@ -202,7 +202,7 @@ Bước 2 -- Kiểm toán tính hợp lệ của tọa độ trắc địa (Boun
     \end{cases}
     \label{eq:bounding-box}
 \end{equation}
-Hộp giới hạn tại Công thức (\ref{eq:bounding-box}) ôm sát phạm vi địa lý của Thừa Thiên Huế (nay là Thành phố Huế trực thuộc Trung ương), trong đó kinh độ cực đông được khống chế chặt chẽ tại $108,15^{\circ}\text{E}$ (ngay đỉnh đèo Hải Vân tại $108,13^{\circ}\text{E}$) nhằm ngăn chặn triệt để nguy cơ trùm lấn sang địa phận quận Liên Chiểu, thành phố Đà Nẵng (vốn nằm từ $108,18^{\circ}\text{E}$ đến $108,25^{\circ}\text{E}$). Đồng thời, hệ thống kết hợp bộ lọc nhãn địa giới hành chính (\texttt{locality = Thừa Thiên Huế}) từ dữ liệu thuộc tính của OSM và Google Maps để bảo đảm 100\% thực thể thuộc đúng địa bàn nghiên cứu. Toàn bộ các tọa độ nằm ngoài hộp giới hạn đều được tự động đối soát và chuẩn hóa lại thông qua Geocoding API để bảo đảm độ tin cậy tuyệt đối trước khi đưa vào tính toán khoảng cách mặt cầu Haversine.
+Hộp giới hạn tại Công thức (\ref{eq:bounding-box}) ôm sát phạm vi địa lý của Thành phố Huế trực thuộc Trung ương, trong đó kinh độ cực đông được khống chế chặt chẽ tại $108,15^{\circ}\text{E}$ (ngay đỉnh đèo Hải Vân tại $108,13^{\circ}\text{E}$) nhằm tránh nguy cơ chồng lấn sang địa phận quận Liên Chiểu, thành phố Đà Nẵng (vốn nằm từ $108,18^{\circ}\text{E}$ đến $108,25^{\circ}\text{E}$). Đồng thời, hệ thống kết hợp bộ lọc nhãn địa giới hành chính (\texttt{locality = Thành phố Huế}) từ dữ liệu thuộc tính của OSM và Google Maps để bảo đảm 100\% thực thể thuộc đúng địa bàn nghiên cứu. Toàn bộ các tọa độ nằm ngoài hộp giới hạn đều được tự động đối soát và chuẩn hóa lại thông qua Geocoding API để bảo đảm độ tin cậy của dữ liệu tọa độ trước khi đưa vào tính toán khoảng cách mặt cầu Haversine.
 
 Bước 3 -- Khử trùng lặp thực thể (Entity Deduplication): Bằng cách kết hợp bán kính không gian nhỏ ($d < 50\text{ mét}$) với độ đo tương đồng chuỗi Levenshtein trên tên gọi chuẩn hóa, hệ thống đã loại bỏ thành công hơn 1.200 bản ghi trùng lặp giữa OpenStreetMap và Google Maps, đồng nhất các thực thể trùng tên vào một nút duy nhất.
 
@@ -232,7 +232,7 @@ Nghiên cứu được triển khai theo một khung phương pháp luận khoa 
 \begin{enumerate}
     \item \textbf{Giai đoạn 1 -- Thu thập và Kiểm toán dữ liệu:} Thu thập dữ liệu địa lý đa nguồn (612 POI tại Huế) và 44.355 bài nhận xét TripAdvisor; kiểm toán toàn vẹn, lọc hộp giới hạn GPS ($16,00^\circ\text{N} \le \phi \le 16,85^\circ\text{N}$, $107,00^\circ\text{E} \le \lambda \le 108,15^\circ\text{E}$) và khử trùng lặp bản ghi.
     \item \textbf{Giai đoạn 2 -- Xây dựng Đồ thị Tri thức Không gian:} Thiết lập ma trận cự ly Haversine, tạo các cạnh lân cận $\text{NEAR\_BY}$ ($d \le 1,5\text{ km}$) và cạnh phân cấp địa giới $\text{LOCATED\_IN}$ trên cấu trúc 9.525 nút và 90.948 cạnh bằng NetworkX.
-    \item \textbf{Giai đoạn 3 -- Khai phá Thực đơn ngầm và Nhúng đa phương thức:} Đối soát 570 món ăn từ điển trên tập nhận xét để gán quan hệ $\text{SERVES}$ dựa trên sự đồng thuận của cộng đồng; thực hiện Atomic Chunking tạo chỉ mục văn bản trên ChromaDB bằng \texttt{paraphrase-multilingual-MiniLM-L12-v2} và xây dựng bộ chỉ mục thị giác 3.528 ảnh di tích bằng \texttt{clip-ViT-B-32} (kèm 77 ảnh kiểm thử LOOCV).
+    \item \textbf{Giai đoạn 3 -- Khai phá Thực đơn ngầm và Nhúng đa phương thức:} Đối soát 570 món ăn từ điển trên tập nhận xét để gán quan hệ $\text{SERVES}$ dựa trên sự đồng thuận của cộng đồng; thực hiện Atomic Chunking tạo chỉ mục văn bản trên ChromaDB bằng \texttt{paraphrase-multilingual-MiniLM-L12-v2} và xây dựng bộ chỉ mục thị giác 3.528 ảnh di tích bằng \texttt{clip-ViT-B-32} (kèm bộ dữ liệu kiểm chuẩn thực địa gồm 77 ảnh đánh giá theo giao thức LOOCV).
     \item \textbf{Giai đoạn 4 -- Khung tác tử Agentic RAG và Mô hình hóa Gu Du lịch:} Xây dựng máy trạng thái LangGraph 5 nút kiểm soát luồng suy luận; tích hợp cơ chế tự suy ngẫm và thẩm định tin cậy, nhánh rẽ Web Search Fallback, mô hình 4 trường phái du khách và kết nối LLM cục bộ Qwen2.5-VL:7B qua Ollama.
     \item \textbf{Giai đoạn 5 -- Lập lịch OSRM, Dự toán ngân sách và Đánh giá Benchmark:} Tối ưu hóa lộ trình phân cụm theo sông Hương qua OSRM; tích hợp công cụ tính toán ngân sách theo giá vé chính thức của Trung tâm Bảo tồn Di tích Cố đô Huế; đóng gói Cổng API FastAPI và Giao diện Web thích ứng RWD; đồng thời đánh giá đối sánh định lượng trên bộ Benchmark 100 kịch bản du lịch Huế.
 \end{enumerate}

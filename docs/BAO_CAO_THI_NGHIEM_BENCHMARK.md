@@ -14,8 +14,8 @@
 
 | Chỉ số đánh giá | Zero-shot LLM | Naive RAG (Vector Only) | Spatial GraphRAG (Đề xuất) | Nhận xét cải tiến |
 | :--- | :---: | :---: | :---: | :--- |
-| **Tỷ lệ bảo chứng thực thể (Grounding Rate %)** | 85.8% | 76.0% | **100.0%** | Tăng độ bảo chứng dữ liệu tuyệt đối |
-| **Tỷ lệ ảo giác thực thể (Hallucination %)** | 14.2% | 24.0% | **0.0%** | Triệt tiêu hoàn toàn ảo giác địa danh |
+| **Tỷ lệ bảo chứng thực thể (Grounding Rate %)** | 85,8% | 76,0% | **100,0%** | Neo giữ thực thể dựa trên đồ thị tri thức |
+| **Tỷ lệ ảo giác thực thể (Hallucination %)** | 14,2% | 24,0% | **0,0%** | Triệt tiêu hoàn toàn ảo giác địa danh |
 | **Tỷ lệ vi phạm cự ly (Spatial Violation %)** | 39.1% | 39.1% | **0.0%** | Loại bỏ 100% lỗi nhảy bờ sông Hương |
 | **Cự ly trung bình đến Anchor POI (km)** | 22.2 km | 42.3 km | **1.2 km** | Rút ngắn 97% cự ly di chuyển lân cận |
 | **Độ chính xác món ăn (Dish Alignment %)** | 56.9% | 56.2% | **62.5%** | Khớp nối chuẩn xác thực đơn đặc sản |

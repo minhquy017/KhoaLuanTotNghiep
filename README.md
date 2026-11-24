@@ -33,12 +33,12 @@ Kết quả đánh giá định lượng trên **100 kịch bản du lịch th�
 
 | Chỉ số Đánh giá | Zero-shot LLM | Naive RAG (Vector Only) | Spatial GraphRAG (Đề xuất) | Ý nghĩa Kỹ thuật |
 | :--- | :---: | :---: | :---: | :--- |
-| **Bảo chứng Thực thể (Grounding Rate)** | 85.8% | 76.0% | **100.0%** | Khắc phục hoàn toàn tình trạng bịa thực thể |
-| **Tỷ lệ Ảo giác (Hallucination Rate)** | 14.2% | 24.0% | **0.0%** | Mọi địa danh và quán ăn gợi ý đều có thật |
-| **Vi phạm Không gian (Spatial Violation)** | 39.1% | 39.1% | **0.0%** | Triệt tiêu lỗi nhảy bờ sông Hương & đi vòng phi lý |
-| **Cự ly Trung bình đến Anchor POI** | 22.2 km | 42.3 km | **1.2 km** | Rút ngắn **97%** quãng đường tìm kiếm lân cận |
-| **Độ chính xác Món ăn (Dish Alignment)** | 56.9% | 56.2% | **62.5%** | Khớp nối chính xác thực đơn đặc sản |
-| **Độ trễ Suy luận (Inference Latency)** | 2.0s | 1.6s | **7.7s** | Đồ thị suy luận đa bước ổn định và tin cậy |
+| **Bảo chứng Thực thể (Grounding Rate)** | 85,8% | 76,0% | **100,0%** | Khắc phục hoàn toàn tình trạng bịa thực thể |
+| **Tỷ lệ Ảo giác (Hallucination Rate)** | 14,2% | 24,0% | **0,0%** | Mọi địa danh và quán ăn gợi ý đều có thật |
+| **Vi phạm Không gian (Spatial Violation)** | 39,1% | 39,1% | **0,0%** | Triệt tiêu lỗi nhảy bờ sông Hương & đi vòng phi lý |
+| **Cự ly Trung bình đến Anchor POI** | 22,2 km | 42,3 km | **1,2 km** | Rút ngắn **97%** quãng đường tìm kiếm lân cận |
+| **Độ chính xác Món ăn (Dish Alignment)** | 56,9% | 56,2% | **62,5%** | Khớp nối chính xác thực đơn đặc sản |
+| **Độ trễ Suy luận (Inference Latency)** | 2,0s | 1,6s | **7,7s** | Đồ thị suy luận đa bước ổn định và tin cậy |
 
 ---
 
