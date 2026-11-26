@@ -6,7 +6,7 @@
 \phantomsection
 \addcontentsline{toc}{section}{1. Kết luận và Đóng góp của đề tài}
 
-Khóa luận tốt nghiệp đã hoàn thành các mục tiêu nghiên cứu và nhiệm vụ kỹ thuật đã đề ra cho đề tài \textbf{\tendetai}. Nghiên cứu đã đề xuất, hiện thực hóa và kiểm chứng một khung phương pháp luận tích hợp mang tên Spatial GraphRAG, kết hợp tính toán không gian địa lý, đồ thị tri thức có cấu trúc, mô hình nhúng đa phương thức thị giác và mô hình ngôn ngữ lớn cục bộ nhằm khắc phục các hạn chế của hệ thống tư vấn du lịch tự động hiện nay.
+Khóa luận tốt nghiệp đã hoàn thành các mục tiêu nghiên cứu và nhiệm vụ kỹ thuật đã đề ra cho đề tài \textbf{\tendetai}. Nghiên cứu đã đề xuất, hiện thực hóa và kiểm chứng một khung phương pháp luận tích hợp mang tên Spatial GraphRAG, kết hợp tính toán không gian địa lý, đồ thị tri thức có cấu trúc, mô hình nhúng đa phương thức thị giác và mô hình ngôn ngữ lớn trọng số mở nhằm khắc phục các hạn chế của hệ thống tư vấn du lịch tự động hiện nay.
 
 Những đóng góp khoa học và thực tiễn trọng tâm của khóa luận bao gồm:
 
@@ -14,7 +14,7 @@ Những đóng góp khoa học và thực tiễn trọng tâm của khóa luận
 
 Đóng góp thứ hai là việc thiết lập giải thuật khai phá thực đơn ngầm từ kho ngữ liệu 44.355 bài nhận xét du khách thực tế tại Huế từ TripAdvisor dựa trên Bộ từ điển ẩm thực Việt Nam 570 món ăn. Đề tài chuyển hóa nguồn dữ liệu phản hồi phi cấu trúc của cộng đồng thành các cạnh quan hệ phục vụ món ăn $\text{SERVES}$ có ngưỡng đồng thuận tin cậy ($\text{Conf} \ge 0{,}70$), giúp nhận diện các món đặc sản tiêu biểu của từng hàng quán tại Huế mà các danh mục cố định thông thường chưa thể hiện.
 
-Đóng góp thứ ba là việc thiết kế khung điều phối tác tử tự suy ngẫm Agentic RAG trên nền tảng LangGraph, tích hợp mô hình thị giác -- ngôn ngữ lớn mã nguồn mở Qwen2.5-VL:7B (phiên bản Q4\_K\_M) vận hành qua Ollama trên GPU NVIDIA Tesla T4 16~GB VRAM (Zero API Cost). Kiến trúc cho phép hệ thống đánh giá chất lượng tri thức qua điểm tin cậy tổng hợp và tự động rẽ nhánh tìm kiếm Internet khi cần thiết, đạt thời gian đáp ứng trung bình 7,7 giây trên bộ kiểm thử và bảo đảm quyền riêng tư dữ liệu người dùng.
+Đóng góp thứ ba là việc thiết kế khung điều phối tác tử tự suy ngẫm Agentic RAG trên nền tảng LangGraph, tích hợp mô hình thị giác -- ngôn ngữ lớn trọng số mở Qwen2.5-VL:7B (phiên bản Q4\_K\_M) vận hành qua Ollama trên GPU NVIDIA Tesla T4 (16~GB VRAM) của Google Colab (Zero API Cost). Kiến trúc cho phép hệ thống đánh giá chất lượng tri thức qua điểm tin cậy tổng hợp và tự động rẽ nhánh tìm kiếm Internet khi cần thiết, đạt thời gian đáp ứng trung bình 7,7 giây trên bộ kiểm thử và sẵn sàng triển khai tại chỗ trên hạ tầng nội bộ khi đưa vào ứng dụng thực tế.
 
 Đóng góp thứ tư là việc phát triển phân hệ Nhận diện Điểm mốc Thị giác Đa phương thức (Multimodal Visual Landmark RAG) dựa trên mô hình Vision Transformer CLIP ViT-B/32 và cơ sở dữ liệu vector ChromaDB gồm 3.528 hình ảnh di sản và dịch vụ du lịch Huế, đạt độ chính xác Top-1 98,7\% (42,5~ms/ảnh) và Top-3 100,0\% trên 25 danh lam di tích Cố đô Huế qua giao thức kiểm định LOOCV.
 

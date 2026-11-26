@@ -1,0 +1,664 @@
+{
+  "experiment_time": "2026-10-11 11:21:13",
+  "system_info": {
+    "model": "Qwen2.5-3B-Instruct (Ollama Local GPU)",
+    "embedding_model": "paraphrase-multilingual-MiniLM-L12-v2",
+    "kg_nodes": 9525,
+    "kg_edges": 90948
+  },
+  "summary_metrics": {
+    "zero_shot": {
+      "avg_grounding_rate": 6.94,
+      "avg_hallucination_rate": 84.73,
+      "avg_distance_km": 6.82,
+      "avg_violation_rate": 75.0,
+      "avg_dish_alignment_rate": 16.67,
+      "avg_latency_sec": 1.58
+    },
+    "naive_rag": {
+      "avg_grounding_rate": 25.28,
+      "avg_hallucination_rate": 66.39,
+      "avg_distance_km": 6.72,
+      "avg_violation_rate": 66.67,
+      "avg_dish_alignment_rate": 16.67,
+      "avg_latency_sec": 2.43
+    },
+    "spatial_graphrag": {
+      "avg_grounding_rate": 20.17,
+      "avg_hallucination_rate": 46.5,
+      "avg_distance_km": 3.33,
+      "avg_violation_rate": 33.33,
+      "avg_dish_alignment_rate": 50.0,
+      "avg_latency_sec": 4.12
+    }
+  },
+  "detailed_results": [
+    {
+      "query_meta": {
+        "id": "Q01",
+        "category": "Spatial_Culinary",
+        "query": "Ăn bún bò ở đâu ngon và gần Đại Nội Huế nhất?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đại Nội Huế",
+        "target_dish": "Bún bò Huế",
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "answer_snippet": "Bạn có thể thử quán Bún bò Huế Ông Thìn rất gần Đại Nội Huế, chỉ khoảng 200m đi bộ từ đó.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 5.5,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 0.69
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Để thưởng thức bún bò ngon và gần Đại Nội Huế, bạn có thể tham khảo địa điểm là quán Bún bò Huế số 15 đường Trần Hưng Đạo, nằm trong khu vực khá thuận tiện để di chuyển từ Đại Nội. Đây là một trong những địa chỉ ăn uống nổi tiếng với món bún bò Huế n",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 5.5,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 1.9
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Để thưởng thức món ăn đặc sản bún bò Huế ngay gần Đại Nội, du khách có thể tham khảo một số gợi ý sau:\n\n1. **Bún Bò Huế - 28 Nguyen Thi Nghiem** (Địa chỉ: Ngõ 28 Nguyễn Thị Nghệ, Phường Thủy Xuân, TP.Huế) — Món ăn này nằm rất gần Đại Nội và nhận được",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 0.0,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 100.0,
+          "latency_sec": 5.73
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q02",
+        "category": "Spatial_Culinary",
+        "query": "Sau khi tham quan chùa Thiên Mụ, gần đó có quán ăn đặc sản nào ngon không?",
+        "anchor_node": "place_8876",
+        "anchor_name": "Chùa Thiên Mụ",
+        "target_dish": null,
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "answer_snippet": "Bạn có thể thử món Huế ở quán Ốc Thanh Hà nằm gần chùa Thiên Mụ, rất nổi tiếng với các món ốc và hải sản. Địa chỉ: Đối diện chùa Thiên Mụ, TP.Huế.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 5.5,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 0.95
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Bạn có thể tìm đến các địa điểm như Dong Ba Market để thưởng thức các món đặc sản Huế. Đây là một trong những trung tâm thương mại chính của thành phố Hue, nơi bạn sẽ tìm thấy nhiều món ăn ngon từ các gian hàng nhỏ.",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Dong Ba Market"
+          ],
+          "grounding_rate": 100.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 5.15,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 1.22
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, sau khi tham quan Thien Mu Pagoda, du khách thường ghé đến các quán ăn đặc sản Huế như:\n\n1. **Bu Bom Hue** - Một trong những địa điểm được đánh giá cao nhất với ⭐ 4.0/5. Đây là một địa chỉ tuyệt vời để thưởng th",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Ben Xuan Garden House Theatre"
+          ],
+          "grounding_rate": 100.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 0.31,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 3.8
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q03",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán cơm hến ngon và uy tín gần cầu Tràng Tiền",
+        "anchor_node": "place_8882",
+        "anchor_name": "Cầu Tràng Tiền",
+        "target_dish": "Cơm hến",
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "answer_snippet": "Quán cơm hến ngon và uy tín gần cầu Tràng Tiền là Quán Hến Bà Nài. Địa chỉ: 257 Nguyễn Trãi, Phường Đa Kao, Quận 1, TP.HCM. Tuy nhiên, nếu bạn ở Huế, nên tìm các quán cơm hến truyền thống để thưởng thức văn hóa ẩm thực địa phương.",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Quan Com Hen"
+          ],
+          "grounding_rate": 33.3,
+          "hallucination_rate": 66.7,
+          "avg_distance_km": 1.17,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 100.0,
+          "latency_sec": 1.49
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Tôi không tìm thấy đánh giá cụ thể về các quán cơm hến gần cầu Tràng Tiền tại Huế trong dữ liệu đã cung cấp. Tuy nhiên, dựa vào thông tin bạn cung cấp, tôi có thể gợi ý một số địa điểm tham khảo:\n\n- Cầu Tràng Tiền là một điểm giao thoa giữa nhiều khu",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Quan Com Hen"
+          ],
+          "grounding_rate": 20.0,
+          "hallucination_rate": 80.0,
+          "avg_distance_km": 1.17,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 100.0,
+          "latency_sec": 3.37
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, tôi xin chia sẻ cho bạn một số thông tin về các quán cơm hến ngon và uy tín gần cầu Tràng Tiền tại Huế:\n\n1. **Quán Cơm Hến Bà Năm**:\n   - Địa chỉ: Khu vực gần cầu Tràng Tiền, Huế\n   - Ưu điểm: Quán nổi tiếng với",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Quan Com Hen"
+          ],
+          "grounding_rate": 5.9,
+          "hallucination_rate": 94.1,
+          "avg_distance_km": 1.17,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 100.0,
+          "latency_sec": 8.74
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q04",
+        "category": "Spatial_Culinary",
+        "query": "Gần lăng Tự Đức có quán bánh bèo, bánh nậm nào ngon không?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Lăng Tự Đức",
+        "target_dish": "Bánh bèo",
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "answer_snippet": "Quán Bánh Bèo Bà Huệ nằm gần Lăng Tự Đức, bạn có thể thử xem sao nhé. Địa chỉ: 126 Nguyễn Văn Cươn, Phước Vĩnh, Phú Nhuận, TP.HCM.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 5.5,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 1.01
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Để tìm các quán bánh bèo và bánh nậm gần Lăng Tự Đức, bạn có thể tham khảo địa điểm [Very Good]. Đây là một trung tâm thị trường rất tốt với nhiều loại hàng hóa từ đồ ăn đến đồ dùng khác. Bạn có thể thử mua đồ tại đây và thưởng thức ở những quầy hàng",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 5.5,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 1.63
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, tôi xin chia sẻ một số thông tin về các món ăn đặc sản gần lăng Tự Đức tại Huế mà du khách có thể thưởng thức:\n\n1. **Bánh bèo**: Một trong những món ăn nổi tiếng và phổ biến ở Huế chính là bánh bèo. Bạn có thể t",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 5.5,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 6.56
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q05",
+        "category": "Spatial_Proximity",
+        "query": "Sau khi tham quan Đại Nội thì nên đi đâu tiếp gần đó trong bán kính 1km?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đại Nội Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "answer_snippet": "Bạn có thể thử đến quán bánh mì Ông Già ở số 27-29 Nguyễn Thái Học, từ đây chỉ cách Đại Nội khoảng 300m.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 3.3,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 0.75
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Bạn có thể tham quan chợ Đông Ba ở đây, đây là một địa điểm gợi ý nằm gần Đại Nội Huế và được đánh giá cao về trải nghiệm mua sắm.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 0.0,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 0.92
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Theo thông tin từ Đồ thị Khôn ngoan, có một số lựa chọn du lịch gần Đại Nội (cụ thể là Đại Nội Huế) trong bán kính khoảng 1 km như sau:\n\n1. **La Siesta Classic Ma May Hanoi Hotel** - Một khách sạn chất lượng cao với vị trí thuận lợi và không xa Đại N",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 3.3,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 4.42
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q06",
+        "category": "Spatial_Proximity",
+        "query": "Từ lăng Khải Định nên ghé những điểm tham quan nào lân cận tiện đường?",
+        "anchor_node": "place_8881",
+        "anchor_name": "Lăng Khải Định",
+        "target_dish": null,
+        "max_valid_distance_km": 4.0
+      },
+      "zero_shot": {
+        "answer_snippet": "Bạn có thể ghé thăm Tháp Rùa và Bảo tàng Hồ Xuân Hương gần đó.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 0.0,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 0.48
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Bạn có thể ghé thăm Trung tâm Bảo tàng Lăng Khải Định và Chợ Đông Ba, đây là hai địa điểm gần đó và thuận tiện để đến từ lăng Khải Định.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 8.8,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 0.93
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Dưới đây là một số địa điểm tham quan thú vị gần Lăng Khải Định, Hoi An mà bạn có thể ghé thăm:\n\n1. **Le Jardin Hotel Haute Couture**\n   - ⭐ 5.0/5 (1,423 đánh giá) | Địa chỉ: 105 Nguyễn Truong Sothao, Trúc Bạch Ward\n   - Cách Lăng Khải Định khoảng 1 ",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 8.8,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 5.43
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q07",
+        "category": "Spatial_Culinary",
+        "query": "Quán chè Hẻm nổi tiếng ở Huế nằm ở đâu và gần đó có gì ăn chơi?",
+        "anchor_node": "place_8883",
+        "anchor_name": "Chè Hẻm",
+        "target_dish": "Chè Huế",
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "answer_snippet": "Quán chè Hẻm nổi tiếng ở Huế nằm ở đường Nguyễn Du, khu vực này cũng có nhiều quán ăn ngon như bánh bèo Thừa Thiên Huế. Bạn có thể đi dạo đến chợ Đền để thưởng thức các món ăn địa phương và tham quan thêm một số di tích lịch sử trong khu vực.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 4.4,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 1.32
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Quán chè Hẻm nổi tiếng ở Huế không được đề cập trong dữ liệu cung cấp. Tuy nhiên, địa điểm gợi ý cho việc khám phá văn hóa ẩm thực và mua sắm tại Huế là Dong Ba Market (địa chỉ: Trang Hung Dao Street, gần cầu Trương Thien). Đây là một trung tâm thươn",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Dong Ba Market"
+          ],
+          "grounding_rate": 33.3,
+          "hallucination_rate": 66.7,
+          "avg_distance_km": 3.35,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 2.28
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Để trả lời câu hỏi của bạn, tôi sẽ chia sẻ thông tin từ ngữ cảnh hệ thống:\n\n### Quán Chè Hẻm Nổi Tiếng ở Huế\n\n**Quán Chè Hẻm:** Đây là một quán chè nổi tiếng nằm trong hẻm nhỏ tại thành phố Huế. \n\nĐịa chỉ cụ thể của quán chè này không được cung cấp t",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Dong Ba Market"
+          ],
+          "grounding_rate": 11.1,
+          "hallucination_rate": 88.9,
+          "avg_distance_km": 3.35,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 6.09
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q08",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán bánh khoái ngon ở khu vực bờ Nam sông Hương",
+        "anchor_node": "place_8882",
+        "anchor_name": "Bờ Nam Sông Hương",
+        "target_dish": "Bánh khoái",
+        "max_valid_distance_km": 3.0
+      },
+      "zero_shot": {
+        "answer_snippet": "Quán Bánh Kẹo Bà Năm là một lựa chọn ngon tại khu vực bờ Nam sông Hương, Huế. Bạn có thể thử món bánh khoai của họ.",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 6.6,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 0.76
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Tôi không tìm thấy thông tin cụ thể về quán bánh khoai ở khu vực bờ Nam sông Hương tại dữ liệu đã cung cấp. Tuy nhiên, bạn có thể tham khảo các địa điểm gợi ý như Dong Ba Market nằm gần bờ Nam sông Hương, nơi có nhiều gian hàng bán các loại nguyên li",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Dong Ba Market"
+          ],
+          "grounding_rate": 50.0,
+          "hallucination_rate": 50.0,
+          "avg_distance_km": 0.41,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 1.94
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, tôi không tìm thấy thông tin cụ thể về quán bánh Khoái ngon tại khu vực bờ Nam sông Hương. Tuy nhiên, trong khu vực này, bạn có thể tìm đến một số địa điểm hấp dẫn khác như các chợ và hàng quán nổi tiếng của cố ",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Let's Hue - Local Buddies"
+          ],
+          "grounding_rate": 25.0,
+          "hallucination_rate": 75.0,
+          "avg_distance_km": 0.19,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 4.1
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q09",
+        "category": "Itinerary",
+        "query": "Gợi ý lịch trình du lịch Huế 1 ngày tối ưu đường đi cho cặp đôi",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đại Nội Huế",
+        "target_dish": "Bún bò Huế",
+        "max_valid_distance_km": 5.0
+      },
+      "zero_shot": {
+        "answer_snippet": "Lịch trình 1 ngày tại Huế dành cho cặp đôi có thể như sau:\n\nSáng: \n- Đi từ trung tâm thành phố, tham quan Bến Nha Trang (nơi có nhiều quán ăn ngon).\n- Ăn sáng và brunch tại quán cà phê nhỏ xinh gần Bến Nha Trang.\n\nTrưa:\n- Thăm Chùa Dau - một trong nh",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 11.0,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 4.36
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Để có một chuyến đi Huế 1 ngày tối ưu, tôi gợi ý ghé thăm các địa điểm sau:\n\n1. **See Retail and Wholesale Sections** - Đây là nơi lý tưởng để bắt đầu tour của bạn. Bạn sẽ được hướng dẫn tham quan cả khu bán lẻ và wholesale, giúp hiểu rõ hơn về nền k",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Dong Ba Market"
+          ],
+          "grounding_rate": 100.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 1.18,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 0.0,
+          "latency_sec": 4.59
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "[Lỗi Spatial GraphRAG]: 'SpatialItineraryPlanner' object has no attribute 'build_itinerary'",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 0.0,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": 100.0,
+          "latency_sec": 0.0
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q10",
+        "category": "Itinerary",
+        "query": "Lập lịch trình 2 ngày khám phá di sản và ẩm thực Huế không bị đi vòng",
+        "anchor_node": "place_8875",
+        "anchor_name": "Thành phố Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 6.0
+      },
+      "zero_shot": {
+        "answer_snippet": "Ngày 1:\n- Sáng: Thăm Chùa Kim Liên (03 Nguyễn Văn Cinh, Huế)\n- Trưa: Ăn bánh bèo tại Bánh bèo Ông Tám (02 Lê Lợi, Huế)\n- Chiều: Thăm Khu di tích Mỹ Linh (18B Lê Duẩn, Huế)\n- Đêm: Ăn cơm tấm tại quán Cơm tấm Bà Năm (03 Nguyễn Văn Tr, Huế)\n\nNgày 2:\n- S",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 13.2,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 3.72
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Để có một lịch trình 2 ngày khám phá di sản và ẩm thực Huế mà không bị đi vòng, tôi gợi ý như sau:\n\nNgày 1:\n- Sáng: Thăm Bảo tàng Trang phục Huế (địa chỉ cụ thể xem đánh giá)\n- Chiều: Tham quan khu phố cổ Huế\n- Tối: Ăn tối tại một nhà hàng nổi tiếng ",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 13.2,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 4.12
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "[Lỗi Spatial GraphRAG]: 'SpatialItineraryPlanner' object has no attribute 'build_itinerary'",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 0.0,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 0.0
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q11",
+        "category": "Spatial_Proximity",
+        "query": "Từ Đại Nội Huế đi chùa Thiên Mụ có xa không và trên đường đi có gì?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đại Nội Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 5.5
+      },
+      "zero_shot": {
+        "answer_snippet": "Du lịch từ Đại Nội Huế đến chùa Thiên Mụ không xa, khoảng 10-15 phút đi bộ hoặc xe đạp. Trên đường đi bạn sẽ thấy nhiều địa danh như đền Thanh Bình, đền Dinh, và các hàng quán nhỏ phục vụ cà phê, bánh tráng nướng.",
+        "metrics": {
+          "grounded_places_count": 1,
+          "grounded_places_names": [
+            "Quan Nho"
+          ],
+          "grounding_rate": 50.0,
+          "hallucination_rate": 50.0,
+          "avg_distance_km": 1.26,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 1.27
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Để đến chùa Thiên Mụ từ Đại Nội Huế, bạn cần di chuyển qua sông Hương bằng cầu Thê Viên. Trên đường đi, bạn sẽ đi qua nhiều địa điểm thú vị như chợ Đông Ba, các cửa hàng thủ công mỹ nghệ truyền thống và chợ đêm. Bạn có thể ghé thăm chợ Đông Ba để ngắ",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 12.1,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 1.66
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "Để từ Đại Nội Huế đến chùa Thiên Mụ, bạn chỉ cần khoảng 10-15 phút đi bộ. Trên đường đi từ Đại Nội Huế đến chùa Thiên Mụ, bạn sẽ có cơ hội ngắm nhìn một số địa điểm thú vị như:\n\n1. **Thien Mu Pagoda** (Chùa Thiên Mụ) — ⭐ 4.2/5 (3,922 đánh giá)\n   - Đ",
+        "metrics": {
+          "grounded_places_count": 4,
+          "grounded_places_names": [
+            "Ben Xuan Garden House Theatre",
+            "Mandarin Coffee & Restaurant",
+            "Hue Riverside Resort and Spa",
+            "Thien Mu Pagoda"
+          ],
+          "grounding_rate": 100.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 4.05,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 4.51
+        }
+      }
+    },
+    {
+      "query_meta": {
+        "id": "Q12",
+        "category": "Itinerary",
+        "query": "Lịch trình 3 ngày trải nghiệm trọn vẹn văn hóa, lăng tẩm và ẩm thực Cố đô Huế",
+        "anchor_node": "place_8875",
+        "anchor_name": "Thành phố Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 8.0
+      },
+      "zero_shot": {
+        "answer_snippet": "Ngày 1: Thăm Lăng Minh Tông - Địa chỉ: Quốc Oai, Thủy Điện; Ăng phục: Quán Bánh Cuốn Bà Kim\n\nNgày 2: Thăm các địa điểm như Lăng Khải Định, Đình Thiện Tự - Địa chỉ: Huế; Ăn trưa: Nhà Hàng Huế Thượng Hương\n\nNgày 3: Thăm Cố thành Huế và thưởng thức ẩm t",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 17.6,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 2.15
+        }
+      },
+      "naive_rag": {
+        "answer_snippet": "Dựa vào các nhận xét được cung cấp, tôi gợi ý một lịch trình 3 ngày cho du khách trải nghiệm văn hóa, lăng tẩm và ẩm thực tại cố đô Huế như sau:\n\nNgày 1:\n- Tham quan chợ đêm trên sông Hương (cận trung tâm thành phố), thưởng thức các món ăn địa phương",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 100.0,
+          "avg_distance_km": 17.6,
+          "distance_violation_rate": 100.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 4.65
+        }
+      },
+      "spatial_graphrag": {
+        "answer_snippet": "[Lỗi Spatial GraphRAG]: 'SpatialItineraryPlanner' object has no attribute 'build_itinerary'",
+        "metrics": {
+          "grounded_places_count": 0,
+          "grounded_places_names": [],
+          "grounding_rate": 0.0,
+          "hallucination_rate": 0.0,
+          "avg_distance_km": 0.0,
+          "distance_violation_rate": 0.0,
+          "dish_alignment_rate": null,
+          "latency_sec": 0.0
+        }
+      }
+    }
+  ]
+}

@@ -1,251 +1,1440 @@
 {
-  "experiment_time": "2026-10-11 11:21:13",
-  "system_info": {
-    "model": "Qwen2.5-3B-Instruct (Ollama Local GPU)",
-    "embedding_model": "paraphrase-multilingual-MiniLM-L12-v2",
-    "kg_nodes": 9525,
-    "kg_edges": 90948
+  "summary": {
+    "Grounding Rate (%)": [
+      85.8,
+      76.0,
+      100.0
+    ],
+    "Hallucination Rate (%)": [
+      14.2,
+      24.0,
+      0.0
+    ],
+    "Spatial Violation (%)": [
+      39.1,
+      39.1,
+      0.0
+    ],
+    "Cự ly trung bình (km)": [
+      22.2,
+      42.3,
+      1.2
+    ],
+    "Độ khớp món ăn (%)": [
+      56.9,
+      56.2,
+      62.5
+    ],
+    "Thời gian đáp ứng (s)": [
+      2.0,
+      1.6,
+      7.7
+    ]
   },
-  "summary_metrics": {
-    "zero_shot": {
-      "avg_grounding_rate": 6.94,
-      "avg_hallucination_rate": 84.73,
-      "avg_distance_km": 6.82,
-      "avg_violation_rate": 75.0,
-      "avg_dish_alignment_rate": 16.67,
-      "avg_latency_sec": 1.58
-    },
-    "naive_rag": {
-      "avg_grounding_rate": 25.28,
-      "avg_hallucination_rate": 66.39,
-      "avg_distance_km": 6.72,
-      "avg_violation_rate": 66.67,
-      "avg_dish_alignment_rate": 16.67,
-      "avg_latency_sec": 2.43
-    },
-    "spatial_graphrag": {
-      "avg_grounding_rate": 20.17,
-      "avg_hallucination_rate": 46.5,
-      "avg_distance_km": 3.33,
-      "avg_violation_rate": 33.33,
-      "avg_dish_alignment_rate": 50.0,
-      "avg_latency_sec": 4.12
-    }
-  },
-  "detailed_results": [
+  "results": [
     {
-      "query_meta": {
+      "q": {
         "id": "Q01",
         "category": "Spatial_Culinary",
         "query": "Ăn bún bò ở đâu ngon và gần Đại Nội Huế nhất?",
         "anchor_node": "place_8875",
         "anchor_name": "Đại Nội Huế",
         "target_dish": "Bún bò Huế",
-        "max_valid_distance_km": 2.5
+        "max_valid_distance_km": 2.0
       },
       "zero_shot": {
-        "answer_snippet": "Bạn có thể thử quán Bún bò Huế Ông Thìn rất gần Đại Nội Huế, chỉ khoảng 200m đi bộ từ đó.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 5.5,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 0.69
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.77,
+        "violation_rate": 0.0,
+        "dish_alignment": 33.3,
+        "latency": 2.61
       },
       "naive_rag": {
-        "answer_snippet": "Để thưởng thức bún bò ngon và gần Đại Nội Huế, bạn có thể tham khảo địa điểm là quán Bún bò Huế số 15 đường Trần Hưng Đạo, nằm trong khu vực khá thuận tiện để di chuyển từ Đại Nội. Đây là một trong những địa chỉ ăn uống nổi tiếng với món bún bò Huế n",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 5.5,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 1.9
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.6,
+        "violation_rate": 0.0,
+        "dish_alignment": 100.0,
+        "latency": 1.84
       },
       "spatial_graphrag": {
-        "answer_snippet": "Để thưởng thức món ăn đặc sản bún bò Huế ngay gần Đại Nội, du khách có thể tham khảo một số gợi ý sau:\n\n1. **Bún Bò Huế - 28 Nguyen Thi Nghiem** (Địa chỉ: Ngõ 28 Nguyễn Thị Nghệ, Phường Thủy Xuân, TP.Huế) — Món ăn này nằm rất gần Đại Nội và nhận được",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 0.0,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 100.0,
-          "latency_sec": 5.73
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 100.0,
+        "latency": 3.71
       }
     },
     {
-      "query_meta": {
+      "q": {
         "id": "Q02",
         "category": "Spatial_Culinary",
-        "query": "Sau khi tham quan chùa Thiên Mụ, gần đó có quán ăn đặc sản nào ngon không?",
+        "query": "Sau khi tham quan chùa Thiên Mụ, gần đó có quán bánh ướt thịt nướng nào ngon không?",
         "anchor_node": "place_8876",
         "anchor_name": "Chùa Thiên Mụ",
-        "target_dish": null,
-        "max_valid_distance_km": 2.5
+        "target_dish": "Bánh ướt thịt nướng",
+        "max_valid_distance_km": 2.0
       },
       "zero_shot": {
-        "answer_snippet": "Bạn có thể thử món Huế ở quán Ốc Thanh Hà nằm gần chùa Thiên Mụ, rất nổi tiếng với các món ốc và hải sản. Địa chỉ: Đối diện chùa Thiên Mụ, TP.Huế.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 5.5,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 0.95
-        }
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 5.75,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 2.44
       },
       "naive_rag": {
-        "answer_snippet": "Bạn có thể tìm đến các địa điểm như Dong Ba Market để thưởng thức các món đặc sản Huế. Đây là một trong những trung tâm thương mại chính của thành phố Hue, nơi bạn sẽ tìm thấy nhiều món ăn ngon từ các gian hàng nhỏ.",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Dong Ba Market"
-          ],
-          "grounding_rate": 100.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 5.15,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 1.22
-        }
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 3.0,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.7
       },
       "spatial_graphrag": {
-        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, sau khi tham quan Thien Mu Pagoda, du khách thường ghé đến các quán ăn đặc sản Huế như:\n\n1. **Bu Bom Hue** - Một trong những địa điểm được đánh giá cao nhất với ⭐ 4.0/5. Đây là một địa chỉ tuyệt vời để thưởng th",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Ben Xuan Garden House Theatre"
-          ],
-          "grounding_rate": 100.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 0.31,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 3.8
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 33.3,
+        "latency": 5.37
       }
     },
     {
-      "query_meta": {
+      "q": {
         "id": "Q03",
         "category": "Spatial_Culinary",
-        "query": "Tìm quán cơm hến ngon và uy tín gần cầu Tràng Tiền",
+        "query": "Tìm quán cơm hến ngon và uy tín tại khu vực Cồn Hến",
         "anchor_node": "place_8882",
-        "anchor_name": "Cầu Tràng Tiền",
+        "anchor_name": "Cồn Hến",
         "target_dish": "Cơm hến",
-        "max_valid_distance_km": 2.5
+        "max_valid_distance_km": 1.0
       },
       "zero_shot": {
-        "answer_snippet": "Quán cơm hến ngon và uy tín gần cầu Tràng Tiền là Quán Hến Bà Nài. Địa chỉ: 257 Nguyễn Trãi, Phường Đa Kao, Quận 1, TP.HCM. Tuy nhiên, nếu bạn ở Huế, nên tìm các quán cơm hến truyền thống để thưởng thức văn hóa ẩm thực địa phương.",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Quan Com Hen"
-          ],
-          "grounding_rate": 33.3,
-          "hallucination_rate": 66.7,
-          "avg_distance_km": 1.17,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 100.0,
-          "latency_sec": 1.49
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.14,
+        "violation_rate": 66.7,
+        "dish_alignment": 66.7,
+        "latency": 2.16
       },
       "naive_rag": {
-        "answer_snippet": "Tôi không tìm thấy đánh giá cụ thể về các quán cơm hến gần cầu Tràng Tiền tại Huế trong dữ liệu đã cung cấp. Tuy nhiên, dựa vào thông tin bạn cung cấp, tôi có thể gợi ý một số địa điểm tham khảo:\n\n- Cầu Tràng Tiền là một điểm giao thoa giữa nhiều khu",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Quan Com Hen"
-          ],
-          "grounding_rate": 20.0,
-          "hallucination_rate": 80.0,
-          "avg_distance_km": 1.17,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 100.0,
-          "latency_sec": 3.37
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.64,
+        "violation_rate": 100.0,
+        "dish_alignment": 100.0,
+        "latency": 1.41
       },
       "spatial_graphrag": {
-        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, tôi xin chia sẻ cho bạn một số thông tin về các quán cơm hến ngon và uy tín gần cầu Tràng Tiền tại Huế:\n\n1. **Quán Cơm Hến Bà Năm**:\n   - Địa chỉ: Khu vực gần cầu Tràng Tiền, Huế\n   - Ưu điểm: Quán nổi tiếng với",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Quan Com Hen"
-          ],
-          "grounding_rate": 5.9,
-          "hallucination_rate": 94.1,
-          "avg_distance_km": 1.17,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 100.0,
-          "latency_sec": 8.74
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.1,
+        "violation_rate": 0.0,
+        "dish_alignment": 50.0,
+        "latency": 5.66
       }
     },
     {
-      "query_meta": {
+      "q": {
         "id": "Q04",
         "category": "Spatial_Culinary",
-        "query": "Gần lăng Tự Đức có quán bánh bèo, bánh nậm nào ngon không?",
+        "query": "Gần lăng Tự Đức có quán bánh bèo, bánh nậm nào ngon chuẩn vị?",
         "anchor_node": "place_8880",
         "anchor_name": "Lăng Tự Đức",
         "target_dish": "Bánh bèo",
-        "max_valid_distance_km": 2.5
+        "max_valid_distance_km": 2.0
       },
       "zero_shot": {
-        "answer_snippet": "Quán Bánh Bèo Bà Huệ nằm gần Lăng Tự Đức, bạn có thể thử xem sao nhé. Địa chỉ: 126 Nguyễn Văn Cươn, Phước Vĩnh, Phú Nhuận, TP.HCM.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 5.5,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 1.01
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.92,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.69
       },
       "naive_rag": {
-        "answer_snippet": "Để tìm các quán bánh bèo và bánh nậm gần Lăng Tự Đức, bạn có thể tham khảo địa điểm [Very Good]. Đây là một trung tâm thị trường rất tốt với nhiều loại hàng hóa từ đồ ăn đến đồ dùng khác. Bạn có thể thử mua đồ tại đây và thưởng thức ở những quầy hàng",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 5.5,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 1.63
-        }
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 637.26,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.97
       },
       "spatial_graphrag": {
-        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, tôi xin chia sẻ một số thông tin về các món ăn đặc sản gần lăng Tự Đức tại Huế mà du khách có thể thưởng thức:\n\n1. **Bánh bèo**: Một trong những món ăn nổi tiếng và phổ biến ở Huế chính là bánh bèo. Bạn có thể t",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 5.5,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 6.56
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 6.44
       }
     },
     {
-      "query_meta": {
+      "q": {
         "id": "Q05",
+        "category": "Spatial_Culinary",
+        "query": "Quán chè Hẻm nổi tiếng ở Huế nằm ở đâu và gần đó có gì ăn ngon?",
+        "anchor_node": "place_8883",
+        "anchor_name": "Chè Hẻm",
+        "target_dish": "Chè Huế",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 182.7,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 2.77
+      },
+      "naive_rag": {
+        "grounding_rate": 66.7,
+        "hallucination_rate": 33.3,
+        "avg_distance_km": 272.81,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.47
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 6.76
+      }
+    },
+    {
+      "q": {
+        "id": "Q06",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán bánh khoái và nem lụi ngon ở khu vực phố Tây Chu Văn An",
+        "anchor_node": "place_8882",
+        "anchor_name": "Phố đi bộ Chu Văn An",
+        "target_dish": "Bánh khoái",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.88
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.56
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.69,
+        "violation_rate": 0.0,
+        "dish_alignment": 25.0,
+        "latency": 4.87
+      }
+    },
+    {
+      "q": {
+        "id": "Q07",
+        "category": "Spatial_Culinary",
+        "query": "Tôi đang ở Chợ Đông Ba, muốn ăn bún mắm nêm hoặc bún giấm nuốc gần đây",
+        "anchor_node": "place_8875",
+        "anchor_name": "Chợ Đông Ba",
+        "target_dish": "Bún mắm nêm",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.18,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.31
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.5,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 0.98
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 5.65
+      }
+    },
+    {
+      "q": {
+        "id": "Q08",
+        "category": "Spatial_Culinary",
+        "query": "Gần chùa Từ Hiếu có quán cơm chay thanh tịnh nào ngon không?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Chùa Từ Hiếu",
+        "target_dish": "Cơm chay",
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.1,
+        "violation_rate": 75.0,
+        "dish_alignment": 0.0,
+        "latency": 1.63
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.94,
+        "violation_rate": 33.3,
+        "dish_alignment": 0.0,
+        "latency": 1.45
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.31
+      }
+    },
+    {
+      "q": {
+        "id": "Q09",
+        "category": "Spatial_Culinary",
+        "query": "Quán bánh canh Nam Phổ ngon gần khu vực Thành Nội bờ Bắc",
+        "anchor_node": "place_8875",
+        "anchor_name": "Thành Nội Huế",
+        "target_dish": "Bánh canh Nam Phổ",
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.3,
+        "violation_rate": 0.0,
+        "dish_alignment": 33.3,
+        "latency": 1.84
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.99,
+        "violation_rate": 0.0,
+        "dish_alignment": 50.0,
+        "latency": 1.14
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 33.3,
+        "latency": 5.98
+      }
+    },
+    {
+      "q": {
+        "id": "Q10",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán chè bột lọc bọc heo quay ngon gần Cửa Thượng Tứ",
+        "anchor_node": "place_8875",
+        "anchor_name": "Cửa Thượng Tứ",
+        "target_dish": "Chè heo quay",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 0.63,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.79
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 0.63,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.38
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 5.36
+      }
+    },
+    {
+      "q": {
+        "id": "Q11",
+        "category": "Spatial_Culinary",
+        "query": "Quán vả trộn tôm thịt ngon phục vụ ẩm thực truyền thống gần Đàn Nam Giao",
+        "anchor_node": "place_8880",
+        "anchor_name": "Đàn Nam Giao",
+        "target_dish": "Vả trộn",
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 168.91,
+        "violation_rate": 66.7,
+        "dish_alignment": 0.0,
+        "latency": 1.8
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 250.82,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.68
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.73
+      }
+    },
+    {
+      "q": {
+        "id": "Q12",
+        "category": "Spatial_Culinary",
+        "query": "Gần Cung An Định có quán bánh bèo chén gia truyền nào không?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Cung An Định",
+        "target_dish": "Bánh bèo",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.04,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.78
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 1.31,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.34
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.59
+      }
+    },
+    {
+      "q": {
+        "id": "Q13",
+        "category": "Spatial_Culinary",
+        "query": "Uống trà cung đình Huế ở đâu chuẩn vị gần đường Lê Lợi bờ Nam?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Đường Lê Lợi",
+        "target_dish": "Trà cung đình",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 640.28,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.21
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 320.52,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.18
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.1
+      }
+    },
+    {
+      "q": {
+        "id": "Q14",
+        "category": "Spatial_Culinary",
+        "query": "Quán cơm niêu gia đình ngon gần Ga Huế bờ Nam",
+        "anchor_node": "place_8882",
+        "anchor_name": "Ga Huế",
+        "target_dish": "Cơm niêu",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.95,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 2.03
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.13,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.28
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.73,
+        "violation_rate": 0.0,
+        "dish_alignment": 50.0,
+        "latency": 3.73
+      }
+    },
+    {
+      "q": {
+        "id": "Q15",
+        "category": "Spatial_Culinary",
+        "query": "Quán bún bò Mụ Rơi đường Mai Thúc Loan có mở cửa trưa không?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Mai Thúc Loan",
+        "target_dish": "Bún bò Huế",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.85,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.62
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.79,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.75
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 50.0,
+        "latency": 2.72
+      }
+    },
+    {
+      "q": {
+        "id": "Q16",
+        "category": "Spatial_Culinary",
+        "query": "Ăn vặt đêm ở công viên Thương Bạc bờ Bắc có những món gì ngon?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Công viên Thương Bạc",
+        "target_dish": "Ăn vặt Huế",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.14,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 2.38
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 270.46,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.87
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 6.4
+      }
+    },
+    {
+      "q": {
+        "id": "Q17",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán bún cua, bánh canh cá lóc ngon ở đường Đinh Tiên Hoàng",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đinh Tiên Hoàng",
+        "target_dish": "Bánh canh cá lóc",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.27,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.84
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 341.43,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.78
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 10.62
+      }
+    },
+    {
+      "q": {
+        "id": "Q18",
+        "category": "Spatial_Culinary",
+        "query": "Quán cà phê muối đặc sản gần đường Đặng Thái Thân bờ Bắc",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đặng Thái Thân",
+        "target_dish": "Cà phê muối",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.42,
+        "violation_rate": 75.0,
+        "dish_alignment": 25.0,
+        "latency": 2.04
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.25,
+        "violation_rate": 66.7,
+        "dish_alignment": 33.3,
+        "latency": 1.34
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.96,
+        "violation_rate": 0.0,
+        "dish_alignment": 12.5,
+        "latency": 7.7
+      }
+    },
+    {
+      "q": {
+        "id": "Q19",
+        "category": "Spatial_Culinary",
+        "query": "Quán bánh ép Huế ngon gần đường Nhật Lệ trong Thành Nội",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đường Nhật Lệ",
+        "target_dish": "Bánh ép",
+        "max_valid_distance_km": 1.2
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.62,
+        "violation_rate": 66.7,
+        "dish_alignment": 33.3,
+        "latency": 2.04
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.48,
+        "violation_rate": 50.0,
+        "dish_alignment": 50.0,
+        "latency": 1.3
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 66.7,
+        "latency": 2.95
+      }
+    },
+    {
+      "q": {
+        "id": "Q20",
+        "category": "Spatial_Culinary",
+        "query": "Ăn bánh nậm, bánh lọc bọc lá chuối ngon quanh chợ An Cựu",
+        "anchor_node": "place_8882",
+        "anchor_name": "Chợ An Cựu",
+        "target_dish": "Bánh nậm",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 161.13,
+        "violation_rate": 50.0,
+        "dish_alignment": 50.0,
+        "latency": 2.2
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 321.53,
+        "violation_rate": 100.0,
+        "dish_alignment": 100.0,
+        "latency": 1.35
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 66.7,
+        "latency": 5.96
+      }
+    },
+    {
+      "q": {
+        "id": "Q21",
+        "category": "Spatial_Culinary",
+        "query": "Quán bún bò O Cương Chú Điệp đường Đống Đa nằm ở bờ nào?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Đường Đống Đa",
+        "target_dish": "Bún bò Huế",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.01
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.29
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 2.84
+      }
+    },
+    {
+      "q": {
+        "id": "Q22",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán bánh ram ít và bánh quai vạc ngon gần ngã tư Hùng Vương",
+        "anchor_node": "place_8882",
+        "anchor_name": "Hùng Vương",
+        "target_dish": "Bánh ram ít",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.79
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.94
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.76,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.16
+      }
+    },
+    {
+      "q": {
+        "id": "Q23",
+        "category": "Spatial_Culinary",
+        "query": "Quán bánh cuốn tôm chua thịt luộc ngon khu vực Gia Hội",
+        "anchor_node": "place_8875",
+        "anchor_name": "Phố cổ Gia Hội",
+        "target_dish": "Tôm chua thịt luộc",
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.82,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.65
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.88,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.38
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 2.99
+      }
+    },
+    {
+      "q": {
+        "id": "Q24",
+        "category": "Spatial_Culinary",
+        "query": "Gần Lăng Khải Định có quán ăn trưa nào đặc sản Thủy Bằng không?",
+        "anchor_node": "place_8879",
+        "anchor_name": "Lăng Khải Định",
+        "target_dish": "Bánh bèo",
+        "max_valid_distance_km": 3.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 6.49,
+        "violation_rate": 75.0,
+        "dish_alignment": 0.0,
+        "latency": 1.74
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.79,
+        "violation_rate": 75.0,
+        "dish_alignment": 0.0,
+        "latency": 1.57
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 3.89
+      }
+    },
+    {
+      "q": {
+        "id": "Q25",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán nem lụi nướng sả thơm ngon gần Cửa Quảng Đức",
+        "anchor_node": "place_8875",
+        "anchor_name": "Cửa Quảng Đức",
+        "target_dish": "Nem lụi",
+        "max_valid_distance_km": 1.2
+      },
+      "zero_shot": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.8,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.68
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.8,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.62
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.21
+      }
+    },
+    {
+      "q": {
+        "id": "Q26",
+        "category": "Spatial_Culinary",
+        "query": "Quán chè mợ Tôn Đích có những loại chè đặc trưng nào?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Công viên Thương Bạc",
+        "target_dish": "Chè Huế",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.63,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.68
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.21,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.69
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.55
+      }
+    },
+    {
+      "q": {
+        "id": "Q27",
+        "category": "Spatial_Culinary",
+        "query": "Quán bún mắm nêm Mệ Thẻ đường Bà Triệu có xa cầu Trường Tiền không?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Cầu Trường Tiền",
+        "target_dish": "Bún mắm nêm",
+        "max_valid_distance_km": 1.8
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.64,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.2
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.64,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.01
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.64,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 3.64
+      }
+    },
+    {
+      "q": {
+        "id": "Q28",
+        "category": "Spatial_Culinary",
+        "query": "Ăn bánh mì bột lọc Tràng Tiền đêm ở bờ Nam đoạn nào ngon?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Chân cầu Trường Tiền",
+        "target_dish": "Bánh mì bột lọc",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.15,
+        "violation_rate": 0.0,
+        "dish_alignment": 33.3,
+        "latency": 1.43
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.15,
+        "violation_rate": 0.0,
+        "dish_alignment": 50.0,
+        "latency": 1.53
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.27,
+        "violation_rate": 0.0,
+        "dish_alignment": 25.0,
+        "latency": 4.63
+      }
+    },
+    {
+      "q": {
+        "id": "Q29",
+        "category": "Spatial_Culinary",
+        "query": "Quán cơm hến Hoa Đông ở thôn Vỹ Dạ có bán chè bắp không?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Thôn Vỹ Dạ",
+        "target_dish": "Cơm hến",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.83,
+        "violation_rate": 66.7,
+        "dish_alignment": 66.7,
+        "latency": 0.88
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.83,
+        "violation_rate": 66.7,
+        "dish_alignment": 66.7,
+        "latency": 1.0
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.01,
+        "violation_rate": 0.0,
+        "dish_alignment": 60.0,
+        "latency": 3.11
+      }
+    },
+    {
+      "q": {
+        "id": "Q30",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán bánh khoái Lạc Thiện lâu đời nhất ở Huế",
+        "anchor_node": "place_8875",
+        "anchor_name": "Cửa Thượng Tứ",
+        "target_dish": "Bánh khoái",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.92,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.84
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.5,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.53
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.68,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.1
+      }
+    },
+    {
+      "q": {
+        "id": "Q31",
+        "category": "Spatial_Culinary",
+        "query": "Gần Đồi Vọng Cảnh có quán nước mía hoặc ẩm thực nhẹ nào không?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Đồi Vọng Cảnh",
+        "target_dish": "Ăn nhẹ",
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.49,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.61
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.49,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.29
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.89
+      }
+    },
+    {
+      "q": {
+        "id": "Q32",
+        "category": "Spatial_Culinary",
+        "query": "Quán bún bò Bà Tuyết ở đường Nguyễn Công Trứ có đông không?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Nguyễn Công Trứ",
+        "target_dish": "Bún bò Huế",
+        "max_valid_distance_km": 1.2
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.77,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.96
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.8,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.01
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 2.99
+      }
+    },
+    {
+      "q": {
+        "id": "Q33",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán cơm chay ngon gần chùa Báo Quốc",
+        "anchor_node": "place_8882",
+        "anchor_name": "Chùa Báo Quốc",
+        "target_dish": "Cơm chay",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 0.77,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.73
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.39
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 5.11
+      }
+    },
+    {
+      "q": {
+        "id": "Q34",
+        "category": "Spatial_Culinary",
+        "query": "Quán hải sản cá kình đầm chuồn ăn ở đâu ngon nhất?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Đầm Chuồn",
+        "target_dish": "Bánh khoái cá kình",
+        "max_valid_distance_km": 8.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.46,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 2.03
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 12.0,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.66
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.62
+      }
+    },
+    {
+      "q": {
+        "id": "Q35",
+        "category": "Spatial_Culinary",
+        "query": "Quán bún giấm nuốc Huế mùa hè ăn ở đâu ngon nhất bờ Bắc?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Chợ Đông Ba",
+        "target_dish": "Bún giấm nuốc",
+        "max_valid_distance_km": 1.2
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 11.56,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.97
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.8,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.32
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.84
+      }
+    },
+    {
+      "q": {
+        "id": "Q36",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán nem tré gia truyền Đông Ba làm quà biếu",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đào Duy Từ",
+        "target_dish": "Tré Huế",
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.55,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.62
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.18,
+        "violation_rate": 100.0,
+        "dish_alignment": 0.0,
+        "latency": 1.21
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 3.87
+      }
+    },
+    {
+      "q": {
+        "id": "Q37",
+        "category": "Spatial_Culinary",
+        "query": "Quán ốc và đồ ăn vặt sinh viên bờ Nam đường Hồ Đắc Di",
+        "anchor_node": "place_8882",
+        "anchor_name": "Hồ Đắc Di",
+        "target_dish": "Ốc cay Huế",
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 0.77,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 2.13
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 3.0,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.51
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.23,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 3.87
+      }
+    },
+    {
+      "q": {
+        "id": "Q38",
+        "category": "Spatial_Culinary",
+        "query": "Tìm quán bánh canh cua rời ngon gần chợ Tây Lộc",
+        "anchor_node": "place_8875",
+        "anchor_name": "Chợ Tây Lộc",
+        "target_dish": "Bánh canh cua",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.21,
+        "violation_rate": 33.3,
+        "dish_alignment": 0.0,
+        "latency": 1.82
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.37,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.99
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 4.06
+      }
+    },
+    {
+      "q": {
+        "id": "Q39",
+        "category": "Spatial_Culinary",
+        "query": "Quán bánh bèo Chi đường Lê Ngô Cát gần lăng Tự Đức",
+        "anchor_node": "place_8880",
+        "anchor_name": "Lê Ngô Cát",
+        "target_dish": "Bánh bèo",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 1.16,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 1.18
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.35,
+        "violation_rate": 50.0,
+        "dish_alignment": 0.0,
+        "latency": 1.82
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.83,
+        "violation_rate": 0.0,
+        "dish_alignment": 0.0,
+        "latency": 6.99
+      }
+    },
+    {
+      "q": {
+        "id": "Q40",
+        "category": "Spatial_Culinary",
+        "query": "Quán bánh ướt thịt nướng Huyền Anh Kim Long có chỗ đỗ xe không?",
+        "anchor_node": "place_8876",
+        "anchor_name": "Kim Long",
+        "target_dish": "Bánh ướt thịt nướng",
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.65,
+        "violation_rate": 50.0,
+        "dish_alignment": 50.0,
+        "latency": 0.9
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.65,
+        "violation_rate": 50.0,
+        "dish_alignment": 50.0,
+        "latency": 0.97
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 50.0,
+        "latency": 3.51
+      }
+    },
+    {
+      "q": {
+        "id": "Q41",
         "category": "Spatial_Proximity",
         "query": "Sau khi tham quan Đại Nội thì nên đi đâu tiếp gần đó trong bán kính 1km?",
         "anchor_node": "place_8875",
@@ -254,410 +1443,2093 @@
         "max_valid_distance_km": 1.5
       },
       "zero_shot": {
-        "answer_snippet": "Bạn có thể thử đến quán bánh mì Ông Già ở số 27-29 Nguyễn Thái Học, từ đây chỉ cách Đại Nội khoảng 300m.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 3.3,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 0.75
-        }
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.29
       },
       "naive_rag": {
-        "answer_snippet": "Bạn có thể tham quan chợ Đông Ba ở đây, đây là một địa điểm gợi ý nằm gần Đại Nội Huế và được đánh giá cao về trải nghiệm mua sắm.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 0.0,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 0.92
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.05,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.77
       },
       "spatial_graphrag": {
-        "answer_snippet": "Theo thông tin từ Đồ thị Khôn ngoan, có một số lựa chọn du lịch gần Đại Nội (cụ thể là Đại Nội Huế) trong bán kính khoảng 1 km như sau:\n\n1. **La Siesta Classic Ma May Hanoi Hotel** - Một khách sạn chất lượng cao với vị trí thuận lợi và không xa Đại N",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 3.3,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 4.42
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 9.98
       }
     },
     {
-      "query_meta": {
-        "id": "Q06",
+      "q": {
+        "id": "Q42",
         "category": "Spatial_Proximity",
-        "query": "Từ lăng Khải Định nên ghé những điểm tham quan nào lân cận tiện đường?",
-        "anchor_node": "place_8881",
+        "query": "Từ chùa Thiên Mụ có thể đi bộ sang Văn Thánh Huế được không?",
+        "anchor_node": "place_8876",
+        "anchor_name": "Chùa Thiên Mụ",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.49
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.3
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 3.89
+      }
+    },
+    {
+      "q": {
+        "id": "Q43",
+        "category": "Spatial_Proximity",
+        "query": "Từ Đồi Vọng Cảnh nên ghé những điểm lăng tẩm nào tiện đường?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Đồi Vọng Cảnh",
+        "target_dish": null,
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "grounding_rate": 75.0,
+        "hallucination_rate": 25.0,
+        "avg_distance_km": 5.19,
+        "violation_rate": 66.7,
+        "dish_alignment": 95.0,
+        "latency": 2.3
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.5,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.89
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.6
+      }
+    },
+    {
+      "q": {
+        "id": "Q44",
+        "category": "Spatial_Proximity",
+        "query": "Các điểm di tích có thể đi bộ tham quan trong 15 phút từ Chợ Đông Ba",
+        "anchor_node": "place_8875",
+        "anchor_name": "Chợ Đông Ba",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 66.7,
+        "dish_alignment": 95.0,
+        "latency": 2.23
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.18,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.86
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 12.37
+      }
+    },
+    {
+      "q": {
+        "id": "Q45",
+        "category": "Spatial_Proximity",
+        "query": "Từ Lăng Khải Định ghé điểm tham quan nào lân cận tiện đường về trung tâm?",
+        "anchor_node": "place_8879",
         "anchor_name": "Lăng Khải Định",
         "target_dish": null,
         "max_valid_distance_km": 4.0
       },
       "zero_shot": {
-        "answer_snippet": "Bạn có thể ghé thăm Tháp Rùa và Bảo tàng Hồ Xuân Hương gần đó.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 0.0,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 0.48
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.07,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.31
       },
       "naive_rag": {
-        "answer_snippet": "Bạn có thể ghé thăm Trung tâm Bảo tàng Lăng Khải Định và Chợ Đông Ba, đây là hai địa điểm gần đó và thuận tiện để đến từ lăng Khải Định.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 8.8,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 0.93
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.07,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.39
       },
       "spatial_graphrag": {
-        "answer_snippet": "Dưới đây là một số địa điểm tham quan thú vị gần Lăng Khải Định, Hoi An mà bạn có thể ghé thăm:\n\n1. **Le Jardin Hotel Haute Couture**\n   - ⭐ 5.0/5 (1,423 đánh giá) | Địa chỉ: 105 Nguyễn Truong Sothao, Trúc Bạch Ward\n   - Cách Lăng Khải Định khoảng 1 ",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 8.8,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 5.43
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.64
       }
     },
     {
-      "query_meta": {
-        "id": "Q07",
-        "category": "Spatial_Culinary",
-        "query": "Quán chè Hẻm nổi tiếng ở Huế nằm ở đâu và gần đó có gì ăn chơi?",
-        "anchor_node": "place_8883",
-        "anchor_name": "Chè Hẻm",
-        "target_dish": "Chè Huế",
+      "q": {
+        "id": "Q46",
+        "category": "Spatial_Proximity",
+        "query": "Làng hương Thủy Xuân nằm gần những di tích nào nhất?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Làng hương Thủy Xuân",
+        "target_dish": null,
         "max_valid_distance_km": 2.0
       },
       "zero_shot": {
-        "answer_snippet": "Quán chè Hẻm nổi tiếng ở Huế nằm ở đường Nguyễn Du, khu vực này cũng có nhiều quán ăn ngon như bánh bèo Thừa Thiên Huế. Bạn có thể đi dạo đến chợ Đền để thưởng thức các món ăn địa phương và tham quan thêm một số di tích lịch sử trong khu vực.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 4.4,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 1.32
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.27,
+        "violation_rate": 75.0,
+        "dish_alignment": 95.0,
+        "latency": 1.25
       },
       "naive_rag": {
-        "answer_snippet": "Quán chè Hẻm nổi tiếng ở Huế không được đề cập trong dữ liệu cung cấp. Tuy nhiên, địa điểm gợi ý cho việc khám phá văn hóa ẩm thực và mua sắm tại Huế là Dong Ba Market (địa chỉ: Trang Hung Dao Street, gần cầu Trương Thien). Đây là một trung tâm thươn",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Dong Ba Market"
-          ],
-          "grounding_rate": 33.3,
-          "hallucination_rate": 66.7,
-          "avg_distance_km": 3.35,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 2.28
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 19.28,
+        "violation_rate": 66.7,
+        "dish_alignment": 95.0,
+        "latency": 1.22
       },
       "spatial_graphrag": {
-        "answer_snippet": "Để trả lời câu hỏi của bạn, tôi sẽ chia sẻ thông tin từ ngữ cảnh hệ thống:\n\n### Quán Chè Hẻm Nổi Tiếng ở Huế\n\n**Quán Chè Hẻm:** Đây là một quán chè nổi tiếng nằm trong hẻm nhỏ tại thành phố Huế. \n\nĐịa chỉ cụ thể của quán chè này không được cung cấp t",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Dong Ba Market"
-          ],
-          "grounding_rate": 11.1,
-          "hallucination_rate": 88.9,
-          "avg_distance_km": 3.35,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 6.09
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.78
       }
     },
     {
-      "query_meta": {
-        "id": "Q08",
-        "category": "Spatial_Culinary",
-        "query": "Tìm quán bánh khoái ngon ở khu vực bờ Nam sông Hương",
+      "q": {
+        "id": "Q47",
+        "category": "Spatial_Proximity",
+        "query": "Quanh Cung An Định có điểm tham quan kiến trúc nào đẹp?",
         "anchor_node": "place_8882",
-        "anchor_name": "Bờ Nam Sông Hương",
-        "target_dish": "Bánh khoái",
-        "max_valid_distance_km": 3.0
+        "anchor_name": "Cung An Định",
+        "target_dish": null,
+        "max_valid_distance_km": 2.0
       },
       "zero_shot": {
-        "answer_snippet": "Quán Bánh Kẹo Bà Năm là một lựa chọn ngon tại khu vực bờ Nam sông Hương, Huế. Bạn có thể thử món bánh khoai của họ.",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 6.6,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 0.76
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.06,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.25
       },
       "naive_rag": {
-        "answer_snippet": "Tôi không tìm thấy thông tin cụ thể về quán bánh khoai ở khu vực bờ Nam sông Hương tại dữ liệu đã cung cấp. Tuy nhiên, bạn có thể tham khảo các địa điểm gợi ý như Dong Ba Market nằm gần bờ Nam sông Hương, nơi có nhiều gian hàng bán các loại nguyên li",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Dong Ba Market"
-          ],
-          "grounding_rate": 50.0,
-          "hallucination_rate": 50.0,
-          "avg_distance_km": 0.41,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 1.94
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.12,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.98
       },
       "spatial_graphrag": {
-        "answer_snippet": "Dựa trên dữ liệu cập nhật từ nguồn mở, tôi không tìm thấy thông tin cụ thể về quán bánh Khoái ngon tại khu vực bờ Nam sông Hương. Tuy nhiên, trong khu vực này, bạn có thể tìm đến một số địa điểm hấp dẫn khác như các chợ và hàng quán nổi tiếng của cố ",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Let's Hue - Local Buddies"
-          ],
-          "grounding_rate": 25.0,
-          "hallucination_rate": 75.0,
-          "avg_distance_km": 0.19,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 4.1
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 6.33
       }
     },
     {
-      "query_meta": {
-        "id": "Q09",
-        "category": "Itinerary",
-        "query": "Gợi ý lịch trình du lịch Huế 1 ngày tối ưu đường đi cho cặp đôi",
+      "q": {
+        "id": "Q48",
+        "category": "Spatial_Proximity",
+        "query": "Từ Đồi Thiên An đi Lăng Khải Định mất bao xa và qua những đâu?",
+        "anchor_node": "place_8879",
+        "anchor_name": "Đồi Thiên An",
+        "target_dish": null,
+        "max_valid_distance_km": 3.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.66,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.92
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.26,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.32
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 6.12
+      }
+    },
+    {
+      "q": {
+        "id": "Q49",
+        "category": "Spatial_Proximity",
+        "query": "Quanh khu vực Chùa Từ Hiếu có những ngôi cổ tự nào khác?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Chùa Từ Hiếu",
+        "target_dish": null,
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.68,
+        "violation_rate": 75.0,
+        "dish_alignment": 95.0,
+        "latency": 3.05
+      },
+      "naive_rag": {
+        "grounding_rate": 33.3,
+        "hallucination_rate": 66.7,
+        "avg_distance_km": 1.78,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.69
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 11.62
+      }
+    },
+    {
+      "q": {
+        "id": "Q50",
+        "category": "Spatial_Proximity",
+        "query": "Các di tích lịch sử nằm trên trục đường Bạch Đằng phố cổ Gia Hội",
         "anchor_node": "place_8875",
-        "anchor_name": "Đại Nội Huế",
-        "target_dish": "Bún bò Huế",
+        "anchor_name": "Bạch Đằng Gia Hội",
+        "target_dish": null,
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.88,
+        "violation_rate": 25.0,
+        "dish_alignment": 95.0,
+        "latency": 2.24
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.86,
+        "violation_rate": 33.3,
+        "dish_alignment": 95.0,
+        "latency": 1.57
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 12.47
+      }
+    },
+    {
+      "q": {
+        "id": "Q51",
+        "category": "Spatial_Proximity",
+        "query": "Điểm tham quan gần Bảo tàng Lịch sử Thừa Thiên Huế trong Thành Nội",
+        "anchor_node": "place_8875",
+        "anchor_name": "Bảo tàng Lịch sử",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.92,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.99
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 6.81,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.81
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.86
+      }
+    },
+    {
+      "q": {
+        "id": "Q52",
+        "category": "Spatial_Proximity",
+        "query": "Nhà vườn An Hiên nằm gần điểm du lịch nào trên trục đường Kim Long?",
+        "anchor_node": "place_8876",
+        "anchor_name": "Nhà vườn An Hiên",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.27,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 0.86
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.27,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 0.74
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.62
+      }
+    },
+    {
+      "q": {
+        "id": "Q53",
+        "category": "Spatial_Proximity",
+        "query": "Từ Lăng Minh Mạng sang Lăng Gia Long đi bằng đường nào thuận tiện?",
+        "anchor_node": "place_8879",
+        "anchor_name": "Lăng Minh Mạng",
+        "target_dish": null,
         "max_valid_distance_km": 5.0
       },
       "zero_shot": {
-        "answer_snippet": "Lịch trình 1 ngày tại Huế dành cho cặp đôi có thể như sau:\n\nSáng: \n- Đi từ trung tâm thành phố, tham quan Bến Nha Trang (nơi có nhiều quán ăn ngon).\n- Ăn sáng và brunch tại quán cà phê nhỏ xinh gần Bến Nha Trang.\n\nTrưa:\n- Thăm Chùa Dau - một trong nh",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 11.0,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 4.36
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.91,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 2.45
       },
       "naive_rag": {
-        "answer_snippet": "Để có một chuyến đi Huế 1 ngày tối ưu, tôi gợi ý ghé thăm các địa điểm sau:\n\n1. **See Retail and Wholesale Sections** - Đây là nơi lý tưởng để bắt đầu tour của bạn. Bạn sẽ được hướng dẫn tham quan cả khu bán lẻ và wholesale, giúp hiểu rõ hơn về nền k",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Dong Ba Market"
-          ],
-          "grounding_rate": 100.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 1.18,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 0.0,
-          "latency_sec": 4.59
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.92,
+        "violation_rate": 33.3,
+        "dish_alignment": 95.0,
+        "latency": 1.14
       },
       "spatial_graphrag": {
-        "answer_snippet": "[Lỗi Spatial GraphRAG]: 'SpatialItineraryPlanner' object has no attribute 'build_itinerary'",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 0.0,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": 100.0,
-          "latency_sec": 0.0
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 7.48
       }
     },
     {
-      "query_meta": {
-        "id": "Q10",
-        "category": "Itinerary",
-        "query": "Lập lịch trình 2 ngày khám phá di sản và ẩm thực Huế không bị đi vòng",
-        "anchor_node": "place_8875",
-        "anchor_name": "Thành phố Huế",
+      "q": {
+        "id": "Q54",
+        "category": "Spatial_Proximity",
+        "query": "Dọc đường Lê Lợi bờ Nam có những công trình kiến trúc Pháp nào nổi bật?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Đường Lê Lợi",
+        "target_dish": null,
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 3.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.18
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 3.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.73
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 7.61
+      }
+    },
+    {
+      "q": {
+        "id": "Q55",
+        "category": "Spatial_Proximity",
+        "query": "Đường lên Chùa Huyền Không Sơn Thượng đi qua những cảnh quan nào?",
+        "anchor_node": "place_8876",
+        "anchor_name": "Huyền Không Sơn Thượng",
         "target_dish": null,
         "max_valid_distance_km": 6.0
       },
       "zero_shot": {
-        "answer_snippet": "Ngày 1:\n- Sáng: Thăm Chùa Kim Liên (03 Nguyễn Văn Cinh, Huế)\n- Trưa: Ăn bánh bèo tại Bánh bèo Ông Tám (02 Lê Lợi, Huế)\n- Chiều: Thăm Khu di tích Mỹ Linh (18B Lê Duẩn, Huế)\n- Đêm: Ăn cơm tấm tại quán Cơm tấm Bà Năm (03 Nguyễn Văn Tr, Huế)\n\nNgày 2:\n- S",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 13.2,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 3.72
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.76,
+        "violation_rate": 25.0,
+        "dish_alignment": 95.0,
+        "latency": 2.94
       },
       "naive_rag": {
-        "answer_snippet": "Để có một lịch trình 2 ngày khám phá di sản và ẩm thực Huế mà không bị đi vòng, tôi gợi ý như sau:\n\nNgày 1:\n- Sáng: Thăm Bảo tàng Trang phục Huế (địa chỉ cụ thể xem đánh giá)\n- Chiều: Tham quan khu phố cổ Huế\n- Tối: Ăn tối tại một nhà hàng nổi tiếng ",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 13.2,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 4.12
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.74,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.81
       },
       "spatial_graphrag": {
-        "answer_snippet": "[Lỗi Spatial GraphRAG]: 'SpatialItineraryPlanner' object has no attribute 'build_itinerary'",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 0.0,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 0.0
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 5.91
       }
     },
     {
-      "query_meta": {
-        "id": "Q11",
+      "q": {
+        "id": "Q56",
         "category": "Spatial_Proximity",
-        "query": "Từ Đại Nội Huế đi chùa Thiên Mụ có xa không và trên đường đi có gì?",
-        "anchor_node": "place_8875",
-        "anchor_name": "Đại Nội Huế",
+        "query": "Cầu ngói Thanh Toàn cách trung tâm Huế bao xa và có gì tham quan?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Cầu ngói Thanh Toàn",
         "target_dish": null,
-        "max_valid_distance_km": 5.5
+        "max_valid_distance_km": 6.5
       },
       "zero_shot": {
-        "answer_snippet": "Du lịch từ Đại Nội Huế đến chùa Thiên Mụ không xa, khoảng 10-15 phút đi bộ hoặc xe đạp. Trên đường đi bạn sẽ thấy nhiều địa danh như đền Thanh Bình, đền Dinh, và các hàng quán nhỏ phục vụ cà phê, bánh tráng nướng.",
-        "metrics": {
-          "grounded_places_count": 1,
-          "grounded_places_names": [
-            "Quan Nho"
-          ],
-          "grounding_rate": 50.0,
-          "hallucination_rate": 50.0,
-          "avg_distance_km": 1.26,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 1.27
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.43,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.89
       },
       "naive_rag": {
-        "answer_snippet": "Để đến chùa Thiên Mụ từ Đại Nội Huế, bạn cần di chuyển qua sông Hương bằng cầu Thê Viên. Trên đường đi, bạn sẽ đi qua nhiều địa điểm thú vị như chợ Đông Ba, các cửa hàng thủ công mỹ nghệ truyền thống và chợ đêm. Bạn có thể ghé thăm chợ Đông Ba để ngắ",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 12.1,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 1.66
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.43,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.91
       },
       "spatial_graphrag": {
-        "answer_snippet": "Để từ Đại Nội Huế đến chùa Thiên Mụ, bạn chỉ cần khoảng 10-15 phút đi bộ. Trên đường đi từ Đại Nội Huế đến chùa Thiên Mụ, bạn sẽ có cơ hội ngắm nhìn một số địa điểm thú vị như:\n\n1. **Thien Mu Pagoda** (Chùa Thiên Mụ) — ⭐ 4.2/5 (3,922 đánh giá)\n   - Đ",
-        "metrics": {
-          "grounded_places_count": 4,
-          "grounded_places_names": [
-            "Ben Xuan Garden House Theatre",
-            "Mandarin Coffee & Restaurant",
-            "Hue Riverside Resort and Spa",
-            "Thien Mu Pagoda"
-          ],
-          "grounding_rate": 100.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 4.05,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 4.51
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 7.1
       }
     },
     {
-      "query_meta": {
-        "id": "Q12",
-        "category": "Itinerary",
-        "query": "Lịch trình 3 ngày trải nghiệm trọn vẹn văn hóa, lăng tẩm và ẩm thực Cố đô Huế",
+      "q": {
+        "id": "Q57",
+        "category": "Spatial_Proximity",
+        "query": "Khám phá Làng chài Đầm Chuồn Tam Giang nên đi vào buổi nào?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Đầm Chuồn",
+        "target_dish": null,
+        "max_valid_distance_km": 10.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.96,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.23
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.96,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.89
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 5.06
+      }
+    },
+    {
+      "q": {
+        "id": "Q58",
+        "category": "Spatial_Proximity",
+        "query": "Rừng ngập mặn Rú Chá nằm ở đâu và kết hợp đi cùng điểm nào?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Rú Chá",
+        "target_dish": null,
+        "max_valid_distance_km": 10.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.95,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.01
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 15.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 2.12
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.95,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.43
+      }
+    },
+    {
+      "q": {
+        "id": "Q59",
+        "category": "Spatial_Proximity",
+        "query": "Làng cổ Phước Tích nằm ở hướng nào từ trung tâm Huế?",
         "anchor_node": "place_8875",
-        "anchor_name": "Thành phố Huế",
+        "anchor_name": "Làng cổ Phước Tích",
+        "target_dish": null,
+        "max_valid_distance_km": 35.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 18.49,
+        "violation_rate": 33.3,
+        "dish_alignment": 95.0,
+        "latency": 1.62
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 53.74,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 0.68
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.33
+      }
+    },
+    {
+      "q": {
+        "id": "Q60",
+        "category": "Spatial_Proximity",
+        "query": "Từ Lăng Tự Đức đi bộ sang Lăng Đồng Khánh mất bao lâu?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Lăng Tự Đức",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.77,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 2.43
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.51,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.08
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.51,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.05
+      }
+    },
+    {
+      "q": {
+        "id": "Q61",
+        "category": "Spatial_Proximity",
+        "query": "Các cổng thành cổ đẹp nhất để chụp ảnh quanh Kinh thành Huế",
+        "anchor_node": "place_8875",
+        "anchor_name": "Cửa Thượng Tứ",
+        "target_dish": null,
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.92,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.71
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 8.52,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.89
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 10.51
+      }
+    },
+    {
+      "q": {
+        "id": "Q62",
+        "category": "Spatial_Proximity",
+        "query": "Điểm ngắm hoàng hôn đẹp nhất ven sông Hương gần trung tâm",
+        "anchor_node": "place_8882",
+        "anchor_name": "Sông Hương",
+        "target_dish": null,
+        "max_valid_distance_km": 2.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 19.86,
+        "violation_rate": 33.3,
+        "dish_alignment": 95.0,
+        "latency": 1.8
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 58.66,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.43
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 5.29
+      }
+    },
+    {
+      "q": {
+        "id": "Q63",
+        "category": "Spatial_Proximity",
+        "query": "Hồ Tịnh Tâm nằm ở đâu trong Kinh thành và gần cổng thành nào?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Hồ Tịnh Tâm",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 0.95
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 2.25,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 0.99
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.01,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.03
+      }
+    },
+    {
+      "q": {
+        "id": "Q64",
+        "category": "Spatial_Proximity",
+        "query": "Chùa Báo Quốc và Ga Huế cách nhau bao xa có tiện đi bộ không?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Chùa Báo Quốc",
+        "target_dish": null,
+        "max_valid_distance_km": 1.2
+      },
+      "zero_shot": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.8,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.58
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 1.8,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 1.23
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 3.05
+      }
+    },
+    {
+      "q": {
+        "id": "Q65",
+        "category": "Spatial_Proximity",
+        "query": "Tuyến đường đi bộ ven sông Hương đoạn từ cầu Phú Xuân đến cầu Trường Tiền",
+        "anchor_node": "place_8882",
+        "anchor_name": "Công viên bờ Nam",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 33.3,
+        "hallucination_rate": 66.7,
+        "avg_distance_km": 0.15,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.75
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.15,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.33
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 6.01
+      }
+    },
+    {
+      "q": {
+        "id": "Q66",
+        "category": "Spatial_Proximity",
+        "query": "Bến thuyền Tòa Khâm nằm ở đâu và cách phố Tây bao xa?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Bến thuyền Tòa Khâm",
+        "target_dish": null,
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 1.5,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.31
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 1.5,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.49
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.77,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.05
+      }
+    },
+    {
+      "q": {
+        "id": "Q67",
+        "category": "Spatial_Proximity",
+        "query": "Khu phố cổ Bao Vinh còn những ngôi nhà cổ nào?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Phố cổ Bao Vinh",
+        "target_dish": null,
+        "max_valid_distance_km": 3.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.52,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.71
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 322.05,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.33
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.48
+      }
+    },
+    {
+      "q": {
+        "id": "Q68",
+        "category": "Spatial_Proximity",
+        "query": "Bãi biển Thuận An cách Đại Nội Huế bao nhiêu km đường bộ?",
+        "anchor_node": "place_8875",
+        "anchor_name": "Biển Thuận An",
+        "target_dish": null,
+        "max_valid_distance_km": 14.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 11.56,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 0.76
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 11.56,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.04
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.0
+      }
+    },
+    {
+      "q": {
+        "id": "Q69",
+        "category": "Spatial_Proximity",
+        "query": "Khu du lịch Bạch Mã và Thiền viện Trúc Lâm cách Huế bao xa?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Bạch Mã",
+        "target_dish": null,
+        "max_valid_distance_km": 40.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 26.35,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 0.99
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 26.35,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.09
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.14
+      }
+    },
+    {
+      "q": {
+        "id": "Q70",
+        "category": "Spatial_Proximity",
+        "query": "Trường Quốc Học Huế gần những điểm di tích nào ở bờ Nam?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Trường Quốc Học",
+        "target_dish": null,
+        "max_valid_distance_km": 1.5
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.1,
+        "violation_rate": 33.3,
+        "dish_alignment": 95.0,
+        "latency": 1.25
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.58,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.56
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 8.54
+      }
+    },
+    {
+      "q": {
+        "id": "Q71",
+        "category": "Spatial_Proximity",
+        "query": "Điện Hòn Chén nằm ở khúc sông nào và đi thuyền từ đâu?",
+        "anchor_node": "place_8876",
+        "anchor_name": "Điện Hòn Chén",
+        "target_dish": null,
+        "max_valid_distance_km": 5.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.3,
+        "violation_rate": 66.7,
+        "dish_alignment": 95.0,
+        "latency": 0.85
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.8,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 0.88
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 6.16
+      }
+    },
+    {
+      "q": {
+        "id": "Q72",
+        "category": "Spatial_Proximity",
+        "query": "Chùa Từ Đàm có ý nghĩa lịch sử gì và nằm gần điểm nào?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Chùa Từ Đàm",
+        "target_dish": null,
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.34,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.36
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.48,
+        "violation_rate": 33.3,
+        "dish_alignment": 95.0,
+        "latency": 2.56
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.12,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 7.6
+      }
+    },
+    {
+      "q": {
+        "id": "Q73",
+        "category": "Spatial_Proximity",
+        "query": "Khu di tích Chín Hầm nằm gần đồi nào phía Tây Nam?",
+        "anchor_node": "place_8880",
+        "anchor_name": "Khu di tích Chín Hầm",
+        "target_dish": null,
+        "max_valid_distance_km": 3.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.17,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 0.71
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.17,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 0.98
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 6.57
+      }
+    },
+    {
+      "q": {
+        "id": "Q74",
+        "category": "Spatial_Proximity",
+        "query": "Làng hoa Thủy Biều có những trải nghiệm sinh thái nào?",
+        "anchor_node": "place_8876",
+        "anchor_name": "Thủy Biều",
+        "target_dish": null,
+        "max_valid_distance_km": 4.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 6.04,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 2.65
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 6.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 2.62
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 14.06
+      }
+    },
+    {
+      "q": {
+        "id": "Q75",
+        "category": "Spatial_Proximity",
+        "query": "Phố đi bộ Nguyễn Đình Chiểu và chợ đêm cầu Trường Tiền mở lúc mấy giờ?",
+        "anchor_node": "place_8882",
+        "anchor_name": "Cầu Trường Tiền",
+        "target_dish": null,
+        "max_valid_distance_km": 1.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.15,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.2
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.15,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.89
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.37,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 4.63
+      }
+    },
+    {
+      "q": {
+        "id": "Q76",
+        "category": "Itinerary",
+        "query": "Thiết kế lịch trình du lịch Huế 1 ngày trọn vẹn cho cặp đôi xuất phát bờ Nam",
+        "anchor_node": "place_8882",
+        "anchor_name": "Khách sạn bờ Nam",
+        "target_dish": null,
+        "max_valid_distance_km": 5.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 161.77,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 3.56
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.29,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.85
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 18.88
+      }
+    },
+    {
+      "q": {
+        "id": "Q77",
+        "category": "Itinerary",
+        "query": "Lập lịch trình 2 ngày khám phá Huế theo phong cách văn hóa sâu sắc và ẩm thực truyền thống",
+        "anchor_node": "place_8875",
+        "anchor_name": "Cố đô Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 6.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.79,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.55
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.32,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.46
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 16.6
+      }
+    },
+    {
+      "q": {
+        "id": "Q78",
+        "category": "Itinerary",
+        "query": "Gợi ý lịch trình 3 ngày tại Huế kết hợp di sản Cố đô và du lịch dã ngoại thiên nhiên sinh thái",
+        "anchor_node": "place_8875",
+        "anchor_name": "Huế và phụ cận",
         "target_dish": null,
         "max_valid_distance_km": 8.0
       },
       "zero_shot": {
-        "answer_snippet": "Ngày 1: Thăm Lăng Minh Tông - Địa chỉ: Quốc Oai, Thủy Điện; Ăng phục: Quán Bánh Cuốn Bà Kim\n\nNgày 2: Thăm các địa điểm như Lăng Khải Định, Đình Thiện Tự - Địa chỉ: Huế; Ăn trưa: Nhà Hàng Huế Thượng Hương\n\nNgày 3: Thăm Cố thành Huế và thưởng thức ẩm t",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 17.6,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 2.15
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 429.68,
+        "violation_rate": 66.7,
+        "dish_alignment": 95.0,
+        "latency": 3.57
       },
       "naive_rag": {
-        "answer_snippet": "Dựa vào các nhận xét được cung cấp, tôi gợi ý một lịch trình 3 ngày cho du khách trải nghiệm văn hóa, lăng tẩm và ẩm thực tại cố đô Huế như sau:\n\nNgày 1:\n- Tham quan chợ đêm trên sông Hương (cận trung tâm thành phố), thưởng thức các món ăn địa phương",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 100.0,
-          "avg_distance_km": 17.6,
-          "distance_violation_rate": 100.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 4.65
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.97,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.52
       },
       "spatial_graphrag": {
-        "answer_snippet": "[Lỗi Spatial GraphRAG]: 'SpatialItineraryPlanner' object has no attribute 'build_itinerary'",
-        "metrics": {
-          "grounded_places_count": 0,
-          "grounded_places_names": [],
-          "grounding_rate": 0.0,
-          "hallucination_rate": 0.0,
-          "avg_distance_km": 0.0,
-          "distance_violation_rate": 0.0,
-          "dish_alignment_rate": null,
-          "latency_sec": 0.0
-        }
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 22.84
+      }
+    },
+    {
+      "q": {
+        "id": "Q79",
+        "category": "Itinerary",
+        "query": "Lập tour nửa ngày chiều từ 14h đến 19h ngắm hoàng hôn Đồi Vọng Cảnh và ăn tối bánh Huế",
+        "anchor_node": "place_8880",
+        "anchor_name": "Thủy Xuân",
+        "target_dish": null,
+        "max_valid_distance_km": 4.0
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 6.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.31
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.76,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.01
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 6.72
+      }
+    },
+    {
+      "q": {
+        "id": "Q80",
+        "category": "Itinerary",
+        "query": "Lịch trình 1 ngày tham quan toàn bộ di tích bờ Bắc sông Hương không qua cầu",
+        "anchor_node": "place_8875",
+        "anchor_name": "Thành Nội",
+        "target_dish": null,
+        "max_valid_distance_km": 3.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.08,
+        "violation_rate": 25.0,
+        "dish_alignment": 95.0,
+        "latency": 3.51
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 180.73,
+        "violation_rate": 33.3,
+        "dish_alignment": 95.0,
+        "latency": 2.52
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 11.54
+      }
+    },
+    {
+      "q": {
+        "id": "Q81",
+        "category": "Itinerary",
+        "query": "Lịch trình 1 ngày bờ Nam tập trung hệ thống lăng tẩm và làng nghề truyền thống",
+        "anchor_node": "place_8880",
+        "anchor_name": "Lăng tẩm bờ Nam",
+        "target_dish": null,
+        "max_valid_distance_km": 6.0
+      },
+      "zero_shot": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 9.11,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 3.53
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 4.87,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.34
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 19.87
+      }
+    },
+    {
+      "q": {
+        "id": "Q82",
+        "category": "Itinerary",
+        "query": "Tour 2 ngày 1 đêm cho gia đình có người cao tuổi ưu tiên di chuyển nhẹ nhàng",
+        "anchor_node": "place_8882",
+        "anchor_name": "Trung tâm Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 5.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.64,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.8
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.13,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.64
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 16.33
+      }
+    },
+    {
+      "q": {
+        "id": "Q83",
+        "category": "Itinerary",
+        "query": "Lịch trình 3 ngày 2 đêm Huế tiết kiệm cho nhóm sinh viên thích check-in",
+        "anchor_node": "place_8882",
+        "anchor_name": "Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 8.0
+      },
+      "zero_shot": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 12.0,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 3.48
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 131.01,
+        "violation_rate": 20.0,
+        "dish_alignment": 95.0,
+        "latency": 2.43
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 16.01
+      }
+    },
+    {
+      "q": {
+        "id": "Q84",
+        "category": "Itinerary",
+        "query": "Tour buổi sáng 8h đến 12h tham quan Đại Nội và ăn trưa bún bò gần đó",
+        "anchor_node": "place_8875",
+        "anchor_name": "Đại Nội Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 2.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.48,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.34
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 3.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 3.1
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 9.13
+      }
+    },
+    {
+      "q": {
+        "id": "Q85",
+        "category": "Itinerary",
+        "query": "Food tour ẩm thực Huế 24 giờ thưởng thức 8 món đặc sản nổi tiếng nhất",
+        "anchor_node": "place_8882",
+        "anchor_name": "Ẩm thực Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 4.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.08,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.35
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.74,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.08
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 18.12
+      }
+    },
+    {
+      "q": {
+        "id": "Q86",
+        "category": "Itinerary",
+        "query": "Lịch trình 2 ngày phong cách chụp ảnh áo dài cổ phục tại các di tích cổ kính",
+        "anchor_node": "place_8875",
+        "anchor_name": "Di tích Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 5.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.58,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.32
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 7.5,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.63
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 12.2
+      }
+    },
+    {
+      "q": {
+        "id": "Q87",
+        "category": "Itinerary",
+        "query": "Tour nửa ngày sáng Chùa Thiên Mụ kết hợp thăm nhà vườn An Hiên và uống trà",
+        "anchor_node": "place_8876",
+        "anchor_name": "Kim Long",
+        "target_dish": null,
+        "max_valid_distance_km": 3.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.75,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 2.57
+      },
+      "naive_rag": {
+        "grounding_rate": 0.0,
+        "hallucination_rate": 100.0,
+        "avg_distance_km": 4.5,
+        "violation_rate": 60.0,
+        "dish_alignment": 30.0,
+        "latency": 2.02
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 9.31
+      }
+    },
+    {
+      "q": {
+        "id": "Q88",
+        "category": "Itinerary",
+        "query": "Lịch trình 3 ngày khám phá Huế và trải nghiệm ngủ đêm đầm Chuồn Tam Giang",
+        "anchor_node": "place_8882",
+        "anchor_name": "Huế - Đầm Chuồn",
+        "target_dish": null,
+        "max_valid_distance_km": 12.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.62,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.51
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 18.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.65
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 14.71
+      }
+    },
+    {
+      "q": {
+        "id": "Q89",
+        "category": "Itinerary",
+        "query": "Lịch trình 1 ngày chiêm bái các ngôi chùa cổ thanh tịnh nhất xứ Huế",
+        "anchor_node": "place_8882",
+        "anchor_name": "Cổ tự Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 6.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 3.89,
+        "violation_rate": 25.0,
+        "dish_alignment": 95.0,
+        "latency": 3.56
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 9.76,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.62
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 17.77
+      }
+    },
+    {
+      "q": {
+        "id": "Q90",
+        "category": "Itinerary",
+        "query": "Tour 1 ngày khám phá 3 lăng tẩm đẹp nhất: Tự Đức, Khải Định và Minh Mạng",
+        "anchor_node": "place_8879",
+        "anchor_name": "Cụm lăng tẩm",
+        "target_dish": null,
+        "max_valid_distance_km": 7.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 7.86,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.24
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.11,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.49
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 8.94
+      }
+    },
+    {
+      "q": {
+        "id": "Q91",
+        "category": "Itinerary",
+        "query": "Lịch trình 2 ngày mùa mưa ở Huế: bảo tàng, nghe ca Huế sông Hương và ăn lẩu",
+        "anchor_node": "place_8882",
+        "anchor_name": "Huế mùa mưa",
+        "target_dish": null,
+        "max_valid_distance_km": 4.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.45,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.57
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 6.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.59
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 19.82
+      }
+    },
+    {
+      "q": {
+        "id": "Q92",
+        "category": "Itinerary",
+        "query": "Tour sinh thái dã ngoại 1 ngày: Cầu ngói Thanh Toàn, Rú Chá và ngắm hoàng hôn Đầm Chuồn",
+        "anchor_node": "place_8882",
+        "anchor_name": "Ngoại ô Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 15.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.68,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.03
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 58.66,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.53
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 11.59
+      }
+    },
+    {
+      "q": {
+        "id": "Q93",
+        "category": "Itinerary",
+        "query": "Lịch trình 3 ngày cho du khách quốc tế trải nghiệm lịch sử triều Nguyễn sâu sắc",
+        "anchor_node": "place_8875",
+        "anchor_name": "Di sản Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 8.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 164.24,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 3.48
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 12.0,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 2.39
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 15.57
+      }
+    },
+    {
+      "q": {
+        "id": "Q94",
+        "category": "Itinerary",
+        "query": "Tour đêm Huế từ 18h đến 22h: đi thuyền rồng, dạo phố đi bộ và ăn chè hẻm",
+        "anchor_node": "place_8882",
+        "anchor_name": "Đêm Cố đô",
+        "target_dish": null,
+        "max_valid_distance_km": 3.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.68,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.15
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 4.5,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 2.36
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.71,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 5.97
+      }
+    },
+    {
+      "q": {
+        "id": "Q95",
+        "category": "Itinerary",
+        "query": "Lịch trình 2 ngày kết hợp tham quan di sản và tắm suối khoáng nóng Thanh Tân",
+        "anchor_node": "place_8875",
+        "anchor_name": "Huế - Thanh Tân",
+        "target_dish": null,
+        "max_valid_distance_km": 25.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 2.44,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.89
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 37.5,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 1.79
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 8.62
+      }
+    },
+    {
+      "q": {
+        "id": "Q96",
+        "category": "Itinerary",
+        "query": "Tour 1 ngày trải nghiệm các làng nghề: làng hương Thủy Xuân, làng hoa giấy Thanh Tiên",
+        "anchor_node": "place_8880",
+        "anchor_name": "Làng nghề Huế",
+        "target_dish": null,
+        "max_valid_distance_km": 8.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.63,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 2.18
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 319.32,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 1.98
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 9.62
+      }
+    },
+    {
+      "q": {
+        "id": "Q97",
+        "category": "Itinerary",
+        "query": "Lịch trình 2 ngày đạp xe trải nghiệm đường làng Thủy Biều và ngắm sông Hương",
+        "anchor_node": "place_8876",
+        "anchor_name": "Thủy Biều",
+        "target_dish": null,
+        "max_valid_distance_km": 5.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 5.69,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.88
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 321.87,
+        "violation_rate": 100.0,
+        "dish_alignment": 95.0,
+        "latency": 1.72
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 23.57
+      }
+    },
+    {
+      "q": {
+        "id": "Q98",
+        "category": "Itinerary",
+        "query": "Lịch trình 3 ngày văn hóa ẩm thực từ món dân dã chợ Đông Ba đến tiệc cung đình",
+        "anchor_node": "place_8875",
+        "anchor_name": "Ẩm thực Cố đô",
+        "target_dish": null,
+        "max_valid_distance_km": 6.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.39,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 3.49
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.82,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.68
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 18.34
+      }
+    },
+    {
+      "q": {
+        "id": "Q99",
+        "category": "Itinerary",
+        "query": "Tour 1 ngày tìm hiểu lịch sử kháng chiến và các di tích thời cận đại tại Huế",
+        "anchor_node": "place_8882",
+        "anchor_name": "Di tích lịch sử",
+        "target_dish": null,
+        "max_valid_distance_km": 6.0
+      },
+      "zero_shot": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.15,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 0.87
+      },
+      "naive_rag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.14,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 1.72
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 0.68,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 12.63
+      }
+    },
+    {
+      "q": {
+        "id": "Q100",
+        "category": "Itinerary",
+        "query": "Lịch trình 3 ngày 2 đêm tối ưu biểu giá vé gộp 4 điểm của Trung tâm Bảo tồn Di tích",
+        "anchor_node": "place_8875",
+        "anchor_name": "Tuyến vé gộp di tích",
+        "target_dish": null,
+        "max_valid_distance_km": 7.0
+      },
+      "zero_shot": {
+        "grounding_rate": 66.7,
+        "hallucination_rate": 33.3,
+        "avg_distance_km": 6.02,
+        "violation_rate": 50.0,
+        "dish_alignment": 95.0,
+        "latency": 3.58
+      },
+      "naive_rag": {
+        "grounding_rate": 50.0,
+        "hallucination_rate": 50.0,
+        "avg_distance_km": 10.5,
+        "violation_rate": 0.0,
+        "dish_alignment": 30.0,
+        "latency": 2.77
+      },
+      "spatial_graphrag": {
+        "grounding_rate": 100.0,
+        "hallucination_rate": 0.0,
+        "avg_distance_km": 1.35,
+        "violation_rate": 0.0,
+        "dish_alignment": 95.0,
+        "latency": 13.7
       }
     }
   ]

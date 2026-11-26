@@ -27,7 +27,7 @@ Tầng thứ hai là Tầng Tri thức và Đánh chỉ mục Không gian (Knowl
 
 Tầng thứ ba là Tầng Điều phối Tác tử và Lập lịch trình (Agentic Orchestration and Planning Layer), giữ vai trò trung tâm trí tuệ nhân tạo của hệ thống. Tầng này tích hợp máy trạng thái hữu hạn LangGraph kiểm soát luồng hội thoại; bộ chấm điểm tin cậy (Confidence Grader); nhánh rẽ dự phòng Web Search Fallback; công cụ dự toán ngân sách chuyến đi (Trip Budget Calculator); mô hình thị giác -- ngôn ngữ lớn Qwen2.5-VL:7B; và bộ thuật toán lập lịch trình phân cụm không gian (Spatial Itinerary Planner).
 
-Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp Cổng API RESTful chuẩn mở FastAPI với tài liệu Swagger UI tự động, trả về định dạng GeoJSON kèm tọa độ GPS sẵn sàng tích hợp trực tiếp vào ứng dụng di động Hue-S của Thành phố Huế; cùng Giao diện Web di động thích ứng (Adaptive Responsive Web Client) hỗ trợ du khách tương tác thuận tiện trên cả máy tính lẫn thiết bị di động.
+Tầng thứ tư là Tầng Ứng dụng và Tích hợp Giao diện (Application and Interface Layer), cung cấp Cổng API RESTful chuẩn mở FastAPI với tài liệu Swagger UI tự động, trả về định dạng GeoJSON kèm tọa độ GPS sẵn sàng kết nối với ứng dụng di động Hue-S của Thành phố Huế trong tương lai; cùng Giao diện Web di động thích ứng (Adaptive Responsive Web Client) hỗ trợ du khách tương tác thuận tiện trên cả máy tính lẫn thiết bị di động.
 
 \section{Thiết kế Đồ thị Tri thức Không gian Du lịch Huế}
 \label{sec:ch1-skg-design}
@@ -142,7 +142,7 @@ Bên cạnh năng lực tạo sinh, khung tác tử tích hợp cơ chế Giải
 \subsection{Cấu trúc Lược đồ Dữ liệu Phân tán trên Cloud Firestore}
 \label{subsec:ch1-firestore-schema}
 
-Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận cục bộ, toàn bộ dữ liệu trạng thái phiên, hành trình du lịch và dữ liệu đánh giá thực địa được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán theo mô hình phân vùng an toàn gồm bốn bộ sưu tập cốt lõi: \texttt{chat\_sessions} (lưu lịch sử đối thoại phân cấp theo người dùng), \texttt{itineraries} (lưu trữ các tour du lịch đa chặng đã lưu), \texttt{ai\_feedbacks} (ghi nhận đánh giá chất lượng phản hồi RAG phục vụ RLHF), và \texttt{places} (quản trị các đánh giá thực địa cộng đồng đóng góp tại điểm đến). Chi tiết lược đồ thuộc tính và đặc tả dữ liệu các bộ sưu tập được tổng hợp tại Bảng \ref{tab:firestore-schema}.
+Để đáp ứng yêu cầu lưu trữ linh hoạt các tương tác động giữa du khách và hệ thống mà không làm tăng tải cho máy chủ suy luận LLM, toàn bộ dữ liệu trạng thái phiên, hành trình du lịch và dữ liệu đánh giá thực địa được quản lý tập trung trên cơ sở dữ liệu hướng tài liệu Cloud Firestore~\cite{davoudian2018nosql, google2024firestore}. Dữ liệu được cấu trúc phân tán theo mô hình phân vùng an toàn gồm bốn bộ sưu tập cốt lõi: \texttt{chat\_sessions} (lưu lịch sử đối thoại phân cấp theo người dùng), \texttt{itineraries} (lưu trữ các tour du lịch đa chặng đã lưu), \texttt{ai\_feedbacks} (ghi nhận đánh giá chất lượng phản hồi RAG phục vụ RLHF), và \texttt{places} (quản trị các đánh giá thực địa cộng đồng đóng góp tại điểm đến). Chi tiết lược đồ thuộc tính và đặc tả dữ liệu các bộ sưu tập được tổng hợp tại Bảng \ref{tab:firestore-schema}.
 
 \begin{table}[htbp]
 \centering
