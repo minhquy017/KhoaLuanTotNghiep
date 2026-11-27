@@ -17,6 +17,10 @@ class ItineraryRequest(BaseModel):
     user_lat: Optional[float] = Field(None, examples=[16.4674], description="Vĩ độ GPS của người dùng")
     user_lng: Optional[float] = Field(None, examples=[107.5905], description="Kinh độ GPS của người dùng")
     preferences: Optional[Dict[str, Any]] = Field(None, description="Hồ sơ cá nhân hóa gu du lịch của du khách")
+    weather_context: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Thời tiết Huế thời gian thực từ Open-Meteo: {temp, humidity, precipitation, weather_code, condition_vi}"
+    )
 
 
 class ItineraryResponse(BaseModel):

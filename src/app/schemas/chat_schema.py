@@ -25,6 +25,10 @@ class ChatRequest(BaseModel):
         None,
         description="Mốc ngữ cảnh do server trả về ở lượt trước (anchor_place_id, anchor_dish, topic_domain, turn_count)"
     )
+    weather_context: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Thời tiết Huế thời gian thực từ Open-Meteo: {temp, humidity, precipitation, weather_code, condition_vi}"
+    )
 
 
 class PlaceItem(BaseModel):

@@ -161,14 +161,15 @@ export class HueWeatherService {
   /**
    * Lấy dữ liệu thời tiết Huế (từ Cache hoặc Open-Meteo API)
    */
-  async getHueWeather(forceRefresh = false) {
+  async getHueWeather(forceRefresh = false, timeoutMs = 6000) {
     if (!forceRefresh) {
       try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
           if (Date.now() - parsed.timestamp < CACHE_TTL_MS) {
-            this.weatherData = parsed.data;
+            this.weatherData = { ...parsed.data, fetchedAt: parsed.timestamp };
+            if (typeof window !== 'undefined') window.__hueWeatherData = this.weatherData;
             return this.weatherData;
           }
         }
@@ -177,9 +178,12 @@ export class HueWeatherService {
       }
     }
 
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timerId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
     try {
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${HUE_LAT}&longitude=${HUE_LNG}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FBangkok`;
-      const res = await fetch(url);
+      const res = await fetch(url, controller ? { signal: controller.signal } : undefined);
+      if (timerId) clearTimeout(timerId);
       if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
       const raw = await res.json();
 
@@ -205,6 +209,7 @@ export class HueWeatherService {
         temp: temp,
         feelsLike: Math.round(current.apparent_temperature || temp),
         humidity: current.relative_humidity_2m || 75,
+        precipitation: Number(current.precipitation) || 0,
         windSpeed: Math.round(current.wind_speed_10m || 8),
         weatherCode: code,
         condition: meta.label,
@@ -220,19 +225,22 @@ export class HueWeatherService {
           label: (WMO_MAP[daily.weather_code[idx]] || WMO_MAP[0]).label,
           iconType: (WMO_MAP[daily.weather_code[idx]] || WMO_MAP[0]).icon
         })),
-        updatedAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+        updatedAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        fetchedAt: Date.now()
       };
 
       this.weatherData = processedData;
+      if (typeof window !== 'undefined') window.__hueWeatherData = processedData;
       try {
         localStorage.setItem(CACHE_KEY, JSON.stringify({
-          timestamp: Date.now(),
+          timestamp: processedData.fetchedAt,
           data: processedData
         }));
       } catch {}
 
       return processedData;
     } catch (err) {
+      if (timerId) clearTimeout(timerId);
       console.warn('Không thể nạp thời tiết thời gian thực Open-Meteo, dùng fallback Cố đô:', err);
       // Fallback an toàn cho Huế
       return {
@@ -240,6 +248,8 @@ export class HueWeatherService {
         temp: 27,
         feelsLike: 28,
         humidity: 78,
+        precipitation: 0,
+        isFallback: true,
         windSpeed: 10,
         weatherCode: 1,
         condition: { vi: 'Trời nắng nhẹ, mát dịu', en: 'Mainly clear, mild' },
@@ -408,4 +418,24 @@ export class HueWeatherService {
       </div>
     `;
   }
+}
+
+const _sharedWeatherService = new HueWeatherService();
+
+/**
+ * Trả về dữ liệu thời tiết Open-Meteo còn hạn (0ms nếu còn hạn 15 phút; tự làm mới nhanh tối đa 1.5s nếu hết hạn/chưa nạp)
+ */
+export async function getFreshHueWeatherData(timeoutMs = 1500) {
+  if (typeof window !== 'undefined') {
+    const cached = window.__hueWeatherData;
+    if (cached && !cached.isFallback && cached.fetchedAt && (Date.now() - cached.fetchedAt < CACHE_TTL_MS)) {
+      return cached;
+    }
+  }
+  const fresh = await _sharedWeatherService.getHueWeather(false, timeoutMs);
+  if (fresh && !fresh.isFallback) return fresh;
+  if (typeof window !== 'undefined' && window.__hueWeatherData && !window.__hueWeatherData.isFallback) {
+    return window.__hueWeatherData;
+  }
+  return null;
 }

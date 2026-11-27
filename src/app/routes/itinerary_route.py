@@ -25,7 +25,8 @@ def generate_itinerary(req: ItineraryRequest):
             trip_type=req.trip_type or "Couples",
             user_lat=req.user_lat,
             user_lng=req.user_lng,
-            preferences=req.preferences
+            preferences=req.preferences,
+            weather_context=req.weather_context
         )
         md_text = planner.format_itinerary_markdown(plan_data)
 

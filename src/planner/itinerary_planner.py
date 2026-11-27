@@ -27,6 +27,25 @@ PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
 sys.path.append(PROJECT_ROOT)
 
 from src.graph.graph_retriever import get_graph_retriever, strip_accents
+from src.rag.weather_rules import (
+    classify_weather, is_warm_dish, LEVEL_HOT, LEVEL_DRIZZLE, LEVEL_STORM
+)
+
+# Mức che chắn của từng hub: indoor = có mái che/hành lang/trưng bày trong nhà,
+# outdoor = ngoài trời, exposed = đồi núi/sông nước/làng quê trống trải
+HUB_EXPOSURE = {
+    "dai_noi": "indoor",
+    "cung_an_dinh": "indoor",
+    "cho_dong_ba": "indoor",
+    "chua_thien_mu": "outdoor",
+    "lang_tu_duc": "outdoor",
+    "lang_khai_dinh": "outdoor",
+    "lang_minh_mang": "outdoor",
+    "cau_trang_tien": "outdoor",
+    "song_huong": "exposed",
+    "cau_ngoi_thanh_toan": "exposed",
+}
+WARM_DISH_FALLBACKS = ["Bún bò Huế", "Bánh canh", "Bánh khoái"]
 
 
 def haversine_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -199,20 +218,76 @@ class SpatialItineraryPlanner:
 
         return None
 
-    def plan_itinerary(self, num_days: int = 1, 
+    def _weather_pick_hub(self, key: str, slot: str, level: int, used_hub_keys: set) -> str:
+        """Chọn hub thay thế khi thời tiết xấu; trả về chính key cũ nếu không cần/không có phương án."""
+        tag = HUB_EXPOSURE.get(key, "outdoor")
+        if level == LEVEL_HOT:
+            needs_swap = slot == "afternoon_hub" and tag in ("outdoor", "exposed")
+        else:  # mưa dầm hoặc mưa rào/dông: tránh ngoài trời & điểm trống trải
+            needs_swap = tag in ("outdoor", "exposed")
+        if not needs_swap:
+            return key
+
+        time_pref = {"morning_hub": "morning", "afternoon_hub": "afternoon", "evening_hub": "evening"}[slot]
+        indoor_free = [k for k, t in HUB_EXPOSURE.items() if t == "indoor" and k not in used_hub_keys]
+        indoor_free.sort(key=lambda k: 0 if self.core_hubs[k].get("preferred_time") == time_pref else 1)
+        if indoor_free:
+            return indoor_free[0]
+        if tag == "exposed":
+            outdoor_free = [k for k, t in HUB_EXPOSURE.items() if t == "outdoor" and k not in used_hub_keys]
+            outdoor_free.sort(key=lambda k: 0 if self.core_hubs[k].get("preferred_time") == time_pref else 1)
+            if outdoor_free:
+                return outdoor_free[0]
+        return key
+
+    def _adapt_template_to_weather(self, tpl: Dict[str, Any], level: int, used_hub_keys: set,
+                                   user_dishes: set, used_dishes: set) -> Tuple[Dict[str, Any], List[str]]:
+        """Trả về (template đã điều chỉnh, danh sách tên hub được thay thế)."""
+        new_tpl = dict(tpl)
+        swapped_to: List[str] = []
+        for slot in ("morning_hub", "afternoon_hub", "evening_hub"):
+            old_key = new_tpl[slot]
+            new_key = self._weather_pick_hub(old_key, slot, level, used_hub_keys)
+            new_tpl[slot] = new_key
+            used_hub_keys.add(new_key)
+            if new_key != old_key:
+                swapped_to.append(new_key)
+
+        if level in (LEVEL_DRIZZLE, LEVEL_STORM):
+            for meal in ("lunch_dish", "dinner_dish"):
+                dish = new_tpl[meal]
+                if dish in user_dishes or is_warm_dish(dish):
+                    used_dishes.add(dish)
+                    continue
+                other = new_tpl["dinner_dish" if meal == "lunch_dish" else "lunch_dish"]
+                for cand in WARM_DISH_FALLBACKS:
+                    if cand not in used_dishes and cand != other:
+                        new_tpl[meal] = cand
+                        break
+                used_dishes.add(new_tpl[meal])
+        return new_tpl, swapped_to
+
+    def plan_itinerary(self, num_days: int = 1,
                        preferred_dishes: Optional[List[str]] = None,
                        trip_type: str = "Couples",
                        user_lat: Optional[float] = None,
                        user_lng: Optional[float] = None,
-                       preferences: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                       preferences: Optional[Dict[str, Any]] = None,
+                       weather_context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Lập lịch trình tour du lịch thông minh (1 - 3 ngày tại Huế):
         Tự động ghép nối các chặng (Sáng - Trưa - Chiều - Tối) dựa trên Spatial KG,
         bắt đầu từ vị trí định vị thực tế của người dùng.
+        weather_context (tùy chọn): thời tiết Open-Meteo; None => hành vi mặc định không đổi.
         """
         num_days = max(1, min(3, num_days))
         used_place_ids = set()
         days_plan = []
+        weather_info = classify_weather(weather_context)
+        adapt_weather = weather_info is not None and weather_info["level"] in (LEVEL_HOT, LEVEL_DRIZZLE, LEVEL_STORM)
+        used_hub_keys: set = set()
+        used_dishes: set = set()
+        user_dishes = set(preferred_dishes or [])
 
         # Danh sách món đặc sản Huế mặc định theo thứ tự các bữa
         default_dishes = ["Bún bò Huế", "Cơm hến", "Bánh bèo", "Bánh nậm", "Nem lụi", "Chè Huế"]
@@ -254,6 +329,11 @@ class SpatialItineraryPlanner:
 
         for day_idx in range(num_days):
             tpl = day_templates[day_idx]
+            swapped_hubs: List[str] = []
+            if adapt_weather:
+                tpl, swapped_hubs = self._adapt_template_to_weather(
+                    tpl, weather_info["level"], used_hub_keys, user_dishes, used_dishes
+                )
             day_slots = []
             day_coords = []
             prev_point = None
@@ -477,21 +557,42 @@ class SpatialItineraryPlanner:
                     "travel_time_min": walk_ev_min
                 })
 
-            days_plan.append({
+            day_entry = {
                 "day_number": day_idx + 1,
                 "theme": tpl["theme"],
                 "total_distance_km": round(total_dist_day, 2),
                 "slots": day_slots,
                 "route_coordinates": day_coords
-            })
+            }
+            if adapt_weather:
+                swapped_names = {self.core_hubs[k]["name"] for k in swapped_hubs}
+                for s in day_slots:
+                    if s.get("place_name") in swapped_names:
+                        s["weather_adjusted"] = True
+                        s["weather_note"] = f"Điều chỉnh theo thời tiết ({weather_info['label_vi']}): ưu tiên điểm phù hợp hơn."
+                day_entry["weather_note"] = weather_info["strategy_vi"]
+            days_plan.append(day_entry)
 
-        return {
+        result = {
             "locality": "Thành phố Huế",
             "num_days": num_days,
             "trip_type": trip_type,
             "total_places": sum(len(d["slots"]) for d in days_plan),
             "days": days_plan
         }
+        if weather_info is not None:
+            ctx = weather_info["context"]
+            result["weather_adaptation"] = {
+                "level": weather_info["level"],
+                "key": weather_info["key"],
+                "label": weather_info["label_vi"],
+                "strategy": weather_info["strategy_vi"],
+                "applied": adapt_weather,
+                "temp": ctx["temp"],
+                "precipitation": ctx["precipitation"],
+                "weather_code": ctx["weather_code"],
+            }
+        return result
 
     # Alias tương thích ngược cho các script đánh giá (benchmark_spatial_rag.py)
     build_itinerary = plan_itinerary
@@ -553,6 +654,10 @@ class SpatialItineraryPlanner:
                 md_lines.append(f"• *Chi tiết:* {desc}\n")
 
             md_lines.append("---\n")
+
+        weather = plan_data.get("weather_adaptation")
+        if weather and weather.get("strategy"):
+            md_lines.append(f"🌦️ **THỜI TIẾT HIỆN TẠI ({weather['label']}):** {weather['strategy']}\n")
 
         md_lines.append("💡 **LỜI KHUYÊN TỪ TRỢ LÝ CỐ ĐÔ:**")
         md_lines.append("- Buổi trưa tại Huế nắng gắt, lịch trình đã bố trí quán ăn nằm sát điểm tham quan sáng (< 1.5km) để bạn không phải di chuyển xa giữa trưa.")

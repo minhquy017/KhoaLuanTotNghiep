@@ -51,6 +51,7 @@ def chat_assistant(req: ChatRequest):
             "session_id": req.session_id,
             "history": req.history or [],
             "session_context": req.session_context,
+            "weather_context": req.weather_context,
             "resolved_query": None,
             "anaphora": None
         }

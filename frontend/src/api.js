@@ -1,4 +1,5 @@
 import hueTopPlaces from './hue_top_places.json';
+import { getFreshHueWeatherData } from './weather.js';
 
 // Tự động dọn sạch mọi URL cũ trong localStorage để luôn trỏ thẳng vào Ngrok Backend
 if (typeof window !== 'undefined') {
@@ -41,7 +42,38 @@ export class TourismApiClient {
    * Gọi API Lập Lịch Trình Du Lịch Tối Ưu (Spatial Itinerary Planner)
    * Có cơ chế tự phục hồi thông minh (Offline Fallback)
    */
-  static async generateItinerary(numDays = 2, preferredDishes = [], tripType = 'Couples', userLat = null, userLng = null, preferences = null, externalSignal = null) {
+  /**
+   * Rút gọn dữ liệu Open-Meteo thật thành weather_context gửi backend (bỏ qua dữ liệu fallback giả định)
+   */
+  static buildWeatherContext(weatherData = null) {
+    const w = weatherData || (typeof window !== 'undefined' ? window.__hueWeatherData : null);
+    if (!w || w.isFallback || typeof w.temp !== 'number') return null;
+    return {
+      temp: w.temp,
+      humidity: w.humidity,
+      precipitation: Number(w.precipitation) || 0,
+      weather_code: w.weatherCode,
+      condition: w.condition?.vi || ''
+    };
+  }
+
+  static async resolveWeatherContext(weatherContext = null) {
+    if (weatherContext) return weatherContext;
+    const syncCtx = TourismApiClient.buildWeatherContext();
+    if (syncCtx && typeof window !== 'undefined' && window.__hueWeatherData?.fetchedAt) {
+      if (Date.now() - window.__hueWeatherData.fetchedAt < 15 * 60 * 1000) {
+        return syncCtx;
+      }
+    }
+    try {
+      const fresh = await getFreshHueWeatherData(1500);
+      return TourismApiClient.buildWeatherContext(fresh) || syncCtx;
+    } catch {
+      return syncCtx;
+    }
+  }
+
+  static async generateItinerary(numDays = 2, preferredDishes = [], tripType = 'Couples', userLat = null, userLng = null, preferences = null, externalSignal = null, weatherContext = null) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 45000);
@@ -63,6 +95,10 @@ export class TourismApiClient {
       }
       if (preferences) {
         payload.preferences = preferences;
+      }
+      const weatherCtx = await TourismApiClient.resolveWeatherContext(weatherContext);
+      if (weatherCtx) {
+        payload.weather_context = weatherCtx;
       }
 
       const res = await fetch(`${API_BASE_URL}/api/v1/itinerary`, {
@@ -98,7 +134,7 @@ export class TourismApiClient {
   /**
    * Gửi câu hỏi đến Trợ lý Du lịch Thông minh (Spatial Agentic RAG)
    */
-  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null, externalSignal = null) {
+  static async askAssistant(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null, externalSignal = null, weatherContext = null) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 120000); // 120s: đảm bảo đủ thời gian cho lần suy luận đầu tiên trên GPU
@@ -119,6 +155,10 @@ export class TourismApiClient {
       }
       if (imageBase64) {
         payload.image_base64 = imageBase64;
+      }
+      const weatherCtx = await TourismApiClient.resolveWeatherContext(weatherContext);
+      if (weatherCtx) {
+        payload.weather_context = weatherCtx;
       }
       // Ngôn ngữ giao diện hiện tại ('vi' hoặc 'en') để backend phản hồi đúng ngôn ngữ du khách
       try {

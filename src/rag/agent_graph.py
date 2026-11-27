@@ -54,6 +54,9 @@ from src.graph.spatial_indexer import haversine_distance
 from src.rag.vector_retriever import get_vector_retriever
 from src.rag.visual_retriever import get_visual_retriever
 from src.rag.web_search_tool import get_web_search_tool
+from src.rag.weather_rules import (
+    classify_weather, is_weather_question, build_weather_prompt_section, build_weather_answer
+)
 from src.rag.session_memory import (
     resolve_anaphora,
     sanitize_session_context,
@@ -147,6 +150,7 @@ class TourismAgentState(TypedDict):
     is_greeting: Optional[bool]                      # Cờ nhận diện câu chào xã giao / chitchat mở đầu
     is_ticket_query: Optional[bool]                  # Cờ truy vấn giá vé di tích Cố đô (ưu tiên tri thức HMDC)
     language: Optional[str]                          # Ngôn ngữ phản hồi: 'vi', 'en', hoặc 'auto'
+    weather_context: Optional[Dict[str, Any]]        # Thời tiết Huế thời gian thực (Open-Meteo): temp, humidity, precipitation, weather_code
 
 
 # =============================================================================
@@ -1306,6 +1310,17 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
         "weather", "forecast", "temperature", "flight ticket"
     ]
     is_realtime_query = any(t in norm_q or t in query_lower for t in realtime_triggers)
+    if (is_realtime_query and not state.get("image_base64") and is_weather_question(state["query"])
+            and classify_weather(state.get("weather_context")) is not None):
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "🌦️",
+            "label": "Router → Thời tiết Thời gian thực (Open-Meteo)",
+            "detail": "Câu hỏi thời tiết Huế hiện tại → dùng số liệu Open-Meteo từ thiết bị, không cần tìm kiếm web",
+            "decision": "local_knowledge",
+            "status": "confident"
+        })
+        return "node_generate_response"
     if is_realtime_query:
         trace_steps.append({
             "step": "routing_decision",
@@ -1743,6 +1758,14 @@ Nguyên tắc trả lời bắt buộc:
 5. ĐỊNH DẠNG TÊN ĐỊA DANH BẰNG CHỮ IN ĐẬM:
    - Khi nhắc đến tên các địa điểm, quán ăn, danh lam thắng cảnh, hãy IN ĐẬM tên địa danh bằng cú pháp **Tên Địa Danh** (ví dụ: **Bãi biển Thuận An**, **Nhà vườn Bến Xuân**, **Quán Bún bò Mụ Rơi**...) để hệ thống tự động ghim vị trí lên bản đồ cho du khách.{dish_rule}{greeting_rule}{ticket_rule}{nav_rule}{pref_section}"""
 
+    # Thích ứng thời tiết thời gian thực (chỉ khi client gửi weather_context hợp lệ; ngược lại giữ nguyên prompt cũ)
+    weather_info = classify_weather(state.get("weather_context"))
+    direct_weather_answer = None
+    if weather_info is not None:
+        system_prompt += build_weather_prompt_section(state.get("weather_context"), lang)
+        if is_weather_question(query) and not state.get("image_base64"):
+            direct_weather_answer = build_weather_answer(state.get("weather_context"), lang)
+
     image_base64 = state.get("image_base64")
     if image_base64:
         if lang == "en":
@@ -1805,20 +1828,23 @@ Nguyên tắc trả lời bắt buộc:
 [CÂU TRẢ LỜI CỦA BẠN]:"""
 
     try:
-        if image_base64:
-            clean_b64 = image_base64.split(",")[-1] if "," in image_base64 else image_base64
-            human_msg = HumanMessage(content=[
-                {"type": "text", "text": user_prompt},
-                {"type": "image_url", "image_url": f"data:image/jpeg;base64,{clean_b64}"}
-            ])
+        if direct_weather_answer:
+            answer_text = direct_weather_answer
         else:
-            human_msg = HumanMessage(content=user_prompt)
+            if image_base64:
+                clean_b64 = image_base64.split(",")[-1] if "," in image_base64 else image_base64
+                human_msg = HumanMessage(content=[
+                    {"type": "text", "text": user_prompt},
+                    {"type": "image_url", "image_url": f"data:image/jpeg;base64,{clean_b64}"}
+                ])
+            else:
+                human_msg = HumanMessage(content=user_prompt)
 
-        response = llm.invoke([
-            SystemMessage(content=system_prompt),
-            human_msg
-        ])
-        answer_text = response.content.strip()
+            response = llm.invoke([
+                SystemMessage(content=system_prompt),
+                human_msg
+            ])
+            answer_text = response.content.strip()
     except Exception as e:
         # Fallback thân thiện, tự nhiên khi LLM cục bộ chưa khởi động
         if lang == "en":
@@ -1980,6 +2006,15 @@ Nguyên tắc trả lời bắt buộc:
             "icon": "✨",
             "label": "Cá nhân hóa Gu du lịch",
             "detail": f"Đã áp dụng {len(pref_rules)} tiêu chí khẩu vị & phong cách du khách",
+            "status": "applied"
+        })
+    if weather_info is not None:
+        trace_steps.append({
+            "step": "weather_adaptation",
+            "icon": "🌦️",
+            "label": "Thích ứng Thời tiết Thời gian thực (Open-Meteo)",
+            "detail": f"{weather_info['label_vi']} (mức {weather_info['level']}/4)"
+                      + (" → trả lời trực tiếp bằng số liệu thực" if direct_weather_answer else " → điều chỉnh gợi ý theo thời tiết"),
             "status": "applied"
         })
     history_turns = history_text.count("- Du khách:")
