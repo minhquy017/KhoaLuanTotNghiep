@@ -1,0 +1,381 @@
+rules_version = '2';
+
+// =============================================================================
+// Assumed Data Model — Huế Smart Tourism (Cloud Firestore)
+// =============================================================================
+//
+// Collection: users/{userId}
+// Document ID: Firebase Auth UID
+// Fields:
+//   - uid: string (required, immutable, == userId)
+//   - displayName: string (required, 1..120 chars)
+//   - email: string (required, valid email, <= 254 chars)
+//   - photoURL: string (required, '' or http(s) URL <= 2048 chars)
+//   - lastLoginAt: timestamp (required)
+//
+// Subcollection: users/{userId}/itineraries/{itineraryId}
+// Document ID: itineraryId (e.g., itinerary_<timestamp>)
+// Fields:
+//   - id: string (required, immutable, == itineraryId, <= 128 chars)
+//   - title: string (required, 1..200 chars)
+//   - days: number (required, 1..30)
+//   - tripType: string (required, 1..100 chars)
+//   - userLocationName: string (required, 0..200 chars)
+//   - items: list (required, <= 100 items)
+//   - stopsCount: number (required, 0..500)
+//   - totalKm: number (required, 0..10000)
+//   - rawResult: map | null (required, if map <= 50 keys)
+//   - savedAt: string (required, ISO date string, 1..64 chars)
+//   - createdAt: timestamp (required)
+//
+// Subcollection: users/{userId}/chat_sessions/{sessionId}
+// Document ID: sessionId
+// Fields:
+//   - id: string (required, immutable, == sessionId, <= 128 chars)
+//   - title: string (required, 1..200 chars)
+//   - messages: list (required, <= 40 trimmed message maps)
+//   - session_context: map | string | null (required)
+//   - messageCount: int (required, 0..100000)
+//   - isPinned: bool (required)
+//   - pinnedAt: string | null (required, <= 64 chars if string)
+//   - createdAt: string | timestamp (required)
+//   - updatedAt: timestamp (required)
+//
+// Subcollection: users/{userId}/ai_feedbacks/{feedbackId}
+// Root Collection: ai_feedbacks/{feedbackId}
+// Document ID: feedbackId (e.g., fb_<timestamp>_<rand>)
+// Fields:
+//   - id: string (required, immutable, == feedbackId, <= 128 chars)
+//   - messageId: string (required, 1..128 chars)
+//   - sessionId: string (required, 1..128 chars)
+//   - rating: string (required, 'like' | 'dislike')
+//   - reason: string (required, 0..500 chars)
+//   - comment: string (required, 0..2000 chars)
+//   - prompt: string (required, 0..5000 chars)
+//   - responseExcerpt: string (required, 0..5000 chars)
+//   - isItinerary: bool (required)
+//   - userId: string (required, auth.uid when signed in, 'anonymous'/'demo_*' for guest)
+//   - userEmail: string (required, 0..254 chars)
+//   - userAgent: string (required, 0..512 chars)
+//   - createdAt: timestamp (required)
+//
+// Subcollection: users/{userId}/my_reviews/{reviewId}
+// Subcollection: places/{placeKey}/user_reviews/{reviewId}
+// Document ID: reviewId (e.g., rev_<timestamp>_<rand>)
+// Fields:
+//   - id: string (required, immutable, == reviewId, <= 128 chars)
+//   - place_id: string | int (required)
+//   - place_key: string (required, 1..128 chars; == placeKey under places/)
+//   - place_name: string (required, 0..200 chars)
+//   - rating: number (required, 1..5)
+//   - author: string (required, 1..100 chars)
+//   - author_uid: string (required, immutable; auth.uid or 'guest'/'demo_*')
+//   - author_photo: string | null (required, '' or http(s) URL <= 2048 chars)
+//   - trip_type: string (required, 1..100 chars)
+//   - title: string (required, 0..200 chars)
+//   - comment: string (required, 0..3000 chars)
+//   - tags: list (required, <= 15 items)
+//   - upvotes: int (required, 0 on create, >= 0 && <= 1000000)
+//   - verified: bool (required)
+//   - created_at: string (required, 1..64 chars)
+//   - visit_date: string (required, 1..64 chars)
+//   - createdAt: timestamp (required)
+//
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // Helper Functions
+    // =========================================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    function isStringLen(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isNumberInRange(val, minVal, maxVal) {
+      return (val is int || val is float) && val >= minVal && val <= maxVal;
+    }
+
+    function isValidUrl(url) {
+      return url is string && (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() <= 254 &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // =========================================================================
+    // Domain Validators
+    // =========================================================================
+
+    function isValidUser(data, userId) {
+      return hasRequiredFields(['uid', 'displayName', 'email', 'photoURL', 'lastLoginAt']) &&
+        hasOnlyAllowedFields(['uid', 'displayName', 'email', 'photoURL', 'lastLoginAt']) &&
+        data.uid == userId &&
+        isStringLen(data.displayName, 1, 120) &&
+        isValidEmail(data.email) &&
+        data.photoURL is string &&
+        data.photoURL.size() <= 2048 &&
+        (data.photoURL == '' || isValidUrl(data.photoURL)) &&
+        data.lastLoginAt is timestamp;
+    }
+
+    function isValidItinerary(data, itineraryId) {
+      return hasRequiredFields([
+          'id', 'title', 'days', 'tripType', 'userLocationName',
+          'items', 'stopsCount', 'totalKm', 'rawResult', 'savedAt', 'createdAt'
+        ]) &&
+        hasOnlyAllowedFields([
+          'id', 'title', 'days', 'tripType', 'userLocationName',
+          'items', 'stopsCount', 'totalKm', 'rawResult', 'savedAt', 'createdAt'
+        ]) &&
+        data.id == itineraryId &&
+        isStringLen(data.id, 1, 128) &&
+        isStringLen(data.title, 1, 200) &&
+        isNumberInRange(data.days, 1, 30) &&
+        isStringLen(data.tripType, 1, 100) &&
+        isStringLen(data.userLocationName, 0, 200) &&
+        data.items is list &&
+        data.items.size() <= 100 &&
+        isNumberInRange(data.stopsCount, 0, 500) &&
+        isNumberInRange(data.totalKm, 0, 10000) &&
+        (data.rawResult == null || (data.rawResult is map && data.rawResult.keys().size() <= 50)) &&
+        isStringLen(data.savedAt, 1, 64) &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidChatSession(data, sessionId) {
+      return hasRequiredFields([
+          'id', 'title', 'messages', 'session_context', 'messageCount',
+          'isPinned', 'pinnedAt', 'createdAt', 'updatedAt'
+        ]) &&
+        hasOnlyAllowedFields([
+          'id', 'title', 'messages', 'session_context', 'messageCount',
+          'isPinned', 'pinnedAt', 'createdAt', 'updatedAt'
+        ]) &&
+        data.id == sessionId &&
+        isStringLen(data.id, 1, 128) &&
+        isStringLen(data.title, 1, 200) &&
+        data.messages is list &&
+        data.messages.size() <= 40 &&
+        (data.session_context == null ||
+          (data.session_context is map && data.session_context.keys().size() <= 50) ||
+          isStringLen(data.session_context, 0, 10000)) &&
+        data.messageCount is int &&
+        data.messageCount >= 0 &&
+        data.messageCount <= 100000 &&
+        data.isPinned is bool &&
+        (data.pinnedAt == null || isStringLen(data.pinnedAt, 1, 64)) &&
+        (isStringLen(data.createdAt, 1, 64) || data.createdAt is timestamp) &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidAiFeedback(data, feedbackId) {
+      return hasRequiredFields([
+          'id', 'messageId', 'sessionId', 'rating', 'reason', 'comment',
+          'prompt', 'responseExcerpt', 'isItinerary', 'userId', 'userEmail',
+          'userAgent', 'createdAt'
+        ]) &&
+        hasOnlyAllowedFields([
+          'id', 'messageId', 'sessionId', 'rating', 'reason', 'comment',
+          'prompt', 'responseExcerpt', 'isItinerary', 'userId', 'userEmail',
+          'userAgent', 'createdAt'
+        ]) &&
+        data.id == feedbackId &&
+        isStringLen(data.id, 1, 128) &&
+        isStringLen(data.messageId, 1, 128) &&
+        isStringLen(data.sessionId, 1, 128) &&
+        data.rating in ['like', 'dislike'] &&
+        isStringLen(data.reason, 0, 500) &&
+        isStringLen(data.comment, 0, 2000) &&
+        isStringLen(data.prompt, 0, 5000) &&
+        isStringLen(data.responseExcerpt, 0, 5000) &&
+        data.isItinerary is bool &&
+        isStringLen(data.userId, 1, 128) &&
+        isStringLen(data.userEmail, 0, 254) &&
+        isStringLen(data.userAgent, 0, 512) &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidReview(data, reviewId) {
+      return hasRequiredFields([
+          'id', 'place_id', 'place_key', 'place_name', 'rating', 'author',
+          'author_uid', 'author_photo', 'trip_type', 'title', 'comment',
+          'tags', 'upvotes', 'verified', 'created_at', 'visit_date', 'createdAt'
+        ]) &&
+        hasOnlyAllowedFields([
+          'id', 'place_id', 'place_key', 'place_name', 'rating', 'author',
+          'author_uid', 'author_photo', 'trip_type', 'title', 'comment',
+          'tags', 'upvotes', 'verified', 'created_at', 'visit_date', 'createdAt'
+        ]) &&
+        data.id == reviewId &&
+        isStringLen(data.id, 1, 128) &&
+        (isStringLen(data.place_id, 1, 128) || data.place_id is int) &&
+        isStringLen(data.place_key, 1, 128) &&
+        isStringLen(data.place_name, 0, 200) &&
+        isNumberInRange(data.rating, 1, 5) &&
+        isStringLen(data.author, 1, 100) &&
+        isStringLen(data.author_uid, 1, 128) &&
+        (data.author_photo == null ||
+          (data.author_photo is string &&
+           data.author_photo.size() <= 2048 &&
+           (data.author_photo == '' || isValidUrl(data.author_photo)))) &&
+        isStringLen(data.trip_type, 1, 100) &&
+        isStringLen(data.title, 0, 200) &&
+        isStringLen(data.comment, 0, 3000) &&
+        data.tags is list &&
+        data.tags.size() <= 15 &&
+        data.upvotes is int &&
+        data.upvotes >= 0 &&
+        data.upvotes <= 1000000 &&
+        data.verified is bool &&
+        isStringLen(data.created_at, 1, 64) &&
+        isStringLen(data.visit_date, 1, 64) &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidUpvoteUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes']) &&
+        request.resource.data.upvotes is int &&
+        request.resource.data.upvotes >= 0 &&
+        math.abs(request.resource.data.upvotes - resource.data.upvotes) == 1;
+    }
+
+    // =========================================================================
+    // User Profiles & Private User Subcollections
+    // =========================================================================
+
+    match /users/{userId} {
+      // Strictly owner-only: document contains PII (email)
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data, userId);
+      allow update: if isOwner(userId) &&
+        isValidUser(request.resource.data, userId) &&
+        areImmutableFieldsUnchanged(['uid']);
+      allow delete: if isOwner(userId);
+
+      match /itineraries/{itineraryId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidItinerary(request.resource.data, itineraryId);
+        allow update: if isOwner(userId) &&
+          isValidItinerary(request.resource.data, itineraryId) &&
+          areImmutableFieldsUnchanged(['id']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /chat_sessions/{sessionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidChatSession(request.resource.data, sessionId);
+        allow update: if isOwner(userId) &&
+          isValidChatSession(request.resource.data, sessionId) &&
+          areImmutableFieldsUnchanged(['id']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /ai_feedbacks/{feedbackId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+          isValidAiFeedback(request.resource.data, feedbackId) &&
+          request.resource.data.userId == userId;
+        allow update: if isOwner(userId) &&
+          isValidAiFeedback(request.resource.data, feedbackId) &&
+          areImmutableFieldsUnchanged(['id', 'userId']);
+        allow delete: if isOwner(userId);
+      }
+
+      match /my_reviews/{reviewId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) &&
+          isValidReview(request.resource.data, reviewId) &&
+          request.resource.data.author_uid == userId &&
+          request.resource.data.upvotes == 0;
+        allow update: if isOwner(userId) &&
+          isValidReview(request.resource.data, reviewId) &&
+          areImmutableFieldsUnchanged(['id', 'author_uid']);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // =========================================================================
+    // Root AI Feedbacks (Admin Aggregation / RLHF Write-Only Telemetry)
+    // =========================================================================
+
+    match /ai_feedbacks/{feedbackId} {
+      // Never readable by clients (contains userEmail & userAgent PII; Admin SDK bypasses rules)
+      allow read: if false;
+      allow create: if isValidAiFeedback(request.resource.data, feedbackId) &&
+        (
+          (isAuthenticated() && request.resource.data.userId == request.auth.uid) ||
+          (!isAuthenticated() && (request.resource.data.userId == 'anonymous' || request.resource.data.userId.matches("^demo_.*")))
+        );
+      allow update, delete: if false;
+    }
+
+    // =========================================================================
+    // Crowdsourced Place Reviews & Upvotes
+    // =========================================================================
+
+    match /places/{placeKey}/user_reviews/{reviewId} {
+      // Publicly readable POI reviews (no PII stored in review documents)
+      allow read: if true;
+
+      // Signed-in users must bind author_uid to auth.uid; guests use 'guest'/'demo_*'
+      allow create: if isValidReview(request.resource.data, reviewId) &&
+        request.resource.data.place_key == placeKey &&
+        request.resource.data.upvotes == 0 &&
+        (
+          (isAuthenticated() && request.resource.data.author_uid == request.auth.uid) ||
+          (!isAuthenticated() && (request.resource.data.author_uid == 'guest' || request.resource.data.author_uid.matches("^demo_.*")))
+        );
+
+      // Allow atomic +/-1 upvote-only updates OR signed-in author edits (with immutable metadata)
+      allow update: if isValidReview(request.resource.data, reviewId) &&
+        request.resource.data.place_key == placeKey &&
+        (
+          isValidUpvoteUpdate() ||
+          (
+            isAuthenticated() &&
+            resource.data.author_uid == request.auth.uid &&
+            areImmutableFieldsUnchanged([
+              'id', 'place_id', 'place_key', 'author_uid', 'upvotes', 'verified', 'created_at', 'createdAt'
+            ])
+          )
+        );
+
+      // Only the signed-in author can delete their own review
+      allow delete: if isAuthenticated() && resource.data.author_uid == request.auth.uid;
+    }
+
+    // =========================================================================
+    // Default Deny
+    // =========================================================================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

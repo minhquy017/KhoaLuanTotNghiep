@@ -2357,65 +2357,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const autoMapToggle = document.getElementById('pref-toggle-auto-map');
     const animToggle = document.getElementById('pref-toggle-animations');
     const weatherToggle = document.getElementById('pref-toggle-weather-tips');
-    const prefDensitySelect = document.getElementById('pref-density-select');
     const aiDetailSelect = document.getElementById('pref-ai-detail-select');
     const aiStyleInputs = document.querySelectorAll('input[name="ai-style-option"]');
     const btnClearCache = document.getElementById('btn-settings-clear-cache');
 
-    const getSavedDensity = () => {
-      try {
-        return localStorage.getItem('hue_density') || 'auto';
-      } catch {
-        return 'auto';
-      }
-    };
-
-    const applyDensity = (densityChoice) => {
-      if (densityChoice === 'auto') {
-        document.documentElement.removeAttribute('data-density');
-      } else {
-        document.documentElement.setAttribute('data-density', densityChoice);
-      }
-      try {
-        localStorage.setItem('hue_density', densityChoice);
-      } catch { }
-      if (prefDensitySelect && prefDensitySelect.value !== densityChoice) {
-        prefDensitySelect.value = densityChoice;
-      }
-    };
-
-    applyDensity(getSavedDensity());
-
-    if (prefDensitySelect) {
-      prefDensitySelect.value = getSavedDensity();
-      prefDensitySelect.addEventListener('change', (e) => {
-        applyDensity(e.target.value);
-        window.authController?.showToast?.(
-          e.target.value === 'compact' ? i18n.t('densityCompact') :
-            e.target.value === 'cozy' ? i18n.t('densityCozy') : i18n.t('densityAuto')
-        );
-      });
-    }
-
-    const btnHeaderDensity = document.getElementById('btn-header-density-toggle');
-    if (btnHeaderDensity) {
-      btnHeaderDensity.addEventListener('click', () => {
-        const currentDensity = document.documentElement.getAttribute('data-density') || 'auto';
-        let nextDensity;
-        if (currentDensity === 'compact') {
-          nextDensity = 'cozy';
-        } else if (currentDensity === 'cozy') {
-          nextDensity = 'compact';
-        } else {
-          // If currently in auto, switch away from auto to show visible difference immediately
-          nextDensity = window.innerWidth <= 1536 ? 'cozy' : 'compact';
-        }
-        applyDensity(nextDensity);
-        window.authController?.showToast?.(
-          nextDensity === 'compact' ? i18n.t('densityCompact') : i18n.t('densityCozy')
-        );
-      });
-    }
+    document.documentElement.removeAttribute('data-density');
+    try { localStorage.removeItem('hue_density'); } catch { }
 
     if (autoMapToggle) {
       autoMapToggle.checked = localStorage.getItem('hue_pref_auto_map') !== 'false';
