@@ -3047,81 +3047,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // =============================================================================
   // XAI: GIẢI THÍCH CHUỖI SUY LUẬN ĐỒ THỊ MINH BẠCH (EXPLAINABLE GRAPH TRACE)
-  // =============================================================================
-  function createGraphTraceHtml(trace, routeTaken = 'local_knowledge', confidenceScore = 0.88) {
-    if (!trace || !Array.isArray(trace) || trace.length === 0) return '';
-
-    const isEn = i18n.getLanguage() === 'en';
-    const confPct = Math.round((confidenceScore || 0.85) * 100);
-    const isWeb = routeTaken === 'web_fallback';
-    const routeLabel = isWeb ? 'Web Search (DuckDuckGo)' : (isEn ? 'Hue Heritage Knowledge' : 'Tri thức Cố đô');
-
-    const stepsHtml = trace.map((step, idx) => {
-      const label = step.label || step.step;
-      const detail = step.detail || '';
-
-      let metricHtml = '';
-      if (step.score !== undefined) {
-        metricHtml = `<span class="xai-step-metric">${(step.score * 100).toFixed(0)}%</span>`;
-      } else if (step.count !== undefined) {
-        metricHtml = `<span class="xai-step-metric">${step.count} ${isEn ? 'results' : 'kết quả'}</span>`;
-      } else if (step.decision) {
-        const decText = step.decision === 'local_knowledge' ? (isEn ? 'Internal Knowledge' : 'Tri thức nội bộ') : 'Web Fallback';
-        metricHtml = `<span class="xai-step-metric">${decText}</span>`;
-      }
-
-      let extraWidgetHtml = '';
-      if (step.step === 'confidence_scoring' && step.score !== undefined) {
-        const pct = Math.min(100, Math.max(0, Math.round(step.score * 100)));
-        extraWidgetHtml = `
-          <div class="xai-confidence-meter">
-            <div class="xai-meter-track">
-              <div class="xai-meter-fill" style="width: ${pct}%"></div>
-            </div>
-            <span class="xai-meter-val">${pct}%</span>
-          </div>
-        `;
-      }
-
-      return `
-        <div class="xai-timeline-item" data-step-type="${step.step}">
-          <span class="xai-step-num">${String(idx + 1).padStart(2, '0')}</span>
-          <div class="xai-step-body">
-            <div class="xai-step-header">
-              <span class="xai-step-title">${label}</span>
-              ${metricHtml}
-            </div>
-            ${detail ? `<div class="xai-step-desc">${detail}</div>` : ''}
-            ${extraWidgetHtml}
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    return `
-      <div class="xai-trace-wrapper">
-        <button type="button" class="xai-trace-toggle" aria-expanded="false" title="${isEn ? 'View GraphRAG reasoning process' : 'Xem tiến trình suy luận GraphRAG'}">
-          <svg class="xai-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
-          <span class="xai-trace-label">${isEn ? `Used ${trace.length} retrieval steps` : `Đã dùng ${trace.length} bước truy xuất`}</span>
-          <span class="xai-trace-meta">${routeLabel} · ${confPct}%</span>
-        </button>
-
-        <div class="xai-trace-drawer">
-          <div class="xai-drawer-inner">
-            <div class="xai-drawer-header">
-              <span class="xai-drawer-title">${isEn ? 'Retrieval & Reasoning Process' : 'Tiến trình truy xuất &amp; lập luận'}</span>
-              <span class="xai-drawer-tag">LangGraph · NetworkX KG · ChromaDB</span>
-            </div>
-
-            <div class="xai-timeline">
-              ${stepsHtml}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
   // attachment: ảnh của câu hỏi tương ứng (nếu có) — giữ lại để nút "Tạo lại" gửi kèm
   function appendAssistantResponse(res, persist = true, promptText = '', attachment = null) {
     const isEn = i18n.getLanguage() === 'en';
@@ -3321,7 +3246,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="message-bubble">
         <div class="message-author">${i18n.t('assistantName', 'Trợ lý Cố đô')}</div>
         <div class="answer-content">${formattedAnswer}</div>
-        ${createGraphTraceHtml(res.graph_trace, res.route_taken, res.confidence_score)}
         ${navCardHtml}
         ${placesPillsHtml}
         ${createFeedbackBarHtml(messageId, savedRating)}
@@ -3329,16 +3253,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
     chatThread.appendChild(msg);
     chatThread.scrollTop = chatThread.scrollHeight;
-
-    // Gán sự kiện mở/đóng XAI Graph Trace Panel
-    msg.querySelectorAll('.xai-trace-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const wrapper = btn.closest('.xai-trace-wrapper');
-        if (!wrapper) return;
-        const isExpanded = wrapper.classList.toggle('is-expanded');
-        btn.setAttribute('aria-expanded', isExpanded);
-      });
-    });
 
     // Gán sự kiện Feedback (Thích / Chưa tốt / Sao chép)
     bindFeedbackEvents(msg, {
