@@ -122,6 +122,36 @@ def sanitize_vietnamese_response(text: str) -> str:
     return "\n".join(lines).strip()
 
 
+_LODGING_TOKENS = (
+    "khach san", "luu tru", "homestay", "resort", "nha nghi", "villa",
+    "hostel", "phong nghi", "dat phong", "cho nghi",
+    "hotel", "lodging", "accommodation", "where to stay", "places to stay",
+)
+_LODGING_RE = re.compile(r"\b(?:" + "|".join(_LODGING_TOKENS) + r")\b")
+_LODGING_SUBTYPE_TOKENS = ("homestay", "resort", "villa", "boutique", "hostel")
+
+
+def _extract_lodging_keyword(norm_q: str) -> Optional[str]:
+    for kw in _LODGING_SUBTYPE_TOKENS:
+        if re.search(rf"\b{kw}\b", norm_q):
+            return kw
+    return None
+
+
+def _is_lodging_intent(norm_q: str) -> bool:
+    return bool(_LODGING_RE.search(norm_q or ""))
+
+
+def _parse_radius_km(norm_q: str, default: float = 2.0) -> float:
+    km_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:km|cay|kilomet)', norm_q or "")
+    if km_match:
+        try:
+            return min(10.0, max(0.5, float(km_match.group(1))))
+        except Exception:
+            pass
+    return default
+
+
 # =============================================================================
 # 1. ĐỊNH NGHĨA TRẠNG THÁI HỆ THỐNG (STATE DEFINITION)
 # =============================================================================
@@ -822,6 +852,8 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 
     # Nhận diện câu hỏi tìm địa điểm lân cận ('quanh X', 'gần X', 'trong bán kính Y km')
     is_nearby_query = any(k in norm_q for k in ["quanh", "xung quanh", "lan can", "ban kinh", "gan day", "gan do", "gan ", "near", "nearby", "around", "close to", "next to"])
+    is_lodging_query = _is_lodging_intent(norm_q)
+    lodging_kw = _extract_lodging_keyword(norm_q) if is_lodging_query else None
     # Nếu hỏi quanh một địa danh mà có 'song huong' xuất hiện như cảnh quan, loại bỏ 'song huong' khỏi danh sách đích
     if is_nearby_query and "place_8882" in extracted_place_ids and len(extracted_place_ids) >= 2:
         extracted_place_ids = [pid for pid in extracted_place_ids if pid != "place_8882"]
@@ -899,19 +931,40 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 "count": len(matched_places),
                 "status": "found" if matched_places else "empty"
             })
+    # B.2 ƯU TIÊN LƯU TRÚ LÂN CẬN: Hỏi khách sạn / homestay / resort gần địa danh X
+    elif is_lodging_query and target_place_id and not target_dish and len(extracted_place_ids) == 1:
+        origin_place = graph_retriever.get_place(target_place_id)
+        if origin_place:
+            radius_km = _parse_radius_km(norm_q, default=2.5)
+
+            nearby_hotels = graph_retriever.find_nearby_places(
+                target_place_id, category="hotel", max_distance_km=radius_km, limit=6
+            )
+            if lodging_kw:
+                nearby_hotels.sort(
+                    key=lambda h: (0 if lodging_kw in strip_accents(h.get("name", "")) else 1, h.get("distance_km", 999.0))
+                )
+            nearby_map[target_place_id] = nearby_hotels
+            matched_places.append(origin_place)
+            for nb in nearby_hotels[:5]:
+                if nb.get("node_id") != target_place_id and nb not in matched_places:
+                    matched_places.append(nb)
+
+            trace_steps.append({
+                "step": "edge_traversal",
+                "icon": "🏨",
+                "label": "Tìm cơ sở Lưu trú lân cận (Hotel)",
+                "detail": f"{len(nearby_hotels)} khách sạn/homestay quanh '{origin_place.get('name', '')}' trong {radius_km}km",
+                "edge": "NEAR_BY",
+                "count": len(nearby_hotels),
+                "status": "found" if nearby_hotels else "empty"
+            })
     # C. ƯU TIÊN 3: Nếu là câu hỏi tìm kiếm địa điểm LÂN CẬN chung quanh X (không chỉ định món ăn cụ thể):
     elif is_nearby_query and target_place_id:
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
             # Bóc tách bán kính km nếu người dùng ghi rõ (ví dụ: 'trong bán kính 2km')
-            radius_km = 2.0
-            import re
-            km_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:km|cay|kilomet)', norm_q)
-            if km_match:
-                try:
-                    radius_km = min(10.0, max(0.5, float(km_match.group(1))))
-                except Exception:
-                    pass
+            radius_km = _parse_radius_km(norm_q, default=2.0)
 
             nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
             nearby_map[target_place_id] = nearby
@@ -1037,6 +1090,23 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             "detail": "Du khách mở đầu cuộc trò chuyện → kích hoạt phản hồi chào đón Cố đô",
             "status": "found"
         })
+
+    # C.0 Nếu là câu hỏi gợi ý lưu trú chung (chưa gắn địa danh cụ thể) -> truy xuất top khách sạn/homestay theo địa phương trong KG
+    if not matched_places and not is_greeting and not is_ticket_query and is_lodging_query:
+        target_loc = locality or "Thành phố Huế"
+        hotels = graph_retriever.find_places_by_category(
+            "hotel", locality=target_loc, keyword=lodging_kw, limit=5
+        )
+        matched_places.extend(hotels)
+        if hotels:
+            trace_steps.append({
+                "step": "lodging_kg_retrieval",
+                "icon": "🏨",
+                "label": "Truy xuất KG Lưu trú (Hotel)",
+                "detail": f"Lọc {len(hotels)} cơ sở lưu trú nổi bật tại {target_loc}",
+                "count": len(hotels),
+                "status": "found"
+            })
 
     # C.1 Nếu là câu hỏi gợi ý mở (đi đâu / ăn gì) có ngữ cảnh thời tiết thực mà chưa khớp địa danh cụ thể -> nạp ứng viên KG phù hợp thời tiết
     if (

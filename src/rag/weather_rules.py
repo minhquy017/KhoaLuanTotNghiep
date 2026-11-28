@@ -83,6 +83,8 @@ _TRAVEL_RECOMMEND_TOKENS = (
     "tham quan", "di dau", "nen di", "choi gi", "cho nao", "diem nao", "dia diem",
     "di tich", "bao tang", "lich trinh", "tour",
     "an gi", "an uong", "mon gi", "quan an", "nha hang", "ca phe", "cafe", "dac san", "nen an",
+    "khach san", "luu tru", "homestay", "resort", "nha nghi", "villa", "hostel",
+    "hotel", "lodging", "accommodation", "where to stay",
     "goi y", "tu van", "phu hop", "hop voi",
     "sightseeing", "visit", "where to go", "itinerary", "places to", "things to do",
     "eat", "food", "dish", "restaurant", "recommend", "suggest", "suitable",

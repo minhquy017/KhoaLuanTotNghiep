@@ -23,6 +23,8 @@ import unicodedata
 from typing import Dict, List, Any, Optional, Tuple
 import networkx as nx
 
+from src.graph.spatial_indexer import haversine_distance
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
 KG_PKL_PATH = os.path.join(PROJECT_ROOT, "data", "processed", "knowledge_graph.pkl")
@@ -599,8 +601,64 @@ class SpatialGraphRetriever:
                             n_data["drive_time_min"] = edge_data.get("drive_time_min", 0)
                             neighbors.append(n_data)
 
+        if category and len(neighbors) < limit:
+            lat0, lng0 = place.get("latitude"), place.get("longitude")
+            if lat0 is not None and lng0 is not None:
+                seen_ids = {origin_id, *(n.get("node_id") for n in neighbors)}
+                target_cat = category.lower()
+                extra: List[Dict[str, Any]] = []
+                for nid, data in self._all_place_nodes:
+                    if nid in seen_ids or (data.get("category") or "").lower() != target_cat:
+                        continue
+                    lat1, lng1 = data.get("latitude"), data.get("longitude")
+                    if lat1 is None or lng1 is None:
+                        continue
+                    dist = round(haversine_distance(float(lat0), float(lng0), float(lat1), float(lng1)), 2)
+                    if dist <= max_distance_km:
+                        item = dict(data)
+                        item["node_id"] = nid
+                        item["distance_km"] = dist
+                        item["walk_time_min"] = max(1, round(dist / 4.5 * 60))
+                        item["drive_time_min"] = max(1, round(dist / 25.0 * 60))
+                        extra.append(item)
+                extra.sort(key=lambda x: x["distance_km"])
+                neighbors.extend(extra[: max(0, limit - len(neighbors))])
+
         neighbors.sort(key=lambda x: x.get("distance_km", 999.0))
         return neighbors[:limit]
+
+    def find_places_by_category(self, category: str, locality: Optional[str] = None,
+                                keyword: Optional[str] = None, limit: int = 5) -> List[Dict[str, Any]]:
+        """Truy xuất các địa điểm nổi bật theo danh mục (vd: Hotel) và địa phương."""
+        target_cat = (category or "").lower()
+        norm_loc = strip_accents(locality) if locality else None
+        norm_kw = strip_accents(keyword) if keyword else None
+        scored: List[Tuple[float, Dict[str, Any]]] = []
+
+        for nid, data in self._all_place_nodes:
+            if (data.get("category") or "").lower() != target_cat:
+                continue
+            if norm_loc:
+                loc_val = strip_accents(data.get("locality", ""))
+                dist_val = strip_accents(data.get("district", ""))
+                addr_val = strip_accents(data.get("address", ""))
+                if not (norm_loc in loc_val or norm_loc in dist_val or norm_loc in addr_val
+                        or ("hue" in norm_loc and "hue" in loc_val)):
+                    continue
+
+            rating = float(data.get("rating_value") or 0.0)
+            reviews = float(data.get("review_count") or 0.0)
+            score = rating * 10.0 + min(reviews / 50.0, 10.0)
+            if norm_kw:
+                blob = strip_accents(f"{data.get('name', '')} {data.get('tags', '')}")
+                if norm_kw in blob:
+                    score += 50.0
+            item = dict(data)
+            item["node_id"] = nid
+            scored.append((score, item))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [item for _, item in scored[:limit]]
 
     def find_places_by_dish(self, dish_name: str, locality: Optional[str] = None, limit: int = 5) -> List[Dict[str, Any]]:
         """Truy xuất các quán ăn/nhà hàng phục vụ món ăn đặc sản qua cạnh SERVES và đối sánh thực thể."""
