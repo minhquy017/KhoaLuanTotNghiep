@@ -90,6 +90,13 @@ _TRAVEL_RECOMMEND_TOKENS = (
     "eat", "food", "dish", "restaurant", "recommend", "suggest", "suitable",
 )
 _TRAVEL_RECOMMEND_RE = re.compile(r"\b(?:" + "|".join(_TRAVEL_RECOMMEND_TOKENS) + r")\b")
+_EXPLICIT_WEATHER_SEED_TOKENS = (
+    "tham quan", "di dau", "nen di", "choi gi", "lich trinh", "tour",
+    "an gi", "an uong", "mon gi", "nen an",
+    "thoi tiet", "troi mua", "troi nang", "mua khong", "co mua",
+    "sightseeing", "where to go", "itinerary", "things to do", "weather",
+)
+_EXPLICIT_WEATHER_SEED_RE = re.compile(r"\b(?:" + "|".join(_EXPLICIT_WEATHER_SEED_TOKENS) + r")\b")
 _INDOOR_HUE_FALLBACKS = ("Cung An Định", "Chợ Đông Ba", "Cà Phê Muối Nguyễn Huệ")
 _FOOD_QUERY_TOKENS = ("an gi", "an uong", "mon gi", "mon", "quan an", "am thuc", "dac san", "food", "eat", "dish", "restaurant")
 _FOOD_QUERY_RE = re.compile(r"\b(?:" + "|".join(_FOOD_QUERY_TOKENS) + r")\b")
@@ -188,6 +195,13 @@ def is_travel_recommendation_query(query: str) -> bool:
     """Câu hỏi xin gợi ý điểm tham quan, ăn uống hoặc lịch trình (kể cả có nhắc thời tiết)."""
     q = strip_accents((query or "").lower())
     return bool(_TRAVEL_RECOMMEND_RE.search(q))
+
+
+def is_explicit_weather_seed_query(query: str) -> bool:
+    """Chỉ True khi câu hỏi thực sự hỏi đi đâu/tham quan/ăn gì/lịch trình chung hoặc nhắc thời tiết,
+    tránh cướp các câu khẩu ngữ hẹp (vd 'chỗ nào ngả lưng') khỏi bộ phân loại LLM Tầng 2."""
+    q = strip_accents((query or "").lower())
+    return bool(_EXPLICIT_WEATHER_SEED_RE.search(q))
 
 
 def is_weather_question(query: str) -> bool:

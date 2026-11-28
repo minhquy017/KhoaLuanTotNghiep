@@ -71,10 +71,13 @@ class TestHueScopeGuard(unittest.TestCase):
 
         orig = self.ag.llm
         try:
-            self.ag.llm = FakeClassifierLLM("other")
-            kg_other = self.ag.node_extract_and_retrieve_kg(self._state("Giải giúp tôi phương trình bậc hai?"))
+            self.ag.llm = FakeClassifierLLM("Nhãn: other.")
+            kg_other = self.ag.node_extract_and_retrieve_kg(self._state("Ai là người phát minh ra bóng đèn?"))
             self.assertTrue(kg_other["is_out_of_scope"])
-            self.assertEqual(self.ag.grade_confidence({**self._state("Giải giúp tôi phương trình bậc hai?"), **kg_other}), "node_generate_response")
+            self.assertEqual(self.ag.grade_confidence({**self._state("Ai là người phát minh ra bóng đèn?"), **kg_other}), "node_generate_response")
+
+            kg_math = self.ag.node_extract_and_retrieve_kg(self._state("Giải giúp tôi phương trình bậc hai x^2 - 5x + 6 = 0?"))
+            self.assertTrue(kg_math["is_out_of_scope"])
 
             self.ag.llm = FakeClassifierLLM("transport")
             kg_transit = self.ag.node_extract_and_retrieve_kg(self._state("Ở Huế đi Grab hay thuê xe máy tiện hơn?"))

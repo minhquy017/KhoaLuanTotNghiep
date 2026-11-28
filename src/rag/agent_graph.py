@@ -58,6 +58,7 @@ from src.rag.weather_rules import (
     classify_weather,
     is_weather_question,
     is_travel_recommendation_query,
+    is_explicit_weather_seed_query,
     is_flight_or_future_weather,
     is_warm_dish,
     get_weather_kg_seeds,
@@ -167,8 +168,8 @@ _INTENT_CATEGORY_MAP = {
 _OFF_TOPIC_KEYWORDS = (
     "ronaldo", "messi", "bong da", "football", "soccer", "world cup", "champions league",
     "chung khoan", "bitcoin", "crypto", "forex", "python", "javascript", "lap trinh",
-    "viet code", "giai phuong trinh", "toan hoc", "vat ly", "hoa hoc", "tu vi", "xo so",
-    "valorant", "lien minh", "chatgpt",
+    "viet code", "phuong trinh", "dao ham", "tich phan", "toan hoc", "vat ly", "hoa hoc",
+    "tu vi", "xo so", "valorant", "lien minh", "chatgpt",
 )
 _OFF_TOPIC_RE = re.compile(r"\b(?:" + "|".join(_OFF_TOPIC_KEYWORDS) + r")\b")
 _OUT_OF_SCOPE_MSG_VI = (
@@ -201,7 +202,11 @@ def _classify_intent_with_llm(query: str) -> Tuple[Optional[str], Optional[bool]
     try:
         runner = llm.bind(num_predict=16, temperature=0.0) if hasattr(llm, "bind") else llm
         raw = getattr(runner.invoke([HumanMessage(content=prompt)]), "content", "") or ""
-        label = strip_accents(raw).split()[0].strip(" .,:;\"'") if raw.strip() else ""
+        m = re.search(
+            r"\b(lodging|hotel|food|restaurant|cafe|attraction|transport|other)\b",
+            strip_accents(raw),
+        )
+        label = m.group(1) if m else ""
         if label in _INTENT_CATEGORY_MAP:
             return _INTENT_CATEGORY_MAP[label], True
         if label == "transport":
@@ -1247,13 +1252,13 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 "status": "found"
             })
 
-    # C.1 Nếu là câu hỏi gợi ý mở (đi đâu / ăn gì) có ngữ cảnh thời tiết thực mà chưa khớp địa danh cụ thể -> nạp ứng viên KG phù hợp thời tiết
+    # C.1 Nếu là câu hỏi gợi ý mở rõ ràng (đi đâu / tham quan / ăn gì / thời tiết) mà chưa khớp địa danh cụ thể -> nạp ứng viên KG phù hợp thời tiết
     if (
         not matched_places
         and not is_greeting
         and not is_ticket_query
         and locality in ("", "Thành phố Huế")
-        and is_travel_recommendation_query(query)
+        and is_explicit_weather_seed_query(query)
     ):
         weather_info = classify_weather(state.get("weather_context"))
         if weather_info is not None:

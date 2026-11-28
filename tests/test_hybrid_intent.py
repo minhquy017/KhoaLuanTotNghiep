@@ -58,13 +58,15 @@ class TestHybridIntentAndGrounding(unittest.TestCase):
         orig = self.ag.llm
         try:
             self.ag.llm = FakeClassifierLLM("lodging")
+            weather_rain = {"temp": 24, "humidity": 90, "precipitation": 0.6, "weather_code": 80}
             kg = self.ag.node_extract_and_retrieve_kg(
-                self._state("Kiếm chỗ nào ngả lưng yên tĩnh buổi tối ở Huế?")
+                self._state("Kiếm chỗ nào ngả lưng yên tĩnh buổi tối ở Huế?", weather=weather_rain)
             )
             self.assertEqual(len(kg["matched_places"]), 5)
             self.assertTrue(all((p.get("category") or "").lower() == "hotel" for p in kg["matched_places"]))
             steps = [s.get("step") for s in kg["graph_trace"]]
             self.assertIn("llm_intent_kg_retrieval", steps)
+            self.assertNotIn("weather_kg_retrieval", steps)
 
             self.ag.llm = FakeClassifierLLM("other")
             kg_other = self.ag.node_extract_and_retrieve_kg(
