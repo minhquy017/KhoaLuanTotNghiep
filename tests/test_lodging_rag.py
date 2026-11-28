@@ -86,6 +86,17 @@ class TestLodgingRAG(unittest.TestCase):
         vec = self.ag.node_retrieve_vector_reviews({**st, **kg})
         self.assertGreater(len(vec["reviews"]), 0)
 
+    def test_format_graph_context_hides_raw_dollar_price_placeholder(self):
+        hotel = self.gr.get_place("place_37")
+        ctx = self.gr.format_graph_context([hotel])
+        self.assertNotIn("$", ctx)
+        self.assertNotIn("Partners", ctx)
+        self.assertNotIn("Giá vé/Chi phí", ctx)
+
+        dai_noi = self.gr.get_place("place_8875")
+        ctx_dn = self.gr.format_graph_context([dai_noi])
+        self.assertIn("200.000 VNĐ", ctx_dn)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

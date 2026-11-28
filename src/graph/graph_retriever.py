@@ -17,6 +17,7 @@ Nhiệm vụ:
 """
 
 import os
+import re
 import sys
 import pickle
 import unicodedata
@@ -28,6 +29,17 @@ from src.graph.spatial_indexer import haversine_distance
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
 KG_PKL_PATH = os.path.join(PROJECT_ROOT, "data", "processed", "knowledge_graph.pkl")
+
+
+_RAW_DOLLAR_PRICE_RE = re.compile(r"^\s*\$+(?:\s*-\s*\$+)?(?:\s*\([^)]*\))?\s*$")
+
+
+def _clean_price_text(raw_price: Optional[str]) -> str:
+    """Chỉ giữ mức giá cụ thể (VNĐ/Miễn phí); bỏ qua nhãn ký hiệu '$' mờ hồ của TripAdvisor."""
+    text = str(raw_price or "").strip()
+    if not text or _RAW_DOLLAR_PRICE_RE.match(text):
+        return ""
+    return text
 
 
 def strip_accents(text: str) -> str:
@@ -779,19 +791,20 @@ class SpatialGraphRetriever:
             if meta:
                 p_name = meta.get("name", p.get("name", "N/A"))
                 addr = meta["street_address"]
-                price = meta["ticket_price"]
+                price = _clean_price_text(meta.get("ticket_price"))
                 open_str = f" | Giờ mở cửa: {meta['opening_hours']}"
             else:
                 p_name = p.get("name", "N/A")
                 addr = p.get("street_address") or p.get("locality") or "Huế"
-                price = p.get("price_range") or "Bình dân"
+                price = _clean_price_text(p.get("price_range"))
                 open_str = f" | Giờ mở cửa: {p.get('opening_hours')}" if p.get("opening_hours") else ""
 
             cat = p.get("category", "").capitalize()
             rating = p.get("rating_value", 0.0)
             rev_cnt = p.get("review_count", 0)
 
-            header = f"{idx}. **{p_name}** ({cat}) — ⭐ {rating}/5 ({rev_cnt:,} đánh giá) | Địa chỉ: {addr} | Giá vé/Chi phí: {price}{open_str}"
+            price_str = f" | Giá vé/Chi phí: {price}" if price else ""
+            header = f"{idx}. **{p_name}** ({cat}) — ⭐ {rating}/5 ({rev_cnt:,} đánh giá) | Địa chỉ: {addr}{price_str}{open_str}"
             lines.append(header)
 
             # Món đặc sản nếu có
