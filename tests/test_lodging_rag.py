@@ -86,6 +86,13 @@ class TestLodgingRAG(unittest.TestCase):
         vec = self.ag.node_retrieve_vector_reviews({**st, **kg})
         self.assertGreater(len(vec["reviews"]), 0)
 
+    def test_colloquial_overnight_stay_near_landmark_finds_real_hotels(self):
+        q = "quanh đại nội có chổ nào để ngủ qua đêm không? mà giá rẻ view đẹp nữa"
+        kg = self.ag.node_extract_and_retrieve_kg(self._state(q))
+        hotels = [p for p in kg["matched_places"] if (p.get("category") or "").lower() == "hotel"]
+        self.assertGreaterEqual(len(hotels), 3)
+        self.assertEqual(kg["matched_places"][0].get("node_id"), "place_8875")
+
     def test_format_graph_context_hides_raw_dollar_price_placeholder(self):
         hotel = self.gr.get_place("place_37")
         ctx = self.gr.format_graph_context([hotel])

@@ -551,7 +551,7 @@ class SpatialGraphRetriever:
                 score = 100
             elif norm_q in norm_name and len(norm_q) >= 4:
                 score = 80 + (len(norm_q) / max(len(norm_name), 1)) * 15
-            elif norm_name in norm_q and len(norm_name) >= 5:
+            elif len(norm_name) >= 5 and re.search(rf"(?<!\w){re.escape(norm_name)}(?!\w)", norm_q):
                 score = 75 + (len(norm_name) / max(len(norm_q), 1)) * 15
             else:
                 # Kiểm tra trong tags
@@ -638,6 +638,29 @@ class SpatialGraphRetriever:
 
         neighbors.sort(key=lambda x: x.get("distance_km", 999.0))
         return neighbors[:limit]
+
+    def find_diverse_nearby_places(self, place_id_or_name: str, max_distance_km: float = 2.0,
+                                   per_category: int = 2) -> List[Dict[str, Any]]:
+        """Lấy các điểm lân cận cân bằng theo từng loại hình (tham quan, ăn uống, lưu trú)."""
+        collected: List[Dict[str, Any]] = []
+        seen_ids = set()
+        for cat in ("attraction", "restaurant", "hotel"):
+            for item in self.find_nearby_places(place_id_or_name, category=cat, max_distance_km=max_distance_km, limit=per_category):
+                nid = item.get("node_id")
+                if nid and nid not in seen_ids:
+                    seen_ids.add(nid)
+                    collected.append(item)
+
+        target_total = per_category * 3
+        if len(collected) < target_total:
+            for item in self.find_nearby_places(place_id_or_name, max_distance_km=max_distance_km, limit=target_total):
+                nid = item.get("node_id")
+                if nid and nid not in seen_ids:
+                    seen_ids.add(nid)
+                    collected.append(item)
+                if len(collected) >= target_total:
+                    break
+        return collected
 
     def find_places_by_category(self, category: str, locality: Optional[str] = None,
                                 keyword: Optional[str] = None, limit: int = 5) -> List[Dict[str, Any]]:

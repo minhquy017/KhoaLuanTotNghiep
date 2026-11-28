@@ -50,7 +50,8 @@ def _build_initial_state(req: ChatRequest):
         "session_context": req.session_context,
         "weather_context": req.weather_context,
         "resolved_query": None,
-        "anaphora": None
+        "anaphora": None,
+        "is_out_of_scope": False,
     }
 
 

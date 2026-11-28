@@ -33,7 +33,7 @@ import os
 import sys
 import re
 import unicodedata
-from typing import TypedDict, List, Dict, Any, Optional, Literal
+from typing import TypedDict, List, Dict, Any, Optional, Literal, Tuple
 
 # Bắt buộc UTF-8 stdout trên Windows
 try:
@@ -123,9 +123,12 @@ def sanitize_vietnamese_response(text: str) -> str:
 
 
 _LODGING_TOKENS = (
-    "khach san", "luu tru", "homestay", "resort", "nha nghi", "villa",
-    "hostel", "phong nghi", "dat phong", "cho nghi",
-    "hotel", "lodging", "accommodation", "where to stay", "places to stay",
+    "khach san", "luu tru", "homestay", "resort", "nha nghi", "villa", "bungalow",
+    "hostel", "motel", "guesthouse", "guest house",
+    "phong nghi", "dat phong", "thue phong", "tim phong", "cho nghi", "cho o", "cho tro",
+    "ngu qua dem", "qua dem", "o qua dem", "nghi qua dem", "nghi dem", "ngu dem",
+    "de ngu", "cho ngu", "noi ngu", "ngu lai", "nghi lai", "o lai",
+    "hotel", "lodging", "accommodation", "where to stay", "places to stay", "overnight", "stay overnight",
 )
 _LODGING_RE = re.compile(r"\b(?:" + "|".join(_LODGING_TOKENS) + r")\b")
 _LODGING_SUBTYPE_TOKENS = ("homestay", "resort", "villa", "boutique", "hostel")
@@ -150,6 +153,64 @@ def _parse_radius_km(norm_q: str, default: float = 2.0) -> float:
         except Exception:
             pass
     return default
+
+
+_INTENT_CATEGORY_MAP = {
+    "lodging": "hotel",
+    "hotel": "hotel",
+    "food": "restaurant",
+    "restaurant": "restaurant",
+    "cafe": "cafe",
+    "attraction": "attraction",
+}
+
+_OFF_TOPIC_KEYWORDS = (
+    "ronaldo", "messi", "bong da", "football", "soccer", "world cup", "champions league",
+    "chung khoan", "bitcoin", "crypto", "forex", "python", "javascript", "lap trinh",
+    "viet code", "giai phuong trinh", "toan hoc", "vat ly", "hoa hoc", "tu vi", "xo so",
+    "valorant", "lien minh", "chatgpt",
+)
+_OFF_TOPIC_RE = re.compile(r"\b(?:" + "|".join(_OFF_TOPIC_KEYWORDS) + r")\b")
+_OUT_OF_SCOPE_MSG_VI = (
+    "Dạ xin lỗi bạn, em là Trợ lý Du lịch Cố đô Huế nên chỉ hỗ trợ các câu hỏi liên quan đến "
+    "du lịch, tham quan di tích, ẩm thực, lưu trú, di chuyển và thời tiết tại Huế. "
+    "Bạn hãy đặt câu hỏi về trải nghiệm tại Cố đô Huế để em hỗ trợ tốt nhất nhé!"
+)
+_OUT_OF_SCOPE_MSG_EN = (
+    "Sorry, I am the Huế Smart Tourism Assistant and can only help with questions about "
+    "sightseeing, local food, accommodation, getting around, and weather in Huế. "
+    "Please ask me anything about visiting Huế!"
+)
+
+
+def _classify_intent_with_llm(query: str) -> Tuple[Optional[str], Optional[bool]]:
+    """Fallback phân loại ý định & phạm vi Huế bằng LLM. Trả về (category_or_None, is_in_scope_or_None)."""
+    if not query or len(query.strip()) < 4:
+        return None, None
+    prompt = (
+        "Phân loại câu hỏi sau xem có thuộc phạm vi DU LỊCH, ĐI LẠI, ĂN UỐNG, LƯU TRÚ tại HUẾ hay không, chọn ĐÚNG 1 nhãn:\n"
+        "- lodging: hỏi chỗ ngủ, khách sạn, homestay tại Huế\n"
+        "- food: hỏi ăn uống, quán ăn, đặc sản tại Huế\n"
+        "- cafe: hỏi quán cà phê, trà, thư giãn tại Huế\n"
+        "- attraction: hỏi tham quan, di tích, lịch sử, văn hóa, cảnh đẹp Huế\n"
+        "- transport: hỏi đi lại, phương tiện, vé máy bay/tàu xe, thời tiết cho chuyến đi Huế\n"
+        "- other: mọi chủ đề ngoài lề (bóng đá, Ronaldo/Messi, lập trình, toán học, chính trị, chứng khoán, du lịch tỉnh khác không liên quan Huế)\n"
+        f"Câu hỏi: {query.strip()}\n"
+        "Chỉ trả về đúng 1 từ nhãn:"
+    )
+    try:
+        runner = llm.bind(num_predict=16, temperature=0.0) if hasattr(llm, "bind") else llm
+        raw = getattr(runner.invoke([HumanMessage(content=prompt)]), "content", "") or ""
+        label = strip_accents(raw).split()[0].strip(" .,:;\"'") if raw.strip() else ""
+        if label in _INTENT_CATEGORY_MAP:
+            return _INTENT_CATEGORY_MAP[label], True
+        if label == "transport":
+            return None, True
+        if label == "other":
+            return None, False
+        return None, None
+    except Exception:
+        return None, None
 
 
 # =============================================================================
@@ -186,6 +247,7 @@ class TourismAgentState(TypedDict):
     anaphora: Optional[Dict[str, Any]]               # Kết quả giải nghĩa đại từ (nếu có)
     is_greeting: Optional[bool]                      # Cờ nhận diện câu chào xã giao / chitchat mở đầu
     is_ticket_query: Optional[bool]                  # Cờ truy vấn giá vé di tích Cố đô (ưu tiên tri thức HMDC)
+    is_out_of_scope: Optional[bool]                  # Cờ câu hỏi ngoài phạm vi du lịch/đi lại/ăn uống/lưu trú tại Huế
     language: Optional[str]                          # Ngôn ngữ phản hồi: 'vi', 'en', hoặc 'auto'
     weather_context: Optional[Dict[str, Any]]        # Thời tiết Huế thời gian thực (Open-Meteo): temp, humidity, precipitation, weather_code
 
@@ -572,14 +634,21 @@ def validate_dish_name(name: str) -> Optional[str]:
 
 
 def _build_safe_kg_aliases() -> Dict[str, str]:
-    """Gộp PLACE_ALIAS_DICT với tên địa danh/khách sạn Huế đủ rõ (>= 8 ký tự, >= 2 từ) trong KG."""
+    """Gộp PLACE_ALIAS_DICT với tên chính thức (không lấy tag mô tả) của địa danh/khách sạn Huế trong KG."""
     generic = {"khach san", "nha hang", "quan an", "thanh pho", "co do hue", "hue city"}
     merged: Dict[str, str] = {}
-    for alias, pid in graph_retriever._place_alias_index.items():
-        if len(alias) >= 8 and " " in alias and alias not in generic and pid in graph_retriever.G:
-            loc = strip_accents(graph_retriever.G.nodes[pid].get("locality", ""))
-            if not loc or "hue" in loc:
-                merged[alias] = pid
+    for pid, data in graph_retriever._all_place_nodes:
+        loc = strip_accents(data.get("locality", ""))
+        if loc and "hue" not in loc:
+            continue
+        for raw_name in (data.get("name"), data.get("name_en")):
+            if not raw_name:
+                continue
+            full_norm = strip_accents(raw_name)
+            short_norm = strip_accents(re.sub(r"\s*\([^)]*\)", "", str(raw_name)))
+            for alias in (full_norm, short_norm):
+                if len(alias) >= 8 and " " in alias and alias not in generic and alias not in merged:
+                    merged[alias] = pid
     merged.update(PLACE_ALIAS_DICT)
     return merged
 
@@ -792,13 +861,49 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     is_greeting = clean_norm_q in GREETING_WORDS or (len(clean_norm_q) <= 14 and any(clean_norm_q.startswith(g) for g in ["xin chao", "chao ban", "hello", "hi ", "hey "]))
 
     # 1. Nhận diện địa phương
-    locality = "Thành phố Huế" if any(h in norm_q for h in ["hue", "thua thien", "co do"]) else ""
+    has_hue_mention = any(h in norm_q for h in ["hue", "thua thien", "co do", "phu bai", "song huong", "lang co", "thuan an", "bach ma"])
+    explicit_other_city = ""
     if "ha noi" in norm_q or "hanoi" in norm_q:
-        locality = "Thủ Đô Hà Nội"
+        explicit_other_city = "Thủ Đô Hà Nội"
     elif "sai gon" in norm_q or "ho chi minh" in norm_q:
-        locality = "Thành phố Hồ Chí Minh"
+        explicit_other_city = "Thành phố Hồ Chí Minh"
     elif "da nang" in norm_q:
-        locality = "Thành phố Đà Nẵng"
+        explicit_other_city = "Thành phố Đà Nẵng"
+
+    locality = "Thành phố Huế" if has_hue_mention else (explicit_other_city or "")
+    is_out_of_scope = False
+
+    if not image_base64 and not resolution.changed and not is_greeting:
+        if explicit_other_city and not has_hue_mention:
+            is_out_of_scope = True
+        elif _OFF_TOPIC_RE.search(norm_q) and not has_hue_mention:
+            is_out_of_scope = True
+
+    if is_out_of_scope:
+        trace_steps.append({
+            "step": "scope_guard",
+            "icon": "🛡️",
+            "label": "Kiểm tra Phạm vi Cố đô Huế",
+            "detail": "Câu hỏi ngoài phạm vi du lịch, di chuyển, ăn uống hoặc lưu trú tại Huế → từ chối lịch sự",
+            "status": "blocked"
+        })
+        return {
+            "query": query,
+            "resolved_query": resolved_query,
+            "session_context": session_ctx,
+            "anaphora": resolution.to_state(),
+            "locality": locality,
+            "target_dish": None,
+            "target_place": None,
+            "matched_places": [],
+            "nearby_map": {},
+            "dishes_map": {},
+            "is_greeting": False,
+            "is_ticket_query": False,
+            "is_out_of_scope": True,
+            "language": detected_lang,
+            "graph_trace": trace_steps,
+        }
 
     trace_steps.append({
         "step": "locality_detection",
@@ -844,10 +949,15 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     for alias, pid in sorted_aliases:
         pos = norm_q.find(alias)
         if pos != -1:
+            prev_ok = (pos == 0) or (not norm_q[pos - 1].isalnum())
+            end_pos = pos + len(alias)
+            next_ok = (end_pos >= len(norm_q)) or (not norm_q[end_pos].isalnum())
+            if not (prev_ok and next_ok):
+                continue
             # Kiểm tra tránh trùng lặp span (ví dụ 'chua thien mu' đã chứa 'thien mu')
-            overlaps = any(pos < end and pos + len(alias) > start for start, end in matched_spans)
+            overlaps = any(pos < end and end_pos > start for start, end in matched_spans)
             if not overlaps:
-                matched_spans.append((pos, pos + len(alias)))
+                matched_spans.append((pos, end_pos))
                 ordered_place_ids.append((pos, pid))
 
     ordered_place_ids.sort(key=lambda x: x[0])
@@ -990,12 +1100,12 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             # Bóc tách bán kính km nếu người dùng ghi rõ (ví dụ: 'trong bán kính 2km')
             radius_km = _parse_radius_km(norm_q, default=2.0)
 
-            nearby = (
-                graph_retriever.find_nearby_places(target_place_id, category="restaurant", max_distance_km=radius_km, limit=6)
-                if is_nearby_food else []
-            )
-            if not nearby:
-                nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
+            if is_nearby_food:
+                nearby = graph_retriever.find_nearby_places(target_place_id, category="restaurant", max_distance_km=radius_km, limit=6)
+                if not nearby:
+                    nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
+            else:
+                nearby = graph_retriever.find_diverse_nearby_places(target_place_id, max_distance_km=radius_km, per_category=2)
             nearby_map[target_place_id] = nearby
             
             # QUAN TRỌNG: Đưa origin_place lên ĐẦU matched_places để làm mốc trung tâm trên bản đồ
@@ -1173,8 +1283,42 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                     "status": "found"
                 })
 
+    # C.2 Hybrid Tier-2: Nếu lớp từ khóa cứng chưa định vị được điểm nào (trừ chào/vé/ảnh/thời tiết/tin tức/dự báo),
+    # dùng LLM phân loại nhanh ý định & kiểm tra phạm vi du lịch Huế
+    if (
+        not matched_places
+        and not is_greeting
+        and not is_ticket_query
+        and not image_base64
+        and not is_weather_question(query)
+        and not is_flight_or_future_weather(query)
+    ):
+        inferred_cat, in_scope = _classify_intent_with_llm(query)
+        if in_scope is False:
+            is_out_of_scope = True
+            trace_steps.append({
+                "step": "scope_guard",
+                "icon": "🛡️",
+                "label": "Kiểm tra Phạm vi Cố đô Huế (Hybrid LLM)",
+                "detail": "Phân loại ngoài phạm vi du lịch/đi lại/ăn uống/lưu trú tại Huế → từ chối lịch sự",
+                "status": "blocked"
+            })
+        elif inferred_cat:
+            target_loc = locality or "Thành phố Huế"
+            cat_places = graph_retriever.find_places_by_category(inferred_cat, locality=target_loc, limit=5)
+            matched_places.extend(cat_places)
+            if cat_places:
+                trace_steps.append({
+                    "step": "llm_intent_kg_retrieval",
+                    "icon": "🧠",
+                    "label": "Phân loại Ý định Ngữ nghĩa (Hybrid LLM)",
+                    "detail": f"Nhận diện nhóm '{inferred_cat}' → truy xuất {len(cat_places)} điểm thực tế tại {target_loc}",
+                    "count": len(cat_places),
+                    "status": "found"
+                })
+
     # 4. Nhận diện nhu cầu ăn chay hoặc danh mục đặc thù
-    if any(k in norm_q for k in ["chay", "quan chay", "com chay", "an chay", "do chay"]):
+    if not is_out_of_scope and any(k in norm_q for k in ["chay", "quan chay", "com chay", "an chay", "do chay"]):
         veg_places = graph_retriever.search_places("chay", locality=locality or "Thành phố Huế", limit=3)
         for vp in veg_places:
             if vp not in matched_places:
@@ -1232,6 +1376,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
         "dishes_map": dishes_map,
         "is_greeting": is_greeting,
         "is_ticket_query": is_ticket_query,
+        "is_out_of_scope": is_out_of_scope,
         "language": detected_lang,
         "graph_trace": trace_steps
     }
@@ -1244,6 +1389,13 @@ def node_retrieve_vector_reviews(state: TourismAgentState) -> Dict[str, Any]:
     query = state["query"]
     trace_steps = list(state.get("graph_trace") or [])
     norm_q = strip_accents(query)
+
+    if state.get("is_out_of_scope"):
+        return {
+            "reviews": [],
+            "confidence_score": 0.0,
+            "graph_trace": trace_steps,
+        }
 
     # 0.2 Nhận diện câu chào hỏi xã giao (Greeting / Chitchat mở đầu)
     clean_norm_q = norm_q.strip(" ?!,.:;~-_")
@@ -1401,7 +1553,19 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
     query_lower = state["query"].lower()
     norm_q = strip_accents(query_lower)
 
-    # 0. Nếu là câu hỏi có ảnh đính kèm và đã có thực thể nhận diện hoặc địa điểm trong KG:
+    # 0. Nếu câu hỏi ngoài phạm vi du lịch/ăn uống/lưu trú/di chuyển tại Huế -> từ chối lịch sự, KHÔNG tìm web
+    if state.get("is_out_of_scope"):
+        trace_steps.append({
+            "step": "routing_decision",
+            "icon": "🛡️",
+            "label": "Router → Từ chối Ngoài phạm vi Cố đô Huế",
+            "detail": "Câu hỏi ngoài chủ đề du lịch/đi lại/ăn uống/lưu trú Huế → không gọi Web Search hay LLM tự do",
+            "decision": "out_of_scope",
+            "status": "blocked"
+        })
+        return "node_generate_response"
+
+    # 0.1 Nếu là câu hỏi có ảnh đính kèm và đã có thực thể nhận diện hoặc địa điểm trong KG:
     if state.get("image_base64") and (has_places or state.get("visual_matches") or state.get("image_detected")):
         trace_steps.append({
             "step": "routing_decision",
@@ -1864,6 +2028,7 @@ Mandatory Response Principles:
    - NEVER use robotic phrases like: "Based on Knowledge Graph data...", "The system has successfully identified...".
    - Respond 100% in fluent, natural, engaging English like a passionate local guide.
    - PRESERVE VIETNAMESE CULTURAL PROPER NAMES: Always retain authentic Vietnamese diacritics for proper names of places, kings, and dishes with English translation in parentheses on first mention, e.g., **Đại Nội** (Imperial Citadel), **Chùa Thiên Mụ** (Thiên Mụ Pagoda), **Bún bò Huế** (Huế Spicy Beef Noodle Soup), **Lăng Khải Định** (Khải Định Tomb).
+   - STRICT CONTEXT GROUNDING: Every venue, landmark, restaurant, hotel, address, and concrete price MUST come from [SYSTEM CONTEXT] and be BOLDED as **Place Name**. NEVER fabricate place names or room/ticket prices absent from context (if unavailable, state so honestly).
    - NO CHINESE CHARACTERS: Strictly forbid inserting any Chinese characters or punctuation.
 
 2. WHEN VISITOR ASKS ABOUT NEARBY PLACES AROUND A LANDMARK (E.G. "NEAR THIEN MU PAGODA", "AROUND THE CITADEL"):
@@ -1890,6 +2055,7 @@ Nguyên tắc trả lời bắt buộc:
    - Mở đầu nhẹ nhàng, lịch thiệp ("Dạ chào bạn...", "Dạ, em xin gợi ý với bạn...", "Chào bạn...").
    - Tuyệt đối KHÔNG dùng các câu cứng nhắc, máy móc như: "Dựa trên dữ liệu Đồ thị Tri thức...", "Hệ thống đã xác định thành công...".
    - Diễn đạt 100% bằng tiếng Việt trong sáng, gần gũi như một người bạn đồng hành bản địa tại Huế.
+   - TRUNG THỰC TUYỆT ĐỐI THEO NGỮ CẢNH: MỌI tên địa điểm, quán ăn, khách sạn, homestay, địa chỉ và giá cả cụ thể PHẢI lấy từ [NGỮ CẢNH HỆ THỐNG] và IN ĐẬM **Tên Cơ Sở**. Tuyệt đối KHÔNG tự bịa thêm tên cơ sở hay tự đoán giá phòng/giá vé khi ngữ cảnh không ghi rõ (thiếu thông tin nào thì nói rõ chưa có dữ liệu phần đó).
    - TUYỆT ĐỐI KHÔNG DÙNG TIẾNG TRUNG: Nghiêm cấm chèn bất kỳ chữ Hán, chữ Trung Quốc (giản thể hoặc phồn thể như 例如, 顺化, 等等, 以及...), từ ngữ tiếng Trung hoặc dấu câu tiếng Trung (như ，、。). Mọi tên di tích lịch sử và triều Nguyễn PHẢI viết bằng chữ Quốc ngữ tiếng Việt thuần túy (ví dụ: viết "Ngọ Môn", "Điện Thái Hòa", "Vua Tự Đức", KHÔNG viết chữ Hán).
 
 2. NẾU DU KHÁCH HỎI CÁC ĐIỂM QUANH / GẦN MỘT ĐỊA DANH (VÍ DỤ "QUANH CHÙA THIÊN MỤ", "GẦN ĐẠI NỘI"):
@@ -1911,7 +2077,8 @@ Nguyên tắc trả lời bắt buộc:
     # Thích ứng thời tiết thời gian thực (chỉ khi client gửi weather_context hợp lệ; ngược lại giữ nguyên prompt cũ)
     weather_info = classify_weather(state.get("weather_context"))
     direct_weather_answer = None
-    if weather_info is not None:
+    direct_refusal_answer = (_OUT_OF_SCOPE_MSG_EN if lang == "en" else _OUT_OF_SCOPE_MSG_VI) if state.get("is_out_of_scope") else None
+    if weather_info is not None and not direct_refusal_answer:
         system_prompt += build_weather_prompt_section(state.get("weather_context"), lang)
         if is_weather_question(query) and not state.get("image_base64"):
             direct_weather_answer = build_weather_answer(state.get("weather_context"), lang)
@@ -2001,8 +2168,9 @@ Nguyên tắc trả lời bắt buộc:
         "is_nav": is_nav,
         "nav_route_info": nav_route_info,
         "pref_rules": pref_rules,
-        "weather_info": weather_info,
+        "weather_info": None if direct_refusal_answer else weather_info,
         "direct_weather_answer": direct_weather_answer,
+        "direct_refusal_answer": direct_refusal_answer,
         "history_text": history_text,
         "system_prompt": system_prompt,
         "human_msg": human_msg,
@@ -2186,7 +2354,15 @@ def _finalize_generation_output(state: TourismAgentState, prep: Dict[str, Any], 
             "status": "applied"
         })
     history_turns = prep["history_text"].count("- Du khách:")
-    if direct_weather_answer:
+    if prep.get("direct_refusal_answer"):
+        trace_steps.append({
+            "step": "scope_refusal",
+            "icon": "🛡️",
+            "label": "Từ chối ngoài phạm vi Cố đô Huế",
+            "detail": "Trả lời từ chối lịch sự (giữ trợ lý đúng phạm vi du lịch Huế)",
+            "status": "blocked"
+        })
+    elif direct_weather_answer:
         trace_steps.append({
             "step": "weather_direct_response",
             "icon": "🌦️",
@@ -2218,7 +2394,9 @@ def _finalize_generation_output(state: TourismAgentState, prep: Dict[str, Any], 
 def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
     prep = _prepare_generation_inputs(state)
     try:
-        if prep["direct_weather_answer"]:
+        if prep.get("direct_refusal_answer"):
+            answer_text = prep["direct_refusal_answer"]
+        elif prep["direct_weather_answer"]:
             answer_text = prep["direct_weather_answer"]
         else:
             response = llm.invoke([
@@ -2240,7 +2418,10 @@ def stream_tourism_agent_response(initial_state: Dict[str, Any]):
         state.update(node_web_search_fallback(state))
 
     prep = _prepare_generation_inputs(state)
-    if prep["direct_weather_answer"]:
+    if prep.get("direct_refusal_answer"):
+        answer_text = prep["direct_refusal_answer"]
+        yield ("token", answer_text)
+    elif prep["direct_weather_answer"]:
         answer_text = prep["direct_weather_answer"]
         yield ("token", answer_text)
     else:
