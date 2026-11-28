@@ -1543,7 +1543,8 @@ def node_web_search_fallback(state: TourismAgentState) -> Dict[str, Any]:
 # =============================================================================
 # 7. NODE 4: SINH CÂU TRẢ LỜI TỔNG HỢP VỚI QWEN2.5-3B (GENERATION)
 # =============================================================================
-def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
+def _prepare_generation_inputs(state: TourismAgentState) -> Dict[str, Any]:
+    """Chuẩn bị prompt, ngữ cảnh, chỉ đường và câu trả lời trực tiếp (dùng chung cho invoke và stream)."""
     query = state["query"]
     route_taken = state.get("route_taken", "local_knowledge")
     matched_places = state.get("matched_places", [])
@@ -1976,179 +1977,197 @@ Nguyên tắc trả lời bắt buộc:
 
 [CÂU TRẢ LỜI CỦA BẠN]:"""
 
-    try:
-        if direct_weather_answer:
-            answer_text = direct_weather_answer
+    if image_base64:
+        clean_b64 = image_base64.split(",")[-1] if "," in image_base64 else image_base64
+        human_msg = HumanMessage(content=[
+            {"type": "text", "text": user_prompt},
+            {"type": "image_url", "image_url": f"data:image/jpeg;base64,{clean_b64}"}
+        ])
+    else:
+        human_msg = HumanMessage(content=user_prompt)
+
+    return {
+        "lang": lang,
+        "norm_q": norm_q,
+        "route_taken": route_taken,
+        "matched_places": matched_places,
+        "target_dish": target_dish,
+        "visual_matches": visual_matches,
+        "visual_confidence": visual_confidence,
+        "web_results": web_results,
+        "image_base64": image_base64,
+        "context_blocks": context_blocks,
+        "full_context": full_context,
+        "is_nav": is_nav,
+        "nav_route_info": nav_route_info,
+        "pref_rules": pref_rules,
+        "weather_info": weather_info,
+        "direct_weather_answer": direct_weather_answer,
+        "history_text": history_text,
+        "system_prompt": system_prompt,
+        "human_msg": human_msg,
+    }
+
+
+def _build_generation_fallback(prep: Dict[str, Any]) -> str:
+    """Fallback thân thiện, tự nhiên khi LLM cục bộ chưa khởi động."""
+    lang = prep["lang"]
+    norm_q = prep["norm_q"]
+    matched_places = prep["matched_places"]
+    target_dish = prep["target_dish"]
+    visual_matches = prep["visual_matches"]
+    visual_confidence = prep["visual_confidence"]
+    web_results = prep["web_results"]
+    image_base64 = prep["image_base64"]
+    is_nav = prep["is_nav"]
+
+    if lang == "en":
+        if is_nav and matched_places:
+            if len(matched_places) >= 2 and ("from " in norm_q or "tu " in norm_q):
+                origin_name = matched_places[0].get("name", "starting point")
+                dest_p = matched_places[1]
+            else:
+                origin_name = "your location"
+                dest_p = matched_places[0]
+            dest_name = dest_p.get("name", "destination")
+            dest_addr = dest_p.get("address", "")
+            addr_str = f" ({dest_addr})" if dest_addr else ""
+            return (
+                f"I have mapped out the optimal route from {origin_name} to **{dest_name}**{addr_str} on the interactive map beside! "
+                f"You can review the distance, estimated travel time, and tap 'Open Google Maps' for live navigation."
+            )
+        if is_nav:
+            return "I have noted your destination and plotted the optimal navigation route on the interactive map beside!"
+        if target_dish and matched_places:
+            bullets = []
+            for p in matched_places[:4]:
+                p_name = p.get('name')
+                p_addr = p.get('address') or p.get('street_address') or 'Huế City'
+                p_desc = p.get('description') or p.get('desc') or ''
+                desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
+                bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
+            places_bullets = "\n".join(bullets)
+            return (
+                f"If you'd like to savor authentic **{target_dish}**, here are top-rated local spots recommended by locals and travelers:\n\n"
+                f"{places_bullets}\n\n"
+                f"You can click on the cards below to locate them on the interactive map!"
+            )
+        if image_base64 and visual_matches and visual_confidence >= 0.70:
+            top_v = visual_matches[0]
+            matched_p = matched_places[0] if matched_places else {}
+            desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
+            addr = matched_p.get("address") or matched_p.get("street_address") or "Huế City"
+            sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
+            nearby_names = [f"**{p_sub.get('name')}**" for p_sub in matched_places[1:4] if p_sub.get("name")]
+            nearby_text = f"\n\n📍 **Nearby suggestions:** {', '.join(nearby_names)}." if nearby_names else ""
+            return (
+                f"Hello! Based on visual recognition (Visual Image RAG with Cosine similarity **{sim_pct}%**), "
+                f"I can confirm your photo was taken at **{top_v['place_name']}** in Ancient Huế!\n\n"
+                f"🏛️ **Heritage Information:** {desc}\n"
+                f"📍 **Address:** {addr}{nearby_text}\n\n"
+                f"I have pinned this location on the map beside for your convenience!"
+            )
+        if image_base64 and matched_places:
+            places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
+            return (
+                f"From your photo, I identified and matched with Huế heritage data: {places_str}. "
+                f"I have located these sites on the interactive map for your exploration!"
+            )
+        if matched_places:
+            places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
+            return (
+                f"Here is helpful tourism information regarding **{places_str}**. "
+                f"You can view locations, local specialties, and real traveler reviews directly on the interactive map beside!"
+            )
+        if web_results:
+            bullets = [f"• **{w.get('title', '')}**: {(w.get('snippet') or '')[:140]}..." for w in web_results[:3] if w.get("title")]
+            wb_str = "\n".join(bullets)
+            return f"According to travel information about Huế:\n\n{wb_str}\n\nYou can explore more on the interactive map!"
+        if image_base64:
+            return "I have received your photo and cross-referenced it with the Huế heritage database. Please explore the map for nearby highlights!"
+        return "I have retrieved the relevant heritage and tourism information for your query about Huế. Please see the interactive map for details!"
+
+    if is_nav and matched_places:
+        if len(matched_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
+            origin_name = matched_places[0].get("name", "điểm xuất phát")
+            dest_p = matched_places[1]
         else:
-            if image_base64:
-                clean_b64 = image_base64.split(",")[-1] if "," in image_base64 else image_base64
-                human_msg = HumanMessage(content=[
-                    {"type": "text", "text": user_prompt},
-                    {"type": "image_url", "image_url": f"data:image/jpeg;base64,{clean_b64}"}
-                ])
-            else:
-                human_msg = HumanMessage(content=user_prompt)
+            origin_name = "vị trí của bạn"
+            dest_p = matched_places[0]
+        dest_name = dest_p.get("name", "điểm đến")
+        dest_addr = dest_p.get("address", "")
+        addr_str = f" ({dest_addr})" if dest_addr else ""
+        return (
+            f"Dạ, em đã định vị và vẽ tuyến đường nhanh nhất từ {origin_name} đến **{dest_name}**{addr_str} trên bản đồ bên cạnh rồi nhé! "
+            f"Bạn có thể xem cự ly, thời gian ước tính và bấm mở Google Maps bên dưới để nghe dẫn đường trực tiếp khi di chuyển."
+        )
+    if is_nav:
+        return "Dạ, em đã ghi nhận điểm đến và định vị lộ trình di chuyển tối ưu trên bản đồ bên cạnh cho bạn rồi nhé!"
+    if target_dish and matched_places:
+        bullets = []
+        for p in matched_places[:4]:
+            p_name = p.get('name')
+            p_addr = p.get('address') or p.get('street_address') or 'TP. Huế'
+            p_desc = p.get('description') or p.get('desc') or ''
+            desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
+            bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
+        places_bullets = "\n".join(bullets)
+        return (
+            f"Dạ, nếu bạn muốn thưởng thức món **{target_dish}** chuẩn vị xứ Huế, em xin gợi ý những quán nổi tiếng được người dân địa phương và du khách đánh giá cao nhất:\n\n"
+            f"{places_bullets}\n\n"
+            f"Bạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!"
+        )
+    if image_base64 and visual_matches and visual_confidence >= 0.70:
+        top_v = visual_matches[0]
+        matched_p = matched_places[0] if matched_places else {}
+        desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
+        addr = matched_p.get("address") or matched_p.get("street_address") or "Thành phố Huế"
+        sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
+        nearby_names = [f"**{p_sub.get('name')}**" for p_sub in matched_places[1:4] if p_sub.get("name")]
+        nearby_text = f"\n\n📍 **Gợi ý điểm đến lân cận thuận đường:** {', '.join(nearby_names)}." if nearby_names else ""
+        return (
+            f"Dạ chào bạn! Qua phân tích đặc trưng thị giác (Visual Image RAG với độ tương đồng Cosine **{sim_pct}%**), "
+            f"em xác nhận bức ảnh của bạn được chụp tại **{top_v['place_name']}** Cố đô Huế!\n\n"
+            f"🏛️ **Thông tin di sản:** {desc}\n"
+            f"📍 **Địa chỉ:** {addr}{nearby_text}\n\n"
+            f"Em đã ghim vị trí chính xác lên bản đồ di sản bên cạnh để bạn dễ dàng định vị và lên kế hoạch tham quan nhé!"
+        )
+    if image_base64 and matched_places:
+        places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
+        return (
+            f"Dạ, qua hình ảnh bạn gửi, em nhận diện và đối chiếu với dữ liệu di sản Cố đô Huế: {places_str}. "
+            f"Em đã định vị các địa điểm này trên bản đồ tương tác để bạn tiện theo dõi và khám phá nhé!"
+        )
+    if matched_places:
+        places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
+        return (
+            f"Dạ, em xin gửi bạn thông tin về **{places_str}**. "
+            f"Bạn có thể xem vị trí chi tiết, các món ăn đặc sắc và đánh giá thực tế của du khách ngay trên bản đồ bên cạnh nhé!"
+        )
+    if web_results:
+        bullets = [
+            f"• **{w.get('title')}**: {(w.get('snippet') or '')[:140]}..."
+            for w in web_results[:3] if w.get("title")
+        ]
+        wb_str = "\n".join(bullets)
+        return (
+            f"Dạ, theo kết quả tra cứu tổng hợp về du lịch Cố đô Huế:\n\n{wb_str}\n\n"
+            f"Bạn có thể xem chi tiết vị trí và gợi ý trên bản đồ tương tác nhé!"
+        )
+    if image_base64:
+        return (
+            "Dạ, em đã tiếp nhận hình ảnh của bạn và đối chiếu với bản đồ di sản Cố đô Huế. "
+            "Bạn có thể xem các điểm tham quan và quán ăn lân cận ngay trên bản đồ tương tác nhé!"
+        )
+    return "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"
 
-            response = llm.invoke([
-                SystemMessage(content=system_prompt),
-                human_msg
-            ])
-            answer_text = response.content.strip()
-    except Exception as e:
-        # Fallback thân thiện, tự nhiên khi LLM cục bộ chưa khởi động
-        if lang == "en":
-            if is_nav and matched_places:
-                if len(matched_places) >= 2 and ("from " in norm_q or "tu " in norm_q):
-                    origin_name = matched_places[0].get("name", "starting point")
-                    dest_p = matched_places[1]
-                else:
-                    origin_name = "your location"
-                    dest_p = matched_places[0]
-                dest_name = dest_p.get("name", "destination")
-                dest_addr = dest_p.get("address", "")
-                addr_str = f" ({dest_addr})" if dest_addr else ""
-                answer_text = (
-                    f"I have mapped out the optimal route from {origin_name} to **{dest_name}**{addr_str} on the interactive map beside! "
-                    f"You can review the distance, estimated travel time, and tap 'Open Google Maps' for live navigation."
-                )
-            elif is_nav:
-                answer_text = "I have noted your destination and plotted the optimal navigation route on the interactive map beside!"
-            elif target_dish and matched_places:
-                bullets = []
-                for p in matched_places[:4]:
-                    p_name = p.get('name')
-                    p_addr = p.get('address') or p.get('street_address') or 'Huế City'
-                    p_desc = p.get('description') or p.get('desc') or ''
-                    desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
-                    bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
-                places_bullets = "\n".join(bullets)
-                answer_text = (
-                    f"If you'd like to savor authentic **{target_dish}**, here are top-rated local spots recommended by locals and travelers:\n\n"
-                    f"{places_bullets}\n\n"
-                    f"You can click on the cards below to locate them on the interactive map!"
-                )
-            elif image_base64 and visual_matches and visual_confidence >= 0.70:
-                top_v = visual_matches[0]
-                matched_p = matched_places[0] if matched_places else {}
-                desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
-                addr = matched_p.get("address") or matched_p.get("street_address") or "Huế City"
-                sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
 
-                nearby_names = [f"**{p_sub.get('name')}**" for p_sub in matched_places[1:4] if p_sub.get("name")]
-                nearby_text = f"\n\n📍 **Nearby suggestions:** {', '.join(nearby_names)}." if nearby_names else ""
-                answer_text = (
-                    f"Hello! Based on visual recognition (Visual Image RAG with Cosine similarity **{sim_pct}%**), "
-                    f"I can confirm your photo was taken at **{top_v['place_name']}** in Ancient Huế!\n\n"
-                    f"🏛️ **Heritage Information:** {desc}\n"
-                    f"📍 **Address:** {addr}{nearby_text}\n\n"
-                    f"I have pinned this location on the map beside for your convenience!"
-                )
-            elif image_base64 and matched_places:
-                places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
-                answer_text = (
-                    f"From your photo, I identified and matched with Huế heritage data: {places_str}. "
-                    f"I have located these sites on the interactive map for your exploration!"
-                )
-            elif matched_places:
-                places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
-                answer_text = (
-                    f"Here is helpful tourism information regarding **{places_str}**. "
-                    f"You can view locations, local specialties, and real traveler reviews directly on the interactive map beside!"
-                )
-            elif web_results:
-                bullets = [f"• **{w.get('title', '')}**: {(w.get('snippet') or '')[:140]}..." for w in web_results[:3] if w.get("title")]
-                wb_str = "\n".join(bullets)
-                answer_text = f"According to travel information about Huế:\n\n{wb_str}\n\nYou can explore more on the interactive map!"
-            elif image_base64:
-                answer_text = "I have received your photo and cross-referenced it with the Huế heritage database. Please explore the map for nearby highlights!"
-            else:
-                answer_text = "I have retrieved the relevant heritage and tourism information for your query about Huế. Please see the interactive map for details!"
-        else:
-            if is_nav and matched_places:
-                if len(matched_places) >= 2 and ("từ " in norm_q or "tu " in norm_q):
-                    origin_name = matched_places[0].get("name", "điểm xuất phát")
-                    dest_p = matched_places[1]
-                else:
-                    origin_name = "vị trí của bạn"
-                    dest_p = matched_places[0]
-                
-                dest_name = dest_p.get("name", "điểm đến")
-                dest_addr = dest_p.get("address", "")
-                addr_str = f" ({dest_addr})" if dest_addr else ""
-                answer_text = (
-                    f"Dạ, em đã định vị và vẽ tuyến đường nhanh nhất từ {origin_name} đến **{dest_name}**{addr_str} trên bản đồ bên cạnh rồi nhé! "
-                    f"Bạn có thể xem cự ly, thời gian ước tính và bấm mở Google Maps bên dưới để nghe dẫn đường trực tiếp khi di chuyển."
-                )
-            elif is_nav:
-                answer_text = "Dạ, em đã ghi nhận điểm đến và định vị lộ trình di chuyển tối ưu trên bản đồ bên cạnh cho bạn rồi nhé!"
-            elif target_dish and matched_places:
-                bullets = []
-                for p in matched_places[:4]:
-                    p_name = p.get('name')
-                    p_addr = p.get('address') or p.get('street_address') or 'TP. Huế'
-                    p_desc = p.get('description') or p.get('desc') or ''
-                    desc_snippet = f" — {p_desc[:80]}..." if p_desc and len(p_desc) > 10 else ""
-                    bullets.append(f"• **{p_name}** ({p_addr}){desc_snippet}")
-                places_bullets = "\n".join(bullets)
-                answer_text = (
-                    f"Dạ, nếu bạn muốn thưởng thức món **{target_dish}** chuẩn vị xứ Huế, em xin gợi ý những quán nổi tiếng được người dân địa phương và du khách đánh giá cao nhất:\n\n"
-                    f"{places_bullets}\n\n"
-                    f"Bạn có thể nhấp vào các nút bên dưới để ghim vị trí và mở hồ sơ chi tiết trên bản đồ nhé!"
-                )
-            elif image_base64 and visual_matches and visual_confidence >= 0.70:
-                top_v = visual_matches[0]
-                matched_p = matched_places[0] if matched_places else {}
-                desc = matched_p.get("description") or matched_p.get("desc") or top_v.get("caption", "")
-                addr = matched_p.get("address") or matched_p.get("street_address") or "Thành phố Huế"
-                sim_pct = top_v.get("confidence_pct", round(visual_confidence * 100, 1))
-
-                nearby_names = []
-                for p_sub in matched_places[1:4]:
-                    if p_sub.get("name"):
-                        nearby_names.append(f"**{p_sub.get('name')}**")
-                nearby_text = f"\n\n📍 **Gợi ý điểm đến lân cận thuận đường:** {', '.join(nearby_names)}." if nearby_names else ""
-
-                answer_text = (
-                    f"Dạ chào bạn! Qua phân tích đặc trưng thị giác (Visual Image RAG với độ tương đồng Cosine **{sim_pct}%**), "
-                    f"em xác nhận bức ảnh của bạn được chụp tại **{top_v['place_name']}** Cố đô Huế!\n\n"
-                    f"🏛️ **Thông tin di sản:** {desc}\n"
-                    f"📍 **Địa chỉ:** {addr}{nearby_text}\n\n"
-                    f"Em đã ghim vị trí chính xác lên bản đồ di sản bên cạnh để bạn dễ dàng định vị và lên kế hoạch tham quan nhé!"
-                )
-            elif image_base64 and matched_places:
-                places_str = ", ".join([f"**{p.get('name', '')}**" for p in matched_places[:3]])
-                answer_text = (
-                    f"Dạ, qua hình ảnh bạn gửi, em nhận diện và đối chiếu với dữ liệu di sản Cố đô Huế: {places_str}. "
-                    f"Em đã định vị các địa điểm này trên bản đồ tương tác để bạn tiện theo dõi và khám phá nhé!"
-                )
-            elif matched_places:
-                places_str = ", ".join([p.get("name", "") for p in matched_places[:3]])
-                answer_text = (
-                    f"Dạ, em xin gửi bạn thông tin về **{places_str}**. "
-                    f"Bạn có thể xem vị trí chi tiết, các món ăn đặc sắc và đánh giá thực tế của du khách ngay trên bản đồ bên cạnh nhé!"
-                )
-            elif web_results:
-                bullets = []
-                for w in web_results[:3]:
-                    title = w.get("title") or ""
-                    snippet = w.get("snippet") or ""
-                    if title:
-                        bullets.append(f"• **{title}**: {snippet[:140]}...")
-                wb_str = "\n".join(bullets)
-                answer_text = (
-                    f"Dạ, theo kết quả tra cứu tổng hợp về du lịch Cố đô Huế:\n\n{wb_str}\n\n"
-                    f"Bạn có thể xem chi tiết vị trí và gợi ý trên bản đồ tương tác nhé!"
-                )
-            elif image_base64:
-                answer_text = (
-                    "Dạ, em đã tiếp nhận hình ảnh của bạn và đối chiếu với bản đồ di sản Cố đô Huế. "
-                    "Bạn có thể xem các điểm tham quan và quán ăn lân cận ngay trên bản đồ tương tác nhé!"
-                )
-            else:
-                answer_text = "Dạ, em đã tìm thấy các thông tin phù hợp cho câu hỏi của bạn tại Cố đô Huế. Bạn có thể xem chi tiết trên bản đồ tương tác nhé!"
-
-    # XAI trace: ghi lại bước sinh phản hồi cuối cùng
+def _finalize_generation_output(state: TourismAgentState, prep: Dict[str, Any], answer_text: str) -> Dict[str, Any]:
+    """Chuẩn hóa câu trả lời và ghi bước trace cuối cùng."""
     trace_steps = list(state.get("graph_trace") or [])
+    pref_rules = prep["pref_rules"]
+    weather_info = prep["weather_info"]
+    direct_weather_answer = prep["direct_weather_answer"]
     if pref_rules:
         trace_steps.append({
             "step": "user_personalization",
@@ -2166,7 +2185,7 @@ Nguyên tắc trả lời bắt buộc:
                       + (" → trả lời trực tiếp bằng số liệu thực" if direct_weather_answer else " → điều chỉnh gợi ý theo thời tiết"),
             "status": "applied"
         })
-    history_turns = history_text.count("- Du khách:")
+    history_turns = prep["history_text"].count("- Du khách:")
     if direct_weather_answer:
         trace_steps.append({
             "step": "weather_direct_response",
@@ -2180,23 +2199,75 @@ Nguyên tắc trả lời bắt buộc:
             "step": "llm_generation",
             "icon": "🤖",
             "label": f"Sinh phản hồi ({OLLAMA_MODEL.upper()} GPU)",
-            "detail": f"LLM tổng hợp từ {len(context_blocks)} khối ngữ cảnh"
+            "detail": f"LLM tổng hợp từ {len(prep['context_blocks'])} khối ngữ cảnh"
                       + (f" + {history_turns} lượt hội thoại trước" if history_turns else "")
                       + " → câu trả lời tự nhiên",
             "model": OLLAMA_MODEL,
             "status": "done"
         })
 
-    # Khử triệt để ký tự chữ Hán / tiếng Trung và chuẩn hóa dấu câu trước khi xuất xưởng
-    answer_text = sanitize_vietnamese_response(answer_text)
-
     return {
-        "formatted_context": full_context,
-        "final_answer": answer_text,
-        "route_taken": route_taken,
+        "formatted_context": prep["full_context"],
+        "final_answer": sanitize_vietnamese_response(answer_text),
+        "route_taken": prep["route_taken"],
         "graph_trace": trace_steps,
-        "nav_route_info": nav_route_info
+        "nav_route_info": prep["nav_route_info"],
     }
+
+
+def node_generate_response(state: TourismAgentState) -> Dict[str, Any]:
+    prep = _prepare_generation_inputs(state)
+    try:
+        if prep["direct_weather_answer"]:
+            answer_text = prep["direct_weather_answer"]
+        else:
+            response = llm.invoke([
+                SystemMessage(content=prep["system_prompt"]),
+                prep["human_msg"],
+            ])
+            answer_text = response.content.strip()
+    except Exception:
+        answer_text = _build_generation_fallback(prep)
+    return _finalize_generation_output(state, prep, answer_text)
+
+
+def stream_tourism_agent_response(initial_state: Dict[str, Any]):
+    """Chạy Graph retrieval/routing rồi stream từng token từ LLM; trả ('token', text) và cuối cùng ('final', state)."""
+    state: Dict[str, Any] = dict(initial_state)
+    state.update(node_extract_and_retrieve_kg(state))
+    state.update(node_retrieve_vector_reviews(state))
+    if grade_confidence(state) == "node_web_search_fallback":
+        state.update(node_web_search_fallback(state))
+
+    prep = _prepare_generation_inputs(state)
+    if prep["direct_weather_answer"]:
+        answer_text = prep["direct_weather_answer"]
+        yield ("token", answer_text)
+    else:
+        messages = [SystemMessage(content=prep["system_prompt"]), prep["human_msg"]]
+        chunks: List[str] = []
+        try:
+            for chunk in llm.stream(messages):
+                text = getattr(chunk, "content", "") or ""
+                if isinstance(text, str) and text:
+                    chunks.append(text)
+                    yield ("token", text)
+            answer_text = "".join(chunks).strip()
+            if not answer_text:
+                answer_text = _build_generation_fallback(prep)
+                yield ("token", answer_text)
+        except Exception:
+            if chunks:
+                answer_text = "".join(chunks).strip()
+            else:
+                try:
+                    answer_text = llm.invoke(messages).content.strip()
+                except Exception:
+                    answer_text = _build_generation_fallback(prep)
+                yield ("token", answer_text)
+
+    state.update(_finalize_generation_output(state, prep, answer_text))
+    yield ("final", state)
 
 
 # =============================================================================

@@ -131,6 +131,36 @@ export class TourismApiClient {
     return TourismApiClient.getOfflineFallbackItinerary(numDays, preferredDishes, tripType, userLat, userLng);
   }
 
+  static async _buildChatPayload(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null, weatherContext = null) {
+    const payload = { query: query || '', locality };
+    if (userLat !== null && userLng !== null) {
+      payload.user_lat = userLat;
+      payload.user_lng = userLng;
+    }
+    if (preferences) {
+      payload.preferences = preferences;
+    }
+    if (imageBase64) {
+      payload.image_base64 = imageBase64;
+    }
+    const weatherCtx = await TourismApiClient.resolveWeatherContext(weatherContext);
+    if (weatherCtx) {
+      payload.weather_context = weatherCtx;
+    }
+    try {
+      const currentLang = (typeof window !== 'undefined' && window.i18n?.currentLang) || localStorage.getItem('hue_lang') || 'vi';
+      payload.language = currentLang;
+    } catch {
+      payload.language = 'auto';
+    }
+    if (session) {
+      if (session.sessionId) payload.session_id = session.sessionId;
+      if (Array.isArray(session.history) && session.history.length) payload.history = session.history;
+      if (session.sessionContext) payload.session_context = session.sessionContext;
+    }
+    return payload;
+  }
+
   /**
    * Gửi câu hỏi đến Trợ lý Du lịch Thông minh (Spatial Agentic RAG)
    */
@@ -145,35 +175,7 @@ export class TourismApiClient {
         externalSignal.addEventListener('abort', () => controller.abort(), { once: true });
       }
 
-      const payload = { query: query || '', locality };
-      if (userLat !== null && userLng !== null) {
-        payload.user_lat = userLat;
-        payload.user_lng = userLng;
-      }
-      if (preferences) {
-        payload.preferences = preferences;
-      }
-      if (imageBase64) {
-        payload.image_base64 = imageBase64;
-      }
-      const weatherCtx = await TourismApiClient.resolveWeatherContext(weatherContext);
-      if (weatherCtx) {
-        payload.weather_context = weatherCtx;
-      }
-      // Ngôn ngữ giao diện hiện tại ('vi' hoặc 'en') để backend phản hồi đúng ngôn ngữ du khách
-      try {
-        const currentLang = (typeof window !== 'undefined' && window.i18n?.currentLang) || localStorage.getItem('hue_lang') || 'vi';
-        payload.language = currentLang;
-      } catch {
-        payload.language = 'auto';
-      }
-
-      // Trí nhớ phiên chat đa lượt: lịch sử rút gọn + mốc ngữ cảnh server trả về ở lượt trước
-      if (session) {
-        if (session.sessionId) payload.session_id = session.sessionId;
-        if (Array.isArray(session.history) && session.history.length) payload.history = session.history;
-        if (session.sessionContext) payload.session_context = session.sessionContext;
-      }
+      const payload = await TourismApiClient._buildChatPayload(query, locality, userLat, userLng, preferences, imageBase64, session, weatherContext);
 
       const res = await fetch(`${API_BASE_URL}/api/v1/chat`, {
         method: 'POST',
@@ -203,6 +205,97 @@ export class TourismApiClient {
 
     // Client-side Fallback Chat
     return TourismApiClient.getOfflineFallbackChat(query, userLat, userLng, imageBase64);
+  }
+
+  /**
+   * Gửi câu hỏi dạng SSE streaming từng token theo thời gian thực (/api/v1/chat/stream);
+   * tự fallback sang /api/v1/chat hoặc offline nếu server chưa hỗ trợ SSE.
+   */
+  static async askAssistantStream(query, locality = 'Thành phố Huế', userLat = null, userLng = null, preferences = null, imageBase64 = null, session = null, externalSignal = null, weatherContext = null, onToken = null) {
+    let reader = null;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
+      if (externalSignal) {
+        if (externalSignal.aborted) {
+          throw new DOMException('User stopped generation', 'AbortError');
+        }
+        externalSignal.addEventListener('abort', () => controller.abort(), { once: true });
+      }
+
+      const payload = await TourismApiClient._buildChatPayload(query, locality, userLat, userLng, preferences, imageBase64, session, weatherContext);
+      const res = await fetch(`${API_BASE_URL}/api/v1/chat/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'text/event-stream',
+          ...NGROK_HEADERS
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+
+      const contentType = res.headers.get('content-type') || '';
+      if (!res.ok || !res.body || !contentType.includes('text/event-stream')) {
+        clearTimeout(timeoutId);
+        return TourismApiClient.askAssistant(query, locality, userLat, userLng, preferences, imageBase64, session, externalSignal, weatherContext);
+      }
+
+      reader = res.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      let fullText = '';
+      let finalResponse = null;
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const blocks = buffer.split(/\r?\n\r?\n/);
+        buffer = blocks.pop() || '';
+        for (const block of blocks) {
+          if (!block.trim()) continue;
+          let eventName = 'message';
+          const dataLines = [];
+          for (const line of block.split(/\r?\n/)) {
+            if (line.startsWith('event:')) eventName = line.slice(6).trim();
+            else if (line.startsWith('data:')) dataLines.push(line.slice(5).trimStart());
+          }
+          if (!dataLines.length) continue;
+          const rawData = dataLines.join('\n');
+          if (eventName === 'token') {
+            const parsed = JSON.parse(rawData);
+            const chunk = parsed?.text || '';
+            if (chunk) {
+              fullText += chunk;
+              onToken?.(chunk, fullText);
+            }
+          } else if (eventName === 'done') {
+            finalResponse = JSON.parse(rawData);
+          } else if (eventName === 'error') {
+            const parsed = JSON.parse(rawData);
+            throw new Error(parsed?.detail || 'Stream error');
+          }
+        }
+      }
+      clearTimeout(timeoutId);
+
+      if (finalResponse) return finalResponse;
+    } catch (err) {
+      if (reader) {
+        try { await reader.cancel(); } catch {}
+      }
+      if (externalSignal?.aborted || err.name === 'AbortError') {
+        throw new DOMException('User stopped generation', 'AbortError');
+      }
+      console.info('SSE stream unavailable, falling back to /chat:', err);
+    }
+
+    if (externalSignal?.aborted) {
+      throw new DOMException('User stopped generation', 'AbortError');
+    }
+    return TourismApiClient.askAssistant(query, locality, userLat, userLng, preferences, imageBase64, session, externalSignal, weatherContext);
   }
 
   /**

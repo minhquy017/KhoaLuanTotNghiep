@@ -12102,6 +12102,22 @@ body[data-theme="dark"] {
   font-weight: 600;
 }
 
+.streaming-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: -0.16em;
+  background-color: var(--primary, #E05A2B);
+  border-radius: 1px;
+  animation: streamCursorBlink 0.85s steps(2, start) infinite;
+}
+
+@keyframes streamCursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
 .chat-message.has-deck,
 .chat-message.has-deck .message-bubble {
   max-width: 100%;

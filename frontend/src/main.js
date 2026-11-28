@@ -1584,12 +1584,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentChatAbortController.abort();
       currentChatAbortController = null;
     }
-    if (currentLoadingId) {
-      removeLoadingMessage(currentLoadingId);
+    const loadingEl = currentLoadingId ? document.getElementById(currentLoadingId) : null;
+    if (loadingEl && loadingEl.dataset.streamed === '1') {
+      loadingEl.querySelector('.streaming-cursor')?.remove();
+      loadingEl.querySelector('.loading-text')?.remove();
+      loadingEl.removeAttribute('id');
       currentLoadingId = null;
+    } else {
+      if (currentLoadingId) {
+        removeLoadingMessage(currentLoadingId);
+        currentLoadingId = null;
+      }
+      appendAssistantStoppedMessage();
     }
-    appendAssistantStoppedMessage();
-    const isEn = typeof i18n !== 'undefined' && i18n.getLanguage() === 'en';
     authController?.showToast?.(
       typeof i18n !== 'undefined' ? i18n.t('stoppedGeneratingToast', 'Đã ngừng tạo câu trả lời.') : 'Đã ngừng tạo câu trả lời.'
     );
@@ -2897,24 +2904,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     const abortController = new AbortController();
     setGeneratingState(true, abortController, loadingId);
 
+    const loadingEl = document.getElementById(loadingId);
+    const loadingLabelEl = loadingEl?.querySelector('.loading-text');
+    const streamContentEl = loadingEl?.querySelector('.answer-content');
+    let streamedSoFar = '';
+    let renderPending = false;
+
+    const flushStreamRender = () => {
+      renderPending = false;
+      if (!loadingEl || !streamContentEl || abortController.signal.aborted) return;
+      loadingEl.dataset.streamed = '1';
+      if (loadingLabelEl) loadingLabelEl.classList.add('hidden');
+      streamContentEl.classList.remove('hidden');
+      streamContentEl.innerHTML = `${formatAssistantMarkdown(streamedSoFar, true)}<span class="streaming-cursor" aria-hidden="true"></span>`;
+      chatThread.scrollTop = chatThread.scrollHeight;
+    };
+
     try {
       // Truyền tọa độ GPS người dùng nếu đã có định vị & hồ sơ gu du lịch cá nhân hóa
       const userLat = mapStudio.userLocation ? mapStudio.userLocation.lat : null;
       const userLng = mapStudio.userLocation ? mapStudio.userLocation.lng : null;
       const userPrefs = userStore.getPreferences();
 
-      const res = await TourismApiClient.askAssistant(
-        trimmedQuery, isEn ? 'Hue City' : 'Thành phố Huế', userLat, userLng, userPrefs, activeImage, conversationMemory, abortController.signal
+      const res = await TourismApiClient.askAssistantStream(
+        trimmedQuery,
+        isEn ? 'Hue City' : 'Thành phố Huế',
+        userLat,
+        userLng,
+        userPrefs,
+        activeImage,
+        conversationMemory,
+        abortController.signal,
+        null,
+        (_chunk, fullText) => {
+          streamedSoFar = fullText;
+          if (!renderPending) {
+            renderPending = true;
+            requestAnimationFrame(flushStreamRender);
+          }
+        }
       );
-      removeLoadingMessage(loadingId);
-      appendAssistantResponse(res, true, displayPrompt, { image: activeImage, storageThumb: activeStorageImage });
+      if (loadingEl) {
+        loadingEl.removeAttribute('id');
+        appendAssistantResponse(res, true, displayPrompt, { image: activeImage, storageThumb: activeStorageImage }, loadingEl);
+      } else {
+        removeLoadingMessage(loadingId);
+        appendAssistantResponse(res, true, displayPrompt, { image: activeImage, storageThumb: activeStorageImage });
+      }
     } catch (err) {
-      removeLoadingMessage(loadingId);
       if (err.name === 'AbortError' || abortController.signal.aborted) {
-        if (currentLoadingId === loadingId) {
-          appendAssistantStoppedMessage();
+        if (loadingEl && streamedSoFar) {
+          loadingEl.querySelector('.streaming-cursor')?.remove();
+          loadingEl.querySelector('.loading-text')?.remove();
+          loadingEl.removeAttribute('id');
+        } else {
+          removeLoadingMessage(loadingId);
+          if (currentLoadingId === loadingId) {
+            appendAssistantStoppedMessage();
+          }
         }
       } else {
+        removeLoadingMessage(loadingId);
         appendAssistantError(err.message);
       }
     } finally {
@@ -3033,6 +3083,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       <div class="message-bubble">
         <div class="message-author">${i18n.t('assistantName', 'Trợ lý Cố đô')}</div>
         <p class="loading-text">${text}</p>
+        <div class="answer-content hidden"></div>
       </div>
     `;
     chatThread.appendChild(msg);
@@ -3047,10 +3098,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // =============================================================================
   // XAI: GIẢI THÍCH CHUỖI SUY LUẬN ĐỒ THỊ MINH BẠCH (EXPLAINABLE GRAPH TRACE)
+  function formatAssistantMarkdown(rawText, streaming = false) {
+    let clean = sanitizeChineseText(rawText || '');
+    if (!clean) return '';
+    if (streaming) {
+      const boldMarkers = (clean.match(/\*\*/g) || []).length;
+      if (boldMarkers % 2 === 1) clean += '**';
+    }
+    return escapeHtml(clean)
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br/>');
+  }
+
   // attachment: ảnh của câu hỏi tương ứng (nếu có) — giữ lại để nút "Tạo lại" gửi kèm
-  function appendAssistantResponse(res, persist = true, promptText = '', attachment = null) {
+  function appendAssistantResponse(res, persist = true, promptText = '', attachment = null, existingMsg = null) {
     const isEn = i18n.getLanguage() === 'en';
-    const msg = document.createElement('div');
+    const msg = existingMsg || document.createElement('div');
     msg.className = 'chat-message assistant';
 
     const messageId = res.messageId || `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -3059,12 +3123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const rawAnswer = sanitizeChineseText(res.answer || res.text || res.content || '');
     res.answer = rawAnswer;
-    const formattedAnswer = rawAnswer
-      ? escapeHtml(rawAnswer)
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br/>')
-      : '';
+    const formattedAnswer = formatAssistantMarkdown(rawAnswer, false);
 
     // Khối thẻ chỉ đường nếu phản hồi có điều hướng (Navigation Intent)
     let navCardHtml = '';
@@ -3251,7 +3310,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         ${createFeedbackBarHtml(messageId, savedRating)}
       </div>
     `;
-    chatThread.appendChild(msg);
+    if (!existingMsg) {
+      chatThread.appendChild(msg);
+    }
     chatThread.scrollTop = chatThread.scrollHeight;
 
     // Gán sự kiện Feedback (Thích / Chưa tốt / Sao chép)
