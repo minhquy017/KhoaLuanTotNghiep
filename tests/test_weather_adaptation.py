@@ -19,6 +19,7 @@ except Exception:
 
 from src.rag.weather_rules import (
     classify_weather, normalize_weather_context, is_weather_question,
+    is_travel_recommendation_query, get_weather_kg_seeds,
     build_weather_prompt_section, build_weather_answer,
     LEVEL_NEUTRAL, LEVEL_CLEAR, LEVEL_HOT, LEVEL_DRIZZLE, LEVEL_STORM,
 )
@@ -64,7 +65,12 @@ class TestWeatherRules(unittest.TestCase):
 
     def test_weather_question_detection(self):
         self.assertTrue(is_weather_question("Thời tiết Huế hôm nay thế nào?"))
+        self.assertTrue(is_weather_question("Thời tiết Huế hôm nay thế nào, có mưa không?"))
         self.assertTrue(is_weather_question("What is the weather in Hue?"))
+        self.assertFalse(is_weather_question("Chiều nay ở Huế nên đi tham quan đâu và ăn gì cho phù hợp với thời tiết hiện tại?"))
+        self.assertFalse(is_weather_question("Trời mưa ở Huế nên đi đâu chơi?"))
+        self.assertTrue(is_travel_recommendation_query("Chiều nay ở Huế nên đi tham quan đâu và ăn gì cho phù hợp với thời tiết hiện tại?"))
+        self.assertGreater(len(get_weather_kg_seeds(DRIZZLE_MM, "Đi đâu ăn gì?")), 0)
         self.assertFalse(is_weather_question("Giá vé máy bay đi Huế"))
         self.assertFalse(is_weather_question("Thời tiết Huế ngày mai"))
         self.assertFalse(is_weather_question("Bún bò Mụ Rơi ở đâu"))
@@ -181,6 +187,44 @@ class TestAgentWeather(unittest.TestCase):
         self.assertIn("25°C", out["final_answer"])
         steps = [t.get("step") for t in out["graph_trace"]]
         self.assertIn("weather_adaptation", steps)
+        self.assertIn("weather_direct_response", steps)
+        self.assertNotIn("llm_generation", steps)
+
+    def test_weather_travel_recommendation_uses_kg_and_llm(self):
+        q = "Chiều nay ở Huế nên đi tham quan đâu và ăn gì cho phù hợp với thời tiết hiện tại?"
+        kg_out = self.ag.node_extract_and_retrieve_kg(self._state(q, DRIZZLE_MM))
+        self.assertGreater(len(kg_out["matched_places"]), 0)
+        steps_kg = [t.get("step") for t in kg_out["graph_trace"]]
+        self.assertIn("weather_kg_retrieval", steps_kg)
+
+        state = self._state(q, DRIZZLE_MM, matched_places=kg_out["matched_places"])
+        self.assertEqual(self.ag.grade_confidence(state), "node_generate_response")
+
+        called = {"count": 0}
+
+        class FakeLLM:
+            def invoke(self, messages):
+                called["count"] += 1
+                called["system"] = messages[0].content
+                called["human"] = messages[1].content
+
+                class R:
+                    content = "Gợi ý chiều mưa tại Huế"
+                return R()
+
+        original = self.ag.llm
+        self.ag.llm = FakeLLM()
+        try:
+            gen_out = self.ag.node_generate_response(state)
+            self.assertEqual(called["count"], 1)
+            self.assertEqual(gen_out["final_answer"], "Gợi ý chiều mưa tại Huế")
+            self.assertIn("Open-Meteo", called["system"])
+            self.assertNotIn("Không tìm thấy dữ liệu liên quan", called["human"])
+            gen_steps = [t.get("step") for t in gen_out["graph_trace"]]
+            self.assertIn("llm_generation", gen_steps)
+            self.assertNotIn("weather_direct_response", gen_steps)
+        finally:
+            self.ag.llm = original
 
     def test_generate_prompt_receives_weather_section(self):
         captured = {}

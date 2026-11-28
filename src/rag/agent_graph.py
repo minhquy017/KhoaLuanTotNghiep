@@ -55,7 +55,14 @@ from src.rag.vector_retriever import get_vector_retriever
 from src.rag.visual_retriever import get_visual_retriever
 from src.rag.web_search_tool import get_web_search_tool
 from src.rag.weather_rules import (
-    classify_weather, is_weather_question, build_weather_prompt_section, build_weather_answer
+    classify_weather,
+    is_weather_question,
+    is_travel_recommendation_query,
+    is_flight_or_future_weather,
+    is_warm_dish,
+    get_weather_kg_seeds,
+    build_weather_prompt_section,
+    build_weather_answer,
 )
 from src.rag.session_memory import (
     resolve_anaphora,
@@ -1031,6 +1038,42 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             "status": "found"
         })
 
+    # C.1 Nếu là câu hỏi gợi ý mở (đi đâu / ăn gì) có ngữ cảnh thời tiết thực mà chưa khớp địa danh cụ thể -> nạp ứng viên KG phù hợp thời tiết
+    if (
+        not matched_places
+        and not is_greeting
+        and not is_ticket_query
+        and locality in ("", "Thành phố Huế")
+        and is_travel_recommendation_query(query)
+    ):
+        weather_info = classify_weather(state.get("weather_context"))
+        if weather_info is not None:
+            target_loc = locality or "Thành phố Huế"
+            seen_ids = set()
+            for seed_name in get_weather_kg_seeds(state.get("weather_context"), query):
+                is_dish_seed = is_warm_dish(seed_name) or "com hen" in strip_accents(seed_name.lower())
+                found_items = (
+                    graph_retriever.find_places_by_dish(seed_name, locality=target_loc, limit=1)
+                    if is_dish_seed
+                    else graph_retriever.search_places(seed_name, locality=target_loc, limit=1)
+                )
+                for item in found_items:
+                    nid = item.get("node_id") or item.get("name")
+                    if nid and nid not in seen_ids:
+                        seen_ids.add(nid)
+                        matched_places.append(item)
+                if len(matched_places) >= 5:
+                    break
+            if matched_places:
+                trace_steps.append({
+                    "step": "weather_kg_retrieval",
+                    "icon": "🌦️",
+                    "label": "Truy xuất KG Thích ứng Thời tiết",
+                    "detail": f"Lọc {len(matched_places)} điểm/quán phù hợp kịch bản '{weather_info['label_vi']}'",
+                    "count": len(matched_places),
+                    "status": "found"
+                })
+
     # 4. Nhận diện nhu cầu ăn chay hoặc danh mục đặc thù
     if any(k in norm_q for k in ["chay", "quan chay", "com chay", "an chay", "do chay"]):
         veg_places = graph_retriever.search_places("chay", locality=locality or "Thành phố Huế", limit=3)
@@ -1310,8 +1353,9 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
         "weather", "forecast", "temperature", "flight ticket"
     ]
     is_realtime_query = any(t in norm_q or t in query_lower for t in realtime_triggers)
+    weather_info = classify_weather(state.get("weather_context"))
     if (is_realtime_query and not state.get("image_base64") and is_weather_question(state["query"])
-            and classify_weather(state.get("weather_context")) is not None):
+            and weather_info is not None):
         trace_steps.append({
             "step": "routing_decision",
             "icon": "🌦️",
@@ -1321,7 +1365,13 @@ def grade_confidence(state: TourismAgentState) -> Literal["node_generate_respons
             "status": "confident"
         })
         return "node_generate_response"
-    if is_realtime_query:
+    use_local_weather_for_travel = (
+        weather_info is not None
+        and is_travel_recommendation_query(state["query"])
+        and not is_flight_or_future_weather(state["query"])
+        and (has_places or (has_reviews and confidence >= 0.40))
+    )
+    if is_realtime_query and not use_local_weather_for_travel:
         trace_steps.append({
             "step": "routing_decision",
             "icon": "🌐",
@@ -2018,16 +2068,25 @@ Nguyên tắc trả lời bắt buộc:
             "status": "applied"
         })
     history_turns = history_text.count("- Du khách:")
-    trace_steps.append({
-        "step": "llm_generation",
-        "icon": "🤖",
-        "label": f"Sinh phản hồi ({OLLAMA_MODEL.upper()} GPU)",
-        "detail": f"LLM tổng hợp từ {len(context_blocks)} khối ngữ cảnh"
-                  + (f" + {history_turns} lượt hội thoại trước" if history_turns else "")
-                  + " → câu trả lời tự nhiên",
-        "model": OLLAMA_MODEL,
-        "status": "done"
-    })
+    if direct_weather_answer:
+        trace_steps.append({
+            "step": "weather_direct_response",
+            "icon": "🌦️",
+            "label": "Trả lời trực tiếp từ Open-Meteo",
+            "detail": "Câu hỏi thời tiết hiện tại → phản hồi tức thì bằng số liệu thời gian thực (không cần gọi LLM)",
+            "status": "done"
+        })
+    else:
+        trace_steps.append({
+            "step": "llm_generation",
+            "icon": "🤖",
+            "label": f"Sinh phản hồi ({OLLAMA_MODEL.upper()} GPU)",
+            "detail": f"LLM tổng hợp từ {len(context_blocks)} khối ngữ cảnh"
+                      + (f" + {history_turns} lượt hội thoại trước" if history_turns else "")
+                      + " → câu trả lời tự nhiên",
+            "model": OLLAMA_MODEL,
+            "status": "done"
+        })
 
     # Khử triệt để ký tự chữ Hán / tiếng Trung và chuẩn hóa dấu câu trước khi xuất xưởng
     answer_text = sanitize_vietnamese_response(answer_text)

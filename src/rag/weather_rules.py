@@ -11,6 +11,7 @@ Phân loại 4 mức:
   0. Trung tính (nhiều mây, sương mù...): không điều chỉnh gì.
 """
 import math
+import re
 from typing import Any, Dict, List, Optional
 
 from src.graph.graph_retriever import strip_accents
@@ -78,6 +79,18 @@ _WEATHER_TOKENS = (
     "thoi tiet", "nhiet do", "bao nhieu do", "mua khong", "co mua", "troi mua", "troi nang",
     "weather", "forecast", "temperature", "is it raining", "will it rain",
 )
+_TRAVEL_RECOMMEND_TOKENS = (
+    "tham quan", "di dau", "nen di", "choi gi", "cho nao", "diem nao", "dia diem",
+    "di tich", "bao tang", "lich trinh", "tour",
+    "an gi", "an uong", "mon gi", "quan an", "nha hang", "ca phe", "cafe", "dac san", "nen an",
+    "goi y", "tu van", "phu hop", "hop voi",
+    "sightseeing", "visit", "where to go", "itinerary", "places to", "things to do",
+    "eat", "food", "dish", "restaurant", "recommend", "suggest", "suitable",
+)
+_TRAVEL_RECOMMEND_RE = re.compile(r"\b(?:" + "|".join(_TRAVEL_RECOMMEND_TOKENS) + r")\b")
+_INDOOR_HUE_FALLBACKS = ("Cung An Định", "Chợ Đông Ba", "Cà Phê Muối Nguyễn Huệ")
+_FOOD_QUERY_TOKENS = ("an gi", "an uong", "mon gi", "mon", "quan an", "am thuc", "dac san", "food", "eat", "dish", "restaurant")
+_FOOD_QUERY_RE = re.compile(r"\b(?:" + "|".join(_FOOD_QUERY_TOKENS) + r")\b")
 
 
 def _num(raw: Dict[str, Any], key: str, lo: float, hi: float) -> Optional[float]:
@@ -163,16 +176,44 @@ def wmo_label(code: Optional[int], lang: str = "vi") -> str:
     return "thay đổi" if vi else "variable"
 
 
+def is_flight_or_future_weather(query: str) -> bool:
+    """Câu hỏi về vé máy bay, tin tức hoặc dự báo thời tiết ngày khác."""
+    q = strip_accents((query or "").lower())
+    return any(t in q for t in _FLIGHT_NEWS_TOKENS) or any(t in q for t in _FUTURE_TOKENS)
+
+
+def is_travel_recommendation_query(query: str) -> bool:
+    """Câu hỏi xin gợi ý điểm tham quan, ăn uống hoặc lịch trình (kể cả có nhắc thời tiết)."""
+    q = strip_accents((query or "").lower())
+    return bool(_TRAVEL_RECOMMEND_RE.search(q))
+
+
 def is_weather_question(query: str) -> bool:
-    """Câu hỏi về thời tiết Huế HIỆN TẠI (loại trừ vé máy bay, tin tức, dự báo ngày khác)."""
+    """Câu hỏi thuần về thời tiết Huế HIỆN TẠI (loại trừ vé máy bay, tin tức, dự báo và gợi ý đi đâu/ăn gì)."""
     q = strip_accents((query or "").lower())
     if not any(t in q for t in _WEATHER_TOKENS):
         return False
-    if any(t in q for t in _FLIGHT_NEWS_TOKENS):
-        return False
-    if any(t in q for t in _FUTURE_TOKENS):
+    if is_flight_or_future_weather(q) or is_travel_recommendation_query(q):
         return False
     return True
+
+
+def get_weather_kg_seeds(raw: Any, query: str) -> List[str]:
+    """Danh sách tên địa danh/món ăn ưu tiên truy xuất KG cho câu hỏi gợi ý mở theo thời tiết."""
+    info = classify_weather(raw)
+    if info is None:
+        return []
+    seeds = list(info.get("suggest") or LEVEL_RULES[LEVEL_CLEAR]["suggest"])
+    if info["level"] in (LEVEL_NEUTRAL, LEVEL_HOT, LEVEL_DRIZZLE, LEVEL_STORM):
+        for extra in _INDOOR_HUE_FALLBACKS:
+            if extra not in seeds:
+                seeds.append(extra)
+    q = strip_accents((query or "").lower())
+    if _FOOD_QUERY_RE.search(q) and info["level"] in (LEVEL_CLEAR, LEVEL_HOT, LEVEL_NEUTRAL):
+        for dish in ("Bún bò Huế", "Cơm hến"):
+            if dish not in seeds:
+                seeds.append(dish)
+    return seeds
 
 
 def is_warm_dish(name: str) -> bool:
