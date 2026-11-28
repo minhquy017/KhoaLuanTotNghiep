@@ -571,12 +571,28 @@ def validate_dish_name(name: str) -> Optional[str]:
     return None
 
 
+def _build_safe_kg_aliases() -> Dict[str, str]:
+    """Gộp PLACE_ALIAS_DICT với tên địa danh/khách sạn Huế đủ rõ (>= 8 ký tự, >= 2 từ) trong KG."""
+    generic = {"khach san", "nha hang", "quan an", "thanh pho", "co do hue", "hue city"}
+    merged: Dict[str, str] = {}
+    for alias, pid in graph_retriever._place_alias_index.items():
+        if len(alias) >= 8 and " " in alias and alias not in generic and pid in graph_retriever.G:
+            loc = strip_accents(graph_retriever.G.nodes[pid].get("locality", ""))
+            if not loc or "hue" in loc:
+                merged[alias] = pid
+    merged.update(PLACE_ALIAS_DICT)
+    return merged
+
+
+ALL_HUE_ALIASES = _build_safe_kg_aliases()
+
+
 def lookup_place_by_name(name: str) -> Optional[Dict[str, Any]]:
     """Tra cứu địa điểm theo tên hoặc alias nếu client chỉ gửi label (ví dụ session phục hồi từ cache cũ)."""
     if not name:
         return None
     norm = strip_accents(name)
-    node_id = PLACE_ALIAS_DICT.get(norm)
+    node_id = ALL_HUE_ALIASES.get(norm)
     if node_id:
         return lookup_place_by_id(node_id)
     try:
@@ -597,12 +613,12 @@ def resolve_session_query(
     """Chuẩn hóa session_context + giải đồng tham chiếu cho câu hỏi hiện tại. Trả về (ctx, resolution)."""
     ctx = sanitize_session_context(raw_session_context, lookup_place_by_id, validate_dish_name, lookup_place_by_name)
     if not ctx and history:
-        ctx = infer_context_from_history(history, PLACE_ALIAS_DICT, lookup_place_by_id, DISH_ALIASES)
+        ctx = infer_context_from_history(history, ALL_HUE_ALIASES, lookup_place_by_id, DISH_ALIASES)
     resolution = resolve_anaphora(
         query,
         ctx,
         has_image=has_image,
-        place_aliases=PLACE_ALIAS_DICT.keys(),
+        place_aliases=ALL_HUE_ALIASES.keys(),
         dish_keywords=DISH_ALIASES.keys(),
     )
     return ctx, resolution
@@ -662,8 +678,8 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
     visual_confidence = 0.0
     vis_matched_place_id = None
 
-    # 0. Từ điển bí danh / tên gọi phổ biến và cụm di tích phụ thuộc (dùng chung cho cả ảnh và văn bản)
-    alias_dict = PLACE_ALIAS_DICT
+    # 0. Từ điển bí danh / tên gọi phổ biến + tên cơ sở Huế đầy đủ trong KG
+    alias_dict = ALL_HUE_ALIASES
 
     # 0.1 Trí nhớ phiên chat: giải đồng tham chiếu "ở đó / từ đó / quán này / món đó" bằng mốc ngữ cảnh
     #     -> viết lại câu hỏi để các bước bóc tách alias & chỉ đường A -> B phía sau hoạt động bình thường
@@ -852,6 +868,7 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
 
     # Nhận diện câu hỏi tìm địa điểm lân cận ('quanh X', 'gần X', 'trong bán kính Y km')
     is_nearby_query = any(k in norm_q for k in ["quanh", "xung quanh", "lan can", "ban kinh", "gan day", "gan do", "gan ", "near", "nearby", "around", "close to", "next to"])
+    is_nearby_food = any(k in norm_q for k in ("an gi", "an uong", "quan an", "nha hang", "mon gi", "dac san", "cafe", "ca phe", "food", "eat", "restaurant"))
     is_lodging_query = _is_lodging_intent(norm_q)
     lodging_kw = _extract_lodging_keyword(norm_q) if is_lodging_query else None
     # Nếu hỏi quanh một địa danh mà có 'song huong' xuất hiện như cảnh quan, loại bỏ 'song huong' khỏi danh sách đích
@@ -931,8 +948,15 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
                 "count": len(matched_places),
                 "status": "found" if matched_places else "empty"
             })
-    # B.2 ƯU TIÊN LƯU TRÚ LÂN CẬN: Hỏi khách sạn / homestay / resort gần địa danh X
-    elif is_lodging_query and target_place_id and not target_dish and len(extracted_place_ids) == 1:
+    # B.2 ƯU TIÊN LƯU TRÚ LÂN CẬN: Hỏi khách sạn / homestay / resort gần địa danh X (không áp dụng khi mốc chính đã là khách sạn & khách đang hỏi ăn uống quanh đó)
+    elif (
+        is_lodging_query
+        and not is_nearby_food
+        and target_place_id
+        and not target_dish
+        and len(extracted_place_ids) == 1
+        and (graph_retriever.G.nodes.get(target_place_id, {}).get("category") or "").lower() != "hotel"
+    ):
         origin_place = graph_retriever.get_place(target_place_id)
         if origin_place:
             radius_km = _parse_radius_km(norm_q, default=2.5)
@@ -966,7 +990,12 @@ def node_extract_and_retrieve_kg(state: TourismAgentState) -> Dict[str, Any]:
             # Bóc tách bán kính km nếu người dùng ghi rõ (ví dụ: 'trong bán kính 2km')
             radius_km = _parse_radius_km(norm_q, default=2.0)
 
-            nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
+            nearby = (
+                graph_retriever.find_nearby_places(target_place_id, category="restaurant", max_distance_km=radius_km, limit=6)
+                if is_nearby_food else []
+            )
+            if not nearby:
+                nearby = graph_retriever.find_nearby_places(target_place_id, max_distance_km=radius_km, limit=6)
             nearby_map[target_place_id] = nearby
             
             # QUAN TRỌNG: Đưa origin_place lên ĐẦU matched_places để làm mốc trung tâm trên bản đồ

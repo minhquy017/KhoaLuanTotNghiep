@@ -172,11 +172,20 @@ class VectorRetriever:
         # Nếu có bộ lọc địa điểm cụ thể từ Knowledge Graph (Graph-Guided Retrieval):
         if where_filter:
             try:
-                get_res = self.collection.get(
-                    where=where_filter,
-                    limit=max(n_results * 6, 30),
-                    include=["documents", "metadatas", "embeddings"]
-                )
+                try:
+                    get_res = self.collection.get(
+                        where=where_filter,
+                        limit=max(n_results * 6, 30),
+                        include=["documents", "metadatas", "embeddings"]
+                    )
+                except Exception:
+                    # Một số collection/shard ChromaDB lỗi khi đọc trường embeddings qua .get();
+                    # đọc documents + metadatas rồi tự encode fallback bên dưới.
+                    get_res = self.collection.get(
+                        where=where_filter,
+                        limit=max(n_results * 6, 30),
+                        include=["documents", "metadatas"]
+                    )
                 docs = get_res.get("documents", [])
                 metas = get_res.get("metadatas", [])
                 stored_embs = get_res.get("embeddings", None)

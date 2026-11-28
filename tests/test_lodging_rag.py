@@ -68,6 +68,24 @@ class TestLodgingRAG(unittest.TestCase):
         vec = self.ag.node_retrieve_vector_reviews({**self._state(q, weather=w), **kg})
         self.assertEqual(self.ag.grade_confidence({**self._state(q, weather=w), **kg, **vec}), "node_generate_response")
 
+    def test_named_hotel_review_and_nearby_dining_ignores_stale_session_anchor(self):
+        q = "Review khách sạn Meliá Vinpearl Hue thế nào và gần đó ăn gì tiện?"
+        stale_ctx = {
+            "anchor_place_id": "place_8875",
+            "anchor_place_label": "Đại Nội Huế",
+            "anchor_place_kind": "site",
+            "topic_domain": "lodging",
+        }
+        st = {**self._state(q), "session_context": stale_ctx}
+        kg = self.ag.node_extract_and_retrieve_kg(st)
+        self.assertEqual(kg["target_place"], "place_37")
+        self.assertEqual(kg["matched_places"][0].get("node_id"), "place_37")
+        self.assertNotIn("place_8875", [p.get("node_id") for p in kg["matched_places"]])
+        nearby_cats = [p.get("category", "").lower() for p in kg["matched_places"][1:]]
+        self.assertTrue(any(c == "restaurant" for c in nearby_cats))
+        vec = self.ag.node_retrieve_vector_reviews({**st, **kg})
+        self.assertGreater(len(vec["reviews"]), 0)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
